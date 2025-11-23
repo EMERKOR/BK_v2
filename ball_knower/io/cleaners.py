@@ -5,6 +5,7 @@ from typing import Iterable
 import pandas as pd
 
 from .validation import validate_required_columns
+from ..mappings import normalize_team_code
 
 
 # ---------- Stream A cleaners ----------
@@ -214,7 +215,7 @@ def clean_trench_matchups(raw: pd.DataFrame) -> pd.DataFrame:
     clean = pd.DataFrame()
     clean["season"] = pd.to_numeric(df["Season"], errors="coerce")
     clean["week"] = pd.to_numeric(df.get("week"), errors="coerce")
-    clean["team"] = df["Team"]
+    clean["team"] = df["Team"].apply(lambda x: normalize_team_code(str(x), "fantasypoints"))
     clean["games"] = pd.to_numeric(df["G"], errors="coerce")
     clean["location"] = df["Location"]
     clean["team_name"] = df["Team Name"]
@@ -288,6 +289,9 @@ def clean_coverage_matrix(raw: pd.DataFrame) -> pd.DataFrame:
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
+    # Normalize team codes to canonical BK codes
+    df["Team"] = df["Team"].apply(lambda x: normalize_team_code(str(x), "fantasypoints"))
+
     return df[required]
 
 
@@ -330,6 +334,9 @@ def clean_receiving_vs_coverage(raw: pd.DataFrame) -> pd.DataFrame:
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
+    # Normalize team codes to canonical BK codes
+    df["Team"] = df["Team"].apply(lambda x: normalize_team_code(str(x), "fantasypoints"))
+
     return df[required]
 
 
@@ -365,6 +372,9 @@ def clean_proe_report(raw: pd.DataFrame) -> pd.DataFrame:
     ]
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Normalize team codes to canonical BK codes
+    df["Team"] = df["Team"].apply(lambda x: normalize_team_code(str(x), "fantasypoints"))
 
     return df[required]
 
@@ -408,5 +418,8 @@ def clean_separation_rates(raw: pd.DataFrame) -> pd.DataFrame:
     ]
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Normalize team codes to canonical BK codes
+    df["Team"] = df["Team"].apply(lambda x: normalize_team_code(str(x), "fantasypoints"))
 
     return df[required]
