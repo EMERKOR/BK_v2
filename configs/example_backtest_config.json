@@ -1,0 +1,40 @@
+{
+  "experiment_id": "example_2024_spread_total",
+  "dataset_version": "v2_1",
+  "model_version": "score_model_v2",
+  "seasons": {
+    "train": [2023],
+    "test": [2024]
+  },
+  "weeks": {
+    "test": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+  },
+  "markets": ["spread", "total"],
+  "bankroll": {
+    "initial_units": 100.0,
+    "staking": "flat",
+    "kelly_fraction": 0.25,
+    "max_stake_per_bet_units": 5.0
+  },
+  "betting_policy": {
+    "decision_point": "closing",
+    "min_edge_points_spread": 1.5,
+    "min_edge_points_total": 1.5,
+    "max_spread_to_bet": 14.0,
+    "enable_home_faves": true,
+    "enable_home_dogs": true,
+    "enable_road_faves": true,
+    "enable_road_dogs": true,
+    "bet_spreads": true,
+    "bet_totals": true,
+    "bet_moneylines": false,
+    "min_prob_edge_spread": null,
+    "min_prob_edge_total": null
+  },
+  "output": {
+    "base_dir": "data/backtests/v2",
+    "save_bet_log": true,
+    "save_game_summary": true,
+    "save_metrics": true
+  }
+}
