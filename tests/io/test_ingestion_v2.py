@@ -312,3 +312,347 @@ def test_market_values_are_numeric(fixture_data_dir):
     assert kc_game["market_closing_total"] == 47.5
     assert kc_game["market_moneyline_home"] == -150.0
     assert kc_game["market_moneyline_away"] == 130.0
+
+
+# ========== Stream B Tests ==========
+
+
+@pytest.fixture
+def fixture_context_data_dir(tmp_path):
+    """Create minimal Stream B (FantasyPoints context) fixtures for testing."""
+    season, week = 2025, 11
+
+    # Create RAW_context directory
+    context_dir = tmp_path / "RAW_context"
+    context_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Trench Matchups
+    trench_df = pd.DataFrame({
+        "Season": [2025, 2025],
+        "Week": [11, 11],
+        "Team": ["AZ", "BAL"],  # FantasyPoints codes
+        "Opponent": ["BAL", "AZ"],
+        "OL Rank": ["5", "12"],
+        "OL Name": ["Cardinals OL", "Ravens OL"],
+        "OL Games": [11, 11],
+        "OL Rush Grade": ["B+", "A-"],
+        "OL Pass Grade": ["B", "B+"],
+        "OL Adj YBC/Att": [1.2, 1.5],
+        "OL Press %": [35.5, 38.2],
+        "OL PRROE": [0.05, 0.08],
+        "OL Att": [450, 480],
+        "OL YBCO": [125.5, 142.8],
+        "DL Name": ["Edge Rush Unit", "Interior DL"],
+        "DL Adj YBC/Att": [1.1, 1.3],
+        "DL Press %": [32.1, 36.5],
+        "DL PRROE": [0.03, 0.06],
+        "DL Att": [420, 455],
+        "DL YBCO": [118.2, 135.7],
+    })
+    trench_df.to_csv(context_dir / f"lineMatchupsExport_{season}_week_{week:02d}.csv", index=False)
+
+    # 2. Coverage Matrix
+    coverage_df = pd.DataFrame({
+        "Team": ["AZ", "BAL"],
+        "M2M": [35.5, 42.3],
+        "Zn": [64.5, 57.7],
+        "Cov0": [15.2, 12.8],
+        "Cov1": [20.3, 29.5],
+        "Cov2": [18.7, 15.2],
+        "Cov3": [25.1, 22.8],
+        "Cov4": [12.3, 10.5],
+        "Cov6": [8.4, 9.2],
+        "Blitz": [22.5, 28.3],
+        "Pressure": [35.2, 38.7],
+        "Avg Cushion": [5.2, 4.8],
+        "Avg Separation Allowed": [2.8, 2.5],
+        "Avg Depth Allowed": [8.5, 7.9],
+        "Success Rate Allowed": [0.52, 0.48],
+    })
+    coverage_df.to_csv(context_dir / f"coverageMatrixExport_{season}_week_{week:02d}.csv", index=False)
+
+    # 3. Receiving vs Coverage
+    recv_cov_df = pd.DataFrame({
+        "Player": ["Marvin Harrison Jr.", "Mark Andrews"],
+        "Team": ["AZ", "BAL"],
+        "Targets v Man": [8.0, 6.0],
+        "Yards v Man": [95.0, 72.0],
+        "TD v Man": [1.0, 0.0],
+        "Targets v Zone": [5.0, 7.0],
+        "Yards v Zone": [58.0, 85.0],
+        "TD v Zone": [0.0, 1.0],
+        "YPRR v Man": [2.8, 2.1],
+        "YPRR v Zone": [1.9, 2.5],
+    })
+    recv_cov_df.to_csv(context_dir / f"receivingManVsZoneExport_{season}_week_{week:02d}.csv", index=False)
+
+    # 4. PROE Report
+    proe_df = pd.DataFrame({
+        "Team": ["AZ", "BAL"],
+        "PROE": [0.05, -0.02],
+        "Dropback %": [62.5, 58.3],
+        "Run %": [37.5, 41.7],
+        "Neutral PROE": [0.03, -0.01],
+        "Neutral Dropback %": [60.2, 55.8],
+        "Neutral Run %": [39.8, 44.2],
+    })
+    proe_df.to_csv(context_dir / f"proeReportExport_{season}_week_{week:02d}.csv", index=False)
+
+    # 5. Separation by Routes
+    sep_df = pd.DataFrame({
+        "Player": ["Marvin Harrison Jr.", "Mark Andrews"],
+        "Team": ["AZ", "BAL"],
+        "Routes": [35.0, 28.0],
+        "Targets": [13.0, 13.0],
+        "Receptions": [8.0, 9.0],
+        "Yards": [153.0, 157.0],
+        "TD": [1.0, 1.0],
+        "Avg Separation": [3.2, 2.8],
+        "Man Separation": [3.5, 2.5],
+        "Zone Separation": [2.9, 3.1],
+        "Success Rate": [0.615, 0.692],
+    })
+    sep_df.to_csv(context_dir / f"receivingSeparationByRoutesExport_{season}_week_{week:02d}.csv", index=False)
+
+    # 6. Receiving Leaders
+    leaders_df = pd.DataFrame({
+        "Player": ["Marvin Harrison Jr.", "Mark Andrews"],
+        "Team": ["AZ", "BAL"],
+        "Pos": ["WR", "TE"],
+        "Routes": [35.0, 28.0],
+        "Targets": [13.0, 13.0],
+        "Receptions": [8.0, 9.0],
+        "Yards": [153.0, 157.0],
+        "TDs": [1.0, 1.0],
+        "Air Yards": [225.0, 185.0],
+        "Air Yard Share": [0.35, 0.28],
+    })
+    leaders_df.to_csv(context_dir / f"receivingLeadersExport_{season}_week_{week:02d}.csv", index=False)
+
+    return tmp_path
+
+
+def test_context_coverage_matrix_schema(fixture_context_data_dir):
+    """Test that context_coverage_matrix_clean matches its schema."""
+    from ball_knower.io.clean_tables import build_context_coverage_matrix_clean
+    from ball_knower.io.schemas_v2 import ALL_SCHEMAS
+
+    df = build_context_coverage_matrix_clean(2025, 11, data_dir=fixture_context_data_dir)
+    schema = ALL_SCHEMAS["context_coverage_matrix_clean"]
+
+    # Check required columns
+    for col in schema.required:
+        assert col in df.columns, f"Required column '{col}' missing"
+
+    # Check primary key uniqueness
+    pk_cols = schema.primary_key
+    assert not df[pk_cols].duplicated().any(), "Primary key has duplicates"
+
+    # Check team normalization (AZ -> ARI, BAL -> BAL)
+    assert "ARI" in df["team_code"].values, "AZ should normalize to ARI"
+    assert "BAL" in df["team_code"].values, "BAL should remain BAL"
+
+    # Check numeric dtypes
+    assert pd.api.types.is_numeric_dtype(df["m2m"])
+    assert pd.api.types.is_numeric_dtype(df["zone"])
+    assert pd.api.types.is_numeric_dtype(df["blitz_rate"])
+
+
+def test_context_proe_report_values(fixture_context_data_dir):
+    """Test that PROE report values are correctly transformed."""
+    from ball_knower.io.clean_tables import build_context_proe_report_clean
+
+    df = build_context_proe_report_clean(2025, 11, data_dir=fixture_context_data_dir)
+
+    # Check row count
+    assert len(df) == 2
+
+    # Check team normalization
+    assert set(df["team_code"]) == {"ARI", "BAL"}
+
+    # Check numeric conversion
+    ari_row = df[df["team_code"] == "ARI"].iloc[0]
+    assert ari_row["proe"] == 0.05
+    assert ari_row["dropback_pct"] == 62.5
+    assert ari_row["run_pct"] == 37.5
+
+
+def test_receiving_vs_coverage_parquet_output(fixture_context_data_dir):
+    """Test that receiving vs coverage writes Parquet file."""
+    from ball_knower.io.clean_tables import build_context_receiving_vs_coverage_clean
+
+    build_context_receiving_vs_coverage_clean(2025, 11, data_dir=fixture_context_data_dir)
+
+    parquet_path = (
+        fixture_context_data_dir / "clean" / "context_receiving_vs_coverage_clean" /
+        "2025" / "context_receiving_vs_coverage_clean_2025_week_11.parquet"
+    )
+    assert parquet_path.exists()
+
+    df_read = pd.read_parquet(parquet_path)
+    assert len(df_read) == 2
+    assert "Marvin Harrison Jr." in df_read["receiver_name"].values
+
+
+def test_separation_by_routes_json_log(fixture_context_data_dir):
+    """Test that separation by routes emits JSON log."""
+    from ball_knower.io.clean_tables import build_context_separation_by_routes_clean
+    import json
+
+    build_context_separation_by_routes_clean(2025, 11, data_dir=fixture_context_data_dir)
+
+    log_path = (
+        fixture_context_data_dir / "clean" / "_logs" /
+        "context_separation_by_routes_clean" / "2025_week_11.json"
+    )
+    assert log_path.exists()
+
+    with open(log_path, "r") as f:
+        log_data = json.load(f)
+
+    assert log_data["table_name"] == "context_separation_by_routes_clean"
+    assert log_data["season"] == 2025
+    assert log_data["week"] == 11
+    assert log_data["row_count_raw"] == 2
+    assert log_data["row_count_clean"] == 2
+
+
+def test_receiving_leaders_pk_uniqueness(fixture_context_data_dir):
+    """Test that receiving_leaders has unique primary key."""
+    from ball_knower.io.clean_tables import build_receiving_leaders_clean
+    from ball_knower.io.schemas_v2 import ALL_SCHEMAS
+
+    df = build_receiving_leaders_clean(2025, 11, data_dir=fixture_context_data_dir)
+    schema = ALL_SCHEMAS["receiving_leaders_clean"]
+
+    pk_cols = schema.primary_key
+    assert not df[pk_cols].duplicated().any(), "Primary key has duplicates"
+
+    # Check specific values
+    harrison = df[df["player_name"] == "Marvin Harrison Jr."].iloc[0]
+    assert harrison["team_code"] == "ARI"
+    assert harrison["pos"] == "WR"
+    assert harrison["yards"] == 153.0
+
+
+def test_trench_matchups_team_normalization(fixture_context_data_dir):
+    """Test that trench matchups normalizes team codes correctly."""
+    from ball_knower.io.clean_tables import build_context_trench_matchups_clean
+
+    df = build_context_trench_matchups_clean(2025, 11, data_dir=fixture_context_data_dir)
+
+    # Check team normalization
+    assert set(df["team_code"]) == {"ARI", "BAL"}
+    assert set(df["opponent_team_code"]) == {"ARI", "BAL"}
+
+    # Check required columns exist
+    assert "ol_adj_ybc_att" in df.columns
+    assert "dl_press_pct" in df.columns
+    assert "ol_rank" in df.columns
+
+
+# ========== Stream D Tests ==========
+
+
+@pytest.fixture
+def fixture_props_data_dir(tmp_path):
+    """Create minimal Stream D (props labels) fixture for testing."""
+    season = 2021
+
+    # Create RAW_props_labels directory
+    props_dir = tmp_path / "RAW_props_labels"
+    props_dir.mkdir(parents=True, exist_ok=True)
+
+    # Props results (season-level, no week)
+    props_df = pd.DataFrame({
+        "Player": ["Patrick Mahomes", "Tyreek Hill"],
+        "Team": ["KC", "MIA"],
+        "Opponent": ["BUF", "NYJ"],
+        "game_id": ["2021_15_BUF_KC", "2021_15_MIA_NYJ"],
+        "Prop Type": ["Passing Yards", "Receiving Yards"],
+        "Line": [275.5, 85.5],
+        "Result": [295.0, 102.0],
+        "Over Outcome": ["Win", "Win"],
+        "Under Outcome": ["Loss", "Loss"],
+    })
+    props_df.to_csv(props_dir / f"props_{season}.csv", index=False)
+
+    return tmp_path
+
+
+def test_props_results_schema(fixture_props_data_dir):
+    """Test that props_results_xsportsbook_clean matches its schema."""
+    from ball_knower.io.clean_tables import build_props_results_xsportsbook_clean
+    from ball_knower.io.schemas_v2 import ALL_SCHEMAS
+
+    df = build_props_results_xsportsbook_clean(2021, data_dir=fixture_props_data_dir)
+    schema = ALL_SCHEMAS["props_results_xsportsbook_clean"]
+
+    # Check required columns
+    for col in schema.required:
+        assert col in df.columns, f"Required column '{col}' missing"
+
+    # Check row count
+    assert len(df) == 2
+
+    # Check team normalization
+    assert "KC" in df["team_code"].values
+    assert "MIA" in df["team_code"].values
+
+
+def test_props_results_parquet_output(fixture_props_data_dir):
+    """Test that props results writes Parquet file (season-level)."""
+    from ball_knower.io.clean_tables import build_props_results_xsportsbook_clean
+
+    build_props_results_xsportsbook_clean(2021, data_dir=fixture_props_data_dir)
+
+    # Note: Props are season-level, not week-level
+    parquet_path = (
+        fixture_props_data_dir / "clean" / "props_results_xsportsbook_clean" /
+        "2021" / "props_2021.parquet"
+    )
+    assert parquet_path.exists()
+
+    df_read = pd.read_parquet(parquet_path)
+    assert len(df_read) == 2
+    assert "Patrick Mahomes" in df_read["player_name"].values
+
+
+def test_props_results_json_log(fixture_props_data_dir):
+    """Test that props results emits JSON log (season-level)."""
+    from ball_knower.io.clean_tables import build_props_results_xsportsbook_clean
+    import json
+
+    build_props_results_xsportsbook_clean(2021, data_dir=fixture_props_data_dir)
+
+    log_path = (
+        fixture_props_data_dir / "clean" / "_logs" /
+        "props_results_xsportsbook_clean" / "2021.json"
+    )
+    assert log_path.exists()
+
+    with open(log_path, "r") as f:
+        log_data = json.load(f)
+
+    assert log_data["table_name"] == "props_results_xsportsbook_clean"
+    assert log_data["season"] == 2021
+    assert log_data["week"] is None  # Props are season-level
+    assert log_data["row_count_raw"] == 2
+    assert log_data["row_count_clean"] == 2
+
+
+def test_props_results_numeric_conversion(fixture_props_data_dir):
+    """Test that props results converts numeric columns correctly."""
+    from ball_knower.io.clean_tables import build_props_results_xsportsbook_clean
+
+    df = build_props_results_xsportsbook_clean(2021, data_dir=fixture_props_data_dir)
+
+    # Check numeric dtypes
+    assert pd.api.types.is_numeric_dtype(df["line"])
+    assert pd.api.types.is_numeric_dtype(df["result"])
+
+    # Check specific values
+    mahomes = df[df["player_name"] == "Patrick Mahomes"].iloc[0]
+    assert mahomes["line"] == 275.5
+    assert mahomes["result"] == 295.0
+    assert mahomes["over_outcome"] == "Win"

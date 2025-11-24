@@ -233,3 +233,39 @@ def load_separation_rates_raw(
     df["season"] = season
     df["week"] = week
     return df
+
+
+def load_receiving_leaders_raw(
+    season: int, week: int, data_dir: Path | str = "data"
+) -> pd.DataFrame:
+    """
+    Load receiving_leaders_raw (receivingLeadersExport.csv)
+
+    Pattern:
+        data/RAW_context/receivingLeadersExport_{season}_week_{week:02d}.csv
+    """
+    base = Path(data_dir)
+    path = base / "RAW_context" / f"receivingLeadersExport_{season}_week_{week:02d}.csv"
+    _ensure_file(path)
+    df = pd.read_csv(path)
+    df["season"] = season
+    df["week"] = week
+    return df
+
+
+def load_props_results_raw(season: int, data_dir: Path | str = "data") -> pd.DataFrame:
+    """
+    Load props_results_raw (xSportsbook props labels - season-only, no week).
+
+    Pattern:
+        data/RAW_props_labels/props_{season}.csv
+
+    Note: This is a season-level dataset with no week dimension.
+    Props labels are isolated and never used as features.
+    """
+    base = Path(data_dir)
+    path = base / "RAW_props_labels" / f"props_{season}.csv"
+    _ensure_file(path)
+    df = pd.read_csv(path)
+    df["season"] = season  # Explicit season injection for anti-leakage
+    return df

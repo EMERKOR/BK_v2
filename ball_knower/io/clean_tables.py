@@ -8,8 +8,10 @@ This module implements the build_*_clean() functions that:
 4. Write to data/clean/ as Parquet
 5. Emit JSON logs
 
-Currently implements Stream A (public game & market data).
-Stream B and D follow the same patterns - see extension guide.
+Implements:
+- Stream A: Public game & market data (5 tables)
+- Stream B: FantasyPoints context data (6 tables)
+- Stream D: Props labels (1 table)
 """
 from __future__ import annotations
 
@@ -26,6 +28,13 @@ from .raw_readers import (
     load_market_spread_raw,
     load_market_total_raw,
     load_market_moneyline_raw,
+    load_trench_matchups_raw,
+    load_coverage_matrix_raw,
+    load_receiving_vs_coverage_raw,
+    load_proe_report_raw,
+    load_separation_rates_raw,
+    load_receiving_leaders_raw,
+    load_props_results_raw,
 )
 from .schemas_v2 import ALL_SCHEMAS, TableSchema
 from ..mappings import normalize_team_code
@@ -495,20 +504,101 @@ def build_market_moneyline_clean(
     return df_clean
 
 
-# ========== Extension Pattern for Streams B and D ==========
+# ========== Stream B: FantasyPoints Context Tables ==========
 
-"""
-To add Stream B (FantasyPoints context) or Stream D (Props) tables:
 
-1. Add loader to raw_readers.py (if not already present)
-2. Define schema in schemas_v2.py (already done)
-3. Implement build_*_clean() function here following this pattern:
+def build_context_trench_matchups_clean(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build context_trench_matchups_clean from FantasyPoints lineMatchupsExport.
+
+    Special handling: Raw CSV has duplicate column names for home/away matchups.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Rename duplicate columns to home/away variants
+    - Convert numeric columns to float
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/context_trench_matchups_clean/{season}/...parquet
+    - Log: data/clean/_logs/context_trench_matchups_clean/{season}_week_{week}.json
+    """
+    schema = ALL_SCHEMAS["context_trench_matchups_clean"]
+
+    # Load raw
+    df_raw = load_trench_matchups_raw(season, week, data_dir)
+    source_path = f"RAW_context/lineMatchupsExport_{season}_week_{week:02d}.csv"
+    row_count_raw = len(df_raw)
+
+    df = df_raw.copy()
+
+    # Normalize team codes (FantasyPoints provider)
+    df["team_code"] = df["Team"].apply(
+        lambda x: normalize_team_code(str(x), "fantasypoints")
+    )
+    df["opponent_team_code"] = df["Opponent"].apply(
+        lambda x: normalize_team_code(str(x), "fantasypoints")
+    )
+
+    # Map OL columns
+    df["ol_rank"] = df.get("OL Rank", "").astype(str)
+    df["ol_name"] = df.get("OL Name", "").astype(str)
+    df["ol_games"] = pd.to_numeric(df.get("OL Games"), errors="coerce").astype("Int64")
+    df["ol_rush_grade"] = df.get("OL Rush Grade", "").astype(str)
+    df["ol_pass_grade"] = df.get("OL Pass Grade", "").astype(str)
+    df["ol_adj_ybc_att"] = pd.to_numeric(df.get("OL Adj YBC/Att"), errors="coerce")
+    df["ol_press_pct"] = pd.to_numeric(df.get("OL Press %"), errors="coerce")
+    df["ol_prroe"] = pd.to_numeric(df.get("OL PRROE"), errors="coerce")
+    df["ol_team_att"] = pd.to_numeric(df.get("OL Att"), errors="coerce")
+    df["ol_ybco"] = pd.to_numeric(df.get("OL YBCO"), errors="coerce")
+
+    # Map DL columns
+    df["dl_name"] = df.get("DL Name", "").astype(str)
+    df["dl_adj_ybc_att"] = pd.to_numeric(df.get("DL Adj YBC/Att"), errors="coerce")
+    df["dl_press_pct"] = pd.to_numeric(df.get("DL Press %"), errors="coerce")
+    df["dl_prroe"] = pd.to_numeric(df.get("DL PRROE"), errors="coerce")
+    df["dl_att"] = pd.to_numeric(df.get("DL Att"), errors="coerce")
+    df["dl_ybco"] = pd.to_numeric(df.get("DL YBCO"), errors="coerce")
+
+    # Enforce schema
+    df_clean = _enforce_schema(df, schema)
+
+    # Write
+    _write_parquet(df_clean, schema.table_name, season, week, data_dir)
+    _emit_log(
+        schema.table_name,
+        season,
+        week,
+        source_path,
+        row_count_raw,
+        len(df_clean),
+        data_dir,
+    )
+
+    return df_clean
+
 
 def build_context_coverage_matrix_clean(
     season: int,
     week: int,
     data_dir: Path | str = "data",
 ) -> pd.DataFrame:
+    """
+    Build context_coverage_matrix_clean from FantasyPoints coverageMatrixExport.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Convert numeric columns to float
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/context_coverage_matrix_clean/{season}/...parquet
+    - Log: data/clean/_logs/context_coverage_matrix_clean/{season}_week_{week}.json
+    """
     schema = ALL_SCHEMAS["context_coverage_matrix_clean"]
 
     # Load raw
@@ -516,7 +606,6 @@ def build_context_coverage_matrix_clean(
     source_path = f"RAW_context/coverageMatrixExport_{season}_week_{week:02d}.csv"
     row_count_raw = len(df_raw)
 
-    # Transform
     df = df_raw.copy()
 
     # Normalize team codes
@@ -524,22 +613,364 @@ def build_context_coverage_matrix_clean(
         lambda x: normalize_team_code(str(x), "fantasypoints")
     )
 
-    # Convert numeric columns
-    numeric_cols = ["m2m", "zone", "cov0", ...  ]
-    for col in numeric_cols:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+    # Map and convert numeric columns
+    df["m2m"] = pd.to_numeric(df.get("M2M"), errors="coerce")
+    df["zone"] = pd.to_numeric(df.get("Zn", df.get("Zone")), errors="coerce")
+    df["cov0"] = pd.to_numeric(df.get("Cov0"), errors="coerce")
+    df["cov1"] = pd.to_numeric(df.get("Cov1"), errors="coerce")
+    df["cov2"] = pd.to_numeric(df.get("Cov2"), errors="coerce")
+    df["cov3"] = pd.to_numeric(df.get("Cov3"), errors="coerce")
+    df["cov4"] = pd.to_numeric(df.get("Cov4"), errors="coerce")
+    df["cov6"] = pd.to_numeric(df.get("Cov6"), errors="coerce")
+    df["blitz_rate"] = pd.to_numeric(df.get("Blitz"), errors="coerce")
+    df["pressure_rate"] = pd.to_numeric(df.get("Pressure"), errors="coerce")
+    df["avg_cushion"] = pd.to_numeric(df.get("Avg Cushion"), errors="coerce")
+    df["avg_separation_allowed"] = pd.to_numeric(df.get("Avg Separation Allowed"), errors="coerce")
+    df["avg_depth_allowed"] = pd.to_numeric(df.get("Avg Depth Allowed"), errors="coerce")
+    df["success_rate_allowed"] = pd.to_numeric(df.get("Success Rate Allowed"), errors="coerce")
 
     # Enforce schema
     df_clean = _enforce_schema(df, schema)
 
     # Write
     _write_parquet(df_clean, schema.table_name, season, week, data_dir)
-    _emit_log(schema.table_name, season, week, source_path,
-              row_count_raw, len(df_clean), data_dir)
+    _emit_log(
+        schema.table_name,
+        season,
+        week,
+        source_path,
+        row_count_raw,
+        len(df_clean),
+        data_dir,
+    )
 
     return df_clean
 
-The existing cleaners in ball_knower/io/cleaners.py already implement the
-transformation logic. You can reference them or refactor to use shared helpers.
-"""
+
+def build_context_receiving_vs_coverage_clean(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build context_receiving_vs_coverage_clean from FantasyPoints receivingManVsZoneExport.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Convert numeric columns to float
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/context_receiving_vs_coverage_clean/{season}/...parquet
+    - Log: data/clean/_logs/context_receiving_vs_coverage_clean/{season}_week_{week}.json
+    """
+    schema = ALL_SCHEMAS["context_receiving_vs_coverage_clean"]
+
+    # Load raw
+    df_raw = load_receiving_vs_coverage_raw(season, week, data_dir)
+    source_path = f"RAW_context/receivingManVsZoneExport_{season}_week_{week:02d}.csv"
+    row_count_raw = len(df_raw)
+
+    df = df_raw.copy()
+
+    # Normalize team codes
+    df["team_code"] = df["Team"].apply(
+        lambda x: normalize_team_code(str(x), "fantasypoints")
+    )
+
+    # Receiver name
+    df["receiver_name"] = df["Player"].astype(str)
+
+    # Map and convert numeric columns
+    df["targets_v_man"] = pd.to_numeric(df.get("Targets v Man", df.get("Tgts v Man")), errors="coerce")
+    df["yards_v_man"] = pd.to_numeric(df.get("Yards v Man", df.get("Yds v Man")), errors="coerce")
+    df["td_v_man"] = pd.to_numeric(df.get("TD v Man"), errors="coerce")
+    df["targets_v_zone"] = pd.to_numeric(df.get("Targets v Zone", df.get("Tgts v Zone")), errors="coerce")
+    df["yards_v_zone"] = pd.to_numeric(df.get("Yards v Zone", df.get("Yds v Zone")), errors="coerce")
+    df["td_v_zone"] = pd.to_numeric(df.get("TD v Zone"), errors="coerce")
+    df["yprr_v_man"] = pd.to_numeric(df.get("YPRR v Man"), errors="coerce")
+    df["yprr_v_zone"] = pd.to_numeric(df.get("YPRR v Zone"), errors="coerce")
+
+    # Enforce schema
+    df_clean = _enforce_schema(df, schema)
+
+    # Write
+    _write_parquet(df_clean, schema.table_name, season, week, data_dir)
+    _emit_log(
+        schema.table_name,
+        season,
+        week,
+        source_path,
+        row_count_raw,
+        len(df_clean),
+        data_dir,
+    )
+
+    return df_clean
+
+
+def build_context_proe_report_clean(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build context_proe_report_clean from FantasyPoints proeReportExport.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Convert numeric columns to float
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/context_proe_report_clean/{season}/...parquet
+    - Log: data/clean/_logs/context_proe_report_clean/{season}_week_{week}.json
+    """
+    schema = ALL_SCHEMAS["context_proe_report_clean"]
+
+    # Load raw
+    df_raw = load_proe_report_raw(season, week, data_dir)
+    source_path = f"RAW_context/proeReportExport_{season}_week_{week:02d}.csv"
+    row_count_raw = len(df_raw)
+
+    df = df_raw.copy()
+
+    # Normalize team codes
+    df["team_code"] = df["Team"].apply(
+        lambda x: normalize_team_code(str(x), "fantasypoints")
+    )
+
+    # Map and convert numeric columns
+    df["proe"] = pd.to_numeric(df.get("PROE"), errors="coerce")
+    df["dropback_pct"] = pd.to_numeric(df.get("Dropback %"), errors="coerce")
+    df["run_pct"] = pd.to_numeric(df.get("Run %"), errors="coerce")
+    df["neutral_proe"] = pd.to_numeric(df.get("Neutral PROE"), errors="coerce")
+    df["neutral_dropback_pct"] = pd.to_numeric(df.get("Neutral Dropback %"), errors="coerce")
+    df["neutral_run_pct"] = pd.to_numeric(df.get("Neutral Run %"), errors="coerce")
+
+    # Enforce schema
+    df_clean = _enforce_schema(df, schema)
+
+    # Write
+    _write_parquet(df_clean, schema.table_name, season, week, data_dir)
+    _emit_log(
+        schema.table_name,
+        season,
+        week,
+        source_path,
+        row_count_raw,
+        len(df_clean),
+        data_dir,
+    )
+
+    return df_clean
+
+
+def build_context_separation_by_routes_clean(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build context_separation_by_routes_clean from FantasyPoints receivingSeparationByRoutesExport.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Convert numeric columns to float
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/context_separation_by_routes_clean/{season}/...parquet
+    - Log: data/clean/_logs/context_separation_by_routes_clean/{season}_week_{week}.json
+    """
+    schema = ALL_SCHEMAS["context_separation_by_routes_clean"]
+
+    # Load raw
+    df_raw = load_separation_rates_raw(season, week, data_dir)
+    source_path = f"RAW_context/receivingSeparationByRoutesExport_{season}_week_{week:02d}.csv"
+    row_count_raw = len(df_raw)
+
+    df = df_raw.copy()
+
+    # Normalize team codes
+    df["team_code"] = df["Team"].apply(
+        lambda x: normalize_team_code(str(x), "fantasypoints")
+    )
+
+    # Receiver name
+    df["receiver_name"] = df["Player"].astype(str)
+
+    # Map and convert numeric columns
+    df["routes"] = pd.to_numeric(df.get("Routes"), errors="coerce")
+    df["targets"] = pd.to_numeric(df.get("Targets", df.get("Tgts")), errors="coerce")
+    df["receptions"] = pd.to_numeric(df.get("Receptions", df.get("Rec")), errors="coerce")
+    df["yards"] = pd.to_numeric(df.get("Yards", df.get("Yds")), errors="coerce")
+    df["td"] = pd.to_numeric(df.get("TD"), errors="coerce")
+    df["avg_separation"] = pd.to_numeric(df.get("Avg Separation"), errors="coerce")
+    df["man_separation"] = pd.to_numeric(df.get("Man Separation"), errors="coerce")
+    df["zone_separation"] = pd.to_numeric(df.get("Zone Separation"), errors="coerce")
+    df["success_rate"] = pd.to_numeric(df.get("Success Rate"), errors="coerce")
+
+    # Enforce schema
+    df_clean = _enforce_schema(df, schema)
+
+    # Write
+    _write_parquet(df_clean, schema.table_name, season, week, data_dir)
+    _emit_log(
+        schema.table_name,
+        season,
+        week,
+        source_path,
+        row_count_raw,
+        len(df_clean),
+        data_dir,
+    )
+
+    return df_clean
+
+
+def build_receiving_leaders_clean(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build receiving_leaders_clean from FantasyPoints receivingLeadersExport.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Convert numeric columns to float
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/receiving_leaders_clean/{season}/...parquet
+    - Log: data/clean/_logs/receiving_leaders_clean/{season}_week_{week}.json
+    """
+    schema = ALL_SCHEMAS["receiving_leaders_clean"]
+
+    # Load raw
+    df_raw = load_receiving_leaders_raw(season, week, data_dir)
+    source_path = f"RAW_context/receivingLeadersExport_{season}_week_{week:02d}.csv"
+    row_count_raw = len(df_raw)
+
+    df = df_raw.copy()
+
+    # Normalize team codes
+    df["team_code"] = df["Team"].apply(
+        lambda x: normalize_team_code(str(x), "fantasypoints")
+    )
+
+    # Player name and position
+    df["player_name"] = df["Player"].astype(str)
+    df["pos"] = df.get("Pos", df.get("Position", "")).astype(str)
+
+    # Map and convert numeric columns
+    df["routes"] = pd.to_numeric(df.get("Routes"), errors="coerce")
+    df["targets"] = pd.to_numeric(df.get("Targets", df.get("Tgts")), errors="coerce")
+    df["receptions"] = pd.to_numeric(df.get("Receptions", df.get("Rec")), errors="coerce")
+    df["yards"] = pd.to_numeric(df.get("Yards", df.get("Yds")), errors="coerce")
+    df["tds"] = pd.to_numeric(df.get("TDs", df.get("TD")), errors="coerce")
+    df["air_yards"] = pd.to_numeric(df.get("Air Yards"), errors="coerce")
+    df["air_yard_share"] = pd.to_numeric(df.get("Air Yard Share", df.get("Air Yd Share")), errors="coerce")
+
+    # Enforce schema
+    df_clean = _enforce_schema(df, schema)
+
+    # Write
+    _write_parquet(df_clean, schema.table_name, season, week, data_dir)
+    _emit_log(
+        schema.table_name,
+        season,
+        week,
+        source_path,
+        row_count_raw,
+        len(df_clean),
+        data_dir,
+    )
+
+    return df_clean
+
+
+# ========== Stream D: Props Labels ==========
+
+
+def build_props_results_xsportsbook_clean(
+    season: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build props_results_xsportsbook_clean from xSportsbook props labels.
+
+    Note: This is a SEASON-LEVEL dataset (no week dimension).
+    Props labels are isolated and never used as features.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Convert numeric columns to float
+    - Validate schema (no primary key for this table)
+
+    Outputs:
+    - Parquet: data/clean/props_results_xsportsbook_clean/{season}/props_{season}.parquet
+    - Log: data/clean/_logs/props_results_xsportsbook_clean/{season}.json
+    """
+    schema = ALL_SCHEMAS["props_results_xsportsbook_clean"]
+
+    # Load raw
+    df_raw = load_props_results_raw(season, data_dir)
+    source_path = f"RAW_props_labels/props_{season}.csv"
+    row_count_raw = len(df_raw)
+
+    df = df_raw.copy()
+
+    # Normalize team codes (if present)
+    if "Team" in df.columns:
+        df["team_code"] = df["Team"].apply(
+            lambda x: normalize_team_code(str(x), "fantasypoints") if pd.notna(x) else None
+        )
+    if "Opponent" in df.columns:
+        df["opponent_team_code"] = df["Opponent"].apply(
+            lambda x: normalize_team_code(str(x), "fantasypoints") if pd.notna(x) else None
+        )
+
+    # Map columns
+    df["player_name"] = df.get("Player", df.get("player_name", "")).astype(str)
+    df["prop_type"] = df.get("Prop Type", df.get("prop_type", "")).astype(str)
+    df["game_id"] = df.get("game_id", "").astype(str)
+
+    # Convert numeric columns
+    df["line"] = pd.to_numeric(df.get("Line", df.get("line")), errors="coerce")
+    df["result"] = pd.to_numeric(df.get("Result", df.get("result")), errors="coerce")
+
+    # Outcome columns
+    df["over_outcome"] = df.get("Over Outcome", df.get("over_outcome", "")).astype(str)
+    df["under_outcome"] = df.get("Under Outcome", df.get("under_outcome", "")).astype(str)
+
+    # Enforce schema
+    df_clean = _enforce_schema(df, schema)
+
+    # Write Parquet (season-only, no week)
+    base = Path(data_dir)
+    parquet_dir = base / "clean" / schema.table_name / str(season)
+    parquet_dir.mkdir(parents=True, exist_ok=True)
+    parquet_path = parquet_dir / f"props_{season}.parquet"
+    df_clean.to_parquet(parquet_path, index=False)
+
+    # Emit log (season-only)
+    log_dir = base / "clean" / "_logs" / schema.table_name
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / f"{season}.json"
+
+    log_data = {
+        "table_name": schema.table_name,
+        "season": season,
+        "week": None,  # Props are season-level
+        "source_file_path": source_path,
+        "row_count_raw": row_count_raw,
+        "row_count_clean": len(df_clean),
+        "ingested_at_utc": pd.Timestamp.utcnow().isoformat(),
+    }
+
+    with open(log_path, "w") as f:
+        json.dump(log_data, f, indent=2)
+
+    return df_clean
