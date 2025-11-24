@@ -16,10 +16,14 @@ from .score_model_v2 import (
     predict_score_model_v2,
     evaluate_score_model_v2,
 )
+from .market_model_v2 import (
+    build_market_predictions_v2,
+)
 
 __all__ = [
     "ScoreModelV2",
     "train_score_model_v2",
     "predict_score_model_v2",
     "evaluate_score_model_v2",
+    "build_market_predictions_v2",
 ]
