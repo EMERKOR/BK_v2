@@ -19,6 +19,10 @@ from .score_model_v2 import (
 from .market_model_v2 import (
     build_market_predictions_v2,
 )
+from .meta_edge_v2 import (
+    build_meta_edge_features_v2,
+    build_meta_edge_predictions_v2,
+)
 
 __all__ = [
     "ScoreModelV2",
@@ -26,4 +30,6 @@ __all__ = [
     "predict_score_model_v2",
     "evaluate_score_model_v2",
     "build_market_predictions_v2",
+    "build_meta_edge_features_v2",
+    "build_meta_edge_predictions_v2",
 ]
