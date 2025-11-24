@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 import pandas as pd
 
@@ -9,6 +9,74 @@ import pandas as pd
 def _ensure_file(path: Path) -> None:
     if not path.exists():
         raise FileNotFoundError(f"Expected raw data file does not exist: {path}")
+
+
+def load_raw_csv(
+    path: Path | str,
+    *,
+    expected_cols: List[str] | None = None,
+    strict: bool = False,
+) -> pd.DataFrame:
+    """
+    Generic CSV loader with optional header validation.
+
+    This is the foundational loader for Phase 2 ingestion. Use this for all
+    new raw data loads to ensure consistent validation and error handling.
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to the raw CSV file
+    expected_cols : List[str] | None
+        If provided, validate that these columns exist in the CSV
+    strict : bool
+        If True and expected_cols is provided, require exact match (including order).
+        Use strict=True for files with duplicate column names (e.g., trench matchups).
+
+    Returns
+    -------
+    pd.DataFrame
+        The loaded CSV data
+
+    Raises
+    ------
+    FileNotFoundError
+        If the file doesn't exist
+    ValueError
+        If expected_cols validation fails
+
+    Examples
+    --------
+    >>> # Lenient mode: just check required columns are present
+    >>> df = load_raw_csv("data/raw.csv", expected_cols=["season", "week", "team"])
+
+    >>> # Strict mode: require exact column order (for duplicate column names)
+    >>> df = load_raw_csv("data/trench.csv", expected_cols=[...], strict=True)
+    """
+    path = Path(path)
+    _ensure_file(path)
+
+    df = pd.read_csv(path)
+
+    if expected_cols is not None:
+        if strict:
+            # Strict mode: exact column match including order
+            if list(df.columns) != expected_cols:
+                raise ValueError(
+                    f"Column mismatch in {path.name}. "
+                    f"Expected: {expected_cols}, "
+                    f"Got: {list(df.columns)}"
+                )
+        else:
+            # Lenient mode: just check that expected columns are present
+            missing = set(expected_cols) - set(df.columns)
+            if missing:
+                raise ValueError(
+                    f"Missing required columns in {path.name}: {missing}. "
+                    f"Available columns: {list(df.columns)}"
+                )
+
+    return df
 
 
 def load_schedule_raw(season: int, week: int, data_dir: Path | str = "data") -> pd.DataFrame:
