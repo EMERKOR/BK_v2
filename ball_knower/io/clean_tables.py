@@ -315,8 +315,10 @@ def build_market_lines_spread_clean(
     # Transform
     df = df_raw.copy()
 
-    # Convert spread to numeric
-    if "market_closing_spread" in df.columns:
+    # Map raw column name to schema column name
+    if "closing_line" in df.columns:
+        df["market_closing_spread"] = pd.to_numeric(df["closing_line"], errors="coerce")
+    elif "market_closing_spread" in df.columns:
         df["market_closing_spread"] = pd.to_numeric(
             df["market_closing_spread"], errors="coerce"
         )
@@ -385,8 +387,10 @@ def build_market_lines_total_clean(
     # Transform
     df = df_raw.copy()
 
-    # Convert total to numeric
-    if "market_closing_total" in df.columns:
+    # Map raw column name to schema column name
+    if "closing_line" in df.columns:
+        df["market_closing_total"] = pd.to_numeric(df["closing_line"], errors="coerce")
+    elif "market_closing_total" in df.columns:
         df["market_closing_total"] = pd.to_numeric(
             df["market_closing_total"], errors="coerce"
         )
@@ -454,12 +458,17 @@ def build_market_moneyline_clean(
     # Transform
     df = df_raw.copy()
 
-    # Convert moneylines to numeric
-    if "market_moneyline_home" in df.columns:
+    # Map raw column names to schema column names
+    if "home_line" in df.columns:
+        df["market_moneyline_home"] = pd.to_numeric(df["home_line"], errors="coerce")
+    elif "market_moneyline_home" in df.columns:
         df["market_moneyline_home"] = pd.to_numeric(
             df["market_moneyline_home"], errors="coerce"
         )
-    if "market_moneyline_away" in df.columns:
+
+    if "away_line" in df.columns:
+        df["market_moneyline_away"] = pd.to_numeric(df["away_line"], errors="coerce")
+    elif "market_moneyline_away" in df.columns:
         df["market_moneyline_away"] = pd.to_numeric(
             df["market_moneyline_away"], errors="coerce"
         )
@@ -535,6 +544,10 @@ def build_context_trench_matchups_clean(
     row_count_raw = len(df_raw)
 
     df = df_raw.copy()
+
+    # Rename Season to season (column name normalization)
+    if "Season" in df.columns:
+        df["season"] = df["Season"]
 
     # Normalize team codes (FantasyPoints provider)
     df["team_code"] = df["Team"].apply(
