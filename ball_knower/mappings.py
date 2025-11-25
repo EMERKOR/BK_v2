@@ -346,8 +346,18 @@ MISC_ALIASES: Dict[str, str] = {
 }
 
 
-# Provider mapping registry
-_PROVIDER_MAPPINGS: Dict[str, Dict[str, str]] = {
+# Historical team codes mapping (relocations and rebrands)
+# Maps old codes to current canonical codes
+HISTORICAL_CODES: Dict[str, str] = {
+    "SD": "LAC",   # San Diego Chargers -> Los Angeles Chargers (2017)
+    "SDG": "LAC",  # Alternate San Diego code
+    "STL": "LAR",  # St. Louis Rams -> Los Angeles Rams (2016)
+    "OAK": "LV",   # Oakland Raiders -> Las Vegas Raiders (2020)
+}
+
+
+# Provider mapping registry (public API)
+PROVIDER_ALIASES: Dict[str, Dict[str, str]] = {
     "nflverse": NFLVERSE_TO_BK,
     "kaggle": KAGGLE_TO_BK,
     "fantasypoints": FP_TO_BK,
@@ -355,16 +365,85 @@ _PROVIDER_MAPPINGS: Dict[str, Dict[str, str]] = {
 }
 
 
-def normalize_team_code(name: str, provider: str) -> str:
-    """
-    Convert provider-specific team name into canonical BK team code.
+# Keep internal reference for backward compatibility
+_PROVIDER_MAPPINGS = PROVIDER_ALIASES
 
-    This function enforces strict mapping and fails hard on unknown names
-    to prevent silent data corruption.
+
+# Season boundaries for historical relocations
+_RELOCATION_SEASONS = {
+    "SD": 2017,   # San Diego -> Los Angeles Chargers in 2017
+    "SDG": 2017,
+    "STL": 2016,  # St. Louis -> Los Angeles Rams in 2016
+    "OAK": 2020,  # Oakland -> Las Vegas Raiders in 2020
+}
+
+
+def _validate_historical_code(
+    original_code: str,
+    canonical_code: str,
+    season: int = None,
+    context: str = "",
+) -> None:
+    """
+    Validate that historical codes are not used inappropriately for recent seasons.
+
+    If a historical code (e.g., "OAK") is detected and mapped to a current code (e.g., "LV"),
+    and a season is provided that is after the relocation, raise an error.
 
     Parameters
     ----------
-    name : str
+    original_code : str
+        The original (uppercase) code from the data source
+    canonical_code : str
+        The canonical BK code it maps to
+    season : int, optional
+        Season year for validation
+    context : str, optional
+        Context string for error messages
+
+    Raises
+    ------
+    ValueError
+        If a historical code is used for a season after the team relocated
+    """
+    if season is None:
+        # No season provided, skip validation
+        return
+
+    # Check if this is a historical code that was relocated
+    if original_code in _RELOCATION_SEASONS:
+        relocation_year = _RELOCATION_SEASONS[original_code]
+        if season >= relocation_year:
+            context_str = f" [{context}]" if context else ""
+            raise ValueError(
+                f"Historical code '{original_code}' should be '{canonical_code}' for season {season}"
+                f"{context_str}. Team relocated in {relocation_year}."
+            )
+
+
+def normalize_team_code(
+    code: str,
+    provider: str,
+    season: int = None,
+    context: str = "",
+) -> str:
+    """
+    Normalize provider-specific team codes to canonical BK codes.
+
+    - `code`: raw team code or name from the upstream provider.
+    - `provider`: string key like "nflverse", "fantasypoints", "kaggle", "misc".
+    - `season` (optional): if provided, may be used for season-aware historical validation.
+    - `context` (optional): human-readable context (e.g., filename/row) to embed in error messages.
+
+    Rules:
+    - If `code` is already a canonical code, return it.
+    - If `code` is in HISTORICAL_CODES (e.g., "OAK", "SD", "STL"), map appropriately.
+    - If `code` is in the provider's alias map, map to the canonical code.
+    - Otherwise, raise ValueError with a helpful message that includes `code`, `provider`, and `context`. No guessing.
+
+    Parameters
+    ----------
+    code : str
         Team name or code as it appears in the source data
     provider : str
         Data provider identifier. Must be one of:
@@ -372,6 +451,10 @@ def normalize_team_code(name: str, provider: str) -> str:
         - "kaggle": Kaggle datasets
         - "fantasypoints": FantasyPoints exports
         - "misc": Catch-all for other sources
+    season : int, optional
+        Season year for season-aware historical validation (e.g., 2023)
+    context : str, optional
+        Human-readable context for error messages (e.g., "file.csv:row 42")
 
     Returns
     -------
@@ -381,7 +464,8 @@ def normalize_team_code(name: str, provider: str) -> str:
     Raises
     ------
     ValueError
-        If the provider is invalid or the team name is not recognized
+        If the provider is invalid, the team code is not recognized, or
+        a historical code is used inappropriately for the given season
 
     Examples
     --------
@@ -391,15 +475,20 @@ def normalize_team_code(name: str, provider: str) -> str:
     'GB'
     >>> normalize_team_code("Chiefs", "kaggle")
     'KC'
+    >>> normalize_team_code("OAK", "nflverse", season=2023)
+    Traceback (most recent call last):
+        ...
+    ValueError: Historical code 'OAK' should be 'LV' for season 2023
     """
     # Strip whitespace and convert to uppercase for consistency
-    normalized_name = name.strip().upper()
+    normalized_code = code.strip().upper()
 
     # Validate provider
     if provider.lower() not in _PROVIDER_MAPPINGS:
         valid_providers = ", ".join(_PROVIDER_MAPPINGS.keys())
+        context_str = f" [{context}]" if context else ""
         raise ValueError(
-            f"Invalid provider '{provider}'. Must be one of: {valid_providers}"
+            f"Invalid provider '{provider}'{context_str}. Must be one of: {valid_providers}"
         )
 
     # Get the appropriate mapping dictionary
@@ -407,22 +496,32 @@ def normalize_team_code(name: str, provider: str) -> str:
 
     # Try exact match (case-insensitive)
     # First check with original casing preserved for full names
-    if name.strip() in mapping:
-        return mapping[name.strip()]
+    if code.strip() in mapping:
+        canonical = mapping[code.strip()]
+        # Season-aware validation for historical codes
+        _validate_historical_code(normalized_code, canonical, season, context)
+        return canonical
 
     # Then try uppercase version
-    if normalized_name in mapping:
-        return mapping[normalized_name]
+    if normalized_code in mapping:
+        canonical = mapping[normalized_code]
+        # Season-aware validation for historical codes
+        _validate_historical_code(normalized_code, canonical, season, context)
+        return canonical
 
     # Try MISC_ALIASES as fallback
-    if normalized_name in MISC_ALIASES:
-        return MISC_ALIASES[normalized_name]
+    if normalized_code in MISC_ALIASES:
+        canonical = MISC_ALIASES[normalized_code]
+        # Season-aware validation for historical codes
+        _validate_historical_code(normalized_code, canonical, season, context)
+        return canonical
 
     # If we get here, the team name is unknown
     # Provide helpful error message with valid options
     valid_keys = sorted(set(mapping.keys()))
+    context_str = f" [{context}]" if context else ""
     raise ValueError(
-        f"Unknown team name '{name}' for provider '{provider}'. "
+        f"Unknown team code '{code}' for provider '{provider}'{context_str}. "
         f"Valid {provider} team identifiers include: {', '.join(valid_keys[:10])}... "
         f"(showing first 10 of {len(valid_keys)} valid options)"
     )

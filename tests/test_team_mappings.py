@@ -15,6 +15,8 @@ from ball_knower.mappings import (
     normalize_team_code,
     validate_canonical_code,
     CANONICAL_TEAM_CODES,
+    HISTORICAL_CODES,
+    PROVIDER_ALIASES,
 )
 from ball_knower.io.cleaners import (
     clean_coverage_matrix,
@@ -44,6 +46,13 @@ def test_normalize_team_code_nflverse_basic():
     # Case insensitive
     assert normalize_team_code("kc", "nflverse") == "KC"
     assert normalize_team_code("Kansas City", "nflverse") == "KC"
+
+
+def test_normalize_canonical_passthrough():
+    """Test that canonical codes pass through unchanged."""
+    assert normalize_team_code("KC", "nflverse") == "KC"
+    assert normalize_team_code("BUF", "nflverse") == "BUF"
+    assert normalize_team_code("SF", "nflverse") == "SF"
 
 
 def test_normalize_team_code_fantasypoints_basic():
@@ -78,7 +87,7 @@ def test_normalize_team_code_kaggle_basic():
 
 def test_normalize_team_code_aliases():
     """Test that misc aliases work as fallback."""
-    # Historical team codes
+    # Historical team codes (without season, should still map)
     assert normalize_team_code("OAK", "nflverse") == "LV"  # Oakland -> Las Vegas
     assert normalize_team_code("SD", "nflverse") == "LAC"  # San Diego -> LA Chargers
     assert normalize_team_code("STL", "nflverse") == "LAR"  # St. Louis -> LA Rams
@@ -86,6 +95,61 @@ def test_normalize_team_code_aliases():
     # Other common variations
     assert normalize_team_code("ARZ", "misc") == "ARI"
     assert normalize_team_code("WSH", "misc") == "WAS"
+
+
+def test_normalize_provider_alias_nflverse():
+    """Test nflverse-specific provider aliases."""
+    assert normalize_team_code("GNB", "nflverse") == "GB"
+    assert normalize_team_code("JAC", "nflverse") == "JAX"
+    assert normalize_team_code("SFO", "nflverse") == "SF"
+    assert normalize_team_code("NWE", "nflverse") == "NE"
+    assert normalize_team_code("KAN", "nflverse") == "KC"
+
+
+def test_normalize_provider_alias_fantasypoints():
+    """Test fantasypoints-specific provider aliases."""
+    assert normalize_team_code("AZ", "fantasypoints") == "ARI"
+    assert normalize_team_code("WSH", "fantasypoints") == "WAS"
+    assert normalize_team_code("JAC", "fantasypoints") == "JAX"
+
+
+def test_normalize_historical_code():
+    """Test historical code normalization without season."""
+    assert normalize_team_code("OAK", "nflverse") == "LV"
+    assert normalize_team_code("SD", "nflverse") == "LAC"
+    assert normalize_team_code("STL", "nflverse") == "LAR"
+
+
+def test_normalize_with_season_validation():
+    """Test season-aware historical code validation."""
+    # OAK relocated to LV in 2020, so using OAK for 2020+ should raise
+    with pytest.raises(ValueError, match="should be 'LV'"):
+        normalize_team_code("OAK", "nflverse", season=2023)
+
+    with pytest.raises(ValueError, match="should be 'LV'"):
+        normalize_team_code("OAK", "nflverse", season=2020)
+
+    # SD relocated to LAC in 2017
+    with pytest.raises(ValueError, match="should be 'LAC'"):
+        normalize_team_code("SD", "nflverse", season=2023)
+
+    with pytest.raises(ValueError, match="should be 'LAC'"):
+        normalize_team_code("SDG", "nflverse", season=2020)
+
+    # STL relocated to LAR in 2016
+    with pytest.raises(ValueError, match="should be 'LAR'"):
+        normalize_team_code("STL", "nflverse", season=2023)
+
+    # Using historical codes for old seasons should work fine
+    assert normalize_team_code("OAK", "nflverse", season=2019) == "LV"
+    assert normalize_team_code("SD", "nflverse", season=2016) == "LAC"
+    assert normalize_team_code("STL", "nflverse", season=2015) == "LAR"
+
+
+def test_normalize_with_context():
+    """Test that context is included in error messages."""
+    with pytest.raises(ValueError, match="test_file.csv:row 42"):
+        normalize_team_code("INVALID", "nflverse", context="test_file.csv:row 42")
 
 
 def test_normalize_team_code_raises_on_unknown():

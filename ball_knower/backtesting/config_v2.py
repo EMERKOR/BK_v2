@@ -128,4 +128,49 @@ def load_backtest_config(path: str | pathlib.Path) -> BacktestConfig:
     else:
         raise ValueError(f"Unsupported config extension: {p.suffix}")
 
-    return BacktestConfig.from_dict(raw)
+    config = BacktestConfig.from_dict(raw)
+    validate_config(config)
+    return config
+
+
+def validate_config(config: BacktestConfig) -> None:
+    """
+    Validate a BacktestConfig for logical consistency.
+
+    Raises
+    ------
+    ValueError
+        If the configuration is invalid or internally inconsistent
+
+    Examples
+    --------
+    >>> config = BacktestConfig(...)
+    >>> validate_config(config)  # Raises if invalid
+    """
+    # Validate Kelly staking parameters
+    if config.bankroll.staking.lower() in {"kelly", "fractional_kelly"}:
+        if config.bankroll.kelly_fraction <= 0:
+            raise ValueError(
+                f"kelly_fraction must be > 0 for Kelly staking. "
+                f"Got: {config.bankroll.kelly_fraction}"
+            )
+
+    # Validate that at least one market is enabled
+    if not config.betting_policy.bet_spreads and not config.betting_policy.bet_totals:
+        raise ValueError(
+            "At least one market must be enabled. "
+            "Set betting_policy.bet_spreads=True or betting_policy.bet_totals=True"
+        )
+
+    # Validate edge thresholds are non-negative
+    if config.betting_policy.min_edge_points_spread < 0:
+        raise ValueError(
+            f"min_edge_points_spread cannot be negative. "
+            f"Got: {config.betting_policy.min_edge_points_spread}"
+        )
+
+    if config.betting_policy.min_edge_points_total < 0:
+        raise ValueError(
+            f"min_edge_points_total cannot be negative. "
+            f"Got: {config.betting_policy.min_edge_points_total}"
+        )

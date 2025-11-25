@@ -535,30 +535,37 @@ def _compute_stake(
     Compute stake per bet according to the staking rule.
     For now:
       - "flat": 1 unit per bet (capped by max_stake_per_bet_units)
-      - "fractional_kelly": very rough approximation using model_edge_prob if present.
+      - "kelly" or "fractional_kelly": Kelly criterion using model_edge_prob (required).
     """
     staking = config.bankroll.staking.lower()
 
     if staking == "flat":
         stake = 1.0
-    elif staking == "fractional_kelly":
-        # Very approximate Kelly: use model_edge_prob against implied probability
-        model_p = row.get("model_edge_prob", None)
-        if model_p is None or not math.isfinite(model_p):
-            # Fallback to flat 1 unit if we have no probability
-            stake = 1.0
-        else:
-            model_p = float(model_p)
+    elif staking in {"kelly", "fractional_kelly"}:
+        # Kelly staking requires model_edge_prob to be present and valid
+        if "model_edge_prob" not in row or pd.isna(row["model_edge_prob"]):
+            raise ValueError(
+                f"Kelly staking requires 'model_edge_prob' column to be present and non-null. "
+                f"Got: {row.get('model_edge_prob', 'MISSING')}"
+            )
 
-            implied_p = 1.0 / decimal_odds
-            edge = model_p - implied_p
-            if edge <= 0:
-                # No edge under Kelly logic; flat default
-                stake = 1.0
-            else:
-                kelly_f_star = (decimal_odds * model_p - 1.0) / (decimal_odds - 1.0)
-                stake_fraction = max(0.0, kelly_f_star) * config.bankroll.kelly_fraction
-                stake = bankroll * stake_fraction
+        model_p = float(row["model_edge_prob"])
+
+        if not math.isfinite(model_p):
+            raise ValueError(
+                f"Kelly staking requires 'model_edge_prob' to be finite. "
+                f"Got: {model_p}"
+            )
+
+        implied_p = 1.0 / decimal_odds
+        edge = model_p - implied_p
+        if edge <= 0:
+            # No edge under Kelly logic; use minimum stake
+            stake = 0.0
+        else:
+            kelly_f_star = (decimal_odds * model_p - 1.0) / (decimal_odds - 1.0)
+            stake_fraction = max(0.0, kelly_f_star) * config.bankroll.kelly_fraction
+            stake = bankroll * stake_fraction
     else:
         raise ValueError(f"Unsupported staking method: {staking}")
 

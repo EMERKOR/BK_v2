@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import tempfile
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from ball_knower.backtesting.config_v2 import (
     BettingPolicyConfig,
     OutputConfig,
     load_backtest_config,
+    validate_config,
 )
 from ball_knower.backtesting.engine_v2 import (
     american_to_decimal,
@@ -441,6 +443,321 @@ def test_compute_stake_respects_max_cap(sample_config):
 
     # Flat staking gives 1 unit, which is below cap
     assert stake <= sample_config.bankroll.max_stake_per_bet_units
+
+
+# ----------------------------------------------------------------------------
+# Tests: Push tolerance and float precision
+# ----------------------------------------------------------------------------
+
+def test_grade_spread_push_float_precision():
+    """Test that spread bet grading handles float precision with push tolerance."""
+    # Simulate float imprecision: line and actual spread are essentially equal
+    # For a push: final_spread - line ≈ 0
+
+    # Case 1: home -3, final spread -3.0 + tiny epsilon (should be push)
+    # home_ats_margin = -3.0 + 1e-14 - (-3.0) = 1e-14 ≈ 0
+    result = _grade_spread_bet(
+        side="home",
+        line=-3.0,
+        final_spread=-3.0 + 1e-14,
+    )
+    assert result == "push"
+
+    # Also test the away side with same scenario
+    result = _grade_spread_bet(
+        side="away",
+        line=-3.0,
+        final_spread=-3.0 - 1e-14,
+    )
+    assert result == "push"
+
+    # Case 2: home +3 (dog), final spread 3.0 + tiny epsilon (should be push)
+    # home_ats_margin = 3.0 + 1e-14 - 3.0 = 1e-14 ≈ 0
+    result = _grade_spread_bet(
+        side="home",
+        line=3.0,
+        final_spread=3.0 + 1e-14,
+    )
+    assert result == "push"
+
+
+def test_grade_total_push_float_precision():
+    """Test that total bet grading handles float precision with push tolerance."""
+    # Simulate float imprecision for totals
+    # line=44.0, final_total=44.0 + tiny epsilon (should still be push)
+    result = _grade_total_bet(
+        side="over",
+        line=44.0,
+        final_total=44.0 + 1e-14,
+    )
+    assert result == "push"
+
+    # Also test under side
+    result = _grade_total_bet(
+        side="under",
+        line=44.0,
+        final_total=44.0 - 1e-14,
+    )
+    assert result == "push"
+
+    # Test with different line
+    result = _grade_total_bet(
+        side="over",
+        line=50.5,
+        final_total=50.5 + 1e-13,
+    )
+    assert result == "push"
+
+
+# ----------------------------------------------------------------------------
+# Tests: Kelly staking guard
+# ----------------------------------------------------------------------------
+
+def test_kelly_staking_missing_prob_raises():
+    """Test that Kelly staking raises when model_edge_prob is missing."""
+    config = BacktestConfig(
+        experiment_id="test_kelly",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["spread"],
+        bankroll=BankrollConfig(
+            initial_units=100.0,
+            staking="kelly",  # Kelly staking enabled
+            kelly_fraction=0.25,
+            max_stake_per_bet_units=5.0,
+        ),
+        betting_policy=BettingPolicyConfig(
+            min_edge_points_spread=1.0,
+            min_edge_points_total=1.0,
+            bet_spreads=True,
+            bet_totals=False,
+        ),
+        output=OutputConfig(),
+    )
+
+    # Row without model_edge_prob
+    row = pd.Series({
+        "season": 2024,
+        "week": 1,
+    })
+
+    with pytest.raises(ValueError, match="requires 'model_edge_prob'"):
+        _compute_stake(
+            bankroll=100.0,
+            decimal_odds=1.909,
+            config=config,
+            row=row,
+        )
+
+
+def test_kelly_staking_null_prob_raises():
+    """Test that Kelly staking raises when model_edge_prob is null/NaN."""
+    config = BacktestConfig(
+        experiment_id="test_kelly",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["spread"],
+        bankroll=BankrollConfig(
+            initial_units=100.0,
+            staking="fractional_kelly",  # Also test fractional_kelly
+            kelly_fraction=0.25,
+            max_stake_per_bet_units=5.0,
+        ),
+        betting_policy=BettingPolicyConfig(
+            min_edge_points_spread=1.0,
+            min_edge_points_total=1.0,
+            bet_spreads=True,
+            bet_totals=False,
+        ),
+        output=OutputConfig(),
+    )
+
+    # Row with NaN model_edge_prob
+    row = pd.Series({
+        "season": 2024,
+        "week": 1,
+        "model_edge_prob": float("nan"),
+    })
+
+    with pytest.raises(ValueError, match="requires 'model_edge_prob'"):
+        _compute_stake(
+            bankroll=100.0,
+            decimal_odds=1.909,
+            config=config,
+            row=row,
+        )
+
+
+def test_kelly_staking_works_with_valid_prob():
+    """Test that Kelly staking works correctly with valid model_edge_prob."""
+    config = BacktestConfig(
+        experiment_id="test_kelly",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["spread"],
+        bankroll=BankrollConfig(
+            initial_units=100.0,
+            staking="fractional_kelly",
+            kelly_fraction=0.25,
+            max_stake_per_bet_units=5.0,
+        ),
+        betting_policy=BettingPolicyConfig(
+            min_edge_points_spread=1.0,
+            min_edge_points_total=1.0,
+            bet_spreads=True,
+            bet_totals=False,
+        ),
+        output=OutputConfig(),
+    )
+
+    # Row with valid model_edge_prob
+    row = pd.Series({
+        "season": 2024,
+        "week": 1,
+        "model_edge_prob": 0.55,  # 55% win probability
+    })
+
+    # Should compute stake without error
+    stake = _compute_stake(
+        bankroll=100.0,
+        decimal_odds=1.909,  # -110 odds
+        config=config,
+        row=row,
+    )
+
+    # Stake should be positive and finite
+    assert stake > 0
+    assert math.isfinite(stake)
+    assert stake <= config.bankroll.max_stake_per_bet_units
+
+
+# ----------------------------------------------------------------------------
+# Tests: Config validation
+# ----------------------------------------------------------------------------
+
+def test_config_rejects_no_markets():
+    """Test that config validation rejects when no markets are enabled."""
+    config = BacktestConfig(
+        experiment_id="test_no_markets",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["spread", "total"],
+        bankroll=BankrollConfig(
+            initial_units=100.0,
+            staking="flat",
+            kelly_fraction=0.25,
+            max_stake_per_bet_units=5.0,
+        ),
+        betting_policy=BettingPolicyConfig(
+            min_edge_points_spread=1.0,
+            min_edge_points_total=1.0,
+            bet_spreads=False,  # Both disabled
+            bet_totals=False,   # Both disabled
+        ),
+        output=OutputConfig(),
+    )
+
+    with pytest.raises(ValueError, match="At least one market"):
+        validate_config(config)
+
+
+def test_config_rejects_negative_edge_thresholds():
+    """Test that config validation rejects negative edge thresholds."""
+    # Test negative spread edge
+    config = BacktestConfig(
+        experiment_id="test_neg_spread",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["spread"],
+        bankroll=BankrollConfig(),
+        betting_policy=BettingPolicyConfig(
+            min_edge_points_spread=-1.0,  # Negative!
+            bet_spreads=True,
+        ),
+        output=OutputConfig(),
+    )
+
+    with pytest.raises(ValueError, match="min_edge_points_spread cannot be negative"):
+        validate_config(config)
+
+    # Test negative total edge
+    config2 = BacktestConfig(
+        experiment_id="test_neg_total",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["total"],
+        bankroll=BankrollConfig(),
+        betting_policy=BettingPolicyConfig(
+            min_edge_points_total=-0.5,  # Negative!
+            bet_totals=True,
+        ),
+        output=OutputConfig(),
+    )
+
+    with pytest.raises(ValueError, match="min_edge_points_total cannot be negative"):
+        validate_config(config2)
+
+
+def test_config_rejects_invalid_kelly_fraction():
+    """Test that config validation rejects invalid kelly_fraction for Kelly staking."""
+    config = BacktestConfig(
+        experiment_id="test_bad_kelly",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["spread"],
+        bankroll=BankrollConfig(
+            staking="kelly",
+            kelly_fraction=0.0,  # Invalid: must be > 0
+        ),
+        betting_policy=BettingPolicyConfig(
+            bet_spreads=True,
+        ),
+        output=OutputConfig(),
+    )
+
+    with pytest.raises(ValueError, match="kelly_fraction must be > 0"):
+        validate_config(config)
+
+    # Also test negative kelly_fraction
+    config2 = BacktestConfig(
+        experiment_id="test_bad_kelly2",
+        dataset_version="v2_1",
+        model_version="score_v2",
+        seasons=SeasonsConfig(train=[2023], test=[2024]),
+        weeks_test=[1, 2],
+        markets=["spread"],
+        bankroll=BankrollConfig(
+            staking="fractional_kelly",
+            kelly_fraction=-0.25,  # Negative!
+        ),
+        betting_policy=BettingPolicyConfig(
+            bet_spreads=True,
+        ),
+        output=OutputConfig(),
+    )
+
+    with pytest.raises(ValueError, match="kelly_fraction must be > 0"):
+        validate_config(config2)
+
+
+def test_config_validation_passes_for_valid_config(sample_config):
+    """Test that config validation passes for a valid configuration."""
+    # sample_config is a valid config, should not raise
+    validate_config(sample_config)
 
 
 # ----------------------------------------------------------------------------
