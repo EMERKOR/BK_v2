@@ -20,6 +20,7 @@ from .cleaners import (
     clean_market_moneyline,
 )
 from .validation import validate_no_future_weeks
+from ..mappings import normalize_team_code
 
 
 def _split_teams_column(teams: pd.Series) -> Tuple[pd.Series, pd.Series]:
@@ -92,6 +93,14 @@ def build_game_state_v2(
     away_team, home_team = _split_teams_column(game_state["teams"])
     game_state["away_team"] = away_team
     game_state["home_team"] = home_team
+
+    # Normalize team codes to canonical BK codes
+    game_state["away_team"] = game_state["away_team"].apply(
+        lambda x: normalize_team_code(str(x), "nflverse")
+    )
+    game_state["home_team"] = game_state["home_team"].apply(
+        lambda x: normalize_team_code(str(x), "nflverse")
+    )
 
     # Reorder columns to match SCHEMA_GAME_v2
     cols = [
