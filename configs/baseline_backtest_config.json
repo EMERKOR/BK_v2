@@ -1,0 +1,41 @@
+{
+  "experiment_id": "baseline_validation_2024",
+  "description": "Zero-edge baseline to validate backtest infrastructure",
+  "dataset_version": "baseline",
+  "model_version": "market_lines",
+  "seasons": {
+    "train": [],
+    "test": [2024]
+  },
+  "weeks": {
+    "test": [1, 2, 3, 4, 5]
+  },
+  "markets": ["spread", "total"],
+  "bankroll": {
+    "initial_units": 1000.0,
+    "staking": "flat",
+    "kelly_fraction": 0.25,
+    "max_stake_per_bet_units": 10.0
+  },
+  "betting_policy": {
+    "decision_point": "closing",
+    "min_edge_points_spread": 0.0,
+    "min_edge_points_total": 0.0,
+    "max_spread_to_bet": 14.0,
+    "enable_home_faves": true,
+    "enable_home_dogs": true,
+    "enable_road_faves": true,
+    "enable_road_dogs": true,
+    "bet_spreads": true,
+    "bet_totals": true,
+    "bet_moneylines": false,
+    "min_prob_edge_spread": null,
+    "min_prob_edge_total": null
+  },
+  "output": {
+    "base_dir": "data/backtests/baseline",
+    "save_bet_log": true,
+    "save_game_summary": true,
+    "save_metrics": true
+  }
+}
