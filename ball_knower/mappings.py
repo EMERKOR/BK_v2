@@ -99,6 +99,7 @@ NFLVERSE_TO_BK: Dict[str, str] = {
     "SDG": "LAC",  # Historical
     # Los Angeles Rams
     "LAR": "LAR",
+    "LA": "LAR",  # nflverse uses LA for Rams
     "LA Rams": "LAR",
     "Los Angeles Rams": "LAR",
     "St. Louis": "LAR",  # Historical
