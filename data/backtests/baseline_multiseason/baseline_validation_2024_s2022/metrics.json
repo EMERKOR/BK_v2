@@ -1,0 +1,79 @@
+{
+  "experiment_id": "baseline_validation_2024_s2022",
+  "dataset_version": "baseline",
+  "model_version": "market_lines",
+  "seasons": {
+    "train": [],
+    "test": [
+      2022
+    ]
+  },
+  "markets": [
+    "spread",
+    "total"
+  ],
+  "bankroll": {
+    "initial_units": 1000.0,
+    "final_units": 978.7272727272644,
+    "roi": -0.02127272727273555,
+    "max_drawdown": 30.545454545462235,
+    "num_bets": 538
+  },
+  "metrics_by_market": {
+    "spread": {
+      "bets": 267,
+      "win_rate": 0.5543071161048689,
+      "roi": 0.07320394960844405,
+      "avg_edge": 0.009999999999999816,
+      "clv_spread_mean": 0.0
+    },
+    "total": {
+      "bets": 271,
+      "win_rate": 0.43911439114391143,
+      "roi": -0.150620597115062,
+      "avg_edge": 0.00999999999999801,
+      "clv_total_mean": 0.0
+    }
+  },
+  "edge_buckets": {
+    "spread": {
+      "0-1": {
+        "bets": 267,
+        "win_rate": 0.5543071161048689,
+        "roi": 0.07320394960844405
+      },
+      "1-2": {
+        "bets": 0,
+        "win_rate": 0.0,
+        "roi": 0.0
+      },
+      "2+": {
+        "bets": 0,
+        "win_rate": 0.0,
+        "roi": 0.0
+      }
+    },
+    "total": {
+      "0-1": {
+        "bets": 271,
+        "win_rate": 0.43911439114391143,
+        "roi": -0.150620597115062
+      },
+      "1-2": {
+        "bets": 0,
+        "win_rate": 0.0,
+        "roi": 0.0
+      },
+      "2+": {
+        "bets": 0,
+        "win_rate": 0.0,
+        "roi": 0.0
+      }
+    }
+  },
+  "calibration": {
+    "spread": [],
+    "total": []
+  },
+  "runtime_seconds": 0.005048036575317383
+}
