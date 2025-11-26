@@ -16,6 +16,7 @@ load_game_state = load_game_state_v2
 from .dataset_v2 import (
     build_dataset_v2_0,
     build_dataset_v2_1,
+    build_dataset_v2_2,
     load_dataset_v2,
 )
 from .builder_v2 import (
@@ -29,6 +30,7 @@ __all__ = [
     "load_game_state",
     "build_dataset_v2_0",
     "build_dataset_v2_1",
+    "build_dataset_v2_2",
     "load_dataset_v2",
     "build_test_games_for_season",
     "save_test_games_artifacts",

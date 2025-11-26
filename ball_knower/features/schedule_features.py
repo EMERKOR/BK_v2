@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 
+from ..mappings import normalize_team_code
+
 
 def _load_schedule_with_kickoff(
     season: int,
@@ -106,9 +108,12 @@ def build_schedule_features(
     features_list = []
 
     for _, game in schedule.iterrows():
-        game_id = game.get("game_id", f"{season}_{week:02d}_{game['away_team']}_{game['home_team']}")
-        home_team = game["home_team"]
-        away_team = game["away_team"]
+        # Normalize team codes to match game_state format
+        home_team = normalize_team_code(str(game["home_team"]), "nflverse")
+        away_team = normalize_team_code(str(game["away_team"]), "nflverse")
+        # game_id must match game_state format: {season}_{week}_{away}_{home} (no zero-padding)
+        # Always recalculate to ensure normalized team codes
+        game_id = f"{season}_{week}_{away_team}_{home_team}"
         kickoff = game.get("kickoff_dt", pd.NaT)
 
         # Default rest days if we can't compute

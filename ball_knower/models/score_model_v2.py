@@ -32,7 +32,7 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.isotonic import IsotonicRegression
 
-from ..datasets.dataset_v2 import build_dataset_v2_1, load_dataset_v2
+from ..datasets.dataset_v2 import build_dataset_v2_1, build_dataset_v2_2, load_dataset_v2
 
 
 def _ensure_predictions_dir(season: int, data_dir: Path | str = "data") -> Path:
@@ -279,6 +279,8 @@ def train_score_model_v2(
     train_seasons: list[int],
     train_weeks: list[int],
     model_type: Literal["gbr", "rf"] = "gbr",
+    dataset_version: str = "2",
+    n_games: int = 5,
     data_dir: Path | str = "data",
     **model_kwargs,
 ) -> ScoreModelV2:
@@ -293,6 +295,10 @@ def train_score_model_v2(
         Weeks to train on (for each season)
     model_type : {"gbr", "rf"}
         Model type
+    dataset_version : str
+        Dataset version to use ("1" for v2_1, "2" for v2_2)
+    n_games : int
+        Lookback window for rolling features (only used for v2_2)
     data_dir : Path | str
         Data directory
     model_kwargs : dict
@@ -308,7 +314,11 @@ def train_score_model_v2(
     for season in train_seasons:
         for week in train_weeks:
             try:
-                df = load_dataset_v2("1", season, week, data_dir=data_dir)
+                if dataset_version == "2":
+                    # Build on-demand for v2_2
+                    df = build_dataset_v2_2(season, week, n_games, data_dir)
+                else:
+                    df = load_dataset_v2(dataset_version, season, week, data_dir=data_dir)
                 train_dfs.append(df)
             except FileNotFoundError:
                 print(f"Warning: Dataset not found for {season} week {week}, skipping")
@@ -338,6 +348,8 @@ def predict_score_model_v2(
     model: ScoreModelV2,
     test_season: int,
     test_week: int,
+    dataset_version: str = "2",
+    n_games: int = 5,
     data_dir: Path | str = "data",
     save: bool = True,
 ) -> pd.DataFrame:
@@ -352,6 +364,10 @@ def predict_score_model_v2(
         Test season
     test_week : int
         Test week
+    dataset_version : str
+        Dataset version to use ("1" for v2_1, "2" for v2_2)
+    n_games : int
+        Lookback window for rolling features (only used for v2_2)
     data_dir : Path | str
         Data directory
     save : bool
@@ -368,7 +384,10 @@ def predict_score_model_v2(
         - home_residual, away_residual
     """
     # Load test data
-    test_df = load_dataset_v2("1", test_season, test_week, data_dir=data_dir)
+    if dataset_version == "2":
+        test_df = build_dataset_v2_2(test_season, test_week, n_games, data_dir)
+    else:
+        test_df = load_dataset_v2(dataset_version, test_season, test_week, data_dir=data_dir)
 
     # Get features
     feature_cols = _get_feature_columns(test_df)
@@ -441,6 +460,8 @@ def evaluate_score_model_v2(
     model: ScoreModelV2,
     test_seasons: list[int],
     test_weeks: list[int],
+    dataset_version: str = "2",
+    n_games: int = 5,
     data_dir: Path | str = "data",
 ) -> Dict[str, Any]:
     """
@@ -454,6 +475,10 @@ def evaluate_score_model_v2(
         Test seasons
     test_weeks : list[int]
         Test weeks
+    dataset_version : str
+        Dataset version to use ("1" for v2_1, "2" for v2_2)
+    n_games : int
+        Lookback window for rolling features (only used for v2_2)
     data_dir : Path | str
         Data directory
 
@@ -468,7 +493,10 @@ def evaluate_score_model_v2(
         for week in test_weeks:
             try:
                 pred_df = predict_score_model_v2(
-                    model, season, week, data_dir=data_dir, save=False
+                    model, season, week,
+                    dataset_version=dataset_version,
+                    n_games=n_games,
+                    data_dir=data_dir, save=False
                 )
                 all_predictions.append(pred_df)
             except FileNotFoundError:

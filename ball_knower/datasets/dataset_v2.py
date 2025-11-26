@@ -353,6 +353,66 @@ def build_dataset_v2_1(
     return dataset
 
 
+def build_dataset_v2_2(
+    season: int,
+    week: int,
+    n_games: int = 5,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build dataset_v2_2: Game state + derived features (no Stream B).
+
+    Base: game_state_v2 (Stream A)
+    Features: Rolling team stats + schedule features
+
+    One row per game with predictive features.
+
+    Parameters
+    ----------
+    season : int
+        NFL season year
+    week : int
+        NFL week number (1-22)
+    n_games : int
+        Lookback window for rolling features (default: 5)
+    data_dir : Path | str
+        Base data directory (default: "data")
+
+    Returns
+    -------
+    pd.DataFrame
+        Dataset with game_state_v2 + features_v2
+    """
+    from ..features import build_features_v2
+    from ..game_state.game_state_v2 import build_game_state_v2
+
+    # Build components
+    game_state = build_game_state_v2(season, week, data_dir)
+    features = build_features_v2(season, week, n_games, data_dir, save=False)
+
+    # Merge on game_id
+    dataset = game_state.merge(
+        features.drop(columns=["season", "week"], errors="ignore"),
+        on="game_id",
+        how="inner",
+    )
+
+    # Validate: One row per game
+    if dataset["game_id"].duplicated().any():
+        raise ValueError("Dataset has duplicate game_ids")
+
+    # Write outputs
+    _write_dataset_parquet(dataset, "2", season, week, data_dir)
+    _emit_dataset_log(
+        "2", season, week,
+        source_tables=["game_state_v2", "features_v2"],
+        row_count=len(dataset),
+        data_dir=data_dir,
+    )
+
+    return dataset
+
+
 def load_dataset_v2(
     version: str,
     season: int,
