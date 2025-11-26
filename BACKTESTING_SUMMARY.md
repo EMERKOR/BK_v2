@@ -107,7 +107,7 @@ python ball_knower/scripts/run_backtest_v2.py \
 - ✅ All imports validated
 - ✅ Static checks passing (flake8)
 - ✅ 30/30 backtesting tests passing
-- ✅ 128/128 full test suite passing
+- ✅ 180 tests in full suite passing
 - ✅ Ready for Phase 8 integration
 
 ## Next Steps (Optional Enhancements)
