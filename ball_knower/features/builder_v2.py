@@ -13,6 +13,7 @@ import pandas as pd
 
 from .rolling_features import build_rolling_features
 from .schedule_features import build_schedule_features
+from .efficiency_features import build_efficiency_features
 
 
 def _ensure_features_dir(season: int, data_dir: Path | str = "data") -> Path:
@@ -44,6 +45,7 @@ def build_features_v2(
     Combines:
     - Rolling team statistics (points, wins)
     - Schedule features (rest days, week position)
+    - Efficiency features (EPA, success rate from PBP data)
 
     Parameters
     ----------
@@ -71,10 +73,16 @@ def build_features_v2(
     # Build component features
     rolling_df = build_rolling_features(season, week, n_games, data_dir)
     schedule_df = build_schedule_features(season, week, data_dir)
+    efficiency_df = build_efficiency_features(season, week, n_games, data_dir)
 
-    # Merge on game_id
+    # Merge all feature sets on game_id
     features = rolling_df.merge(
         schedule_df,
+        on="game_id",
+        how="left",
+    )
+    features = features.merge(
+        efficiency_df.drop(columns=["season", "week"], errors="ignore"),
         on="game_id",
         how="left",
     )
