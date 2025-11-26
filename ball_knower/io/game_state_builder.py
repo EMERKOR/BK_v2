@@ -53,7 +53,7 @@ def build_game_state_v2(
     Build the canonical game_state_v2 table for a given season/week.
 
     Columns (from SCHEMA_GAME_v2):
-        season, week, game_id, teams, kickoff,
+        season, week, game_id, teams, kickoff_utc,
         home_team, away_team, home_score, away_score,
         market_closing_spread, market_closing_total,
         market_moneyline_home, market_moneyline_away
@@ -108,7 +108,7 @@ def build_game_state_v2(
         "week",
         "game_id",
         "teams",
-        "kickoff",
+        "kickoff_utc",
         "home_team",
         "away_team",
         "home_score",

@@ -102,7 +102,7 @@ def test_build_game_state_v2_end_to_end(tmp_path):
         "week",
         "game_id",
         "teams",
-        "kickoff",
+        "kickoff_utc",
         "home_team",
         "away_team",
         "home_score",
@@ -123,7 +123,8 @@ def test_build_game_state_v2_end_to_end(tmp_path):
     assert row["week"] == week
     assert row["game_id"] == game_id
     assert row["teams"] == teams_str
-    assert row["kickoff"] == "2025-11-17T18:00:00Z"
+    # kickoff_utc should be datetime, not string
+    assert pd.api.types.is_datetime64_any_dtype(df_game_state["kickoff_utc"])
 
     # Assert home/away teams are split correctly from "BUF@KC"
     assert row["away_team"] == "BUF"
