@@ -8,7 +8,7 @@ Stream A (public game/market data) has been fully implemented as an MVP. This in
 - 5 clean tables: schedule_games, final_scores, market_lines_spread, market_lines_total, market_moneyline
 - 1 canonical dataset: game_state_v2 (merges all Stream A tables)
 - Parquet output with JSON logging
-- 13 integration tests
+- 23 integration tests
 
 The same patterns can be extended to:
 - **Stream B**: FantasyPoints context data (6 tables)
