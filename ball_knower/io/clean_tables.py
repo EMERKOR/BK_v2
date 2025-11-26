@@ -316,10 +316,11 @@ def build_market_lines_spread_clean(
     df = df_raw.copy()
 
     # Map raw column name to schema column name
+    # Negate to convert from nflverse convention to BK_v2 convention (home - away)
     if "closing_line" in df.columns:
-        df["market_closing_spread"] = pd.to_numeric(df["closing_line"], errors="coerce")
+        df["market_closing_spread"] = -pd.to_numeric(df["closing_line"], errors="coerce")
     elif "market_closing_spread" in df.columns:
-        df["market_closing_spread"] = pd.to_numeric(
+        df["market_closing_spread"] = -pd.to_numeric(
             df["market_closing_spread"], errors="coerce"
         )
 
