@@ -20,6 +20,8 @@ from .cleaners import (
     clean_market_moneyline,
 )
 from .validation import validate_no_future_weeks
+from .schemas_v2 import GAME_STATE_V2
+from .clean_tables import _enforce_schema
 from ..mappings import normalize_team_code
 
 
@@ -122,5 +124,8 @@ def build_game_state_v2(
     for col in cols:
         if col not in game_state.columns:
             game_state[col] = pd.NA
+
+    # Enforce schema before returning
+    game_state = _enforce_schema(game_state, GAME_STATE_V2)
 
     return game_state[cols]
