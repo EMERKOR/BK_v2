@@ -36,5 +36,7 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Generated features (build artifacts)
+# Generated data (build artifacts)
 data/features/
+data/clean/
+data/datasets/
