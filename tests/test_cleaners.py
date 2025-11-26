@@ -43,13 +43,17 @@ def test_clean_schedule_games():
 
     df_clean = clean_schedule_games(df_raw)
 
-    # Assert required columns are present
-    required = ["season", "week", "game_id", "teams", "kickoff"]
+    # Assert required columns are present (kickoff is converted to kickoff_utc)
+    required = ["season", "week", "game_id", "teams", "kickoff_utc"]
     assert all(col in df_clean.columns for col in required), "Missing required columns"
+    assert "kickoff" not in df_clean.columns, "kickoff should be renamed to kickoff_utc"
 
     # Assert season and week are integers
     assert pd.api.types.is_integer_dtype(df_clean["season"]), "season should be int"
     assert pd.api.types.is_integer_dtype(df_clean["week"]), "week should be int"
+
+    # Assert kickoff_utc is datetime
+    assert pd.api.types.is_datetime64_any_dtype(df_clean["kickoff_utc"]), "kickoff_utc should be datetime"
 
     # Assert single row is preserved
     assert len(df_clean) == 1, "Should have 1 row"

@@ -13,24 +13,30 @@ from ..mappings import normalize_team_code
 
 def clean_schedule_games(raw: pd.DataFrame) -> pd.DataFrame:
     """
-    Clean schedule_games_raw -> schedule_games.
+    Clean schedule_games_raw.
 
-    Canonical fields per SCHEMA_UPSTREAM_v2 / SCHEMA_GAME_v2:
+    Raw columns:
         season, week, game_id, teams, kickoff
 
-    We assume the raw file already has columns named 'game_id', 'teams', 'kickoff'.
-    If upstream uses different names, adjust this mapping.
+    Output columns:
+        season, week, game_id, teams, kickoff_utc
+
+    Converts kickoff string to datetime64[ns] as kickoff_utc.
     """
     required = ["season", "week", "game_id", "teams", "kickoff"]
     validate_required_columns(raw, required, table_name="schedule_games_raw")
 
-    df = raw.copy()
+    df = raw[required].copy()
 
-    # For now, treat kickoff as opaque string; downstream code can parse to datetime.
     # Strip whitespace from team identifiers to reduce merge bugs.
     df["teams"] = df["teams"].astype(str).str.strip()
 
-    return df[required]
+    # Convert kickoff to datetime and rename to kickoff_utc
+    df["kickoff_utc"] = pd.to_datetime(df["kickoff"], errors="coerce")
+    df = df.drop(columns=["kickoff"])
+
+    # Reorder columns to match schema
+    return df[["season", "week", "game_id", "teams", "kickoff_utc"]]
 
 
 def clean_final_scores(raw: pd.DataFrame) -> pd.DataFrame:

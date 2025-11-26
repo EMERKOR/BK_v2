@@ -1,14 +1,18 @@
 """
-Dataset loaders and builders for Ball Knower v2.
+Dataset builders and loaders for Ball Knower v2.
 
 Provides:
-- Simple loaders for cleaned data tables
-- Dataset builders that merge Stream A + B into canonical feature matrices
-- Test games builder for backtesting pipeline (builder_v2)
+- load_game_state_v2: Load canonical game state from Parquet
+- load_game_state: Alias for load_game_state_v2 (backward compatibility)
+- build_dataset_v2_0: Dataset with team-level context features
+- build_dataset_v2_1: Dataset with player-level aggregated features
 """
-from __future__ import annotations
 
-from .game_state_v2 import load_game_state
+from ..game_state.game_state_v2 import load_game_state_v2
+
+# Backward compatibility alias
+load_game_state = load_game_state_v2
+
 from .dataset_v2 import (
     build_dataset_v2_0,
     build_dataset_v2_1,
@@ -21,6 +25,7 @@ from .builder_v2 import (
 )
 
 __all__ = [
+    "load_game_state_v2",
     "load_game_state",
     "build_dataset_v2_0",
     "build_dataset_v2_1",

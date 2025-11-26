@@ -2,7 +2,7 @@
 Tests for ball_knower.datasets module.
 
 Verifies that dataset loaders:
-- Load CSV files from the expected paths
+- Load Parquet files from the expected paths
 - Return properly formatted DataFrames
 """
 from __future__ import annotations
@@ -11,12 +11,12 @@ import pandas as pd
 import pytest
 from pathlib import Path
 
-from ball_knower.datasets import load_game_state
+from ball_knower.datasets import load_game_state, load_game_state_v2
 
 
 def test_load_game_state(tmp_path):
     """
-    Test load_game_state with a minimal CSV file.
+    Test load_game_state with a minimal Parquet file.
 
     Creates a temporary directory structure matching the expected
     clean data layout and verifies the loader reads it correctly.
@@ -29,14 +29,14 @@ def test_load_game_state(tmp_path):
     clean_dir = tmp_path / "clean" / "game_state_v2" / str(season)
     clean_dir.mkdir(parents=True, exist_ok=True)
 
-    # Create a minimal game_state_v2 CSV with expected columns
+    # Create a minimal game_state_v2 DataFrame with expected columns
     game_state_df = pd.DataFrame(
         {
             "season": [season],
             "week": [week],
             "game_id": [game_id],
             "teams": ["BUF@KC"],
-            "kickoff": ["2025-11-17T18:00:00Z"],
+            "kickoff_utc": pd.to_datetime(["2025-11-17T18:00:00Z"]),
             "home_team": ["KC"],
             "away_team": ["BUF"],
             "home_score": [24.0],
@@ -48,9 +48,9 @@ def test_load_game_state(tmp_path):
         }
     )
 
-    # Write CSV to expected path
-    csv_path = clean_dir / f"game_state_v2_{season}_week_{week}.csv"
-    game_state_df.to_csv(csv_path, index=False)
+    # Write Parquet to expected path (note: week is zero-padded to 2 digits)
+    parquet_path = clean_dir / f"game_state_v2_{season}_week_{week:02d}.parquet"
+    game_state_df.to_parquet(parquet_path, index=False)
 
     # Load using the dataset loader
     df = load_game_state(season, week, data_dir=str(tmp_path))
@@ -60,6 +60,7 @@ def test_load_game_state(tmp_path):
     assert df.iloc[0]["season"] == season
     assert df.iloc[0]["week"] == week
     assert df.iloc[0]["game_id"] == game_id
+    assert "kickoff_utc" in df.columns, "Should have kickoff_utc column"
 
 
 def test_load_game_state_multiple_rows(tmp_path):
@@ -73,18 +74,18 @@ def test_load_game_state_multiple_rows(tmp_path):
     clean_dir = tmp_path / "clean" / "game_state_v2" / str(season)
     clean_dir.mkdir(parents=True, exist_ok=True)
 
-    # Create a game_state_v2 CSV with 3 games
+    # Create a game_state_v2 DataFrame with 3 games
     game_state_df = pd.DataFrame(
         {
             "season": [season, season, season],
             "week": [week, week, week],
             "game_id": ["2025_11_BUF_KC", "2025_11_SF_DAL", "2025_11_GB_DET"],
             "teams": ["BUF@KC", "SF@DAL", "GB@DET"],
-            "kickoff": [
+            "kickoff_utc": pd.to_datetime([
                 "2025-11-17T18:00:00Z",
                 "2025-11-17T21:00:00Z",
                 "2025-11-18T13:00:00Z",
-            ],
+            ]),
             "home_team": ["KC", "DAL", "DET"],
             "away_team": ["BUF", "SF", "GB"],
             "home_score": [24.0, 28.0, 31.0],
@@ -96,9 +97,9 @@ def test_load_game_state_multiple_rows(tmp_path):
         }
     )
 
-    # Write CSV
-    csv_path = clean_dir / f"game_state_v2_{season}_week_{week}.csv"
-    game_state_df.to_csv(csv_path, index=False)
+    # Write Parquet (note: week is zero-padded to 2 digits)
+    parquet_path = clean_dir / f"game_state_v2_{season}_week_{week:02d}.parquet"
+    game_state_df.to_parquet(parquet_path, index=False)
 
     # Load using the dataset loader
     df = load_game_state(season, week, data_dir=str(tmp_path))
@@ -118,3 +119,12 @@ def test_load_game_state_file_not_found(tmp_path):
 
     with pytest.raises(FileNotFoundError):
         load_game_state(season, week, data_dir=str(tmp_path))
+
+
+def test_load_game_state_v2_alias():
+    """
+    Test that load_game_state is an alias for load_game_state_v2.
+    """
+    assert load_game_state is load_game_state_v2, (
+        "load_game_state should be an alias for load_game_state_v2"
+    )
