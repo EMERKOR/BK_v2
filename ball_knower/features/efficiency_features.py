@@ -76,45 +76,87 @@ def aggregate_pbp_to_team_game(pbp_df: pd.DataFrame) -> pd.DataFrame:
         (pbp_df["posteam"].notna())
     ].copy()
 
-    # Offensive stats (grouped by possession team)
+    # === OFFENSIVE STATS ===
+
+    # Basic offensive stats (no lambdas needed)
     off_stats = plays.groupby(["game_id", "season", "week", "posteam"]).agg(
         off_epa=("epa", "mean"),
         off_success_rate=("success", "mean"),
         off_plays=("epa", "count"),
-        pass_epa=("epa", lambda x: x[plays.loc[x.index, "play_type"] == "pass"].mean() if (plays.loc[x.index, "play_type"] == "pass").any() else np.nan),
-        rush_epa=("epa", lambda x: x[plays.loc[x.index, "play_type"] == "run"].mean() if (plays.loc[x.index, "play_type"] == "run").any() else np.nan),
-        pass_plays=("play_type", lambda x: (x == "pass").sum()),
-        rush_plays=("play_type", lambda x: (x == "run").sum()),
     ).reset_index()
     off_stats = off_stats.rename(columns={"posteam": "team"})
 
-    # Compute explosive play rates separately (cleaner than nested lambdas)
+    # Pass-specific stats (filter first, then group)
     pass_plays_df = plays[plays["play_type"] == "pass"]
+    if len(pass_plays_df) > 0:
+        pass_stats = pass_plays_df.groupby(["game_id", "posteam"]).agg(
+            pass_epa=("epa", "mean"),
+            pass_plays=("epa", "count"),
+        ).reset_index()
+        pass_stats = pass_stats.rename(columns={"posteam": "team"})
+
+        # Explosive pass rate (EPA > 1.5)
+        explosive_pass = pass_plays_df.copy()
+        explosive_pass["is_explosive"] = explosive_pass["epa"] > 1.5
+        explosive_pass_agg = explosive_pass.groupby(["game_id", "posteam"]).agg(
+            explosive_pass_count=("is_explosive", "sum"),
+            pass_play_count=("epa", "count"),
+        ).reset_index()
+        explosive_pass_agg["explosive_pass_rate"] = (
+            explosive_pass_agg["explosive_pass_count"] / explosive_pass_agg["pass_play_count"]
+        ).fillna(0.0)
+        explosive_pass_agg = explosive_pass_agg[["game_id", "posteam", "explosive_pass_rate"]]
+        explosive_pass_agg = explosive_pass_agg.rename(columns={"posteam": "team"})
+
+        # Merge pass stats
+        off_stats = off_stats.merge(pass_stats, on=["game_id", "team"], how="left")
+        off_stats = off_stats.merge(explosive_pass_agg, on=["game_id", "team"], how="left")
+    else:
+        off_stats["pass_epa"] = np.nan
+        off_stats["pass_plays"] = 0
+        off_stats["explosive_pass_rate"] = 0.0
+
+    # Rush-specific stats (filter first, then group)
     rush_plays_df = plays[plays["play_type"] == "run"]
+    if len(rush_plays_df) > 0:
+        rush_stats = rush_plays_df.groupby(["game_id", "posteam"]).agg(
+            rush_epa=("epa", "mean"),
+            rush_plays=("epa", "count"),
+        ).reset_index()
+        rush_stats = rush_stats.rename(columns={"posteam": "team"})
 
-    explosive_pass = pass_plays_df.groupby(["game_id", "posteam"]).apply(
-        lambda x: (x["epa"] > 1.5).mean() if len(x) > 0 else 0.0
-    ).reset_index(name="explosive_pass_rate")
-    explosive_pass = explosive_pass.rename(columns={"posteam": "team"})
+        # Explosive rush rate (EPA > 1.0)
+        explosive_rush = rush_plays_df.copy()
+        explosive_rush["is_explosive"] = explosive_rush["epa"] > 1.0
+        explosive_rush_agg = explosive_rush.groupby(["game_id", "posteam"]).agg(
+            explosive_rush_count=("is_explosive", "sum"),
+            rush_play_count=("epa", "count"),
+        ).reset_index()
+        explosive_rush_agg["explosive_rush_rate"] = (
+            explosive_rush_agg["explosive_rush_count"] / explosive_rush_agg["rush_play_count"]
+        ).fillna(0.0)
+        explosive_rush_agg = explosive_rush_agg[["game_id", "posteam", "explosive_rush_rate"]]
+        explosive_rush_agg = explosive_rush_agg.rename(columns={"posteam": "team"})
 
-    explosive_rush = rush_plays_df.groupby(["game_id", "posteam"]).apply(
-        lambda x: (x["epa"] > 1.0).mean() if len(x) > 0 else 0.0
-    ).reset_index(name="explosive_rush_rate")
-    explosive_rush = explosive_rush.rename(columns={"posteam": "team"})
+        # Merge rush stats
+        off_stats = off_stats.merge(rush_stats, on=["game_id", "team"], how="left")
+        off_stats = off_stats.merge(explosive_rush_agg, on=["game_id", "team"], how="left")
+    else:
+        off_stats["rush_epa"] = np.nan
+        off_stats["rush_plays"] = 0
+        off_stats["explosive_rush_rate"] = 0.0
 
-    # Merge explosive rates into off_stats
-    off_stats = off_stats.merge(explosive_pass, on=["game_id", "team"], how="left")
-    off_stats = off_stats.merge(explosive_rush, on=["game_id", "team"], how="left")
+    # === DEFENSIVE STATS ===
 
-    # Defensive stats (grouped by defensive team)
     def_stats = plays.groupby(["game_id", "season", "week", "defteam"]).agg(
-        def_epa=("epa", "mean"),  # Note: lower is better for defense
-        def_success_rate=("success", "mean"),  # Lower is better
+        def_epa=("epa", "mean"),
+        def_success_rate=("success", "mean"),
         def_plays=("epa", "count"),
     ).reset_index()
     def_stats = def_stats.rename(columns={"defteam": "team"})
 
-    # Merge offensive and defensive stats
+    # === MERGE OFFENSIVE AND DEFENSIVE ===
+
     team_game_stats = off_stats.merge(
         def_stats[["game_id", "team", "def_epa", "def_success_rate", "def_plays"]],
         on=["game_id", "team"],
@@ -126,7 +168,7 @@ def aggregate_pbp_to_team_game(pbp_df: pd.DataFrame) -> pd.DataFrame:
         lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x
     )
 
-    # Fill NaN for teams that only played defense (rare edge cases)
+    # Fill NaN for edge cases
     team_game_stats = team_game_stats.fillna({
         "off_epa": 0.0,
         "off_success_rate": 0.0,
@@ -134,6 +176,10 @@ def aggregate_pbp_to_team_game(pbp_df: pd.DataFrame) -> pd.DataFrame:
         "def_epa": 0.0,
         "def_success_rate": 0.0,
         "def_plays": 0,
+        "pass_epa": 0.0,
+        "rush_epa": 0.0,
+        "pass_plays": 0,
+        "rush_plays": 0,
         "explosive_pass_rate": 0.0,
         "explosive_rush_rate": 0.0,
     })
