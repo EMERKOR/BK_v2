@@ -14,6 +14,8 @@ import pandas as pd
 from .rolling_features import build_rolling_features
 from .schedule_features import build_schedule_features
 from .efficiency_features import build_efficiency_features
+from .weather_features import build_weather_features
+from .injury_features import build_injury_features
 
 
 def _ensure_features_dir(season: int, data_dir: Path | str = "data") -> Path:
@@ -86,6 +88,30 @@ def build_features_v2(
         on="game_id",
         how="left",
     )
+
+    # Merge weather features (game-specific, not rolled)
+    try:
+        weather_df = build_weather_features(season, week, data_dir)
+        if len(weather_df) > 0:
+            features = features.merge(
+                weather_df,
+                on="game_id",
+                how="left",
+            )
+    except Exception as e:
+        print(f"Warning: Could not build weather features: {e}")
+
+    # Merge injury features (pre-game reports)
+    try:
+        injury_df = build_injury_features(season, week, data_dir)
+        if len(injury_df) > 0:
+            features = features.merge(
+                injury_df,
+                on="game_id",
+                how="left",
+            )
+    except Exception as e:
+        print(f"Warning: Could not build injury features: {e}")
 
     if save:
         # Write Parquet
