@@ -28,6 +28,7 @@ import pandas as pd
 
 # nflverse data URL (GitHub raw)
 NFLVERSE_GAMES_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
+NFLVERSE_PBP_URL = "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{season}.parquet"
 
 
 def parse_range(range_str: str) -> List[int]:
@@ -341,6 +342,48 @@ def write_moneyline_files(
     return written, skipped
 
 
+def download_pbp_data(
+    seasons: List[int],
+    data_dir: Path,
+    overwrite: bool = False,
+) -> Tuple[int, int]:
+    """
+    Download play-by-play parquet files from nflverse.
+
+    Downloads full-season PBP files containing EPA, success, and other
+    advanced metrics needed for efficiency features.
+
+    Returns (files_written, files_skipped) counts.
+    """
+    written = 0
+    skipped = 0
+
+    pbp_dir = data_dir / "RAW_pbp"
+    ensure_dir(pbp_dir)
+
+    for season in seasons:
+        filepath = pbp_dir / f"pbp_{season}.parquet"
+
+        if filepath.exists() and not overwrite:
+            print(f"  Skipping PBP {season} (already exists)")
+            skipped += 1
+            continue
+
+        url = NFLVERSE_PBP_URL.format(season=season)
+        print(f"  Downloading PBP {season} from nflverse...")
+
+        try:
+            df = pd.read_parquet(url)
+            df.to_parquet(filepath, index=False)
+            print(f"    Saved {len(df):,} plays to {filepath}")
+            written += 1
+        except Exception as e:
+            print(f"  ERROR downloading PBP {season}: {e}")
+            continue
+
+    return written, skipped
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Bootstrap NFL data for Ball Knower v2",
@@ -352,6 +395,7 @@ Examples:
     python scripts/bootstrap_data.py --seasons 2020-2024
     python scripts/bootstrap_data.py --seasons 2024 --weeks 1-10
     python scripts/bootstrap_data.py --seasons 2024 --overwrite
+    python scripts/bootstrap_data.py --seasons 2021-2024 --include-pbp
         """,
     )
     parser.add_argument(
@@ -381,6 +425,11 @@ Examples:
         "--skip-market",
         action="store_true",
         help="Skip creating market data files",
+    )
+    parser.add_argument(
+        "--include-pbp",
+        action="store_true",
+        help="Download play-by-play data (large files, ~50-100MB per season)",
     )
 
     args = parser.parse_args()
@@ -434,6 +483,14 @@ Examples:
         market_written = spread_written + total_written + ml_written
         market_skipped = spread_skipped + total_skipped + ml_skipped
         print(f"  Market total: {market_written} written, {market_skipped} skipped")
+
+    # Download PBP data if requested
+    if args.include_pbp:
+        print("\nDownloading play-by-play data...")
+        pbp_written, pbp_skipped = download_pbp_data(
+            seasons, data_dir, args.overwrite
+        )
+        print(f"  PBP: {pbp_written} written, {pbp_skipped} skipped")
 
     print("\n" + "=" * 60)
     print("Bootstrap complete!")
