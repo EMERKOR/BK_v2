@@ -29,6 +29,7 @@ import pandas as pd
 # nflverse data URL (GitHub raw)
 NFLVERSE_GAMES_URL = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
 NFLVERSE_PBP_URL = "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{season}.parquet"
+NFLVERSE_INJURIES_URL = "https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_{season}.parquet"
 
 
 def parse_range(range_str: str) -> List[int]:
@@ -384,6 +385,47 @@ def download_pbp_data(
     return written, skipped
 
 
+def download_injury_data(
+    seasons: List[int],
+    data_dir: Path,
+    overwrite: bool = False,
+) -> Tuple[int, int]:
+    """
+    Download injury report data from nflverse.
+
+    Downloads per-season injury parquet files similar to PBP data.
+
+    Returns (files_written, files_skipped) counts.
+    """
+    written = 0
+    skipped = 0
+
+    injuries_dir = data_dir / "RAW_injuries"
+    ensure_dir(injuries_dir)
+
+    for season in seasons:
+        filepath = injuries_dir / f"injuries_{season}.parquet"
+
+        if filepath.exists() and not overwrite:
+            print(f"  Skipping injuries {season} (already exists)")
+            skipped += 1
+            continue
+
+        url = NFLVERSE_INJURIES_URL.format(season=season)
+        print(f"  Downloading injuries {season} from nflverse...")
+
+        try:
+            df = pd.read_parquet(url)
+            df.to_parquet(filepath, index=False)
+            print(f"    Saved {len(df):,} injury records to {filepath}")
+            written += 1
+        except Exception as e:
+            print(f"  ERROR downloading injuries {season}: {e}")
+            continue
+
+    return written, skipped
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Bootstrap NFL data for Ball Knower v2",
@@ -430,6 +472,11 @@ Examples:
         "--include-pbp",
         action="store_true",
         help="Download play-by-play data (large files, ~50-100MB per season)",
+    )
+    parser.add_argument(
+        "--include-injuries",
+        action="store_true",
+        help="Download injury report data",
     )
 
     args = parser.parse_args()
@@ -491,6 +538,12 @@ Examples:
             seasons, data_dir, args.overwrite
         )
         print(f"  PBP: {pbp_written} written, {pbp_skipped} skipped")
+
+    # Download injury data if requested
+    if args.include_injuries:
+        print("\nDownloading injury data...")
+        inj_written, inj_skipped = download_injury_data(seasons, data_dir, args.overwrite)
+        print(f"  Injuries: {inj_written} written, {inj_skipped} skipped")
 
     print("\n" + "=" * 60)
     print("Bootstrap complete!")

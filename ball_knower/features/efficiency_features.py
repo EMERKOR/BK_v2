@@ -146,6 +146,55 @@ def aggregate_pbp_to_team_game(pbp_df: pd.DataFrame) -> pd.DataFrame:
         off_stats["rush_plays"] = 0
         off_stats["explosive_rush_rate"] = 0.0
 
+    # === TIER 2 EPA: RED ZONE ===
+    # Red zone = inside opponent's 20 (yardline_100 <= 20)
+    red_zone_plays = plays[plays["yardline_100"] <= 20]
+
+    if len(red_zone_plays) > 0:
+        rz_off_stats = red_zone_plays.groupby(["game_id", "posteam"]).agg(
+            red_zone_epa=("epa", "mean"),
+            red_zone_success_rate=("success", "mean"),
+            red_zone_plays=("epa", "count"),
+        ).reset_index()
+        rz_off_stats = rz_off_stats.rename(columns={"posteam": "team"})
+        off_stats = off_stats.merge(rz_off_stats, on=["game_id", "team"], how="left")
+    else:
+        off_stats["red_zone_epa"] = np.nan
+        off_stats["red_zone_success_rate"] = np.nan
+        off_stats["red_zone_plays"] = 0
+
+    # === TIER 2 EPA: THIRD DOWN ===
+    third_down_plays = plays[plays["down"] == 3]
+
+    if len(third_down_plays) > 0:
+        third_off_stats = third_down_plays.groupby(["game_id", "posteam"]).agg(
+            third_down_epa=("epa", "mean"),
+            third_down_success_rate=("success", "mean"),
+            third_down_plays=("epa", "count"),
+        ).reset_index()
+        third_off_stats = third_off_stats.rename(columns={"posteam": "team"})
+        off_stats = off_stats.merge(third_off_stats, on=["game_id", "team"], how="left")
+    else:
+        off_stats["third_down_epa"] = np.nan
+        off_stats["third_down_success_rate"] = np.nan
+        off_stats["third_down_plays"] = 0
+
+    # === TIER 2 EPA: EARLY DOWNS (1st/2nd) ===
+    early_down_plays = plays[plays["down"].isin([1, 2])]
+
+    if len(early_down_plays) > 0:
+        early_off_stats = early_down_plays.groupby(["game_id", "posteam"]).agg(
+            early_down_epa=("epa", "mean"),
+            early_down_success_rate=("success", "mean"),
+            early_down_plays=("epa", "count"),
+        ).reset_index()
+        early_off_stats = early_off_stats.rename(columns={"posteam": "team"})
+        off_stats = off_stats.merge(early_off_stats, on=["game_id", "team"], how="left")
+    else:
+        off_stats["early_down_epa"] = np.nan
+        off_stats["early_down_success_rate"] = np.nan
+        off_stats["early_down_plays"] = 0
+
     # === DEFENSIVE STATS ===
 
     def_stats = plays.groupby(["game_id", "season", "week", "defteam"]).agg(
@@ -182,6 +231,15 @@ def aggregate_pbp_to_team_game(pbp_df: pd.DataFrame) -> pd.DataFrame:
         "rush_plays": 0,
         "explosive_pass_rate": 0.0,
         "explosive_rush_rate": 0.0,
+        "red_zone_epa": 0.0,
+        "red_zone_success_rate": 0.0,
+        "red_zone_plays": 0,
+        "third_down_epa": 0.0,
+        "third_down_success_rate": 0.0,
+        "third_down_plays": 0,
+        "early_down_epa": 0.0,
+        "early_down_success_rate": 0.0,
+        "early_down_plays": 0,
     })
 
     return team_game_stats
@@ -269,7 +327,11 @@ def compute_rolling_efficiency_stats(
     dict
         Rolling efficiency statistics for the team
     """
-    team_history = team_stats[team_stats["team"] == team].copy()
+    # Handle empty DataFrame case
+    if len(team_stats) == 0 or "team" not in team_stats.columns:
+        team_history = pd.DataFrame()
+    else:
+        team_history = team_stats[team_stats["team"] == team].copy()
 
     if len(team_history) == 0:
         # No history - return league average defaults
@@ -282,6 +344,11 @@ def compute_rolling_efficiency_stats(
             "rush_epa_mean": 0.0,
             "explosive_pass_rate_mean": 0.10,
             "explosive_rush_rate_mean": 0.05,
+            "red_zone_epa_mean": 0.0,
+            "red_zone_success_mean": 0.45,
+            "third_down_epa_mean": 0.0,
+            "third_down_success_mean": 0.35,
+            "early_down_epa_mean": 0.0,
             "efficiency_games": 0,
         }
 
@@ -297,6 +364,11 @@ def compute_rolling_efficiency_stats(
         "rush_epa_mean": recent["rush_epa"].mean() if recent["rush_epa"].notna().any() else 0.0,
         "explosive_pass_rate_mean": recent["explosive_pass_rate"].mean(),
         "explosive_rush_rate_mean": recent["explosive_rush_rate"].mean(),
+        "red_zone_epa_mean": recent["red_zone_epa"].mean() if "red_zone_epa" in recent.columns and recent["red_zone_epa"].notna().any() else 0.0,
+        "red_zone_success_mean": recent["red_zone_success_rate"].mean() if "red_zone_success_rate" in recent.columns and recent["red_zone_success_rate"].notna().any() else 0.0,
+        "third_down_epa_mean": recent["third_down_epa"].mean() if "third_down_epa" in recent.columns and recent["third_down_epa"].notna().any() else 0.0,
+        "third_down_success_mean": recent["third_down_success_rate"].mean() if "third_down_success_rate" in recent.columns and recent["third_down_success_rate"].notna().any() else 0.0,
+        "early_down_epa_mean": recent["early_down_epa"].mean() if "early_down_epa" in recent.columns and recent["early_down_epa"].notna().any() else 0.0,
         "efficiency_games": len(team_history),
     }
 
@@ -364,6 +436,12 @@ def build_efficiency_features(
             "home_rush_epa_mean": home_stats["rush_epa_mean"],
             "home_explosive_pass_rate": home_stats["explosive_pass_rate_mean"],
             "home_explosive_rush_rate": home_stats["explosive_rush_rate_mean"],
+            # Home team Tier 2 EPA features
+            "home_red_zone_epa_mean": home_stats["red_zone_epa_mean"],
+            "home_red_zone_success_mean": home_stats["red_zone_success_mean"],
+            "home_third_down_epa_mean": home_stats["third_down_epa_mean"],
+            "home_third_down_success_mean": home_stats["third_down_success_mean"],
+            "home_early_down_epa_mean": home_stats["early_down_epa_mean"],
             # Away team efficiency features
             "away_off_epa_mean": away_stats["off_epa_mean"],
             "away_def_epa_mean": away_stats["def_epa_mean"],
@@ -373,12 +451,20 @@ def build_efficiency_features(
             "away_rush_epa_mean": away_stats["rush_epa_mean"],
             "away_explosive_pass_rate": away_stats["explosive_pass_rate_mean"],
             "away_explosive_rush_rate": away_stats["explosive_rush_rate_mean"],
+            # Away team Tier 2 EPA features
+            "away_red_zone_epa_mean": away_stats["red_zone_epa_mean"],
+            "away_red_zone_success_mean": away_stats["red_zone_success_mean"],
+            "away_third_down_epa_mean": away_stats["third_down_epa_mean"],
+            "away_third_down_success_mean": away_stats["third_down_success_mean"],
+            "away_early_down_epa_mean": away_stats["early_down_epa_mean"],
             # Differential features (home - away)
             "off_epa_diff": home_stats["off_epa_mean"] - away_stats["off_epa_mean"],
             "def_epa_diff": home_stats["def_epa_mean"] - away_stats["def_epa_mean"],
             "off_success_diff": home_stats["off_success_rate_mean"] - away_stats["off_success_rate_mean"],
             "pass_epa_diff": home_stats["pass_epa_mean"] - away_stats["pass_epa_mean"],
             "rush_epa_diff": home_stats["rush_epa_mean"] - away_stats["rush_epa_mean"],
+            "red_zone_epa_diff": home_stats["red_zone_epa_mean"] - away_stats["red_zone_epa_mean"],
+            "third_down_epa_diff": home_stats["third_down_epa_mean"] - away_stats["third_down_epa_mean"],
         }
 
         features_list.append(row)
