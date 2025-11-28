@@ -32,6 +32,12 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.isotonic import IsotonicRegression
 
+try:
+    import xgboost as xgb
+    HAS_XGBOOST = True
+except ImportError:
+    HAS_XGBOOST = False
+
 from ..datasets.dataset_v2 import build_dataset_v2_1, build_dataset_v2_2, load_dataset_v2
 
 
@@ -141,7 +147,7 @@ class ScoreModelV2:
 
     def __init__(
         self,
-        model_type: Literal["gbr", "rf"] = "gbr",
+        model_type: Literal["gbr", "rf", "xgb"] = "gbr",
         random_state: int = 42,
         **model_kwargs,
     ):
@@ -150,8 +156,8 @@ class ScoreModelV2:
 
         Parameters
         ----------
-        model_type : {"gbr", "rf"}
-            Model type: "gbr" = GradientBoostingRegressor, "rf" = RandomForestRegressor
+        model_type : {"gbr", "rf", "xgb"}
+            Model type: "gbr" = GradientBoostingRegressor, "rf" = RandomForestRegressor, "xgb" = XGBoost
         random_state : int
             Random seed for reproducibility
         model_kwargs : dict
@@ -180,6 +186,25 @@ class ScoreModelV2:
                 random_state=random_state,
                 **model_kwargs
             )
+        elif model_type == "xgb":
+            if not HAS_XGBOOST:
+                raise ImportError("XGBoost not installed. Run: pip install xgboost")
+            # XGBoost defaults tuned for NFL prediction
+            xgb_defaults = {
+                'n_estimators': 200,
+                'max_depth': 4,
+                'learning_rate': 0.05,
+                'subsample': 0.8,
+                'colsample_bytree': 0.8,
+                'reg_alpha': 0.1,
+                'reg_lambda': 1.0,
+                'random_state': random_state,
+                'n_jobs': -1,
+            }
+            # Merge with any user-provided kwargs
+            xgb_params = {**xgb_defaults, **model_kwargs}
+            self.model_home = xgb.XGBRegressor(**xgb_params)
+            self.model_away = xgb.XGBRegressor(**xgb_params)
         else:
             raise ValueError(f"Unknown model_type: {model_type}")
 
@@ -340,13 +365,18 @@ def train_score_model_v2(
     y_home_train = train_df["home_score"]
     y_away_train = train_df["away_score"]
 
-    # Phase 6 tuned defaults (if not overridden)
-    tuned_defaults = {
-        'n_estimators': 100,
-        'max_depth': 3,
-        'learning_rate': 0.05,
-        'min_samples_leaf': 5,
-    }
+    # Model-specific tuned defaults
+    if model_type == "xgb":
+        # XGBoost defaults (handled in ScoreModelV2.__init__)
+        tuned_defaults = {}
+    else:
+        # Phase 6 tuned defaults for GBR/RF
+        tuned_defaults = {
+            'n_estimators': 100,
+            'max_depth': 3,
+            'learning_rate': 0.05,
+            'min_samples_leaf': 5,
+        }
     # Merge: caller kwargs override tuned defaults
     final_kwargs = {**tuned_defaults, **model_kwargs}
 
