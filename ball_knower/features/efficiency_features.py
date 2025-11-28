@@ -373,6 +373,39 @@ def compute_rolling_efficiency_stats(
     }
 
 
+def compute_league_averages(team_stats: pd.DataFrame) -> Dict[str, float]:
+    """
+    Compute league-wide average efficiency metrics.
+
+    Used for opponent adjustment calculations.
+
+    Parameters
+    ----------
+    team_stats : pd.DataFrame
+        Historical team-game stats from _load_historical_pbp_stats()
+
+    Returns
+    -------
+    dict
+        League averages for key metrics
+    """
+    if len(team_stats) == 0:
+        # Default to zero (EPA is designed to be zero-centered)
+        return {
+            "league_off_epa": 0.0,
+            "league_def_epa": 0.0,
+            "league_off_success": 0.45,
+            "league_def_success": 0.45,
+        }
+
+    return {
+        "league_off_epa": team_stats["off_epa"].mean(),
+        "league_def_epa": team_stats["def_epa"].mean(),
+        "league_off_success": team_stats["off_success_rate"].mean(),
+        "league_def_success": team_stats["def_success_rate"].mean(),
+    }
+
+
 def build_efficiency_features(
     season: int,
     week: int,
@@ -409,6 +442,9 @@ def build_efficiency_features(
 
     # Load historical efficiency stats
     historical_stats = _load_historical_pbp_stats(season, week, data_dir)
+
+    # Compute league averages for opponent adjustment
+    league_avgs = compute_league_averages(historical_stats)
 
     # Compute features for each game
     features_list = []
@@ -457,6 +493,25 @@ def build_efficiency_features(
             "away_third_down_epa_mean": away_stats["third_down_epa_mean"],
             "away_third_down_success_mean": away_stats["third_down_success_mean"],
             "away_early_down_epa_mean": away_stats["early_down_epa_mean"],
+            # === OPPONENT-ADJUSTED FEATURES ===
+            # Adjusts team's metrics based on opponent quality
+            # Formula: adjusted = raw + (opponent_metric - league_avg)
+
+            # Home offense adjusted for away defense quality
+            "home_adj_off_epa": home_stats["off_epa_mean"] + (away_stats["def_epa_mean"] - league_avgs["league_def_epa"]),
+            # Home defense adjusted for away offense quality
+            "home_adj_def_epa": home_stats["def_epa_mean"] + (away_stats["off_epa_mean"] - league_avgs["league_off_epa"]),
+            # Home success rates adjusted
+            "home_adj_off_success": home_stats["off_success_rate_mean"] + (away_stats["def_success_rate_mean"] - league_avgs["league_def_success"]),
+            "home_adj_def_success": home_stats["def_success_rate_mean"] + (away_stats["off_success_rate_mean"] - league_avgs["league_off_success"]),
+
+            # Away offense adjusted for home defense quality
+            "away_adj_off_epa": away_stats["off_epa_mean"] + (home_stats["def_epa_mean"] - league_avgs["league_def_epa"]),
+            # Away defense adjusted for home offense quality
+            "away_adj_def_epa": away_stats["def_epa_mean"] + (home_stats["off_epa_mean"] - league_avgs["league_off_epa"]),
+            # Away success rates adjusted
+            "away_adj_off_success": away_stats["off_success_rate_mean"] + (home_stats["def_success_rate_mean"] - league_avgs["league_def_success"]),
+            "away_adj_def_success": away_stats["def_success_rate_mean"] + (home_stats["off_success_rate_mean"] - league_avgs["league_off_success"]),
             # Differential features (home - away)
             "off_epa_diff": home_stats["off_epa_mean"] - away_stats["off_epa_mean"],
             "def_epa_diff": home_stats["def_epa_mean"] - away_stats["def_epa_mean"],
