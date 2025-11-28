@@ -340,8 +340,18 @@ def train_score_model_v2(
     y_home_train = train_df["home_score"]
     y_away_train = train_df["away_score"]
 
+    # Phase 6 tuned defaults (if not overridden)
+    tuned_defaults = {
+        'n_estimators': 100,
+        'max_depth': 3,
+        'learning_rate': 0.05,
+        'min_samples_leaf': 5,
+    }
+    # Merge: caller kwargs override tuned defaults
+    final_kwargs = {**tuned_defaults, **model_kwargs}
+
     # Initialize and fit model
-    model = ScoreModelV2(model_type=model_type, **model_kwargs)
+    model = ScoreModelV2(model_type=model_type, **final_kwargs)
     model.fit(X_train, y_home_train, y_away_train)
 
     return model
