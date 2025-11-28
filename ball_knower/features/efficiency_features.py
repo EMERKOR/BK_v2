@@ -512,6 +512,32 @@ def build_efficiency_features(
             # Away success rates adjusted
             "away_adj_off_success": away_stats["off_success_rate_mean"] + (home_stats["def_success_rate_mean"] - league_avgs["league_def_success"]),
             "away_adj_def_success": away_stats["def_success_rate_mean"] + (home_stats["off_success_rate_mean"] - league_avgs["league_off_success"]),
+            # === MATCHUP DIFFERENTIAL FEATURES ===
+            # Direct comparisons between home and away teams
+            # Positive = home advantage, Negative = away advantage
+
+            # Offensive matchup: home offense quality vs away offense quality
+            "matchup_off_epa_diff": home_stats["off_epa_mean"] - away_stats["off_epa_mean"],
+
+            # Defensive matchup: home defense quality vs away defense quality
+            # Note: Lower def_epa is better, so home - away means positive = home has worse defense
+            # We flip the sign so positive = home advantage (better defense)
+            "matchup_def_epa_diff": away_stats["def_epa_mean"] - home_stats["def_epa_mean"],
+
+            # Net EPA differential (overall team quality)
+            # Team net = off_epa - def_epa (higher is better)
+            "matchup_net_epa_diff": (home_stats["off_epa_mean"] - home_stats["def_epa_mean"]) - (away_stats["off_epa_mean"] - away_stats["def_epa_mean"]),
+
+            # Adjusted offensive matchup: home adjusted offense vs away adjusted offense
+            "matchup_adj_off_epa_diff": (home_stats["off_epa_mean"] + (away_stats["def_epa_mean"] - league_avgs["league_def_epa"])) - (away_stats["off_epa_mean"] + (home_stats["def_epa_mean"] - league_avgs["league_def_epa"])),
+
+            # Success rate differentials
+            "matchup_off_success_diff": home_stats["off_success_rate_mean"] - away_stats["off_success_rate_mean"],
+            "matchup_def_success_diff": away_stats["def_success_rate_mean"] - home_stats["def_success_rate_mean"],
+
+            # Explosive play differential
+            "matchup_explosive_pass_diff": home_stats["explosive_pass_rate_mean"] - away_stats["explosive_pass_rate_mean"],
+            "matchup_explosive_rush_diff": home_stats["explosive_rush_rate_mean"] - away_stats["explosive_rush_rate_mean"],
             # Differential features (home - away)
             "off_epa_diff": home_stats["off_epa_mean"] - away_stats["off_epa_mean"],
             "def_epa_diff": home_stats["def_epa_mean"] - away_stats["def_epa_mean"],
