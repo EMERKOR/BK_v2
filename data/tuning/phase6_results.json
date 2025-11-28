@@ -1,0 +1,70 @@
+{
+  "phase": 6,
+  "train_seasons": [
+    2021,
+    2022,
+    2023
+  ],
+  "test_season": 2024,
+  "n_train_games": 623,
+  "n_test_games": 208,
+  "n_features": 64,
+  "param_grid": {
+    "n_estimators": [
+      100,
+      200,
+      300
+    ],
+    "max_depth": [
+      3,
+      4,
+      5
+    ],
+    "learning_rate": [
+      0.05,
+      0.1
+    ],
+    "min_samples_leaf": [
+      1,
+      5,
+      10,
+      20
+    ]
+  },
+  "home_model": {
+    "target": "home_score",
+    "best_params": {
+      "learning_rate": 0.05,
+      "max_depth": 3,
+      "min_samples_leaf": 5,
+      "n_estimators": 100
+    },
+    "best_cv_mae": 8.005323373396028,
+    "test_mae": 7.866111897090979,
+    "elapsed_seconds": 13.93953824043274
+  },
+  "away_model": {
+    "target": "away_score",
+    "best_params": {
+      "learning_rate": 0.05,
+      "max_depth": 3,
+      "min_samples_leaf": 10,
+      "n_estimators": 100
+    },
+    "best_cv_mae": 7.637645563524906,
+    "test_mae": 7.351812519366532,
+    "elapsed_seconds": 7.224226474761963
+  },
+  "final_metrics": {
+    "spread_mae": 10.46093161140346,
+    "total_mae": 10.099997293429048
+  },
+  "baseline": {
+    "spread_mae": 10.49,
+    "total_mae": 10.07
+  },
+  "market": {
+    "spread_mae": 9.63,
+    "total_mae": 9.87
+  }
+}

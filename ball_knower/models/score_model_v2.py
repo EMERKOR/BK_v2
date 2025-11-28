@@ -72,6 +72,9 @@ def _get_feature_columns(df: pd.DataFrame, exclude_patterns: list[str] = None) -
         "teams",  # Raw teams identifier (BUF@KC format)
         "week_type",  # Week type (REG, POST, etc.)
         "kickoff_utc", "stadium",  # Metadata
+        # Phase 6: Pruned features (near-zero importance)
+        "is_cold",  # Weather feature with no predictive value
+        "home_skill_out", "home_qb_questionable", "away_qb_questionable",  # Injury features with no predictive value
     ]
 
     # Exclude all market lines
