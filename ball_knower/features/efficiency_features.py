@@ -350,6 +350,11 @@ def compute_rolling_efficiency_stats(
             "third_down_success_mean": 0.35,
             "early_down_epa_mean": 0.0,
             "efficiency_games": 0,
+            # Consistency features (standard deviation defaults)
+            "off_epa_std": 0.15,  # League average std approximation
+            "def_epa_std": 0.15,
+            "off_success_std": 0.10,
+            "def_success_std": 0.10,
         }
 
     # Take last N games
@@ -370,6 +375,11 @@ def compute_rolling_efficiency_stats(
         "third_down_success_mean": recent["third_down_success_rate"].mean() if "third_down_success_rate" in recent.columns and recent["third_down_success_rate"].notna().any() else 0.0,
         "early_down_epa_mean": recent["early_down_epa"].mean() if "early_down_epa" in recent.columns and recent["early_down_epa"].notna().any() else 0.0,
         "efficiency_games": len(team_history),
+        # Consistency features (standard deviation - lower = more consistent)
+        "off_epa_std": recent["off_epa"].std() if len(recent) > 1 else 0.0,
+        "def_epa_std": recent["def_epa"].std() if len(recent) > 1 else 0.0,
+        "off_success_std": recent["off_success_rate"].std() if len(recent) > 1 else 0.0,
+        "def_success_std": recent["def_success_rate"].std() if len(recent) > 1 else 0.0,
     }
 
 
@@ -546,6 +556,24 @@ def build_efficiency_features(
             "rush_epa_diff": home_stats["rush_epa_mean"] - away_stats["rush_epa_mean"],
             "red_zone_epa_diff": home_stats["red_zone_epa_mean"] - away_stats["red_zone_epa_mean"],
             "third_down_epa_diff": home_stats["third_down_epa_mean"] - away_stats["third_down_epa_mean"],
+            # === CONSISTENCY FEATURES ===
+            # Standard deviation of recent performance (lower = more predictable)
+
+            # Home team consistency
+            "home_off_epa_std": home_stats["off_epa_std"],
+            "home_def_epa_std": home_stats["def_epa_std"],
+            "home_off_success_std": home_stats["off_success_std"],
+            "home_def_success_std": home_stats["def_success_std"],
+
+            # Away team consistency
+            "away_off_epa_std": away_stats["off_epa_std"],
+            "away_def_epa_std": away_stats["def_epa_std"],
+            "away_off_success_std": away_stats["off_success_std"],
+            "away_def_success_std": away_stats["def_success_std"],
+
+            # Consistency differentials (positive = home more consistent)
+            "matchup_off_consistency_diff": away_stats["off_epa_std"] - home_stats["off_epa_std"],
+            "matchup_def_consistency_diff": away_stats["def_epa_std"] - home_stats["def_epa_std"],
         }
 
         features_list.append(row)
