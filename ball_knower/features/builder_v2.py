@@ -98,6 +98,11 @@ def build_features_v2(
                 on="game_id",
                 how="left",
             )
+            # Fill NaN for dome games and missing weather data
+            if "temp" in features.columns:
+                features["temp"] = features["temp"].fillna(65.0)
+            if "wind" in features.columns:
+                features["wind"] = features["wind"].fillna(0.0)
     except Exception as e:
         print(f"Warning: Could not build weather features: {e}")
 
