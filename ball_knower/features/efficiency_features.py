@@ -18,6 +18,43 @@ import numpy as np
 from ..mappings import normalize_team_code
 
 
+def _weighted_mean(values: pd.Series, decay: str = "linear") -> float:
+    """
+    Compute weighted mean with more weight on recent values.
+
+    Parameters
+    ----------
+    values : pd.Series
+        Values in chronological order (oldest first, most recent last)
+    decay : str
+        Weighting scheme: "linear" or "exponential"
+
+    Returns
+    -------
+    float
+        Weighted mean, or simple mean if fewer than 2 values
+    """
+    if len(values) == 0:
+        return 0.0
+    if len(values) == 1:
+        return float(values.iloc[0])
+
+    n = len(values)
+    if decay == "linear":
+        # Linear weights: [1, 2, 3, 4, 5] for n=5
+        weights = np.arange(1, n + 1, dtype=float)
+    elif decay == "exponential":
+        # Exponential weights with decay factor 0.7
+        weights = np.array([0.7 ** (n - 1 - i) for i in range(n)])
+    else:
+        raise ValueError(f"Unknown decay type: {decay}")
+
+    # Normalize weights
+    weights = weights / weights.sum()
+
+    return float(np.average(values.values, weights=weights))
+
+
 def load_pbp_raw(season: int, data_dir: Path | str = "data") -> pd.DataFrame:
     """
     Load cached play-by-play parquet for a season.
@@ -355,6 +392,11 @@ def compute_rolling_efficiency_stats(
             "def_epa_std": 0.15,
             "off_success_std": 0.10,
             "def_success_std": 0.10,
+            # Recent form weighted features (defaults)
+            "off_epa_weighted": 0.0,
+            "def_epa_weighted": 0.0,
+            "off_success_weighted": 0.45,
+            "def_success_weighted": 0.45,
         }
 
     # Take last N games
@@ -380,6 +422,11 @@ def compute_rolling_efficiency_stats(
         "def_epa_std": recent["def_epa"].std() if len(recent) > 1 else 0.0,
         "off_success_std": recent["off_success_rate"].std() if len(recent) > 1 else 0.0,
         "def_success_std": recent["def_success_rate"].std() if len(recent) > 1 else 0.0,
+        # Recent form weighted features (more weight on recent games)
+        "off_epa_weighted": _weighted_mean(recent["off_epa"]),
+        "def_epa_weighted": _weighted_mean(recent["def_epa"]),
+        "off_success_weighted": _weighted_mean(recent["off_success_rate"]),
+        "def_success_weighted": _weighted_mean(recent["def_success_rate"]),
     }
 
 
@@ -574,6 +621,25 @@ def build_efficiency_features(
             # Consistency differentials (positive = home more consistent)
             "matchup_off_consistency_diff": away_stats["off_epa_std"] - home_stats["off_epa_std"],
             "matchup_def_consistency_diff": away_stats["def_epa_std"] - home_stats["def_epa_std"],
+            # === RECENT FORM WEIGHTED FEATURES ===
+            # More weight on recent games (linear decay)
+
+            # Home team recent form
+            "home_off_epa_weighted": home_stats["off_epa_weighted"],
+            "home_def_epa_weighted": home_stats["def_epa_weighted"],
+            "home_off_success_weighted": home_stats["off_success_weighted"],
+            "home_def_success_weighted": home_stats["def_success_weighted"],
+
+            # Away team recent form
+            "away_off_epa_weighted": away_stats["off_epa_weighted"],
+            "away_def_epa_weighted": away_stats["def_epa_weighted"],
+            "away_off_success_weighted": away_stats["off_success_weighted"],
+            "away_def_success_weighted": away_stats["def_success_weighted"],
+
+            # Weighted differentials
+            "matchup_off_epa_weighted_diff": home_stats["off_epa_weighted"] - away_stats["off_epa_weighted"],
+            "matchup_def_epa_weighted_diff": away_stats["def_epa_weighted"] - home_stats["def_epa_weighted"],
+            "matchup_net_epa_weighted_diff": (home_stats["off_epa_weighted"] - home_stats["def_epa_weighted"]) - (away_stats["off_epa_weighted"] - away_stats["def_epa_weighted"]),
         }
 
         features_list.append(row)
