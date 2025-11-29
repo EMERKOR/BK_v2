@@ -16,6 +16,7 @@ from .schedule_features import build_schedule_features
 from .efficiency_features import build_efficiency_features
 from .weather_features import build_weather_features
 from .injury_features import build_injury_features
+from .snap_features import build_snap_features
 
 
 def _ensure_features_dir(season: int, data_dir: Path | str = "data") -> Path:
@@ -32,6 +33,41 @@ def _ensure_features_log_dir(data_dir: Path | str = "data") -> Path:
     log_dir = base / "features" / "_logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     return log_dir
+
+
+def _load_schedule_for_snap_features(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Load schedule with game_id, home_team, away_team for snap feature building.
+
+    Normalizes team codes to BK canonical format.
+    """
+    from ..mappings import normalize_team_code
+
+    base = Path(data_dir)
+    schedule_path = base / "RAW_schedule" / str(season) / f"schedule_week_{week:02d}.csv"
+
+    if not schedule_path.exists():
+        return pd.DataFrame(columns=["game_id", "home_team", "away_team"])
+
+    schedule = pd.read_csv(schedule_path)
+
+    # Normalize team codes and build game_id
+    rows = []
+    for _, game in schedule.iterrows():
+        home_team = normalize_team_code(str(game["home_team"]), "nflverse")
+        away_team = normalize_team_code(str(game["away_team"]), "nflverse")
+        game_id = f"{season}_{week}_{away_team}_{home_team}"
+        rows.append({
+            "game_id": game_id,
+            "home_team": home_team,
+            "away_team": away_team,
+        })
+
+    return pd.DataFrame(rows)
 
 
 def build_features_v2(
@@ -117,6 +153,22 @@ def build_features_v2(
             )
     except Exception as e:
         print(f"Warning: Could not build injury features: {e}")
+
+    # Merge snap features (player availability signals from snap share data)
+    # Only available for seasons 2021+ (when snap data exists)
+    if season >= 2021:
+        try:
+            schedule_df = _load_schedule_for_snap_features(season, week, data_dir)
+            if len(schedule_df) > 0:
+                snap_df = build_snap_features(season, week, schedule_df, data_dir)
+                if len(snap_df) > 0:
+                    features = features.merge(
+                        snap_df,
+                        on="game_id",
+                        how="left",
+                    )
+        except Exception as e:
+            print(f"Warning: Could not build snap features: {e}")
 
     if save:
         # Write Parquet

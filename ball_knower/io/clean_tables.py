@@ -1038,6 +1038,11 @@ def build_snap_share_clean(
     # Filter to skill positions (exclude FB)
     df = df[df["position"].isin(["WR", "RB", "TE"])].copy()
 
+    # Handle duplicate player names (e.g., players traded mid-season)
+    # Keep the row with highest season snap %
+    df = df.sort_values("season_snap_pct", ascending=False)
+    df = df.drop_duplicates(subset=["season", "player_name"], keep="first")
+
     df_clean = _enforce_schema(df, schema)
 
     # Write parquet (season-level, not week-level)

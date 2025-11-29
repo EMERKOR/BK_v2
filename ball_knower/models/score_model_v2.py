@@ -27,7 +27,7 @@ from typing import Literal, Dict, Any
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, HistGradientBoostingRegressor
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.isotonic import IsotonicRegression
@@ -141,7 +141,7 @@ class ScoreModelV2:
 
     def __init__(
         self,
-        model_type: Literal["gbr", "rf"] = "gbr",
+        model_type: Literal["gbr", "rf", "hgbr"] = "gbr",
         random_state: int = 42,
         **model_kwargs,
     ):
@@ -150,8 +150,9 @@ class ScoreModelV2:
 
         Parameters
         ----------
-        model_type : {"gbr", "rf"}
-            Model type: "gbr" = GradientBoostingRegressor, "rf" = RandomForestRegressor
+        model_type : {"gbr", "rf", "hgbr"}
+            Model type: "gbr" = GradientBoostingRegressor, "rf" = RandomForestRegressor,
+            "hgbr" = HistGradientBoostingRegressor (handles NaN natively)
         random_state : int
             Random seed for reproducibility
         model_kwargs : dict
@@ -177,6 +178,16 @@ class ScoreModelV2:
                 **model_kwargs
             )
             self.model_away = RandomForestRegressor(
+                random_state=random_state,
+                **model_kwargs
+            )
+        elif model_type == "hgbr":
+            # HistGradientBoostingRegressor handles NaN natively
+            self.model_home = HistGradientBoostingRegressor(
+                random_state=random_state,
+                **model_kwargs
+            )
+            self.model_away = HistGradientBoostingRegressor(
                 random_state=random_state,
                 **model_kwargs
             )
@@ -341,12 +352,21 @@ def train_score_model_v2(
     y_away_train = train_df["away_score"]
 
     # Phase 6 tuned defaults (if not overridden)
-    tuned_defaults = {
-        'n_estimators': 100,
-        'max_depth': 3,
-        'learning_rate': 0.05,
-        'min_samples_leaf': 5,
-    }
+    # Note: HistGradientBoostingRegressor uses different param names
+    if model_type == "hgbr":
+        tuned_defaults = {
+            'max_iter': 100,  # equivalent to n_estimators
+            'max_depth': 3,
+            'learning_rate': 0.05,
+            'min_samples_leaf': 5,
+        }
+    else:
+        tuned_defaults = {
+            'n_estimators': 100,
+            'max_depth': 3,
+            'learning_rate': 0.05,
+            'min_samples_leaf': 5,
+        }
     # Merge: caller kwargs override tuned defaults
     final_kwargs = {**tuned_defaults, **model_kwargs}
 
