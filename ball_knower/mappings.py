@@ -554,3 +554,32 @@ def validate_canonical_code(code: str) -> bool:
         True if code is in CANONICAL_TEAM_CODES, False otherwise
     """
     return code.strip().upper() in CANONICAL_TEAM_CODES
+
+
+def normalize_team_fullname(name: str) -> str:
+    """
+    Convert full team name to BK canonical code.
+
+    Uses the FP_TO_BK mapping which includes full team names.
+
+    Parameters
+    ----------
+    name : str
+        Full team name (e.g., "Kansas City Chiefs", "San Francisco 49ers")
+
+    Returns
+    -------
+    str
+        Canonical BK team code (e.g., "KC", "SF"), or the original name
+        if not found in the mapping.
+
+    Examples
+    --------
+    >>> normalize_team_fullname("Kansas City Chiefs")
+    'KC'
+    >>> normalize_team_fullname("San Francisco 49ers")
+    'SF'
+    >>> normalize_team_fullname("Unknown Team")
+    'Unknown Team'
+    """
+    return FP_TO_BK.get(name, name)

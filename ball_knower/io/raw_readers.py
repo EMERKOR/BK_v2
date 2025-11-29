@@ -271,6 +271,58 @@ def load_props_results_raw(season: int, data_dir: Path | str = "data") -> pd.Dat
     return df
 
 
+def load_fp_coverage_matrix_raw(
+    season: int,
+    week: int,
+    view: str,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Load raw FantasyPoints coverage matrix CSV for a specific team-week.
+
+    Pattern: data/RAW_fantasypoints/coverage/{view}/coverage_{view}_{season}_w{week:02d}.csv
+
+    Args:
+        season: NFL season year
+        week: Week number (1-18)
+        view: "defense" (what coverage defense runs) or "offense" (what coverage offense faces)
+        data_dir: Data directory path
+
+    Returns:
+        DataFrame with team-level coverage stats for that week
+
+    Raises:
+        FileNotFoundError: If the file doesn't exist
+        ValueError: If view is not "defense" or "offense"
+    """
+    if view not in ("defense", "offense"):
+        raise ValueError(f"view must be 'defense' or 'offense', got '{view}'")
+
+    base = Path(data_dir)
+    path = (
+        base
+        / "RAW_fantasypoints"
+        / "coverage"
+        / view
+        / f"coverage_{view}_{season}_w{week:02d}.csv"
+    )
+    _ensure_file(path)
+
+    # Skip header placeholder row (row 0 is "Team Details", "", "", ...)
+    df = pd.read_csv(path, skiprows=1)
+
+    # Remove footer rows (column definitions with non-numeric Rank)
+    df = df[df["Rank"].apply(lambda x: str(x).isdigit())]
+    df["Rank"] = df["Rank"].astype(int)
+
+    # Add metadata
+    df["season"] = season
+    df["week"] = week
+    df["view"] = view
+
+    return df
+
+
 def load_snap_share_raw(season: int, data_dir: Path | str = "data") -> pd.DataFrame:
     """
     Load raw snap share CSV for a season.
