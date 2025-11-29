@@ -269,3 +269,38 @@ def load_props_results_raw(season: int, data_dir: Path | str = "data") -> pd.Dat
     df = pd.read_csv(path)
     df["season"] = season  # Explicit season injection for anti-leakage
     return df
+
+
+def load_snap_share_raw(season: int, data_dir: Path | str = "data") -> pd.DataFrame:
+    """
+    Load raw snap share CSV for a season.
+
+    Pattern:
+        data/RAW_fantasypoints/snap_share_{season}.csv
+
+    Note: This is a SEASON-level file (not weekly).
+    Contains player snap share percentages by week (W1-W18).
+
+    The raw CSV has:
+    - Row 0: Header placeholder ("Player Details", etc.)
+    - Row 1: Actual column names (Rank, Name, Team, POS, G, Season, W1-W18, Snap %)
+    - Data rows
+    - Footer rows with column definitions (non-numeric Rank values)
+
+    Returns
+    -------
+    pd.DataFrame
+        Raw snap share data with Rank as int, filtering out footer rows.
+    """
+    base = Path(data_dir)
+    path = base / "RAW_fantasypoints" / f"snap_share_{season}.csv"
+    _ensure_file(path)
+
+    # Skip header placeholder row (row 0)
+    df = pd.read_csv(path, skiprows=1)
+
+    # Remove footer rows (column definitions with non-numeric Rank)
+    df = df[df["Rank"].apply(lambda x: str(x).isdigit())]
+    df["Rank"] = df["Rank"].astype(int)
+
+    return df

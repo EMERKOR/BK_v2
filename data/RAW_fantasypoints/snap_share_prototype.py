@@ -69,7 +69,7 @@ def normalize_team_code(raw_team: str) -> str:
 
 # ===== Raw Loader =====
 
-def load_snap_share_raw(season: int, data_dir: str = "/home/claude/data") -> pd.DataFrame:
+def load_snap_share_raw(season: int, data_dir: str = "/home/user/BK_v2/data") -> pd.DataFrame:
     """
     Load raw snap share CSV for a season.
     
@@ -97,7 +97,7 @@ def load_snap_share_raw(season: int, data_dir: str = "/home/claude/data") -> pd.
 
 # ===== Clean Table Builder =====
 
-def build_snap_share_clean(season: int, data_dir: str = "/home/claude/data") -> pd.DataFrame:
+def build_snap_share_clean(season: int, data_dir: str = "/home/user/BK_v2/data") -> pd.DataFrame:
     """
     Build cleaned snap share table.
     

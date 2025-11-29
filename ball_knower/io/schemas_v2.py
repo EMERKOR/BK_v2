@@ -325,6 +325,46 @@ RECEIVING_LEADERS_CLEAN = TableSchema(
     ]),
 )
 
+SNAP_SHARE_CLEAN = TableSchema(
+    table_name="snap_share_clean",
+    columns=OrderedDict([
+        ("season", "int64"),
+        ("player_name", "string"),
+        ("team_code", "string"),
+        ("position", "string"),
+        ("games_played", "Int64"),
+        ("w1_snap_pct", "float64"),
+        ("w2_snap_pct", "float64"),
+        ("w3_snap_pct", "float64"),
+        ("w4_snap_pct", "float64"),
+        ("w5_snap_pct", "float64"),
+        ("w6_snap_pct", "float64"),
+        ("w7_snap_pct", "float64"),
+        ("w8_snap_pct", "float64"),
+        ("w9_snap_pct", "float64"),
+        ("w10_snap_pct", "float64"),
+        ("w11_snap_pct", "float64"),
+        ("w12_snap_pct", "float64"),
+        ("w13_snap_pct", "float64"),
+        ("w14_snap_pct", "float64"),
+        ("w15_snap_pct", "float64"),
+        ("w16_snap_pct", "float64"),
+        ("w17_snap_pct", "float64"),
+        ("w18_snap_pct", "float64"),
+        ("season_snap_pct", "float64"),
+    ]),
+    primary_key=["season", "player_name"],
+    required={"season", "player_name"},
+    nullable=set(col for col in [
+        "team_code", "position", "games_played",
+        "w1_snap_pct", "w2_snap_pct", "w3_snap_pct", "w4_snap_pct",
+        "w5_snap_pct", "w6_snap_pct", "w7_snap_pct", "w8_snap_pct",
+        "w9_snap_pct", "w10_snap_pct", "w11_snap_pct", "w12_snap_pct",
+        "w13_snap_pct", "w14_snap_pct", "w15_snap_pct", "w16_snap_pct",
+        "w17_snap_pct", "w18_snap_pct", "season_snap_pct"
+    ]),
+)
+
 
 # ========== Stream D: Props Labels ==========
 
@@ -400,6 +440,7 @@ ALL_SCHEMAS = {
     "context_proe_report_clean": CONTEXT_PROE_REPORT_CLEAN,
     "context_separation_by_routes_clean": CONTEXT_SEPARATION_BY_ROUTES_CLEAN,
     "receiving_leaders_clean": RECEIVING_LEADERS_CLEAN,
+    "snap_share_clean": SNAP_SHARE_CLEAN,
     # Stream D
     "props_results_xsportsbook_clean": PROPS_RESULTS_XSPORTSBOOK_CLEAN,
     # Game State

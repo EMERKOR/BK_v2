@@ -251,25 +251,29 @@ FP_TO_BK: Dict[str, str] = {
     # Standard mappings
     "ARI": "ARI",
     "AZ": "ARI",  # FP sometimes uses AZ
+    "ARZ": "ARI",  # FP snap share uses ARZ for Arizona
     "ATL": "ATL",
     "BAL": "BAL",
+    "BLT": "BAL",  # FP snap share uses BLT for Baltimore
     "BUF": "BUF",
     "CAR": "CAR",
     "CHI": "CHI",
     "CIN": "CIN",
     "CLE": "CLE",
+    "CLV": "CLE",  # FP snap share uses CLV for Cleveland
     "DAL": "DAL",
     "DEN": "DEN",
     "DET": "DET",
     "GB": "GB",
     "GNB": "GB",
     "HOU": "HOU",
+    "HST": "HOU",  # FP snap share uses HST for Houston
     "IND": "IND",
     "JAX": "JAX",
     "JAC": "JAX",
     "KC": "KC",
     "LAC": "LAC",
-    "LA": "LAC",  # If LA appears without context, default to Chargers (ambiguous)
+    "LA": "LAR",  # FP snap share uses LA for LA Rams (not Chargers)
     "LAR": "LAR",
     "LV": "LV",
     "LVR": "LV",
@@ -440,6 +444,7 @@ def normalize_team_code(
     - If `code` is already a canonical code, return it.
     - If `code` is in HISTORICAL_CODES (e.g., "OAK", "SD", "STL"), map appropriately.
     - If `code` is in the provider's alias map, map to the canonical code.
+    - For multi-team codes (e.g., "LV, NYJ"), take the last team.
     - Otherwise, raise ValueError with a helpful message that includes `code`, `provider`, and `context`. No guessing.
 
     Parameters
@@ -476,11 +481,17 @@ def normalize_team_code(
     'GB'
     >>> normalize_team_code("Chiefs", "kaggle")
     'KC'
+    >>> normalize_team_code("LV, NYJ", "fantasypoints")
+    'NYJ'
     >>> normalize_team_code("OAK", "nflverse", season=2023)
     Traceback (most recent call last):
         ...
     ValueError: Historical code 'OAK' should be 'LV' for season 2023
     """
+    # Handle multi-team players: "LV, NYJ" -> take last team (current team)
+    if "," in code:
+        code = code.split(",")[-1].strip()
+
     # Strip whitespace and convert to uppercase for consistency
     normalized_code = code.strip().upper()
 

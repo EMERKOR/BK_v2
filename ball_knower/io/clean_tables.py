@@ -35,6 +35,7 @@ from .raw_readers import (
     load_separation_rates_raw,
     load_receiving_leaders_raw,
     load_props_results_raw,
+    load_snap_share_raw,
 )
 from .schemas_v2 import ALL_SCHEMAS, TableSchema
 from ..mappings import normalize_team_code
@@ -978,6 +979,82 @@ def build_props_results_xsportsbook_clean(
         "table_name": schema.table_name,
         "season": season,
         "week": None,  # Props are season-level
+        "source_file_path": source_path,
+        "row_count_raw": row_count_raw,
+        "row_count_clean": len(df_clean),
+        "ingested_at_utc": pd.Timestamp.utcnow().isoformat(),
+    }
+
+    with open(log_path, "w") as f:
+        json.dump(log_data, f, indent=2)
+
+    return df_clean
+
+
+# ========== Stream B: Snap Share Data ==========
+
+
+def build_snap_share_clean(
+    season: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build snap_share_clean from Fantasy Points snap share export.
+
+    Note: This is a SEASON-level table (one file per season, no week dimension).
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Convert week columns to float (empty -> NaN)
+    - Filter to WR, RB, TE only (exclude FB)
+
+    Outputs:
+    - Parquet: data/clean/snap_share_clean/{season}/snap_share.parquet
+    - Log: data/clean/_logs/snap_share_clean/{season}.json
+    """
+    schema = ALL_SCHEMAS["snap_share_clean"]
+
+    df_raw = load_snap_share_raw(season, data_dir)
+    source_path = f"RAW_fantasypoints/snap_share_{season}.csv"
+    row_count_raw = len(df_raw)
+
+    df = pd.DataFrame()
+    df["season"] = season
+    df["player_name"] = df_raw["Name"]
+    df["team_code"] = df_raw["Team"].apply(
+        lambda x: normalize_team_code(str(x), "fantasypoints")
+    )
+    df["position"] = df_raw["POS"]
+    df["games_played"] = pd.to_numeric(df_raw["G"], errors="coerce").astype("Int64")
+
+    # Convert week columns to float
+    for week in range(1, 19):
+        raw_col = f"W{week}"
+        clean_col = f"w{week}_snap_pct"
+        df[clean_col] = pd.to_numeric(df_raw[raw_col], errors="coerce")
+
+    df["season_snap_pct"] = pd.to_numeric(df_raw["Snap %"], errors="coerce")
+
+    # Filter to skill positions (exclude FB)
+    df = df[df["position"].isin(["WR", "RB", "TE"])].copy()
+
+    df_clean = _enforce_schema(df, schema)
+
+    # Write parquet (season-level, not week-level)
+    out_dir = Path(data_dir) / "clean" / "snap_share_clean" / str(season)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "snap_share.parquet"
+    df_clean.to_parquet(out_path, index=False)
+
+    # Emit log (season-level)
+    log_dir = Path(data_dir) / "clean" / "_logs" / "snap_share_clean"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / f"{season}.json"
+
+    log_data = {
+        "table_name": schema.table_name,
+        "season": season,
+        "week": None,  # Snap share is season-level
         "source_file_path": source_path,
         "row_count_raw": row_count_raw,
         "row_count_clean": len(df_clean),
