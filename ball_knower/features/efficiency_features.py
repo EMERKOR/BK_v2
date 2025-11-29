@@ -55,6 +55,32 @@ def _weighted_mean(values: pd.Series, decay: str = "linear") -> float:
     return float(np.average(values.values, weights=weights))
 
 
+def _compute_epa_momentum(values: pd.Series) -> float:
+    """
+    Compute momentum as recent 2 games minus older games.
+
+    Captures whether team is trending up or down.
+    Positive = team improving, Negative = team declining.
+
+    Parameters
+    ----------
+    values : pd.Series
+        Values in chronological order (oldest first, most recent last)
+
+    Returns
+    -------
+    float
+        Momentum value (recent - older)
+    """
+    if len(values) < 3:
+        return 0.0
+
+    recent_2 = values.tail(2).mean()
+    older = values.iloc[:-2].mean()
+
+    return float(recent_2 - older)
+
+
 def load_pbp_raw(season: int, data_dir: Path | str = "data") -> pd.DataFrame:
     """
     Load cached play-by-play parquet for a season.
@@ -397,6 +423,9 @@ def compute_rolling_efficiency_stats(
             "def_epa_weighted": 0.0,
             "off_success_weighted": 0.45,
             "def_success_weighted": 0.45,
+            # Momentum features (defaults)
+            "off_epa_momentum": 0.0,
+            "def_epa_momentum": 0.0,
         }
 
     # Take last N games
@@ -427,6 +456,9 @@ def compute_rolling_efficiency_stats(
         "def_epa_weighted": _weighted_mean(recent["def_epa"]),
         "off_success_weighted": _weighted_mean(recent["off_success_rate"]),
         "def_success_weighted": _weighted_mean(recent["def_success_rate"]),
+        # Momentum features (recent 2 games vs older games)
+        "off_epa_momentum": _compute_epa_momentum(recent["off_epa"]) if len(recent) >= 3 else 0.0,
+        "def_epa_momentum": _compute_epa_momentum(recent["def_epa"]) if len(recent) >= 3 else 0.0,
     }
 
 
@@ -640,6 +672,21 @@ def build_efficiency_features(
             "matchup_off_epa_weighted_diff": home_stats["off_epa_weighted"] - away_stats["off_epa_weighted"],
             "matchup_def_epa_weighted_diff": away_stats["def_epa_weighted"] - home_stats["def_epa_weighted"],
             "matchup_net_epa_weighted_diff": (home_stats["off_epa_weighted"] - home_stats["def_epa_weighted"]) - (away_stats["off_epa_weighted"] - away_stats["def_epa_weighted"]),
+            # === MOMENTUM FEATURES ===
+            # Positive = team improving, Negative = team declining
+            # Compares recent 2 games vs older games
+
+            # Home team momentum
+            "home_off_epa_momentum": home_stats.get("off_epa_momentum", 0.0),
+            "home_def_epa_momentum": home_stats.get("def_epa_momentum", 0.0),
+
+            # Away team momentum
+            "away_off_epa_momentum": away_stats.get("off_epa_momentum", 0.0),
+            "away_def_epa_momentum": away_stats.get("def_epa_momentum", 0.0),
+
+            # Momentum differentials (positive = home improving more than away)
+            "matchup_off_momentum_diff": home_stats.get("off_epa_momentum", 0.0) - away_stats.get("off_epa_momentum", 0.0),
+            "matchup_def_momentum_diff": away_stats.get("def_epa_momentum", 0.0) - home_stats.get("def_epa_momentum", 0.0),
         }
 
         features_list.append(row)
