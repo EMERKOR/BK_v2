@@ -19,18 +19,39 @@ def _load_historical_scores(
     up_to_season: int,
     up_to_week: int,
     data_dir: Path | str = "data",
+    min_season: Optional[int] = None,
 ) -> pd.DataFrame:
     """
     Load all scores from start of data through (season, week-1).
 
     For week 1, loads all prior seasons.
     Does NOT include the target week's games.
+
+    Parameters
+    ----------
+    up_to_season : int
+        Target season (exclusive for prior seasons)
+    up_to_week : int
+        Target week (exclusive)
+    data_dir : Path | str
+        Base data directory
+    min_season : Optional[int]
+        Earliest season to load. If None, auto-detects from available files.
     """
     base = Path(data_dir)
     all_games = []
 
+    # Auto-detect earliest available season if not provided
+    if min_season is None:
+        scores_dir = base / "RAW_scores"
+        if scores_dir.exists():
+            available = sorted([int(d.name) for d in scores_dir.iterdir() if d.is_dir() and d.name.isdigit()])
+            min_season = available[0] if available else up_to_season
+        else:
+            min_season = up_to_season
+
     # Load all prior seasons completely
-    for season in range(2021, up_to_season):
+    for season in range(min_season, up_to_season):
         for week in range(1, 23):  # Max 22 weeks (18 reg + 4 playoff)
             path = base / "RAW_scores" / str(season) / f"scores_week_{week:02d}.csv"
             if path.exists():
@@ -173,6 +194,7 @@ def build_rolling_features(
     week: int,
     n_games: int = 5,
     data_dir: Path | str = "data",
+    min_season: Optional[int] = None,
 ) -> pd.DataFrame:
     """
     Build rolling team features for all games in a given week.
@@ -187,6 +209,8 @@ def build_rolling_features(
         Lookback window for rolling stats
     data_dir : Path | str
         Base data directory
+    min_season : Optional[int]
+        Earliest season to load for historical data. If None, auto-detects.
 
     Returns
     -------
@@ -205,7 +229,7 @@ def build_rolling_features(
     schedule["week"] = week
 
     # Load historical data (everything before this week)
-    historical = _load_historical_scores(season, week, data_dir)
+    historical = _load_historical_scores(season, week, data_dir, min_season=min_season)
     team_log = _compute_team_game_log(historical)
 
     # Compute features for each game

@@ -10,7 +10,7 @@ completed before the target game's kickoff.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import pandas as pd
 import numpy as np
@@ -286,12 +286,13 @@ def _load_historical_pbp_stats(
     season: int,
     week: int,
     data_dir: Path | str = "data",
+    min_season: Optional[int] = None,
 ) -> pd.DataFrame:
     """
     Load team-game efficiency stats for all games BEFORE target week.
 
     Anti-leakage: excludes current week and future weeks.
-    Includes prior season data for early-season stability.
+    Includes all available prior seasons for model training stability.
 
     Parameters
     ----------
@@ -301,24 +302,36 @@ def _load_historical_pbp_stats(
         Target week (features will NOT include this week's games)
     data_dir : Path | str
         Base data directory
+    min_season : Optional[int]
+        Earliest season to load. If None, auto-detects from available files.
 
     Returns
     -------
     pd.DataFrame
         Team-game stats for historical games only
     """
+    base = Path(data_dir)
     all_stats = []
 
-    # Load prior season (for early weeks of current season)
-    prior_season = season - 1
-    try:
-        prior_pbp = load_pbp_raw(prior_season, data_dir)
-        # Include only regular season games (weeks 1-18)
-        prior_pbp = prior_pbp[prior_pbp["week"] <= 18]
-        prior_stats = aggregate_pbp_to_team_game(prior_pbp)
-        all_stats.append(prior_stats)
-    except FileNotFoundError:
-        pass  # No prior season data available
+    # Auto-detect earliest available season if not provided
+    if min_season is None:
+        pbp_dir = base / "RAW_pbp"
+        if pbp_dir.exists():
+            available = sorted([int(f.stem.split("_")[1]) for f in pbp_dir.glob("pbp_*.parquet")])
+            min_season = available[0] if available else season
+        else:
+            min_season = season
+
+    # Load all prior seasons (from min_season up to but not including current season)
+    for prior_season in range(min_season, season):
+        try:
+            prior_pbp = load_pbp_raw(prior_season, data_dir)
+            # Include only regular season games (weeks 1-18)
+            prior_pbp = prior_pbp[prior_pbp["week"] <= 18]
+            prior_stats = aggregate_pbp_to_team_game(prior_pbp)
+            all_stats.append(prior_stats)
+        except FileNotFoundError:
+            continue  # Skip seasons without PBP data
 
     # Load current season up to (but not including) target week
     try:
@@ -468,6 +481,7 @@ def build_efficiency_features(
     week: int,
     n_games: int = 5,
     data_dir: Path | str = "data",
+    min_season: Optional[int] = None,
 ) -> pd.DataFrame:
     """
     Build EPA-based efficiency features for all games in a week.
@@ -482,6 +496,8 @@ def build_efficiency_features(
         Lookback window for rolling stats (default: 5)
     data_dir : Path | str
         Base data directory
+    min_season : Optional[int]
+        Earliest season to load for historical data. If None, auto-detects.
 
     Returns
     -------
@@ -498,7 +514,7 @@ def build_efficiency_features(
     schedule = pd.read_csv(schedule_path)
 
     # Load historical efficiency stats
-    historical_stats = _load_historical_pbp_stats(season, week, data_dir)
+    historical_stats = _load_historical_pbp_stats(season, week, data_dir, min_season=min_season)
 
     # Compute league averages for opponent adjustment
     league_avgs = compute_league_averages(historical_stats)

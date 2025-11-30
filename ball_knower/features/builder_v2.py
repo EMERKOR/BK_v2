@@ -40,6 +40,7 @@ def build_features_v2(
     n_games: int = 5,
     data_dir: Path | str = "data",
     save: bool = True,
+    min_season: Optional[int] = None,
 ) -> pd.DataFrame:
     """
     Build all pre-game features for a season/week.
@@ -61,6 +62,9 @@ def build_features_v2(
         Base data directory
     save : bool
         Whether to save to Parquet (default: True)
+    min_season : Optional[int]
+        Earliest season to load for historical data. If None, auto-detects
+        from available files (allows training on all available data).
 
     Returns
     -------
@@ -73,9 +77,9 @@ def build_features_v2(
     Log: data/features/_logs/{season}_week_{week}.json
     """
     # Build component features
-    rolling_df = build_rolling_features(season, week, n_games, data_dir)
+    rolling_df = build_rolling_features(season, week, n_games, data_dir, min_season=min_season)
     schedule_df = build_schedule_features(season, week, data_dir)
-    efficiency_df = build_efficiency_features(season, week, n_games, data_dir)
+    efficiency_df = build_efficiency_features(season, week, n_games, data_dir, min_season=min_season)
 
     # Merge all feature sets on game_id
     features = rolling_df.merge(
