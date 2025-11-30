@@ -1,0 +1,60 @@
+{
+  "baseline": {
+    "spread_mae": 10.22,
+    "total_mae": 9.96
+  },
+  "phase_14": {
+    "spread_mae": 10.797503575066568,
+    "total_mae": 10.384421294435299
+  },
+  "change": {
+    "spread": 0.5775035750665669,
+    "total": 0.4244212944352981
+  },
+  "n_train_games": 543,
+  "n_test_games": 272,
+  "n_features": 164,
+  "n_coverage_features": 107,
+  "top_coverage_features": [
+    [
+      "off_cover_4_pct_home",
+      0.03698532859146326
+    ],
+    [
+      "def_cover_1_pct_home",
+      0.033603876025271574
+    ],
+    [
+      "def_cover_4_pct_away",
+      0.03159061695833468
+    ],
+    [
+      "def_cover_6_pct_away",
+      0.03058087372973374
+    ],
+    [
+      "def_fp_vs_zone_away",
+      0.024146361008424433
+    ],
+    [
+      "off_cover_0_pct_home",
+      0.02392791963274263
+    ],
+    [
+      "off_fp_vs_two_high_away",
+      0.02156344165200208
+    ],
+    [
+      "off_fp_vs_single_high_away",
+      0.01905224152689817
+    ],
+    [
+      "off_cover_6_pct_home",
+      0.018835126260992728
+    ],
+    [
+      "def_cover_6_pct_home",
+      0.01834911034697761
+    ]
+  ]
+}
