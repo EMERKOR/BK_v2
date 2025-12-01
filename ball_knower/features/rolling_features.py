@@ -7,7 +7,6 @@ completed before the target game's kickoff.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -19,7 +18,7 @@ def _load_historical_scores(
     up_to_season: int,
     up_to_week: int,
     data_dir: Path | str = "data",
-    min_season: Optional[int] = None,
+    min_season: int = 2010,
 ) -> pd.DataFrame:
     """
     Load all scores from start of data through (season, week-1).
@@ -35,20 +34,11 @@ def _load_historical_scores(
         Target week (exclusive)
     data_dir : Path | str
         Base data directory
-    min_season : Optional[int]
-        Earliest season to load. If None, auto-detects from available files.
+    min_season : int
+        Earliest season to load (default: 2010).
     """
     base = Path(data_dir)
     all_games = []
-
-    # Auto-detect earliest available season if not provided
-    if min_season is None:
-        scores_dir = base / "RAW_scores"
-        if scores_dir.exists():
-            available = sorted([int(d.name) for d in scores_dir.iterdir() if d.is_dir() and d.name.isdigit()])
-            min_season = available[0] if available else up_to_season
-        else:
-            min_season = up_to_season
 
     # Load all prior seasons completely
     for season in range(min_season, up_to_season):
@@ -194,7 +184,7 @@ def build_rolling_features(
     week: int,
     n_games: int = 5,
     data_dir: Path | str = "data",
-    min_season: Optional[int] = None,
+    min_season: int = 2010,
 ) -> pd.DataFrame:
     """
     Build rolling team features for all games in a given week.
@@ -209,8 +199,8 @@ def build_rolling_features(
         Lookback window for rolling stats
     data_dir : Path | str
         Base data directory
-    min_season : Optional[int]
-        Earliest season to load for historical data. If None, auto-detects.
+    min_season : int
+        Earliest season to load for historical data (default: 2010).
 
     Returns
     -------
