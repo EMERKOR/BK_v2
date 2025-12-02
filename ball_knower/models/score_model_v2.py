@@ -7,8 +7,8 @@ Spread and total are derived from score predictions (not used as training target
 Architecture:
 - Shared feature backbone
 - Two output heads (home_score, away_score)
-- Baseline: GradientBoostingRegressor or RandomForestRegressor (deterministic)
-- Future: XGBoost/LightGBM after baseline validation
+- Primary: XGBoost with research-validated regularization (Phase A)
+- Fallback: GradientBoostingRegressor or RandomForestRegressor
 
 Training:
 - Time-aware blocking splits (seasonal TSCV)
@@ -31,6 +31,7 @@ from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.isotonic import IsotonicRegression
+import xgboost as xgb
 
 from ..datasets.dataset_v2 import build_dataset_v2_1, build_dataset_v2_2, load_dataset_v2
 
@@ -141,7 +142,7 @@ class ScoreModelV2:
 
     def __init__(
         self,
-        model_type: Literal["gbr", "rf"] = "gbr",
+        model_type: Literal["gbr", "rf", "xgb"] = "xgb",
         random_state: int = 42,
         **model_kwargs,
     ):
@@ -150,8 +151,8 @@ class ScoreModelV2:
 
         Parameters
         ----------
-        model_type : {"gbr", "rf"}
-            Model type: "gbr" = GradientBoostingRegressor, "rf" = RandomForestRegressor
+        model_type : {"gbr", "rf", "xgb"}
+            Model type: "gbr" = GradientBoostingRegressor, "rf" = RandomForestRegressor, "xgb" = XGBRegressor
         random_state : int
             Random seed for reproducibility
         model_kwargs : dict
@@ -177,6 +178,15 @@ class ScoreModelV2:
                 **model_kwargs
             )
             self.model_away = RandomForestRegressor(
+                random_state=random_state,
+                **model_kwargs
+            )
+        elif model_type == "xgb":
+            self.model_home = xgb.XGBRegressor(
+                random_state=random_state,
+                **model_kwargs
+            )
+            self.model_away = xgb.XGBRegressor(
                 random_state=random_state,
                 **model_kwargs
             )
@@ -281,7 +291,7 @@ class ScoreModelV2:
 def train_score_model_v2(
     train_seasons: list[int],
     train_weeks: list[int],
-    model_type: Literal["gbr", "rf"] = "gbr",
+    model_type: Literal["gbr", "rf", "xgb"] = "xgb",
     dataset_version: str = "2",
     n_games: int = 5,
     data_dir: Path | str = "data",
@@ -296,7 +306,7 @@ def train_score_model_v2(
         Seasons to train on
     train_weeks : list[int]
         Weeks to train on (for each season)
-    model_type : {"gbr", "rf"}
+    model_type : {"gbr", "rf", "xgb"}
         Model type
     dataset_version : str
         Dataset version to use ("1" for v2_1, "2" for v2_2)
@@ -340,13 +350,32 @@ def train_score_model_v2(
     y_home_train = train_df["home_score"]
     y_away_train = train_df["away_score"]
 
-    # Phase 6 tuned defaults (if not overridden)
-    tuned_defaults = {
-        'n_estimators': 100,
-        'max_depth': 3,
-        'learning_rate': 0.05,
-        'min_samples_leaf': 5,
-    }
+    # Phase A tuned defaults by model type (research-validated)
+    if model_type == "xgb":
+        tuned_defaults = {
+            'n_estimators': 100,
+            'max_depth': 4,
+            'learning_rate': 0.05,
+            'reg_lambda': 5.0,        # L2 regularization (critical for small samples)
+            'reg_alpha': 0.0,         # L1 regularization
+            'subsample': 0.7,         # Row sampling per tree
+            'colsample_bytree': 0.7,  # Column sampling per tree
+            'min_child_weight': 5,    # Min samples per leaf
+        }
+    elif model_type == "gbr":
+        tuned_defaults = {
+            'n_estimators': 100,
+            'max_depth': 3,
+            'learning_rate': 0.05,
+            'min_samples_leaf': 5,
+            'subsample': 0.7,         # Row sampling
+        }
+    else:  # rf
+        tuned_defaults = {
+            'n_estimators': 100,
+            'max_depth': 5,
+            'min_samples_leaf': 5,
+        }
     # Merge: caller kwargs override tuned defaults
     final_kwargs = {**tuned_defaults, **model_kwargs}
 
