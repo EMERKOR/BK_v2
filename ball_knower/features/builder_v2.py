@@ -77,9 +77,9 @@ def build_features_v2(
     Log: data/features/_logs/{season}_week_{week}.json
     """
     # Build component features
-    rolling_df = build_rolling_features(season, week, n_games, data_dir, min_season=min_season)
+    rolling_df = build_rolling_features(season, week, n_games, data_dir, min_season=min_season or 2010)
     schedule_df = build_schedule_features(season, week, data_dir)
-    efficiency_df = build_efficiency_features(season, week, n_games, data_dir, min_season=min_season)
+    efficiency_df = build_efficiency_features(season, week, n_games, data_dir, min_season=min_season or 2010)
 
     # Merge all feature sets on game_id
     features = rolling_df.merge(
