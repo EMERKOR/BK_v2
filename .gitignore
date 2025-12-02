@@ -41,3 +41,6 @@ data/features/
 data/clean/
 data/datasets/
 data/RAW_pbp/
+data/RAW_market/
+data/RAW_schedule/
+data/RAW_scores/
