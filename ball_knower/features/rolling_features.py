@@ -60,6 +60,12 @@ def _load_historical_scores(
             all_games.append(df)
 
     if not all_games:
+        import warnings
+        warnings.warn(
+            f"No historical scores found for seasons before {up_to_season} week {up_to_week}. "
+            "Rolling features will use default values.",
+            UserWarning
+        )
         return pd.DataFrame()
 
     combined = pd.concat(all_games, ignore_index=True)

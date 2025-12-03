@@ -345,6 +345,13 @@ def _load_historical_pbp_stats(
         pass
 
     if not all_stats:
+        import warnings
+        warnings.warn(
+            f"No PBP data found for seasons {min_season}-{season} week {week}. "
+            "EPA features will use default values. "
+            "Run: python scripts/bootstrap_data.py --seasons <range> --include-pbp",
+            UserWarning
+        )
         return pd.DataFrame()
 
     combined = pd.concat(all_stats, ignore_index=True)
