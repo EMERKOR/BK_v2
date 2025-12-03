@@ -121,6 +121,14 @@ def _compute_team_game_log(historical_df: pd.DataFrame) -> pd.DataFrame:
     team_log = pd.concat([home_log, away_log], ignore_index=True)
     team_log = team_log.sort_values(["season", "week", "team"]).reset_index(drop=True)
 
+    # Normalize team codes to canonical format
+    team_log["team"] = team_log["team"].apply(
+        lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x
+    )
+    team_log["opponent"] = team_log["opponent"].apply(
+        lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x
+    )
+
     return team_log
 
 
