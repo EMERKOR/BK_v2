@@ -322,7 +322,7 @@ def build_meta_edge_features_v2(
 
     # Mispricing features.
     merged["spread_edge"] = (
-        merged[spread_pred_col] - merged["market_closing_spread"]
+        merged[spread_pred_col] + merged["market_closing_spread"]
     )
     merged["total_edge"] = (
         merged[total_pred_col] - merged["market_closing_total"]

@@ -147,7 +147,7 @@ def generate_bets(
         matchup_type = _categorize_matchup(row)  # home_fave or home_dog
 
         # Spread edges
-        edge_home = pred_spread - closing_spread
+        edge_home = pred_spread + closing_spread
         edge_away = -edge_home
 
         # Total edges
@@ -624,7 +624,7 @@ def _grade_spread_bet(
     Grading logic:
 
     final_spread = home_score - away_score
-    home ATS margin = final_spread - line (line is home spread)
+    home ATS margin = final_spread + line (line is home spread)
 
     - If home ATS margin > 0: home covers, away loses.
     - If home ATS margin < 0: away covers, home loses.
@@ -632,7 +632,7 @@ def _grade_spread_bet(
     """
     assert side in {"home", "away"}
 
-    home_ats_margin = final_spread - line
+    home_ats_margin = final_spread + line
 
     if abs(home_ats_margin) < 1e-9:
         return "push"
