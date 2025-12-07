@@ -1,0 +1,5 @@
+game_id,teams,kickoff,stadium,home_team,away_team
+2012_18_CIN_HOU,CIN@HOU,2013-01-05T16:30,Reliant Stadium,HOU,CIN
+2012_18_MIN_GB,MIN@GB,2013-01-05T20:00,Lambeau Field,GB,MIN
+2012_18_IND_BAL,IND@BAL,2013-01-06T13:00,M&T Bank Stadium,BAL,IND
+2012_18_SEA_WAS,SEA@WAS,2013-01-06T16:30,FedExField,WAS,SEA

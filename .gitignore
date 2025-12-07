@@ -36,12 +36,12 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Generated data (build artifacts)
-data/features/
+# Environment
+.env
+
+# Intermediate generated data (rebuilds quickly from RAW_*)
 data/clean/
 data/datasets/
-data/RAW_pbp/
-data/RAW_market/
-data/RAW_schedule/
-data/RAW_scores/
-.env
+data/features/
+data/predictions/
+data/backtests/
