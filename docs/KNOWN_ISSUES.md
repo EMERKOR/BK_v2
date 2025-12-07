@@ -12,13 +12,14 @@
 
 ---
 ## ISSUE-002: KeyError 'home_team' in rolling_features.py
-**Status:** Cannot Reproduce (2025-12-07)
+**Status:** CLOSED (2025-12-07)
 **Discovered:** 2025-12-03
 **Location:** ball_knower/features/rolling_features.py:244
 **Description:** rolling_features expects 'home_team' column but receives data without it.
+**Resolution:** Cannot reproduce. Tested with 2011-2024 data after bootstrap. Likely fixed alongside ISSUE-001 changes or was a transient data issue.
 **Testing performed:** 
-- `build_rolling_features(2024, 5, 5, 'data')` → Success (14 rows)
-- `train_score_model_v2(train_seasons=[2021,2022], ...)` → Success
-**Note:** Only 2021-2024 RAW_schedule data exists. Issue may resurface when 2010-2020 data is bootstrapped. Re-test after running `bootstrap_data.py` for earlier seasons.
+- `build_rolling_features(2015, 5, 5, 'data')` → Success
+- `build_rolling_features(2024, 5, 5, 'data')` → Success
+- `train_score_model_v2(train_seasons=[2011,2012], ...)` → Success
 
 ---
