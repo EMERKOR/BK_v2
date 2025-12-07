@@ -41,7 +41,7 @@
 - `run_backtest()`: Full orchestration + artifact persistence
 
 **Bet Grading:**
-- `_grade_spread_bet()`: ATS margin = final_spread - line
+- `_grade_spread_bet()`: ATS margin = final_spread + line
 - `_grade_total_bet()`: Over margin = final_total - line
 - `_grade_moneyline_bet()`: Winner based on final_spread sign
 
