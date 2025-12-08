@@ -325,6 +325,36 @@ def build_market_lines_spread_clean(
             df["market_closing_spread"], errors="coerce"
         )
 
+    # If game_id exists in raw, normalize team codes in it
+    if "game_id" in df.columns:
+        # Extract teams from game_id (format: YYYY_WW_AWAY_HOME)
+        parts = df["game_id"].str.split("_", expand=True)
+        if parts.shape[1] >= 4:
+            away_norm = parts[2].apply(lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x)
+            home_norm = parts[3].apply(lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x)
+            week_norm = parts[1].str.lstrip('0')  # Remove zero padding
+            df["game_id"] = parts[0] + "_" + week_norm + "_" + away_norm + "_" + home_norm
+
+    # If game_id exists in raw, normalize team codes in it
+    if "game_id" in df.columns:
+        # Extract teams from game_id (format: YYYY_WW_AWAY_HOME)
+        parts = df["game_id"].str.split("_", expand=True)
+        if parts.shape[1] >= 4:
+            away_norm = parts[2].apply(lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x)
+            home_norm = parts[3].apply(lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x)
+            week_norm = parts[1].str.lstrip('0')  # Remove zero padding
+            df["game_id"] = parts[0] + "_" + week_norm + "_" + away_norm + "_" + home_norm
+
+    # If game_id exists in raw, normalize team codes in it
+    if "game_id" in df.columns:
+        # Extract teams from game_id (format: YYYY_WW_AWAY_HOME)
+        parts = df["game_id"].str.split("_", expand=True)
+        if parts.shape[1] >= 4:
+            away_norm = parts[2].apply(lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x)
+            home_norm = parts[3].apply(lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x)
+            week_norm = parts[1].str.lstrip('0')  # Remove zero padding
+            df["game_id"] = parts[0] + "_" + week_norm + "_" + away_norm + "_" + home_norm
+
     # If game_id not in raw, join via schedule
     if "game_id" not in df.columns and "teams" in df.columns:
         # Extract teams from raw
