@@ -311,6 +311,16 @@ def load_fp_coverage_matrix_raw(
     # Skip header placeholder row (row 0 is "Team Details", "", "", ...)
     df = pd.read_csv(path, skiprows=1)
 
+    # Rename duplicate FP/DB columns to descriptive names
+    # CSV has: FP/DB (man), FP/DB (zone), FP/DB (mof_closed), FP/DB (mof_open)
+    # pandas reads them as: FP/DB, FP/DB.1, FP/DB.2, FP/DB.3
+    df = df.rename(columns={
+        "FP/DB": "fp_per_db_man",
+        "FP/DB.1": "fp_per_db_zone",
+        "FP/DB.2": "fp_per_db_mof_closed",
+        "FP/DB.3": "fp_per_db_mof_open",
+    })
+
     # Remove footer rows (column definitions with non-numeric Rank)
     df = df[df["Rank"].apply(lambda x: str(x).isdigit())]
     df["Rank"] = df["Rank"].astype(int)

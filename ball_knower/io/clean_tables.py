@@ -29,7 +29,7 @@ from .raw_readers import (
     load_market_total_raw,
     load_market_moneyline_raw,
     load_trench_matchups_raw,
-    load_coverage_matrix_raw,
+    load_fp_coverage_matrix_raw,
     load_receiving_vs_coverage_raw,
     load_proe_report_raw,
     load_separation_rates_raw,
@@ -627,52 +627,57 @@ def build_context_trench_matchups_clean(
     return df_clean
 
 
-def build_context_coverage_matrix_clean(
+def _build_context_coverage_matrix_clean(
     season: int,
     week: int,
+    view: str,
     data_dir: Path | str = "data",
 ) -> pd.DataFrame:
     """
-    Build context_coverage_matrix_clean from FantasyPoints coverageMatrixExport.
+    Internal helper to build coverage matrix for a specific view (offense/defense).
 
-    Transformations:
-    - Normalize team codes to BK canonical
-    - Convert numeric columns to float
-    - Validate schema and primary key
+    Args:
+        season: NFL season year
+        week: Week number (1-18)
+        view: "offense" or "defense"
+        data_dir: Data directory path
 
-    Outputs:
-    - Parquet: data/clean/context_coverage_matrix_clean/{season}/...parquet
-    - Log: data/clean/_logs/context_coverage_matrix_clean/{season}_week_{week}.json
+    Returns:
+        Clean DataFrame with coverage matrix stats
     """
-    schema = ALL_SCHEMAS["context_coverage_matrix_clean"]
+    schema_key = f"context_coverage_matrix_{view}_clean"
+    schema = ALL_SCHEMAS[schema_key]
 
-    # Load raw
-    df_raw = load_coverage_matrix_raw(season, week, data_dir)
-    source_path = f"RAW_context/coverageMatrixExport_{season}_week_{week:02d}.csv"
+    # Load raw using the correct loader
+    df_raw = load_fp_coverage_matrix_raw(season, week, view, data_dir)
+    source_path = f"RAW_fantasypoints/coverage/{view}/coverage_{view}_{season}_w{week:02d}.csv"
     row_count_raw = len(df_raw)
 
     df = df_raw.copy()
 
-    # Normalize team codes
-    df["team_code"] = df["Team"].apply(
+    # Normalize team codes (Name column contains team names like "Cincinnati Bengals")
+    df["team_code"] = df["Name"].apply(
         lambda x: normalize_team_code(str(x), "fantasypoints")
     )
 
-    # Map and convert numeric columns
-    df["m2m"] = pd.to_numeric(df.get("M2M"), errors="coerce")
-    df["zone"] = pd.to_numeric(df.get("Zn", df.get("Zone")), errors="coerce")
-    df["cov0"] = pd.to_numeric(df.get("Cov0"), errors="coerce")
-    df["cov1"] = pd.to_numeric(df.get("Cov1"), errors="coerce")
-    df["cov2"] = pd.to_numeric(df.get("Cov2"), errors="coerce")
-    df["cov3"] = pd.to_numeric(df.get("Cov3"), errors="coerce")
-    df["cov4"] = pd.to_numeric(df.get("Cov4"), errors="coerce")
-    df["cov6"] = pd.to_numeric(df.get("Cov6"), errors="coerce")
-    df["blitz_rate"] = pd.to_numeric(df.get("Blitz"), errors="coerce")
-    df["pressure_rate"] = pd.to_numeric(df.get("Pressure"), errors="coerce")
-    df["avg_cushion"] = pd.to_numeric(df.get("Avg Cushion"), errors="coerce")
-    df["avg_separation_allowed"] = pd.to_numeric(df.get("Avg Separation Allowed"), errors="coerce")
-    df["avg_depth_allowed"] = pd.to_numeric(df.get("Avg Depth Allowed"), errors="coerce")
-    df["success_rate_allowed"] = pd.to_numeric(df.get("Success Rate Allowed"), errors="coerce")
+    # Map CSV columns to schema columns
+    df["games"] = pd.to_numeric(df.get("G"), errors="coerce").astype("Int64")
+    df["dropbacks"] = pd.to_numeric(df.get("DB"), errors="coerce").astype("Int64")
+    df["man_pct"] = pd.to_numeric(df.get("MAN %"), errors="coerce")
+    # fp_per_db_man already renamed in raw reader
+    df["zone_pct"] = pd.to_numeric(df.get("ZONE %"), errors="coerce")
+    # fp_per_db_zone already renamed in raw reader
+    df["mof_closed_pct"] = pd.to_numeric(df.get("1-HI/MOF C %"), errors="coerce")
+    # fp_per_db_mof_closed already renamed in raw reader
+    df["mof_open_pct"] = pd.to_numeric(df.get("2-HI/MOF O %"), errors="coerce")
+    # fp_per_db_mof_open already renamed in raw reader
+    df["cover_0_pct"] = pd.to_numeric(df.get("COVER 0 %"), errors="coerce")
+    df["cover_1_pct"] = pd.to_numeric(df.get("COVER 1 %"), errors="coerce")
+    df["cover_2_pct"] = pd.to_numeric(df.get("COVER 2 %"), errors="coerce")
+    df["cover_2_man_pct"] = pd.to_numeric(df.get("COVER 2 MAN %"), errors="coerce")
+    df["cover_3_pct"] = pd.to_numeric(df.get("COVER 3 %"), errors="coerce")
+    df["cover_4_pct"] = pd.to_numeric(df.get("COVER 4 %"), errors="coerce")
+    df["cover_6_pct"] = pd.to_numeric(df.get("COVER 6 %"), errors="coerce")
 
     # Enforce schema
     df_clean = _enforce_schema(df, schema)
@@ -690,6 +695,52 @@ def build_context_coverage_matrix_clean(
     )
 
     return df_clean
+
+
+def build_context_coverage_matrix_offense_clean(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build context_coverage_matrix_offense_clean from FantasyPoints coverage data.
+
+    This table shows what coverage schemes each OFFENSE faces (opponent defenses).
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Rename duplicate FP/DB columns to descriptive names
+    - Convert numeric columns to appropriate types
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/context_coverage_matrix_offense_clean/{season}/...parquet
+    - Log: data/clean/_logs/context_coverage_matrix_offense_clean/{season}_week_{week}.json
+    """
+    return _build_context_coverage_matrix_clean(season, week, "offense", data_dir)
+
+
+def build_context_coverage_matrix_defense_clean(
+    season: int,
+    week: int,
+    data_dir: Path | str = "data",
+) -> pd.DataFrame:
+    """
+    Build context_coverage_matrix_defense_clean from FantasyPoints coverage data.
+
+    This table shows what coverage schemes each DEFENSE runs.
+
+    Transformations:
+    - Normalize team codes to BK canonical
+    - Rename duplicate FP/DB columns to descriptive names
+    - Convert numeric columns to appropriate types
+    - Validate schema and primary key
+
+    Outputs:
+    - Parquet: data/clean/context_coverage_matrix_defense_clean/{season}/...parquet
+    - Log: data/clean/_logs/context_coverage_matrix_defense_clean/{season}_week_{week}.json
+    """
+    return _build_context_coverage_matrix_clean(season, week, "defense", data_dir)
 
 
 def build_context_receiving_vs_coverage_clean(
