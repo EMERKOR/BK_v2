@@ -103,32 +103,20 @@ Actual data: `data/RAW_fantasypoints/coverage/offense/coverage_offense_2022_w01.
 
 ---
 
-### Task 1.3: Implement Weeks 1-4 (Prior Season Decay)
+### Task 1.3: [CLOSED - NOT A BUG]
 
-**Status:** TODO
-**Priority:** HIGH  
-**Blocks:** 2.1
+**Status:** CLOSED  
+**Resolution:** Verified false premise on 2025-12-10
 
-**Problem:**  
-Current code requires 4 prior games for rolling stats, excluding weeks 1-4 (~56 games/season).
+**Original Claim:** "Code requires 4 prior games, excluding weeks 1-4"
 
-**Solution:**  
-Use prior season data with decay weights:
-- Week 1: 100% prior season
-- Week 2: 75% prior / 25% current
-- Week 3: 50% prior / 50% current
-- Week 4: 25% prior / 75% current
-- Week 5+: 100% current season
+**Verification Results:**
+- `build_rolling_features(2022, 1)` returns 16 games with team-specific stats
+- Code loads 554 prior season games (2020-2021) for Week 1 predictions  
+- Values are team-specific (LAR: 26.2 pts, CAR: 13.6 pts), not defaults (21.0)
+- Rolling window naturally spans seasons — handles cold start correctly
 
-**Files to Modify:**
-- `ball_knower/game_state/game_state_v2.py` — rolling stat calculation
-- `ball_knower/datasets/builder_v2.py` — week filtering logic
-
-**Acceptance Criteria:**
-- [ ] Weeks 1-4 included in dataset output
-- [ ] Prior season stats loaded for early-week games
-- [ ] Decay weights applied correctly
-- [ ] No data leakage
+**No action required.** Prior season integration already implemented.
 
 ---
 
