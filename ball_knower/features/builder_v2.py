@@ -16,6 +16,7 @@ from .schedule_features import build_schedule_features
 from .efficiency_features import build_efficiency_features
 from .weather_features import build_weather_features
 from .injury_features import build_injury_features
+from .coverage_features import build_coverage_features
 
 
 def _ensure_features_dir(season: int, data_dir: Path | str = "data") -> Path:
@@ -49,6 +50,7 @@ def build_features_v2(
     - Rolling team statistics (points, wins)
     - Schedule features (rest days, week position)
     - Efficiency features (EPA, success rate from PBP data)
+    - Coverage features (man/zone coverage schemes, matchup edges) [2022+]
 
     Parameters
     ----------
@@ -121,6 +123,19 @@ def build_features_v2(
             )
     except Exception as e:
         print(f"Warning: Could not build injury features: {e}")
+
+    # Merge coverage features (coverage scheme matchups)
+    # Coverage data only available from 2022+
+    try:
+        coverage_df = build_coverage_features(season, week, n_games, data_dir, min_season=max(min_season or 2022, 2022))
+        if len(coverage_df) > 0:
+            features = features.merge(
+                coverage_df,
+                on="game_id",
+                how="left",
+            )
+    except Exception as e:
+        print(f"Warning: Could not build coverage features: {e}")
 
     if save:
         # Write Parquet

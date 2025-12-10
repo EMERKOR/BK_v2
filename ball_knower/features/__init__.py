@@ -11,6 +11,7 @@ from .schedule_features import build_schedule_features
 from .efficiency_features import build_efficiency_features
 from .weather_features import build_weather_features
 from .injury_features import build_injury_features
+from .coverage_features import build_coverage_features
 
 __all__ = [
     "build_features_v2",
@@ -20,4 +21,5 @@ __all__ = [
     "build_efficiency_features",
     "build_weather_features",
     "build_injury_features",
+    "build_coverage_features",
 ]
