@@ -31,7 +31,7 @@ Build an NFL betting prediction system that approximates sharp book pricing acro
 
 ### Task 1.1: Fix Coverage Data Integration
 
-**Status:** TODO
+**Status:** DONE
 **Priority:** HIGH  
 **Blocks:** 1.2, 2.1
 
