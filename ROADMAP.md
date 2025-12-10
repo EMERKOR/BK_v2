@@ -31,7 +31,7 @@ Build an NFL betting prediction system that approximates sharp book pricing acro
 
 ### Task 1.1: Fix Coverage Data Integration
 
-**Status:** DONE (verified 2025-12-09)
+**Status:** TODO
 **Priority:** HIGH  
 **Blocks:** 1.2, 2.1
 
@@ -105,7 +105,7 @@ Actual data: `data/RAW_fantasypoints/coverage/offense/coverage_offense_2022_w01.
 
 ### Task 1.3: Implement Weeks 1-4 (Prior Season Decay)
 
-**Status:** DONE (verified 2025-12-09)
+**Status:** TODO
 **Priority:** HIGH  
 **Blocks:** 2.1
 
@@ -134,7 +134,7 @@ Use prior season data with decay weights:
 
 ### Task 1.4: Extend to Playoffs (Weeks 19-22)
 
-**Status:** DONE (verified 2025-12-09)
+**Status:** TODO
 **Priority:** MEDIUM  
 **Blocks:** 2.1
 
@@ -153,7 +153,7 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 
 ### Task 1.5: Bootstrap 2025 NFLverse Data
 
-**Status:** DONE (verified 2025-12-09)
+**Status:** TODO
 **Priority:** MEDIUM  
 **Blocks:** 2.1
 
