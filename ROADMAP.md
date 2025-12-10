@@ -31,7 +31,7 @@ Build an NFL betting prediction system that approximates sharp book pricing acro
 
 ### Task 1.1: Fix Coverage Data Integration
 
-**Status:** TODO  
+**Status:** DONE (verified 2025-12-09)
 **Priority:** HIGH  
 **Blocks:** 1.2, 2.1
 
@@ -72,29 +72,40 @@ Actual data: `data/RAW_fantasypoints/coverage/offense/coverage_offense_2022_w01.
 
 ---
 
-### Task 1.2: Upload 2023-2025 Coverage Data
+### Task 1.2: Coverage Data Upload
 
-**Status:** TODO  
+**Status:** PARTIAL  
 **Priority:** HIGH  
 **Depends On:** 1.1 (need working loader first)  
 **Blocks:** 2.1
 
 **Current State:**
-- 2022: Complete (w01-w18 offense + defense)
-- 2023: Missing
-- 2024: Missing  
-- 2025: Missing (through current week)
+
+| Data | Status | Notes |
+|------|--------|-------|
+| Weekly 2022 (w01-w18) | ✓ DONE | Offense + Defense |
+| Weekly 2023 (w01-w18) | ✓ DONE | Offense + Defense |
+| Weekly 2024 (w01-w18) | ✓ DONE | Offense + Defense |
+| Weekly 2025 (w01-w12) | ✓ DONE | Through current week |
+| Postseason 2022-2025 | TODO | Available from FPD |
+| 2021 Full Season | TODO | Weekly not available, full season is |
+
+**Remaining Work:**
+- Upload postseason coverage files (2022-2025)
+- Upload 2021 full-season coverage (offense + defense)
+- Decide how to handle 2021 (no weekly granularity)
 
 **Acceptance Criteria:**
-- [ ] All files present in correct directories
+- [x] Regular season weekly files present (2022-2025)
+- [ ] Postseason files present
+- [ ] 2021 full-season files present
 - [ ] Loader successfully reads sample file from each season
-- [ ] File count matches expected
 
 ---
 
 ### Task 1.3: Implement Weeks 1-4 (Prior Season Decay)
 
-**Status:** TODO  
+**Status:** DONE (verified 2025-12-09)
 **Priority:** HIGH  
 **Blocks:** 2.1
 
@@ -123,7 +134,7 @@ Use prior season data with decay weights:
 
 ### Task 1.4: Extend to Playoffs (Weeks 19-22)
 
-**Status:** TODO  
+**Status:** DONE (verified 2025-12-09)
 **Priority:** MEDIUM  
 **Blocks:** 2.1
 
@@ -142,7 +153,7 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 
 ### Task 1.5: Bootstrap 2025 NFLverse Data
 
-**Status:** TODO  
+**Status:** DONE (verified 2025-12-09)
 **Priority:** MEDIUM  
 **Blocks:** 2.1
 
