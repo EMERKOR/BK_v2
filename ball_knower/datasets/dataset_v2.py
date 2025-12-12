@@ -30,7 +30,6 @@ from typing import Dict, Any
 import pandas as pd
 
 from ..io.clean_tables import (
-    build_context_coverage_matrix_clean,
     build_context_proe_report_clean,
     build_context_trench_matchups_clean,
     build_receiving_leaders_clean,
