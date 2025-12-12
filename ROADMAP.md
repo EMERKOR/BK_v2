@@ -122,6 +122,8 @@ Actual data: `data/RAW_fantasypoints/coverage/offense/coverage_offense_2022_w01.
 
 ### Task 1.4: Extend to Playoffs (Weeks 19-22)
 
+**Status:** DONE
+
 **Status:** TODO
 **Priority:** MEDIUM  
 **Blocks:** 2.1
@@ -140,6 +142,8 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 ---
 
 ### Task 1.5: Bootstrap 2025 NFLverse Data
+
+**Status:** DONE
 
 **Status:** TODO
 **Priority:** MEDIUM  
