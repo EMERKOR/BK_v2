@@ -33,7 +33,7 @@ def load_schedule_and_scores(
     season : int
         NFL season year (e.g., 2024)
     weeks : Optional[List[int]]
-        Specific weeks to load. If None, loads all available weeks (1-18).
+        Specific weeks to load. If None, loads all available weeks (1-22).
     data_dir : Path | str
         Base data directory (default: "data")
 
@@ -58,7 +58,7 @@ def load_schedule_and_scores(
         If team codes are invalid
     """
     if weeks is None:
-        weeks = list(range(1, 19))  # Regular season weeks 1-18
+        weeks = list(range(1, 23))  # All weeks including playoffs (1-22)
 
     dfs = []
     for week in weeks:
@@ -162,7 +162,7 @@ def load_market_closing_lines(
     if odds_path is None:
         # Load from game_state_v2
         if weeks is None:
-            weeks = list(range(1, 19))
+            weeks = list(range(1, 23))
 
         dfs = []
         for week in weeks:

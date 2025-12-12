@@ -327,7 +327,7 @@ def _load_historical_pbp_stats(
         try:
             prior_pbp = load_pbp_raw(prior_season, data_dir)
             # Include only regular season games (weeks 1-18)
-            prior_pbp = prior_pbp[prior_pbp["week"] <= 18]
+            prior_pbp = prior_pbp[prior_pbp["week"] <= 22]
             prior_stats = aggregate_pbp_to_team_game(prior_pbp)
             all_stats.append(prior_stats)
         except FileNotFoundError:

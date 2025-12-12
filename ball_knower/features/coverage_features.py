@@ -30,7 +30,7 @@ def _load_fp_coverage_raw(
 
     Args:
         season: NFL season year
-        week: Week number (1-18)
+        week: Week number (1-22)
         view: "defense" (what coverage defense runs) or "offense" (what coverage offense faces)
         data_dir: Data directory path
 

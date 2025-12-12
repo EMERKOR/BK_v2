@@ -168,7 +168,7 @@ def build_dataset_v2_0(
     season : int
         NFL season year
     week : int
-        NFL week number (1-18)
+        NFL week number (1-22)
     data_dir : Path | str
         Base data directory (default: "data")
 
@@ -247,7 +247,7 @@ def build_dataset_v2_1(
     season : int
         NFL season year
     week : int
-        NFL week number (1-18)
+        NFL week number (1-22)
     data_dir : Path | str
         Base data directory (default: "data")
 
