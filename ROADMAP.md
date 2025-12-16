@@ -74,25 +74,26 @@ Actual data: `data/RAW_fantasypoints/coverage/offense/coverage_offense_2022_w01.
 
 ### Task 1.2: Coverage Data Upload
 
-**Status:** PARTIAL  
+**Status:** DONE  
 **Priority:** HIGH  
 **Depends On:** 1.1 (need working loader first)  
 **Blocks:** 2.1
 
-**Current State:**
+**Final State:**
 
 | Data | Status | Notes |
 |------|--------|-------|
-| Weekly 2022 (w01-w18) | ✓ DONE | Offense + Defense |
-| Weekly 2023 (w01-w18) | ✓ DONE | Offense + Defense |
-| Weekly 2024 (w01-w18) | ✓ DONE | Offense + Defense |
-| Weekly 2025 (w01-w12) | ✓ DONE | Through current week |
-| Postseason 2022-2025 | TODO | Available from FPD |
-| 2021 Full Season | TODO | Weekly not available, full season is |
+| Weekly 2022 (w01-w18) | DONE | Offense + Defense |
+| Weekly 2023 (w01-w18) | DONE | Offense + Defense |
+| Weekly 2024 (w01-w18) | DONE | Offense + Defense |
+| Weekly 2025 (w01-w14) | DONE | Through week 14 |
+| Postseason 2022-2024 (w19-w22) | DONE | All rounds |
+| 2021 Season | SKIPPED | FP only has season aggregates, incompatible with weekly rolling approach |
 
-**Remaining Work:**
-- Upload postseason coverage files (2022-2025)
-- Upload 2021 full-season coverage (offense + defense)
+**Acceptance Criteria:**
+- [x] Regular season weekly files present (2022-2025)
+- [x] Postseason files present (2022-2024)
+- [x] Loader successfully reads sample file from each season
 - Decide how to handle 2021 (no weekly granularity)
 
 **Acceptance Criteria:**
