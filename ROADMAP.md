@@ -1,8 +1,8 @@
 # Ball Knower v2.1 - Project Roadmap
 
 **Created:** December 9, 2025  
-**Last Updated:** December 9, 2025  
-**Current Phase:** 1 (Foundation Fixes)
+**Last Updated:** December 17, 2025  
+**Current Phase:** 2 (Rebuild & Validate)
 
 ---
 
@@ -16,8 +16,8 @@ Build an NFL betting prediction system that approximates sharp book pricing acro
 
 | Phase | Name | Status | Blocking Issues |
 |-------|------|--------|-----------------|
-| 1 | Foundation Fixes | TODO | None |
-| 2 | Rebuild & Validate | BLOCKED | Requires Phase 1 |
+| 1 | Foundation Fixes | DONE | None |
+| 2 | Rebuild & Validate | TODO | None |
 | 3 | Expand Markets | BLOCKED | Requires Phase 2 |
 | 4 | Player Props & Subjective Layer | BLOCKED | Requires Phase 3 |
 
