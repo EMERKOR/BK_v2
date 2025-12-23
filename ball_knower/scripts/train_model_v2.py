@@ -181,10 +181,10 @@ def main():
         data_dir=args.data_dir,
     )
     
-    print(f"\nHome Score MAE: {metrics.get('home_mae', 'N/A'):.2f}")
-    print(f"Away Score MAE: {metrics.get('away_mae', 'N/A'):.2f}")
-    print(f"Spread MAE: {metrics.get('spread_mae', 'N/A'):.2f}")
-    print(f"Total MAE: {metrics.get('total_mae', 'N/A'):.2f}")
+    print(f"\nHome Score MAE: {metrics.get('mae_home', 'N/A'):.2f}")
+    print(f"Away Score MAE: {metrics.get('mae_away', 'N/A'):.2f}")
+    print(f"Spread MAE: {metrics.get('mae_spread', 'N/A'):.2f}")
+    print(f"Total MAE: {metrics.get('mae_total', 'N/A'):.2f}")
     
     if 'spread_correlation' in metrics:
         print(f"Spread Correlation: {metrics['spread_correlation']:.3f}")
