@@ -143,3 +143,30 @@ avg_cushion, avg_separation_allowed, avg_depth_allowed, success_rate_allowed
 | 1.5 Bootstrap 2025 NFLverse | DONE |
 
 **Validated:** `build_features_v2(2024, 10)` → 139 features, 25 coverage columns
+
+## Session: 2025-12-23 — Task 2.1 Dataset Regeneration
+
+### Exchange Log (Chronological)
+- Started at commit 3693a9d (Phase 2 pre-work complete)
+- Verified feature pipeline: 139 cols, 31 coverage-related
+- Discovered existing datasets were stale (Dec 8, pre-Phase 1 fixes): only 125 cols, 14 weeks, no coverage
+- Created `regenerate_datasets_v2.py` script with validation checks
+- Regenerated all datasets: 2011-2025, 4,019 games total
+- Validation passed all acceptance criteria
+
+### Task 2.1 Results
+| Season Range | Weeks | Games |
+|--------------|-------|-------|
+| 2011-2020 | 1-21 (playoffs) | ~3,200 |
+| 2021-2024 | 1-22 (playoffs) | ~750 |
+| 2025 | 1-14 (in progress) | ~220 |
+
+Coverage features: 8 cols present for all seasons (defaults for pre-2022, real data for 2022+)
+
+### Commits Made
+| Hash | Message |
+|------|---------|
+| 78f9ca0 | Complete Task 2.1: Regenerate datasets (4,019 games, 2011-2025) |
+
+### Files Created
+- `ball_knower/scripts/regenerate_datasets_v2.py` — multi-season dataset regeneration with validation
