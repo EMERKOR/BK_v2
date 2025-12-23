@@ -172,14 +172,14 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 
 ### Task 2.1: Regenerate Datasets
 
-**Status:** BLOCKED  
+**Status:** DONE  
 **Depends On:** 1.1, 1.2, 1.3, 1.4, 1.5
 
 **Acceptance Criteria:**
-- [ ] Coverage feature columns > 0 in final dataset
-- [ ] Weeks 1-22 present
-- [ ] 2011-2025 seasons present
-- [ ] No missing spreads
+- [x] Coverage feature columns > 0 in final dataset
+- [x] Weeks 1-22 present
+- [x] 2011-2025 seasons present
+- [x] No missing spreads
 
 ### Task 2.2: Retrain Model
 
