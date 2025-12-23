@@ -170,3 +170,31 @@ Coverage features: 8 cols present for all seasons (defaults for pre-2022, real d
 
 ### Files Created
 - `ball_knower/scripts/regenerate_datasets_v2.py` — multi-season dataset regeneration with validation
+
+## Session: 2025-12-23 — Workflow Improvements & Task 2.2 Prep
+
+### Exchange Log (Chronological)
+- Reviewed friction in thread handoff process from prior conversation
+- Identified root cause: handoffs provided context but not executable commands
+- Updated RUNBOOK.md with task-indexed commands section
+- Updated Thread_Handoff_Template.md with "First Command for Next Task" format
+- Added rule: next task's script must exist before closing thread
+- Created `train_model_v2.py` script for Task 2.2
+- Dry-run verified: correctly loads datasets, counts games, parses args
+
+### Commits Made
+| Hash | Message |
+|------|---------|
+| 76ae976 | Update RUNBOOK.md with task-indexed commands |
+| b477f63 | Add train_model_v2.py script for Task 2.2 |
+| f013ebb | Update Task 2.2 status to TODO |
+
+### Files Modified/Created
+- `RUNBOOK.md` — added Task Commands section indexed by ROADMAP tasks
+- `Thread_Handoff_Template.md` — updated in project knowledge (not in repo)
+- `ball_knower/scripts/train_model_v2.py` — CLI for model training
+
+### Decisions Made
+- Scripts must exist before task begins (front-load tooling creation)
+- RUNBOOK.md is the single source of truth for task commands
+- Handoffs now include exact command, not just "run diagnostic"
