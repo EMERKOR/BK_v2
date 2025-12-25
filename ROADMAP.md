@@ -193,10 +193,30 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 - [ ] Feature importance exported
 - [ ] Coverage features in importance rankings
 
+### Task 2.2.1: Fix Season Boundary Handling (ISSUE-003)
+**Status:** TODO
+**Priority:** CRITICAL
+**Blocks:** 2.3, all downstream
+
+**Problem:** Rolling features treat prior season final games as "recent form" for week 1. No decay across 7-month offseason.
+
+**Required Changes:**
+1. Season boundary decay: Prior season games weighted 1/3 toward mean
+2. Dynamic window: Transition to current-season-only by week 10
+
+**Files:** rolling_features.py, efficiency_features.py
+
+**Acceptance Criteria:**
+- [ ] Week 1 uses decayed prior-season stats
+- [ ] By week 10, only current-season data
+- [ ] PHI 2024 week 1 produces reasonable prediction
+
+---
+
 ### Task 2.3: Run Backtest
 
 **Status:** BLOCKED  
-**Depends On:** 2.2
+**Depends On:** 2.2.1
 
 **Baseline:** 49.1% win rate, -20.1 units
 

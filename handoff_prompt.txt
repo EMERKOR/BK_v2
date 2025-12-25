@@ -1,0 +1,12 @@
+Thread handoff for Task 2.3: Run Backtest
+
+Read handoff doc:
+Thread_Handoff_2025-12-23_Task2.2.md
+
+Then run diagnostic:
+bash scripts/thread_diagnostic.sh
+
+Key context:
+- Task 2.2 DONE: Model trained, 56% win rate at 4+ pt edges
+- Commit: 2a3db4d
+- Next: Create backtest script for Task 2.3
