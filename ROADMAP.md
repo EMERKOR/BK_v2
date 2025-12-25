@@ -183,7 +183,7 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 
 ### Task 2.2: Retrain Model
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends On:** 2.1
 
 **Config:** Train 2011-2023, Test 2024

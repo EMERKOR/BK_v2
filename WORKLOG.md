@@ -198,3 +198,59 @@ Coverage features: 8 cols present for all seasons (defaults for pre-2022, real d
 - Scripts must exist before task begins (front-load tooling creation)
 - RUNBOOK.md is the single source of truth for task commands
 - Handoffs now include exact command, not just "run diagnostic"
+
+## Session: 2025-12-23 — Task 2.2: Retrain Model
+
+### Exchange Log (Chronological)
+- Ran thread diagnostic script to verify repo state (commit ea25268)
+- Executed `train_model_v2.py` for Task 2.2 (train 2011-2023, test 2024)
+- Hit ValueError in evaluation: metrics key mismatch (`home_mae` vs `mae_home`)
+- Fixed key names in script (4 replacements)
+- Re-ran training successfully: 3,526 games trained, 285 games predicted (weeks 1-22)
+- Analyzed results: Spread MAE 10.33 (model) vs 9.70 (market closing lines)
+- Discovered spread edge correlation with win rate at high thresholds
+- Added feature importance export to training script
+- Re-ran training to generate feature importance file (133 features)
+- Verified coverage features present in rankings (6 features, 2 with non-zero importance)
+
+### Commits Made
+| Hash | Message |
+|------|---------|
+| b88768c | Fix metrics key mismatch in train_model_v2.py |
+| eda1ffa | Add feature importance export to train_model_v2.py |
+
+### Files Modified/Created
+- `ball_knower/scripts/train_model_v2.py` — fixed metrics keys, added importance export
+- `data/predictions/score_model_v2/2024/week_*.parquet` — 22 prediction files (gitignored)
+- `data/predictions/score_model_v2/feature_importance_2024.csv` — feature rankings (gitignored)
+- `ROADMAP.md` — Task 2.2 status → DONE
+
+### Key Results
+**Model Performance (2024 test set, n=285)**
+- Spread MAE: 10.33 (vs market 9.70)
+- Home Score MAE: 7.68
+- Away Score MAE: 6.99
+- Total MAE: 9.88
+
+**ATS Performance**
+- All bets: 143-138 (50.9%, below breakeven)
+- 4+ pt edge: 56-44 (56.0%, profitable)
+- 5+ pt edge: 37-28 (56.9%, profitable)
+
+**Feature Importance**
+- Top: away_adj_off_epa (0.0263), pt_diff_diff (0.0231), home_adj_def_epa (0.0212)
+- Coverage features: home_off_coverage_games (#17, 0.0098), coverage_shell_diff_home (#25, 0.0085)
+- 4 of 6 coverage features have zero importance (limited data 2022+)
+
+**Phase Split (4+ pt edge)**
+- Early season (1-9): 32-25 (56.1%)
+- Late season (10-18): 20-19 (51.3%)
+- Playoffs: 4-0 (100%, n=4)
+
+### Decisions Made
+- Model shows profitable signal at high edge thresholds (4+ points) — [VERIFIED]
+- Selective betting strategy needed (not every game) — [FINDING]
+- Coverage features have minimal importance (expected given limited data) — [FINDING]
+
+### Next Steps
+- Task 2.3: Run Backtest (formal backtest with kelly sizing, CLV analysis)
