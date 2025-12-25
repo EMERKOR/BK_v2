@@ -254,3 +254,44 @@ Coverage features: 8 cols present for all seasons (defaults for pre-2022, real d
 
 ### Next Steps
 - Task 2.3: Run Backtest (formal backtest with kelly sizing, CLV analysis)
+
+---
+
+## Session: 2025-12-25 — Task 2.3 Attempted, ISSUE-003 Discovered
+
+### Summary
+Attempted Task 2.3 (Run Backtest) but discovered critical flaw in rolling features. Season boundary handling is broken — prior season games are treated as "recent form" with no decay across 7-month offseason.
+
+### Exchange Log
+- Ran thread diagnostic, verified at commit 2a3db4d
+- Created backtest script `run_backtest_v2.py`
+- Initial results showed profitable signal at 4+ point edges (56% win rate)
+- Investigated CLV metrics — found mislabeled (not actually CLV)
+- Investigated PHI Week 1 2024 prediction discrepancy
+- Discovered model predicted GB +9 when market had PHI -2
+- Traced to rolling features: PHI's late-2023 collapse (4-6, -7 pt diff) used as "recent form" for September 2024
+- This is fundamentally wrong — 7 months between seasons, roster changes, etc.
+- Documented as ISSUE-003 (CRITICAL)
+- Added Task 2.2.1 to fix before continuing backtest
+
+### Key Discovery
+📝 LOG: Rolling features use `tail(n_games)` across season boundary with no decay
+📝 LOG: NFL_markets_analysis.md specifies: "1/3 mean regression between seasons", "dynamic window transitioning to current-season-only by week 10"
+📝 LOG: Current code implements none of this
+
+### Commits Made
+| Hash | Message |
+|------|---------|
+| d4c9830 | Update handoff template with operational context |
+| cf41cf7 | Add ISSUE-003: Season boundary handling broken |
+
+### Files Created/Modified
+- `KNOWN_ISSUES.md` — created with ISSUE-003
+- `ROADMAP.md` — added Task 2.2.1, updated 2.3 dependency
+- `Thread_Handoff_Template.md` — added operational context section
+- `ball_knower/scripts/run_backtest_v2.py` — created (blocked by ISSUE-003)
+
+### Decisions Made
+- Task 2.3 blocked until ISSUE-003 fixed (season boundary handling)
+- Backtest results from this session are invalid
+- Next task: 2.2.1 (fix rolling features)
