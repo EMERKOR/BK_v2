@@ -78,6 +78,14 @@ At the end of each thread, Claude fills out a handoff document. User copies it i
 - Clean data: `data/clean/` (gitignored, rebuilds from RAW)
 - Datasets: `data/datasets/` (gitignored, rebuilds from clean)
 - Coverage: `data/RAW_fantasypoints/coverage/{offense|defense}/`
+- Market spreads: `data/clean/market_lines_spread_clean/` (gitignored)
+- Predictions: `data/predictions/score_model_v2/` (gitignored)
+
+**Operational Context:**
+- Working directory: `/workspaces/BK_v2`
+- All commands assume this as cwd
+- File creation tools must use absolute paths starting with `/workspaces/BK_v2/`
+- Gitignored dirs (clean/, datasets/, predictions/) may be empty after codespace restart
 
 **Model Targets (from research):**
 - 53-56% ATS accuracy
