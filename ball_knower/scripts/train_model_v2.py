@@ -129,6 +129,21 @@ def main():
     )
     
     print(f"\nModel trained successfully")
+
+    # Export feature importance
+    import_home = model.model_home.feature_importances_
+    import_away = model.model_away.feature_importances_
+    import_avg = (import_home + import_away) / 2
+    
+    fi_df = pd.DataFrame({
+        'feature': model.feature_columns_,
+        'importance_avg': import_avg,
+    }).sort_values('importance_avg', ascending=False)
+    
+    fi_path = Path(f"data/predictions/score_model_v2/feature_importance_{test_year}.csv")
+    fi_df.to_csv(fi_path, index=False)
+    print(f"Feature importance saved to: {fi_path}")
+    
     
     # Save model if requested
     if args.save_model:
