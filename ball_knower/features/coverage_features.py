@@ -17,6 +17,18 @@ import numpy as np
 from ..mappings import normalize_team_code
 
 
+def _regress_coverage_toward_mean(stats: dict, defaults: dict, regression_factor: float = 1/3) -> dict:
+    """
+    Regress coverage stats toward league mean per NFL_markets_analysis.md.
+    Formula: regressed = raw * (1 - regression_factor) + mean * regression_factor
+    """
+    regressed = stats.copy()
+    for key, default in defaults.items():
+        if key in stats and key != "games_available":
+            regressed[key] = stats[key] * (1 - regression_factor) + default * regression_factor
+    return regressed
+
+
 def _load_fp_coverage_raw(
     season: int,
     week: int,
@@ -174,9 +186,15 @@ def compute_rolling_coverage_stats(
     team: str,
     coverage_log: pd.DataFrame,
     n_games: int = 10,
+    target_season: int = None,
+    target_week: int = None,
 ) -> dict:
     """
     Compute rolling coverage stats for a team.
+    
+    Implements season-aware blending per NFL_markets_analysis.md:
+    - Prior season stats regressed 1/3 toward league mean
+    - Dynamic window: prior-season-inclusive -> current-season-only by week 10
 
     Parameters
     ----------
@@ -186,6 +204,10 @@ def compute_rolling_coverage_stats(
         Full coverage log (all teams) from _load_historical_coverage
     n_games : int
         Number of recent games to use
+    target_season : int
+        Season we're predicting for (required for season boundary handling)
+    target_week : int
+        Week we're predicting for (required for dynamic blending)
 
     Returns
     -------
@@ -209,39 +231,93 @@ def compute_rolling_coverage_stats(
         "games_available": 0,
     }
 
+    def _compute_raw_stats(games):
+        """Compute raw coverage stats from games."""
+        if len(games) == 0:
+            return {k: v for k, v in defaults.items() if k != "games_available"}
+        return {
+            "man_pct_avg": games["man_pct"].mean() if "man_pct" in games.columns else defaults["man_pct_avg"],
+            "fp_per_db_man_avg": games["fp_per_db_man"].mean() if "fp_per_db_man" in games.columns else defaults["fp_per_db_man_avg"],
+            "zone_pct_avg": games["zone_pct"].mean() if "zone_pct" in games.columns else defaults["zone_pct_avg"],
+            "fp_per_db_zone_avg": games["fp_per_db_zone"].mean() if "fp_per_db_zone" in games.columns else defaults["fp_per_db_zone_avg"],
+            "cover_0_pct_avg": games["cover_0_pct"].mean() if "cover_0_pct" in games.columns else defaults["cover_0_pct_avg"],
+            "cover_1_pct_avg": games["cover_1_pct"].mean() if "cover_1_pct" in games.columns else defaults["cover_1_pct_avg"],
+            "cover_2_pct_avg": games["cover_2_pct"].mean() if "cover_2_pct" in games.columns else defaults["cover_2_pct_avg"],
+            "cover_2_man_pct_avg": games["cover_2_man_pct"].mean() if "cover_2_man_pct" in games.columns else defaults["cover_2_man_pct_avg"],
+            "cover_3_pct_avg": games["cover_3_pct"].mean() if "cover_3_pct" in games.columns else defaults["cover_3_pct_avg"],
+            "cover_4_pct_avg": games["cover_4_pct"].mean() if "cover_4_pct" in games.columns else defaults["cover_4_pct_avg"],
+            "cover_6_pct_avg": games["cover_6_pct"].mean() if "cover_6_pct" in games.columns else defaults["cover_6_pct_avg"],
+        }
+
     if coverage_log.empty:
-        return defaults
+        return defaults.copy()
 
     team_data = coverage_log[coverage_log["team_code"] == team].copy()
 
     if len(team_data) == 0:
-        return defaults
+        return defaults.copy()
 
-    # Sort by season and week, take last n_games
-    team_data = team_data.sort_values(["season", "week"])
-    recent = team_data.tail(n_games)
+    # If no target context provided, fall back to simple tail (legacy behavior)
+    if target_season is None or target_week is None:
+        team_data = team_data.sort_values(["season", "week"])
+        recent = team_data.tail(n_games)
+        stats = _compute_raw_stats(recent)
+        stats["games_available"] = len(recent)
+        for key, default_val in defaults.items():
+            if pd.isna(stats.get(key)):
+                stats[key] = default_val
+        return stats
 
-    stats = {
-        "man_pct_avg": recent["man_pct"].mean() if "man_pct" in recent.columns else defaults["man_pct_avg"],
-        "fp_per_db_man_avg": recent["fp_per_db_man"].mean() if "fp_per_db_man" in recent.columns else defaults["fp_per_db_man_avg"],
-        "zone_pct_avg": recent["zone_pct"].mean() if "zone_pct" in recent.columns else defaults["zone_pct_avg"],
-        "fp_per_db_zone_avg": recent["fp_per_db_zone"].mean() if "fp_per_db_zone" in recent.columns else defaults["fp_per_db_zone_avg"],
-        "cover_0_pct_avg": recent["cover_0_pct"].mean() if "cover_0_pct" in recent.columns else defaults["cover_0_pct_avg"],
-        "cover_1_pct_avg": recent["cover_1_pct"].mean() if "cover_1_pct" in recent.columns else defaults["cover_1_pct_avg"],
-        "cover_2_pct_avg": recent["cover_2_pct"].mean() if "cover_2_pct" in recent.columns else defaults["cover_2_pct_avg"],
-        "cover_2_man_pct_avg": recent["cover_2_man_pct"].mean() if "cover_2_man_pct" in recent.columns else defaults["cover_2_man_pct_avg"],
-        "cover_3_pct_avg": recent["cover_3_pct"].mean() if "cover_3_pct" in recent.columns else defaults["cover_3_pct_avg"],
-        "cover_4_pct_avg": recent["cover_4_pct"].mean() if "cover_4_pct" in recent.columns else defaults["cover_4_pct_avg"],
-        "cover_6_pct_avg": recent["cover_6_pct"].mean() if "cover_6_pct" in recent.columns else defaults["cover_6_pct_avg"],
-        "games_available": len(recent),
-    }
+    # Split into current season and prior seasons
+    current_season_games = team_data[team_data["season"] == target_season].sort_values("week")
+    prior_season_games = team_data[team_data["season"] < target_season].sort_values(["season", "week"])
+
+    # Dynamic blend: Week 1 = 0% current, Week 10+ = 100% current
+    current_weight = min(1.0, (target_week - 1) / 9.0)
+    prior_weight = 1.0 - current_weight
+
+    n_current = len(current_season_games)
+    n_prior = len(prior_season_games)
+
+    # Case 1: No current season games (week 1)
+    if n_current == 0:
+        if n_prior == 0:
+            return defaults.copy()
+        prior_recent = prior_season_games.tail(n_games)
+        stats = _regress_coverage_toward_mean(_compute_raw_stats(prior_recent), defaults)
+        stats["games_available"] = len(prior_recent)
+        return stats
+
+    # Case 2: Week 10+ or enough current data - use only current season
+    if current_weight >= 1.0 or n_current >= n_games:
+        recent = current_season_games.tail(n_games)
+        stats = _compute_raw_stats(recent)
+        stats["games_available"] = len(recent)
+        for key, default_val in defaults.items():
+            if pd.isna(stats.get(key)):
+                stats[key] = default_val
+        return stats
+
+    # Case 3: Blend current season with regressed prior season
+    current_stats = _compute_raw_stats(current_season_games)
+    prior_recent = prior_season_games.tail(n_games)
+    prior_stats = _regress_coverage_toward_mean(_compute_raw_stats(prior_recent), defaults)
+
+    # Blend based on week
+    blended = {}
+    for key in defaults.keys():
+        if key == "games_available":
+            continue
+        blended[key] = current_stats.get(key, defaults[key]) * current_weight + prior_stats.get(key, defaults[key]) * prior_weight
+
+    blended["games_available"] = n_current + n_prior
 
     # Fill NaN with defaults
     for key, default_val in defaults.items():
-        if pd.isna(stats.get(key)):
-            stats[key] = default_val
+        if pd.isna(blended.get(key)):
+            blended[key] = default_val
 
-    return stats
+    return blended
 
 
 def build_coverage_features(
@@ -310,10 +386,10 @@ def build_coverage_features(
         game_id = f"{season}_{week}_{away_team}_{home_team}"
 
         # Get rolling stats for each team and view
-        home_off_stats = compute_rolling_coverage_stats(home_team, offense_log, n_games)
-        away_off_stats = compute_rolling_coverage_stats(away_team, offense_log, n_games)
-        home_def_stats = compute_rolling_coverage_stats(home_team, defense_log, n_games)
-        away_def_stats = compute_rolling_coverage_stats(away_team, defense_log, n_games)
+        home_off_stats = compute_rolling_coverage_stats(home_team, offense_log, n_games, target_season=season, target_week=week)
+        away_off_stats = compute_rolling_coverage_stats(away_team, offense_log, n_games, target_season=season, target_week=week)
+        home_def_stats = compute_rolling_coverage_stats(home_team, defense_log, n_games, target_season=season, target_week=week)
+        away_def_stats = compute_rolling_coverage_stats(away_team, defense_log, n_games, target_season=season, target_week=week)
 
         row = {
             "game_id": game_id,
