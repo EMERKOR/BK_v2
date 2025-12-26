@@ -295,3 +295,33 @@ Attempted Task 2.3 (Run Backtest) but discovered critical flaw in rolling featur
 - Task 2.3 blocked until ISSUE-003 fixed (season boundary handling)
 - Backtest results from this session are invalid
 - Next task: 2.2.1 (fix rolling features)
+
+## Session: 2025-12-25 — Task 2.2.1: Fix Season Boundary Handling
+
+### Summary
+Fixed ISSUE-003 by implementing season-aware blending in rolling features. Prior season stats now regressed 1/3 toward league mean, with dynamic window transitioning to current-season-only by week 10.
+
+### Exchange Log
+- Verified repo state at commit eb93c87
+- Examined rolling_features.py and efficiency_features.py - found `tail(n_games)` with no season awareness
+- Searched project knowledge for research specs on season boundary handling
+- Created patch scripts (workflow: create file in Claude container, user downloads, places in repo, runs)
+- Patched rolling_features.py: added `_ROLLING_DEFAULTS`, `_compute_raw_stats`, `_regress_toward_mean`
+- Patched efficiency_features.py: added `_regress_efficiency_toward_mean`, updated `compute_rolling_efficiency_stats`
+- Verified PHI Week 1 2024: pt_diff went from -7.0 (raw) to -4.67 (regressed)
+- Verified dynamic blending: Week 6 shows blend, Week 10+ uses current-season only
+- Cleared pycache, verified end-to-end through dataset builder
+- Regenerated datasets 2011-2024 with n_games=10
+- Retrained model v2.3 on 2011-2023
+- Backtest 2024: 58.6% win rate at 4+ edge, +11.8% ROI
+
+### Key Discoveries
+📝 LOG: Workflow for large code changes - create patch scripts, user downloads and runs
+📝 LOG: builder_v2.py defaults to n_games=5, research says n_games=10 optimal
+📝 LOG: Early season (w1-8) now performs on par with late season after fix
+
+### Commits Made
+| Hash | Message |
+|------|---------|
+| d6de686 | Fix ISSUE-003: Season boundary handling in rolling features |
+| bc8f79a | Regenerate datasets and retrain model with ISSUE-003 fix |
