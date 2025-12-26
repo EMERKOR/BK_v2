@@ -228,7 +228,7 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 
 ### Task 2.4: Document Results
 
-**Status:** TODO  
+**Status:** DONE  
 **Depends On:** 2.3
 
 **Acceptance Criteria:**
