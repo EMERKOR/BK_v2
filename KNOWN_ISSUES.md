@@ -66,3 +66,53 @@ The prior season's December/January performance has near-zero predictive value f
 
 - Task 2.3 (Backtest) - results invalid without this fix
 - All downstream phases
+
+---
+
+## ISSUE-004: Coverage Features Lacked Season Boundary Handling
+
+**Status:** FIXED (commit 9750d21)  
+**Severity:** MEDIUM  
+**Discovered:** 2025-12-26 (Code Audit Task 2.7)
+
+### Problem
+`coverage_features.py` used simple `tail(n_games)` without season-aware blending, unlike `rolling_features.py` and `efficiency_features.py` which had proper 3-case logic after ISSUE-003 fix.
+
+### Fix Applied
+Added matching season boundary handling:
+- `_regress_coverage_toward_mean()` helper function
+- 3-case logic: week 1 (regressed prior), weeks 2-9 (blended), week 10+ (current only)
+- Updated all call sites to pass `target_season` and `target_week`
+
+---
+
+## ISSUE-005: Duplicate Features in efficiency_features.py
+
+**Status:** OPEN  
+**Severity:** LOW  
+**Discovered:** 2025-12-26 (Code Audit Task 2.7)
+
+### Problem
+`efficiency_features.py` outputs duplicate features with different names:
+- `matchup_off_epa_diff` and `off_epa_diff` are identical calculations
+- Similar duplicates exist for other differential features
+
+This contributes to the 138 feature count and wastes compute.
+
+### Resolution
+Will be addressed in Task 2.6 (Feature Pruning). Low priority since duplicates don't break anything, they just add noise.
+
+---
+
+## Code Audit Summary (Task 2.7) — 2025-12-26
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Spread convention | ✓ VERIFIED | Correct |
+| Edge calculation | ✓ VERIFIED | Correct |
+| Bet grading | ✓ VERIFIED | Correct |
+| CLV calculation | ✓ VERIFIED | Recent fix correct |
+| Rolling features - season boundary | ✓ VERIFIED | ISSUE-003 fix working |
+| Efficiency features - season boundary | ✓ VERIFIED | ISSUE-003 fix working |
+| Coverage features - season boundary | ✓ FIXED | ISSUE-004 |
+| Duplicate features | ⚠ OPEN | ISSUE-005, deferred to 2.6 |
