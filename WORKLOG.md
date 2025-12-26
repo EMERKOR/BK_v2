@@ -354,3 +354,23 @@ Playoffs w19+: 75.0%, +43.2% ROI (small sample)
 
 ### Commits Made
 - da8c4a1: Fix CLV calculation: measure cover margin, not prediction error
+
+### Extended Session: Phase 2 Roadmap Revision
+
+After reviewing backtest results with user, identified several concerns:
+1. CLV bug discovered mid-session suggests more bugs may exist
+2. FantasyPoints Stream B data largely unused/unevaluated  
+3. 138 features likely too many (research suggests 20-40 optimal for sample size)
+4. Single-season backtest (99 bets) insufficient for statistical significance
+
+**Decision:** Phase 2 "GO" was premature. Extended roadmap with:
+- Task 2.5: Multi-year backtest (2022-2024)
+- Task 2.6: Feature selection & pruning
+- Task 2.7: Code audit - critical path review
+- Task 2.8: FantasyPoints data evaluation
+
+### Commits Made (Full Session)
+- da8c4a1: Fix CLV calculation: measure cover margin, not prediction error
+- 053e37f: Update docs: Task 2.3 complete, CLV fix documented
+- cb4bcd8: Task 2.4: Document backtest results, GO decision for Phase 3
+- 8419c5e: Extend Phase 2: Add Tasks 2.5-2.8 for rigorous validation before Phase 3
