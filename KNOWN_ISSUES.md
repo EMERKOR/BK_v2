@@ -21,7 +21,9 @@ Spread convention was inconsistent. Now standardized:
 
 ## ISSUE-003: Season Boundary Not Handled in Rolling Features
 
-**Status:** OPEN  
+**Status:** FIXED (commit d6de686)
+
+**Status:** FIXED  
 **Severity:** CRITICAL  
 **Discovered:** 2025-12-25  
 **Affects:** All predictions, especially weeks 1-8

@@ -193,7 +193,9 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 - [ ] Feature importance exported
 - [ ] Coverage features in importance rankings
 
-### Task 2.2.1: Fix Season Boundary Handling (ISSUE-003)
+### Task 2.2.1: Fix Season Boundary Handling
+
+**Status:** DONE (ISSUE-003)
 **Status:** TODO
 **Priority:** CRITICAL
 **Blocks:** 2.3, all downstream
