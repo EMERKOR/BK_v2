@@ -325,3 +325,32 @@ Fixed ISSUE-003 by implementing season-aware blending in rolling features. Prior
 |------|---------|
 | d6de686 | Fix ISSUE-003: Season boundary handling in rolling features |
 | bc8f79a | Regenerate datasets and retrain model with ISSUE-003 fix |
+
+## Session: 2025-12-26 — Fix CLV Calculation Bug
+
+### Summary
+Investigated negative CLV despite profitable results. Found CLV formula was measuring model prediction error instead of betting value. Fixed and re-ran backtest - CLV now aligns with win rates.
+
+### Exchange Log
+- Verified repo state at commit f5a67d2
+- Searched for CLV calculation code in backtesting files
+- Found bug in run_backtest_v2.py lines 62-67
+- Old formula: `spread_actual - spread_pred` (model error)
+- New formula: `cover_margin` from bet perspective (actual CLV)
+- Created and applied patch_clv_fix.py
+- Re-ran backtest: CLV now correlates with wins as expected
+
+### Key Discoveries
+📝 LOG: CLV calculation was fundamentally wrong - measured prediction error, not betting value
+📝 LOG: Corrected CLV at 4+ edge: +2.03 avg, 58.0% CLV+ rate (matches 58.6% win rate)
+
+### Backtest Results (2024, corrected)
+```
+Edge >= 4.0: 58-41 (58.6%), ROI: +11.8%, Avg CLV: +2.03
+Early season w1-8: 58.0%, +10.7% ROI
+Late season w9-18: 57.8%, +10.3% ROI
+Playoffs w19+: 75.0%, +43.2% ROI (small sample)
+```
+
+### Commits Made
+- da8c4a1: Fix CLV calculation: measure cover margin, not prediction error
