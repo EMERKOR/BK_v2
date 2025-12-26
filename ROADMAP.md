@@ -239,6 +239,112 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 
 ## Phase 3: Expand Markets
 
+### Task 2.5: Multi-Year Backtest
+**Status:** TODO  
+**Depends On:** 2.4
+**Priority:** HIGH
+
+**Purpose:** Validate model performance across multiple seasons to ensure edge is not 2024-specific.
+
+**Scope:**
+- Run backtest on 2022, 2023, 2024 (train on prior years for each)
+- Target: ~300+ bets at 4+ edge across all seasons
+- Compare win rates, ROI, CLV across seasons
+
+**Acceptance Criteria:**
+- [ ] 2022 backtest complete (train 2011-2021)
+- [ ] 2023 backtest complete (train 2011-2022)
+- [ ] 2024 backtest complete (train 2011-2023)
+- [ ] Combined results show consistent performance (no single-season anomaly)
+- [ ] Statistical significance assessment documented
+
+---
+
+### Task 2.6: Feature Selection & Pruning
+**Status:** TODO  
+**Depends On:** 2.5
+**Priority:** HIGH
+
+**Purpose:** Reduce feature count from 138 to 20-40 high-importance features to reduce noise and improve generalization.
+
+**Approach:**
+1. Run permutation importance on holdout set
+2. Identify features with importance > threshold
+3. Retrain model with pruned feature set
+4. Compare performance vs full feature set
+
+**Reference:** data/audits/feature_importance_phase_a2.csv shows steep dropoff after top 20 features
+
+**Acceptance Criteria:**
+- [ ] Feature importance audit complete on multi-year data
+- [ ] Pruned feature set defined (target: 20-40 features)
+- [ ] Model retrained with pruned features
+- [ ] Performance comparison documented (full vs pruned)
+
+---
+
+### Task 2.7: Code Audit - Critical Path Review
+**Status:** TODO  
+**Depends On:** 2.4
+**Priority:** MEDIUM
+
+**Purpose:** Systematic review of math and logic in critical code paths to catch bugs like CLV calculation error.
+
+**Scope:**
+- Spread convention and edge calculation
+- Rolling feature aggregation
+- Season boundary handling
+- Bet grading logic
+- CLV calculation (verify fix is correct)
+
+**Method:** Trace through concrete examples end-to-end, verify intermediate values match expectations.
+
+**Files to Audit:**
+- `ball_knower/backtesting/engine_v2.py`
+- `ball_knower/scripts/run_backtest_v2.py`
+- `ball_knower/features/rolling_features.py`
+- `ball_knower/features/efficiency_features.py`
+- `ball_knower/datasets/dataset_v2.py`
+
+**Acceptance Criteria:**
+- [ ] Each file audited with concrete test cases
+- [ ] Any bugs found documented in KNOWN_ISSUES.md
+- [ ] All bugs fixed before proceeding
+
+---
+
+### Task 2.8: FantasyPoints Data Evaluation
+**Status:** BLOCKED  
+**Depends On:** 2.6, 2.7
+**Priority:** MEDIUM
+
+**Purpose:** Determine if Stream B data (coverage, PROE, trench matchups) adds predictive value when properly integrated.
+
+**Current State:** Coverage features show minimal importance in current audit. Need to determine if this is:
+- (a) Features genuinely not predictive
+- (b) Integration issues (data not flowing correctly)
+- (c) Feature engineering issues (wrong aggregation/representation)
+
+**Approach:**
+1. Verify Stream B data is correctly merged into datasets
+2. Test model with/without Stream B features
+3. Analyze feature importance of Stream B features specifically
+4. Document findings and decide whether to keep/drop
+
+**Available Stream B Data:**
+- Coverage matrix (man/zone rates) - 2022+
+- PROE report (play-calling tendencies)
+- Trench matchups (OL/DL grades)
+- Receiving leaders, separation rates
+
+**Acceptance Criteria:**
+- [ ] Data integration verified (spot-check values)
+- [ ] A/B test: model with vs without Stream B
+- [ ] Decision documented: include, exclude, or needs more work
+
+---
+
+
 **Depends On:** Phase 2 complete
 
 ### Task 3.1: Totals Model
