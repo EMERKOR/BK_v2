@@ -89,12 +89,13 @@ def calculate_betting_metrics(df: pd.DataFrame) -> pd.DataFrame:
         )
     )
     
-    # CLV: How much our predicted spread differed from actual result
-    # Positive CLV = we were on the right side of the "true" line
+    # CLV: How much we beat the spread by from our bet's perspective
+    # Positive CLV = we covered, negative CLV = we didn't cover
+    # This is the cover margin from the perspective of the side we bet
     df["clv"] = np.where(
         df["bet_side"] == "home",
-        df["spread_actual"] - df["spread_pred"],  # Home bet: actual > pred is good
-        df["spread_pred"] - df["spread_actual"]   # Away bet: pred > actual is good
+        df["cover_margin"],      # positive = home covered
+        -df["cover_margin"]      # positive = away covered
     )
     
     return df
