@@ -374,3 +374,31 @@ After reviewing backtest results with user, identified several concerns:
 - 053e37f: Update docs: Task 2.3 complete, CLV fix documented
 - cb4bcd8: Task 2.4: Document backtest results, GO decision for Phase 3
 - 8419c5e: Extend Phase 2: Add Tasks 2.5-2.8 for rigorous validation before Phase 3
+
+---
+
+## Session: 2025-12-26 — Code Audit (Task 2.7)
+
+### Summary
+Completed systematic code audit of critical paths. Found and fixed one bug (coverage features missing season boundary handling). Documented all findings.
+
+### Files Audited
+- `ball_knower/backtesting/engine_v2.py` — spread convention, edge calculation, bet grading
+- `ball_knower/scripts/run_backtest_v2.py` — CLV calculation
+- `ball_knower/features/rolling_features.py` — season boundary handling
+- `ball_knower/features/efficiency_features.py` — season boundary handling
+- `ball_knower/features/coverage_features.py` — season boundary handling (BUG FOUND)
+- `ball_knower/features/builder_v2.py` — feature orchestration
+- `ball_knower/datasets/dataset_v2.py` — dataset builder
+
+### Key Findings
+1. **Spread/edge/CLV logic:** All verified correct
+2. **Season boundary handling:** rolling_features.py and efficiency_features.py correct; coverage_features.py was missing it (ISSUE-004, fixed)
+3. **Duplicate features:** efficiency_features.py has redundant features (ISSUE-005, deferred to Task 2.6)
+
+### Commits
+- 9750d21: Fix coverage features season boundary handling
+- 6743997: Document audit findings
+
+### Next Steps
+Task 2.6 (Feature Pruning) — reduce 138 features to 20-40
