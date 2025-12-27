@@ -261,23 +261,26 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 ---
 
 ### Task 2.6: Feature Selection & Pruning
-**Status:** TODO  
+**Status:** IN PROGRESS  
 **Depends On:** 2.5
 **Priority:** HIGH
 
-**Purpose:** Reduce feature count from 138 to 20-40 high-importance features to reduce noise and improve generalization.
+**Purpose:** Reduce feature count from 136 to 20-40 high-importance features to reduce noise and improve generalization.
 
 **Approach:**
-1. Run permutation importance on holdout set
-2. Identify features with importance > threshold
+1. Used existing importance data from phase_a2 audit
+2. Identified features with importance >= 0.005
 3. Retrain model with pruned feature set
 4. Compare performance vs full feature set
 
-**Reference:** data/audits/feature_importance_phase_a2.csv shows steep dropoff after top 20 features
+**Implementation:**
+- `configs/feature_sets/base_features_v1.json` - 40 features
+- `ball_knower/features/feature_selector.py` - Feature utilities
+- `--feature-set` CLI flag added to train_model_v2.py
 
 **Acceptance Criteria:**
-- [ ] Feature importance audit complete on multi-year data
-- [ ] Pruned feature set defined (target: 20-40 features)
+- [x] Feature importance audit complete on multi-year data
+- [x] Pruned feature set defined (40 features)
 - [ ] Model retrained with pruned features
 - [ ] Performance comparison documented (full vs pruned)
 
