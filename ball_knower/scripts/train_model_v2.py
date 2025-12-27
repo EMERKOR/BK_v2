@@ -53,6 +53,8 @@ def main():
                         help="Path to save trained model (optional)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Show what would be done without training")
+    parser.add_argument("--feature-set", type=str, default=None,
+                        help="Feature set name (e.g., 'base_features_v1'). If not specified, uses all features.")
     
     args = parser.parse_args()
     
@@ -126,6 +128,7 @@ def main():
         dataset_version="2",
         n_games=args.n_games,
         data_dir=args.data_dir,
+        feature_set=args.feature_set,
     )
     
     print(f"\nModel trained successfully")
