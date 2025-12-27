@@ -34,6 +34,7 @@ from sklearn.isotonic import IsotonicRegression
 import xgboost as xgb
 
 from ..datasets.dataset_v2 import build_dataset_v2_1, build_dataset_v2_2, load_dataset_v2
+from ..features.feature_selector import load_feature_set, filter_to_feature_set
 
 
 def _ensure_predictions_dir(season: int, data_dir: Path | str = "data") -> Path:
@@ -295,6 +296,7 @@ def train_score_model_v2(
     dataset_version: str = "2",
     n_games: int = 5,
     data_dir: Path | str = "data",
+    feature_set: str | None = None,
     **model_kwargs,
 ) -> ScoreModelV2:
     """
@@ -342,8 +344,14 @@ def train_score_model_v2(
 
     train_df = pd.concat(train_dfs, ignore_index=True)
 
-    # Get features (exclude sportsbook lines)
-    feature_cols = _get_feature_columns(train_df)
+    # Get features (use feature_set if provided, else auto-detect)
+    if feature_set:
+        feature_cols = load_feature_set(feature_set)
+        # Filter to only features that exist in the data
+        feature_cols = [c for c in feature_cols if c in train_df.columns]
+        print(f"Using feature set '{feature_set}': {len(feature_cols)} features")
+    else:
+        feature_cols = _get_feature_columns(train_df)
     X_train = train_df[feature_cols]
 
     # Get targets
@@ -394,6 +402,7 @@ def predict_score_model_v2(
     n_games: int = 5,
     data_dir: Path | str = "data",
     save: bool = True,
+    feature_set: str | None = None,
 ) -> pd.DataFrame:
     """
     Generate predictions for a test week.
@@ -431,8 +440,13 @@ def predict_score_model_v2(
     else:
         test_df = load_dataset_v2(dataset_version, test_season, test_week, data_dir=data_dir)
 
-    # Get features
-    feature_cols = _get_feature_columns(test_df)
+    # Get features (use feature_set if provided, else auto-detect)
+    if feature_set:
+        feature_cols = load_feature_set(feature_set)
+        # Filter to only features that exist in the data
+        feature_cols = [c for c in feature_cols if c in test_df.columns]
+    else:
+        feature_cols = _get_feature_columns(test_df)
     X_test = test_df[feature_cols]
 
     # Get actuals
