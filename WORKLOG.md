@@ -10,6 +10,45 @@ This document maintains a chronological record of all work sessions. Each sessio
 
 ---
 
+
+## Session: 2025-12-27 — Feature Pruning (Task 2.6)
+
+### Summary
+Completed feature pruning to reduce model from ~106 features to 40 high-importance features. Validated improvement through A/B backtest comparison.
+
+### Analysis
+- Analyzed feature importance from `data/audits/feature_importance_phase_a2.csv`
+- Identified 40 features with importance >= 0.005
+- Removed 2 exact duplicates (off_epa_diff, off_success_diff)
+- Removed 64 features with zero/negative importance
+- Validated alignment with NFL betting research (EPA/passing metrics dominate)
+
+### Implementation
+- Created `configs/feature_sets/base_features_v1.json` - 40 feature config
+- Created `ball_knower/features/feature_selector.py` - feature loading/filtering
+- Added `feature_set` parameter to `train_score_model_v2()` and `predict_score_model_v2()`
+- Added `--feature-set` CLI flag to `train_model_v2.py`
+
+### Validation Results (2024 backtest)
+| Metric | Pruned (40) | Full (~106) |
+|--------|-------------|-------------|
+| Spread MAE | 10.21 | 10.41 |
+| 3.0+ Win% | 57.3% | 55.3% |
+| 3.0+ ROI | +9.3% | +5.6% |
+| 3.0+ CLV | +1.48 | +0.58 |
+
+Pruned model outperforms on all metrics. Feature selection validated.
+
+### Commits
+- 4015767: Add feature selection with base_v1 (40 features)
+- 3278bae: Integrate feature_set into score model training/prediction
+- 2fe5c9b: Add --feature-set CLI argument to train_model_v2.py
+- ea957bd: Update ROADMAP.md with progress
+
+### Next Steps
+- Task 2.5: Multi-year backtest with pruned feature set
+- Evaluate coverage features (2022+) separately
+
 ## Session: 2025-12-09 — Project Setup & Roadmap Creation
 
 ### Exchange Log (Chronological)

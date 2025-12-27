@@ -261,7 +261,7 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 ---
 
 ### Task 2.6: Feature Selection & Pruning
-**Status:** IN PROGRESS  
+**Status:** DONE  
 **Depends On:** 2.5
 **Priority:** HIGH
 
@@ -281,8 +281,18 @@ Week range hardcoded as 5-18, excluding ~11 playoff games/season.
 **Acceptance Criteria:**
 - [x] Feature importance audit complete on multi-year data
 - [x] Pruned feature set defined (40 features)
-- [ ] Model retrained with pruned features
-- [ ] Performance comparison documented (full vs pruned)
+- [x] Model retrained with pruned features
+- [x] Performance comparison documented (full vs pruned)
+
+**Results (2024 backtest):**
+| Metric | Pruned (40) | Full (~106) |
+|--------|-------------|-------------|
+| Spread MAE | 10.21 | 10.41 |
+| 3.0+ Win% | 57.3% | 55.3% |
+| 3.0+ ROI | +9.3% | +5.6% |
+| 3.0+ CLV | +1.48 | +0.58 |
+
+Pruned model outperforms across all metrics. Feature selection validated.
 
 ---
 
