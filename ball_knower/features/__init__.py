@@ -23,3 +23,5 @@ __all__ = [
     "build_injury_features",
     "build_coverage_features",
 ]
+
+from .feature_selector import load_feature_set, filter_to_feature_set
