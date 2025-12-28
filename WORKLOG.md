@@ -441,3 +441,51 @@ Completed systematic code audit of critical paths. Found and fixed one bug (cove
 
 ### Next Steps
 Task 2.6 (Feature Pruning) — reduce 138 features to 20-40
+
+---
+
+## Session: 2025-12-27 — Multi-Year Backtest (Task 2.5)
+
+### Summary
+Completed multi-year backtest across 2023, 2024, 2025. Results revealed inconsistent performance and a critical finding: the model only works late-season (weeks 13+). Early-season predictions suffer from insufficient prior-season regression.
+
+### Data Updates
+- Ingested 2025 weeks 15-16 (scores, spreads, game_state_v2)
+- Created pruned model file: `models/score_model_v2_pruned.pkl` (40 features)
+
+### Key Results
+
+**Combined 3-Year (2023-2025):**
+| Edge | Bets | Win% | ROI | CLV |
+|------|------|------|-----|-----|
+| 4.0+ | 239 | 52.3% | -0.2% | +0.57 |
+| 5.0+ | 163 | 55.8% | +6.6% | +0.96 |
+| 6.0+ | 104 | 56.7% | +8.3% | +1.12 |
+
+z-score at 4.0+ edge: 0.71 (not statistically significant)
+
+**By Season @ 4.0+ edge:**
+- 2023: 77 bets, 44.2% win, -15.7% ROI, +0.74 CLV
+- 2024: 88 bets, 54.5% win, +4.1% ROI, +0.89 CLV
+- 2025: 74 bets, 58.1% win, +10.9% ROI, -0.01 CLV
+
+**Early vs Late Season (4+ edge):**
+- Weeks 1-6: 76 bets, 51.3% win, -0.82 CLV
+- Weeks 7-12: 82 bets, 48.8% win, -0.25 CLV
+- Weeks 13+: 81 bets, 56.8% win, +2.76 CLV ← Model works here
+
+### Root Cause Analysis
+Season boundary regression is too weak. Current logic:
+- Prior season regressed 1/3 toward league mean (keeps 67% of raw)
+- Week weighting: linear ramp from 0% current (wk1) to 100% (wk10+)
+- Result: Elite teams (BUF, BAL) overvalued early in subsequent seasons
+
+Research needed: Optimal regression factor for NFL EPA year-over-year.
+
+### Commits
+- (none yet - no code changes, only analysis)
+
+### Next Steps
+1. Research optimal season-to-season regression factor for NFL metrics
+2. Adjust regression in efficiency_features.py and rolling_features.py
+3. Re-run multi-year backtest to validate improvement
