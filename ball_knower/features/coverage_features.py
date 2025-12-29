@@ -17,7 +17,7 @@ import numpy as np
 from ..mappings import normalize_team_code
 
 
-def _regress_coverage_toward_mean(stats: dict, defaults: dict, regression_factor: float = 1/3) -> dict:
+def _regress_coverage_toward_mean(stats: dict, defaults: dict, regression_factor: float = 0.5) -> dict:
     """
     Regress coverage stats toward league mean per NFL_markets_analysis.md.
     Formula: regressed = raw * (1 - regression_factor) + mean * regression_factor

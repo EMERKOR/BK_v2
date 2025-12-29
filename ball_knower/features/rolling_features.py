@@ -42,7 +42,7 @@ def _compute_raw_stats(games: pd.DataFrame) -> dict:
     }
 
 
-def _regress_toward_mean(stats: dict, regression_factor: float = 1/3) -> dict:
+def _regress_toward_mean(stats: dict, regression_factor: float = 0.5) -> dict:
     """
     Regress stats toward league mean per NFL_markets_analysis.md.
     Formula: regressed = raw * (1 - factor) + mean * factor

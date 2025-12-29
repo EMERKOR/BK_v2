@@ -55,7 +55,7 @@ def _weighted_mean(values: pd.Series, decay: str = "linear") -> float:
     return float(np.average(values.values, weights=weights))
 
 
-def _regress_efficiency_toward_mean(stats: dict, regression_factor: float = 1/3) -> dict:
+def _regress_efficiency_toward_mean(stats: dict, regression_factor: float = 0.5) -> dict:
     """
     Regress efficiency stats toward league mean per NFL_markets_analysis.md.
     Formula: regressed = raw * (1 - regression_factor) + mean * regression_factor

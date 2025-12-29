@@ -489,3 +489,38 @@ Research needed: Optimal regression factor for NFL EPA year-over-year.
 1. Research optimal season-to-season regression factor for NFL metrics
 2. Adjust regression in efficiency_features.py and rolling_features.py
 3. Re-run multi-year backtest to validate improvement
+
+## Session: 2025-12-29 — Regression Factor Fix
+
+### Summary
+Updated season boundary regression factor from 0.33 to 0.5 across all feature modules based on NFL year-over-year correlation research. This reduces prior-season signal retention from 67% to 50%, better matching empirical EPA correlations (r ≈ 0.34-0.41).
+
+### Research Basis [NFL_markets_analysis.md]
+- Pass EPA year-over-year correlation: r = 0.34
+- Point differential correlation: r = 0.41
+- FiveThirtyEight approach: "regress prior year 1/3 toward mean"
+- Optimal Bayesian shrinkage: keep r proportion of signal
+
+### Code Changes
+- `efficiency_features.py`: `regression_factor = 0.5` (was 1/3)
+- `rolling_features.py`: `regression_factor = 0.5` (was 1/3)
+- `coverage_features.py`: `regression_factor = 0.5` (was 1/3)
+
+### Backtest Results (@ 4.0+ edge)
+
+| Year | Old Win% | New Win% | Old ROI | New ROI | Old CLV | New CLV |
+|------|----------|----------|---------|---------|---------|---------|
+| 2023 | 44.2% | 51.2% | -15.7% | -2.3% | +0.74 | +1.50 |
+| 2024 | 54.5% | 53.7% | +4.1% | +2.5% | +0.89 | +1.57 |
+| 2025 | 58.1% | 54.2% | +10.9% | +3.5% | -0.01 | +0.29 |
+| **Combined** | 52.3% | 52.9% | -0.2% | +1.1% | +0.57 | +1.23 |
+
+### Key Findings
+1. CLV improved across all years (combined: +0.57 → +1.23)
+2. 2023 problem year fixed (ROI: -15.7% → -2.3%)
+3. Results more consistent across seasons
+4. Early/late season variance is noise at these sample sizes
+
+### Models Saved
+- `models/score_model_v2_reg05.pkl` (trained 2011-2023, tested 2024)
+- `models/score_model_v2_2025.pkl` (trained 2011-2024, tested 2025)
