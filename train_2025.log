@@ -1,0 +1,1005 @@
+nohup: ignoring input
+/workspaces/BK_v2/ball_knower/features/rolling_features.py:106: UserWarning: No historical scores found for seasons before 2011 week 1. Rolling features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2011 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2012 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2013 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2014 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2015 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2016 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2017 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2018 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2019 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2020 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 2. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 3. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 4. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 5. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 6. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 7. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 8. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 9. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 10. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 11. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 12. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 13. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 14. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 15. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 16. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 17. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 18. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 19. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 20. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 21. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 22. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2021 week 22. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2022 week 1. Coverage features will use default values.
+  warnings.warn(
+/workspaces/BK_v2/ball_knower/features/coverage_features.py:152: UserWarning: No historical coverage data found for seasons before 2022 week 1. Coverage features will use default values.
+  warnings.warn(
+Training years: 2011-2024 (14 seasons)
+Training weeks: 1-22 (22 unique weeks)
+Total training games: 3811
+
+Test year: 2025
+Test weeks: 1-16 (16 weeks)
+Total test games: 240
+
+Model type: xgb
+N-games (rolling window): 10
+
+============================================================
+TRAINING MODEL
+============================================================
+Warning: Dataset not found for 2011 week 22, skipping
+Warning: Dataset not found for 2012 week 22, skipping
+Warning: Dataset not found for 2013 week 22, skipping
+Warning: Dataset not found for 2014 week 22, skipping
+Warning: Dataset not found for 2015 week 22, skipping
+Warning: Dataset not found for 2016 week 22, skipping
+Warning: Dataset not found for 2017 week 22, skipping
+Warning: Dataset not found for 2018 week 22, skipping
+Warning: Dataset not found for 2019 week 22, skipping
+Warning: Dataset not found for 2020 week 22, skipping
+Using feature set 'base_features_v1': 40 features
+
+Model trained successfully
+Feature importance saved to: data/predictions/score_model_v2/feature_importance_2025.csv
+Model saved to: models/score_model_v2_2025.pkl
+
+============================================================
+GENERATING PREDICTIONS FOR 2025
+============================================================
+  Week 1: 16 predictions
+  Week 2: 16 predictions
+  Week 3: 16 predictions
+  Week 4: 16 predictions
+  Week 5: 14 predictions
+  Week 6: 15 predictions
+  Week 7: 15 predictions
+  Week 8: 13 predictions
+  Week 9: 14 predictions
+  Week 10: 14 predictions
+  Week 11: 15 predictions
+  Week 12: 14 predictions
+  Week 13: 16 predictions
+  Week 14: 14 predictions
+  Week 15: 16 predictions
+  Week 16: 16 predictions
+
+Total predictions: 240
+
+============================================================
+EVALUATION
+============================================================
+
+Home Score MAE: 7.16
+Away Score MAE: 7.43
+Spread MAE: 10.12
+Total MAE: 10.53
+
+============================================================
+TRAINING COMPLETE
+============================================================
+
+Summary:
+- Trained on: 14 seasons, 3811 games
+- Tested on: 2025, 240 games
+- Predictions saved to: data/predictions/score_model_v2/2025/
+
