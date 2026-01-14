@@ -279,10 +279,14 @@ def build_player_stats(season: int, data_dir: str = "data") -> pd.DataFrame:
     if "position" in weekly.columns:
         weekly = weekly[weekly["position"].isin(skill_positions)].copy()
 
+    # Handle duplicate column issue: if both player_display_name and player_name exist,
+    # prefer player_display_name and drop the original player_name to avoid duplicates
+    if "player_display_name" in weekly.columns and "player_name" in weekly.columns:
+        weekly = weekly.drop(columns=["player_name"])
+
     # Rename columns
     column_map = {
         "player_id": "player_id",
-        "player_name": "player_name",
         "player_display_name": "player_name",
         "recent_team": "team",
         "position": "position",
