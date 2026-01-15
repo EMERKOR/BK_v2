@@ -133,22 +133,26 @@ def build_depth_charts(season: int, data_dir: str = "data") -> pd.DataFrame:
         raise ValueError(f"No depth chart data available for {season}")
 
     # Standardize columns using safe_rename to handle duplicates
-    # Include ALL potential duplicate column names from NFLverse depth charts
+    # Include ALL potential column names from NFLverse depth charts (both old and new schemas)
+    # Old schema (pre-2025): club_code, position, depth_position, depth_team, full_name
+    # New schema (2025+): team, pos_grp, pos_name, pos_abb, pos_rank, player_name
     df = safe_rename(df, {
-        # Team - prefer club_code
+        # Team - prefer club_code (old schema), then team (new schema)
         "club_code": "team",
         "team": "team",
         # Player ID - prefer gsis_id
         "gsis_id": "player_id",
         "player_id": "player_id",
-        # Player name - prefer full_name
+        # Player name - prefer full_name (old), then player_name (new)
         "full_name": "player_name",
         "player_name": "player_name",
-        # Position - prefer depth_position
+        # Position - prefer depth_position (old), then pos_abb (new 2025)
         "depth_position": "position",
+        "pos_abb": "position",
         "position": "position",
-        # Depth
+        # Depth - prefer depth_team (old), then pos_rank (new 2025)
         "depth_team": "depth",
+        "pos_rank": "depth",
         "depth": "depth",
         # Week/Season (in case of duplicates)
         "week": "week",

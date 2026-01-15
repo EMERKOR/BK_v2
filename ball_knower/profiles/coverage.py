@@ -48,15 +48,23 @@ def _load_fp_coverage_matrix(season: int, week: int, data_dir: str = "data") -> 
 
     # Try RAW_fantasypoints directory
     path = base / "RAW_fantasypoints" / f"coverage_matrix_def_{season}_w{week:02d}.csv"
-    if path.exists():
-        return pd.read_csv(path)
+    if not path.exists():
+        # Try coverage subdirectory
+        path = base / "RAW_fantasypoints" / "coverage" / f"coverage_matrix_def_{season}_w{week:02d}.csv"
 
-    # Try coverage subdirectory
-    path = base / "RAW_fantasypoints" / "coverage" / f"coverage_matrix_def_{season}_w{week:02d}.csv"
-    if path.exists():
-        return pd.read_csv(path)
+    if not path.exists():
+        return pd.DataFrame()
 
-    return pd.DataFrame()
+    # FantasyPoints CSVs have multi-row headers:
+    # Row 0: Group headers ("Team Details", "Man/Zone", etc.)
+    # Row 1: Actual column names ("Rank", "Name", "G", etc.)
+    # We need to skip row 0 and use row 1 as the header
+    try:
+        df = pd.read_csv(path, skiprows=1, encoding='utf-8-sig')
+        return df
+    except Exception:
+        # Fallback to default parsing
+        return pd.read_csv(path)
 
 
 def _load_fp_allowed_by_position(season: int, week: int, position: str, data_dir: str = "data") -> pd.DataFrame:
@@ -161,7 +169,8 @@ def build_coverage(season: int, data_dir: str = "data") -> pd.DataFrame:
         fp_te = _load_fp_allowed_by_position(season, week, "te", data_dir)
 
         # Process each team in coverage matrix
-        team_col = next((c for c in ["Team", "team", "TEAM", "Tm"] if c in coverage.columns), None)
+        # Note: "Name" contains full team names like "Las Vegas Raiders" in FP exports
+        team_col = next((c for c in ["Team", "team", "TEAM", "Tm", "Name"] if c in coverage.columns), None)
         if team_col is None:
             continue
 
@@ -177,28 +186,32 @@ def build_coverage(season: int, data_dir: str = "data") -> pd.DataFrame:
 
             # Map coverage matrix columns to our schema
             # Column names vary by FP export format
-            def get_col(df, possible_names, default=None):
+            def get_col(series, possible_names, default=None):
+                """Get value from Series by trying multiple possible column names."""
                 for name in possible_names:
-                    if name in df.columns:
-                        return df[name] if isinstance(df, pd.Series) else row.get(name, default)
+                    if name in series.index:
+                        val = series[name]
+                        if pd.notna(val):
+                            return val
                 return default
 
+            # FP column names (with spaces): 'MAN %', 'ZONE %', '1-HI/MOF C %', 'COVER 0 %', etc.
             stats = {
                 "season": season,
                 "week": week,
                 "team": team,
-                "man_pct": get_col(row, ["Man%", "man_pct", "Man Pct"], 0.3),
-                "zone_pct": get_col(row, ["Zone%", "zone_pct", "Zone Pct"], 0.7),
-                "man_fp_per_db": get_col(row, ["Man FP/DB", "man_fp_per_db"], 0.0),
-                "zone_fp_per_db": get_col(row, ["Zone FP/DB", "zone_fp_per_db"], 0.0),
-                "mof_closed_pct": get_col(row, ["MOF Closed%", "1-High%", "mof_closed_pct"], 0.5),
-                "mof_open_pct": get_col(row, ["MOF Open%", "2-High%", "mof_open_pct"], 0.5),
-                "cover_0_pct": get_col(row, ["Cover 0%", "cover_0_pct"], 0.0),
-                "cover_1_pct": get_col(row, ["Cover 1%", "cover_1_pct"], 0.2),
-                "cover_2_pct": get_col(row, ["Cover 2%", "cover_2_pct"], 0.2),
-                "cover_3_pct": get_col(row, ["Cover 3%", "cover_3_pct"], 0.3),
-                "cover_4_pct": get_col(row, ["Cover 4%", "cover_4_pct"], 0.1),
-                "cover_6_pct": get_col(row, ["Cover 6%", "cover_6_pct"], 0.1),
+                "man_pct": get_col(row, ["MAN %", "Man%", "man_pct", "Man Pct"], 0.3),
+                "zone_pct": get_col(row, ["ZONE %", "Zone%", "zone_pct", "Zone Pct"], 0.7),
+                "man_fp_per_db": get_col(row, ["FP/DB", "Man FP/DB", "man_fp_per_db"], 0.0),
+                "zone_fp_per_db": get_col(row, ["FP/DB.1", "Zone FP/DB", "zone_fp_per_db"], 0.0),
+                "mof_closed_pct": get_col(row, ["1-HI/MOF C %", "MOF Closed%", "1-High%", "mof_closed_pct"], 0.5),
+                "mof_open_pct": get_col(row, ["2-HI/MOF O %", "MOF Open%", "2-High%", "mof_open_pct"], 0.5),
+                "cover_0_pct": get_col(row, ["COVER 0 %", "Cover 0%", "cover_0_pct"], 0.0),
+                "cover_1_pct": get_col(row, ["COVER 1 %", "Cover 1%", "cover_1_pct"], 0.2),
+                "cover_2_pct": get_col(row, ["COVER 2 %", "Cover 2%", "cover_2_pct"], 0.2),
+                "cover_3_pct": get_col(row, ["COVER 3 %", "Cover 3%", "cover_3_pct"], 0.3),
+                "cover_4_pct": get_col(row, ["COVER 4 %", "Cover 4%", "cover_4_pct"], 0.1),
+                "cover_6_pct": get_col(row, ["COVER 6 %", "Cover 6%", "cover_6_pct"], 0.1),
                 "blitz_rate": get_col(row, ["Blitz%", "blitz_rate", "Blitz Rate"], 0.25),
             }
 
