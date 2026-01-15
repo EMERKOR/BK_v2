@@ -134,6 +134,7 @@ def build_depth_charts(season: int, data_dir: str = "data") -> pd.DataFrame:
         "full_name": "player_name",
         "player_name": "player_name",  # Keep if full_name doesn't exist
         "depth_position": "position",
+        "position": "position",  # Drop if depth_position exists
         "depth_team": "depth",
     })
 
