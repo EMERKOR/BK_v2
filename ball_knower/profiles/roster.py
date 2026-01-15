@@ -159,6 +159,10 @@ def build_depth_charts(season: int, data_dir: str = "data") -> pd.DataFrame:
         "season": "season",
     })
 
+    # Ensure season column exists (2025+ schema uses 'dt' date column instead of season)
+    if "season" not in df.columns:
+        df["season"] = season
+
     # Select and clean columns
     columns = ["season", "week", "team", "position", "depth", "player_id", "player_name"]
     if "jersey_number" in df.columns:
