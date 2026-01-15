@@ -44,7 +44,7 @@ def safe_rename(df: pd.DataFrame, column_map: Dict[str, str]) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        DataFrame with renamed columns, no duplicates
+        DataFrame with renamed columns, no duplicates guaranteed
 
     Examples
     --------
@@ -89,9 +89,14 @@ def safe_rename(df: pd.DataFrame, column_map: Dict[str, str]) -> pd.DataFrame:
     if columns_to_drop:
         df = df.drop(columns=columns_to_drop)
 
-    # Now rename (no duplicates possible)
+    # Now rename (no duplicates possible from the map)
     if columns_to_rename:
         df = df.rename(columns=columns_to_rename)
+
+    # CRITICAL: Drop any remaining duplicate columns that weren't in the map
+    # Keep only the first occurrence of each column name
+    if df.columns.duplicated().any():
+        df = df.loc[:, ~df.columns.duplicated()]
 
     return df
 
@@ -128,14 +133,26 @@ def build_depth_charts(season: int, data_dir: str = "data") -> pd.DataFrame:
         raise ValueError(f"No depth chart data available for {season}")
 
     # Standardize columns using safe_rename to handle duplicates
+    # Include ALL potential duplicate column names from NFLverse depth charts
     df = safe_rename(df, {
+        # Team - prefer club_code
         "club_code": "team",
+        "team": "team",
+        # Player ID - prefer gsis_id
         "gsis_id": "player_id",
+        "player_id": "player_id",
+        # Player name - prefer full_name
         "full_name": "player_name",
-        "player_name": "player_name",  # Keep if full_name doesn't exist
+        "player_name": "player_name",
+        # Position - prefer depth_position
         "depth_position": "position",
-        "position": "position",  # Drop if depth_position exists
+        "position": "position",
+        # Depth
         "depth_team": "depth",
+        "depth": "depth",
+        # Week/Season (in case of duplicates)
+        "week": "week",
+        "season": "season",
     })
 
     # Select and clean columns
@@ -239,14 +256,26 @@ def build_injuries(season: int, data_dir: str = "data") -> pd.DataFrame:
         ])
 
     # Standardize columns using safe_rename to handle duplicates
+    # Include ALL potential duplicate column names from NFLverse injuries
     df = safe_rename(df, {
+        # Player ID - prefer gsis_id
         "gsis_id": "player_id",
-        "player_id": "player_id",  # Keep if gsis_id doesn't exist
+        "player_id": "player_id",
+        # Player name - prefer full_name
         "full_name": "player_name",
-        "player_name": "player_name",  # Keep if full_name doesn't exist
+        "player_name": "player_name",
+        # Team
+        "team": "team",
+        # Position
+        "position": "position",
+        # Injury info
         "report_primary_injury": "injury_type",
+        "injury_type": "injury_type",
         "report_status": "report_status",
         "practice_status": "practice_status",
+        # Week/Season (in case of duplicates)
+        "week": "week",
+        "season": "season",
     })
 
     # Normalize team codes
@@ -347,29 +376,38 @@ def build_player_stats(season: int, data_dir: str = "data") -> pd.DataFrame:
     if weekly is None or len(weekly) == 0:
         raise ValueError(f"No weekly data available for {season}")
 
-    # Filter to skill positions
-    skill_positions = ["QB", "RB", "WR", "TE"]
-    if "position" in weekly.columns:
-        weekly = weekly[weekly["position"].isin(skill_positions)].copy()
-
-    # Standardize columns using safe_rename to handle duplicates
-    # When multiple sources map to same target, first one wins (player_display_name > player_name)
+    # Standardize columns FIRST using safe_rename to handle duplicates
+    # When multiple sources map to same target, first one wins
+    # Include ALL potential duplicate column names from NFLverse
     weekly = safe_rename(weekly, {
+        # Player identification
         "player_id": "player_id",
         "player_display_name": "player_name",
-        "player_name": "player_name",  # Fallback if player_display_name doesn't exist
+        "player_name": "player_name",
+        # Team and position
         "recent_team": "team",
+        "team": "team",
         "position": "position",
+        # Passing stats
         "passing_yards": "passing_yards",
         "passing_tds": "passing_tds",
+        # Rushing stats
         "rushing_yards": "rushing_yards",
         "rushing_tds": "rushing_tds",
+        # Receiving stats
         "receiving_yards": "receiving_yards",
         "receiving_tds": "receiving_tds",
         "targets": "targets",
         "receptions": "receptions",
+        # Fantasy points - PPR preferred, then standard
         "fantasy_points_ppr": "fantasy_points",
+        "fantasy_points": "fantasy_points",
     })
+
+    # Filter to skill positions AFTER safe_rename to ensure no duplicate columns
+    skill_positions = ["QB", "RB", "WR", "TE"]
+    if "position" in weekly.columns:
+        weekly = weekly[weekly["position"].isin(skill_positions)].copy()
 
     # Normalize team codes
     if "team" in weekly.columns:
