@@ -26,6 +26,76 @@ import numpy as np
 from ..mappings import normalize_team_code, CANONICAL_TEAM_CODES
 
 
+def safe_rename(df: pd.DataFrame, column_map: Dict[str, str]) -> pd.DataFrame:
+    """
+    Safely rename DataFrame columns, handling duplicates and missing columns.
+
+    This function defensively handles NFLverse data which may have unpredictable
+    columns that create duplicates during rename operations.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Source DataFrame to rename columns
+    column_map : dict
+        Mapping of {source_column: target_column}. When multiple source columns
+        map to the same target, only the first one found (in map order) is kept.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with renamed columns, no duplicates
+
+    Examples
+    --------
+    >>> df = pd.DataFrame({'player_display_name': ['A'], 'player_name': ['B']})
+    >>> column_map = {'player_display_name': 'player_name', 'player_name': 'player_name'}
+    >>> result = safe_rename(df, column_map)
+    >>> list(result.columns)
+    ['player_name']
+    >>> result['player_name'].iloc[0]
+    'A'
+    """
+    df = df.copy()
+
+    # Group source columns by their target name to identify duplicates
+    target_to_sources: Dict[str, List[str]] = {}
+    for src, tgt in column_map.items():
+        if tgt not in target_to_sources:
+            target_to_sources[tgt] = []
+        target_to_sources[tgt].append(src)
+
+    # For each target, keep only the first source column that exists in df
+    columns_to_drop = []
+    columns_to_rename = {}
+
+    for target, sources in target_to_sources.items():
+        # Find which source columns actually exist in the DataFrame
+        existing_sources = [s for s in sources if s in df.columns]
+
+        if not existing_sources:
+            # No source columns exist, skip this target
+            continue
+
+        # Keep the first existing source, drop the rest
+        primary_source = existing_sources[0]
+        columns_to_rename[primary_source] = target
+
+        # Mark other existing sources for dropping (they would create duplicates)
+        for other_source in existing_sources[1:]:
+            columns_to_drop.append(other_source)
+
+    # Drop duplicate source columns first
+    if columns_to_drop:
+        df = df.drop(columns=columns_to_drop)
+
+    # Now rename (no duplicates possible)
+    if columns_to_rename:
+        df = df.rename(columns=columns_to_rename)
+
+    return df
+
+
 def build_depth_charts(season: int, data_dir: str = "data") -> pd.DataFrame:
     """
     Pull and clean depth charts from NFLverse for a season.
@@ -57,11 +127,12 @@ def build_depth_charts(season: int, data_dir: str = "data") -> pd.DataFrame:
     if df is None or len(df) == 0:
         raise ValueError(f"No depth chart data available for {season}")
 
-    # Standardize columns
-    df = df.rename(columns={
+    # Standardize columns using safe_rename to handle duplicates
+    df = safe_rename(df, {
         "club_code": "team",
         "gsis_id": "player_id",
         "full_name": "player_name",
+        "player_name": "player_name",  # Keep if full_name doesn't exist
         "depth_position": "position",
         "depth_team": "depth",
     })
@@ -166,15 +237,16 @@ def build_injuries(season: int, data_dir: str = "data") -> pd.DataFrame:
             "report_status", "injury_type", "practice_status"
         ])
 
-    # Standardize columns
-    column_map = {
+    # Standardize columns using safe_rename to handle duplicates
+    df = safe_rename(df, {
         "gsis_id": "player_id",
+        "player_id": "player_id",  # Keep if gsis_id doesn't exist
         "full_name": "player_name",
+        "player_name": "player_name",  # Keep if full_name doesn't exist
         "report_primary_injury": "injury_type",
         "report_status": "report_status",
         "practice_status": "practice_status",
-    }
-    df = df.rename(columns={k: v for k, v in column_map.items() if k in df.columns})
+    })
 
     # Normalize team codes
     if "team" in df.columns:
@@ -279,15 +351,12 @@ def build_player_stats(season: int, data_dir: str = "data") -> pd.DataFrame:
     if "position" in weekly.columns:
         weekly = weekly[weekly["position"].isin(skill_positions)].copy()
 
-    # Handle duplicate column issue: if both player_display_name and player_name exist,
-    # prefer player_display_name and drop the original player_name to avoid duplicates
-    if "player_display_name" in weekly.columns and "player_name" in weekly.columns:
-        weekly = weekly.drop(columns=["player_name"])
-
-    # Rename columns
-    column_map = {
+    # Standardize columns using safe_rename to handle duplicates
+    # When multiple sources map to same target, first one wins (player_display_name > player_name)
+    weekly = safe_rename(weekly, {
         "player_id": "player_id",
         "player_display_name": "player_name",
+        "player_name": "player_name",  # Fallback if player_display_name doesn't exist
         "recent_team": "team",
         "position": "position",
         "passing_yards": "passing_yards",
@@ -299,8 +368,7 @@ def build_player_stats(season: int, data_dir: str = "data") -> pd.DataFrame:
         "targets": "targets",
         "receptions": "receptions",
         "fantasy_points_ppr": "fantasy_points",
-    }
-    weekly = weekly.rename(columns={k: v for k, v in column_map.items() if k in weekly.columns})
+    })
 
     # Normalize team codes
     if "team" in weekly.columns:
