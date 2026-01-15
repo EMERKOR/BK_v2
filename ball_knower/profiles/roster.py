@@ -163,6 +163,26 @@ def build_depth_charts(season: int, data_dir: str = "data") -> pd.DataFrame:
     if "season" not in df.columns:
         df["season"] = season
 
+    # Ensure week column exists (2025+ schema uses 'dt' date column instead of week)
+    if "week" not in df.columns and "dt" in df.columns:
+        # Load schedules to map dates to weeks
+        try:
+            schedules = nfl.import_schedules(years=[season])
+            # Create date-to-week mapping from schedules
+            # Schedules have 'gameday' (date) and 'week' columns
+            if "gameday" in schedules.columns and "week" in schedules.columns:
+                schedules["gameday"] = pd.to_datetime(schedules["gameday"]).dt.date
+                date_to_week = dict(zip(schedules["gameday"], schedules["week"]))
+                # Convert dt to date and map to week
+                df["dt"] = pd.to_datetime(df["dt"]).dt.date
+                df["week"] = df["dt"].map(date_to_week)
+        except Exception:
+            pass  # Will fall through to the fallback below
+
+    # Fallback: if week still doesn't exist, set to 1
+    if "week" not in df.columns:
+        df["week"] = 1
+
     # Select and clean columns
     columns = ["season", "week", "team", "position", "depth", "player_id", "player_name"]
     if "jersey_number" in df.columns:
