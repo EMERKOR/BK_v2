@@ -22,6 +22,24 @@ import numpy as np
 from ..mappings import normalize_team_code, CANONICAL_TEAM_CODES
 
 
+# Division lookup, built from the identity bucket. Cached so we read the
+# parquet once per process instead of once per team-week.
+_DIVISIONS = None
+
+
+def _team_divisions(data_dir: str = "data") -> dict:
+    """Map team code -> division string, e.g. 'KC' -> 'AFC West'."""
+    global _DIVISIONS
+    if _DIVISIONS is None:
+        path = Path(data_dir) / "profiles" / "identity" / "teams.parquet"
+        if path.exists():
+            frame = pd.read_parquet(path)
+            _DIVISIONS = dict(zip(frame["team"], frame["division"]))
+        else:
+            _DIVISIONS = {}
+    return _DIVISIONS
+
+
 def _load_schedule_and_scores(
     season: int,
     through_week: int,
@@ -58,15 +76,27 @@ def _load_schedule_and_scores(
                 on="game_id", how="left"
             )
 
-        # Try to load market data for ATS
-        market_path = base / "RAW_market" / str(season) / f"market_week_{week:02d}.csv"
-        if market_path.exists():
-            market = pd.read_csv(market_path)
-            if "spread_line" in market.columns:
-                schedule = schedule.merge(
-                    market[["game_id", "spread_line", "total_line"]],
-                    on="game_id", how="left"
-                )
+        # Load market data for ATS and O/U.
+        # Spread and total live in separate per-market folders, and the
+        # columns are named market_closing_spread / market_closing_total.
+        # The previous code looked for RAW_market/{season}/market_week_XX.csv
+        # with columns spread_line / total_line. Neither existed, so the
+        # merge never ran and every ATS and O/U column came out zero.
+        spread_path = base / "RAW_market" / "spread" / str(season) / f"spread_week_{week:02d}.csv"
+        if spread_path.exists():
+            spread = pd.read_csv(spread_path)
+            spread = spread.rename(columns={"market_closing_spread": "spread_line"})
+            schedule = schedule.merge(
+                spread[["game_id", "spread_line"]], on="game_id", how="left"
+            )
+
+        total_path = base / "RAW_market" / "total" / str(season) / f"total_week_{week:02d}.csv"
+        if total_path.exists():
+            total = pd.read_csv(total_path)
+            total = total.rename(columns={"market_closing_total": "total_line"})
+            schedule = schedule.merge(
+                total[["game_id", "total_line"]], on="game_id", how="left"
+            )
 
         games.append(schedule)
 
@@ -91,6 +121,7 @@ def _load_schedule_and_scores(
 def _compute_team_records(
     games: pd.DataFrame,
     team: str,
+    data_dir: str = "data",
 ) -> dict:
     """
     Compute cumulative record for a team from games data.
@@ -150,6 +181,10 @@ def _compute_team_records(
     ats_pushes = 0
     ou_overs = 0
     ou_unders = 0
+    division_wins = 0
+    division_losses = 0
+    divisions = _team_divisions(data_dir)
+    own_division = divisions.get(team)
     streak = 0
     last_results = []
 
@@ -161,12 +196,20 @@ def _compute_team_records(
             points_for += home_score
             points_against += away_score
 
+            in_division = (
+                own_division is not None
+                and divisions.get(game["away_team"]) == own_division
+            )
             if home_score > away_score:
                 home_wins += 1
                 last_results.append(1)
+                if in_division:
+                    division_wins += 1
             elif home_score < away_score:
                 home_losses += 1
                 last_results.append(-1)
+                if in_division:
+                    division_losses += 1
             else:
                 home_ties += 1
                 last_results.append(0)
@@ -201,12 +244,20 @@ def _compute_team_records(
             points_for += away_score
             points_against += home_score
 
+            in_division = (
+                own_division is not None
+                and divisions.get(game["home_team"]) == own_division
+            )
             if away_score > home_score:
                 away_wins += 1
                 last_results.append(1)
+                if in_division:
+                    division_wins += 1
             elif away_score < home_score:
                 away_losses += 1
                 last_results.append(-1)
+                if in_division:
+                    division_losses += 1
             else:
                 away_ties += 1
                 last_results.append(0)
@@ -267,8 +318,8 @@ def _compute_team_records(
         "wins": home_wins + away_wins,
         "losses": home_losses + away_losses,
         "ties": home_ties + away_ties,
-        "division_wins": 0,  # Would need division info to compute
-        "division_losses": 0,
+        "division_wins": division_wins,
+        "division_losses": division_losses,
         "home_wins": home_wins,
         "home_losses": home_losses,
         "away_wins": away_wins,
@@ -330,7 +381,7 @@ def build_record(season: int, data_dir: str = "data") -> pd.DataFrame:
         games = _load_schedule_and_scores(season, week, data_dir)
 
         for team in teams:
-            record = _compute_team_records(games, team)
+            record = _compute_team_records(games, team, data_dir)
 
             row = {
                 "season": season,

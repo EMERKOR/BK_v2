@@ -72,7 +72,71 @@ def _load_pbp_raw(season: int, data_dir: str = "data") -> pd.DataFrame:
     return pd.read_parquet(path)
 
 
-def _compute_tendencies(pbp: pd.DataFrame, team: str, through_week: int) -> dict:
+def _load_ftn(season: int, data_dir: str = "data") -> pd.DataFrame:
+    """
+    Load FTN charting data, which carries the fields nflfastR's play-by-play
+    does not: is_play_action, is_motion, n_blitzers. Available 2022 onward.
+
+    Returns an empty frame for seasons with no FTN coverage, which makes the
+    caller fall back to defaults rather than crash.
+    """
+    path = Path(data_dir) / "RAW_ftn" / f"ftn_{season}.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    return pd.read_parquet(path)
+
+
+def _compute_ftn_tendencies(
+    ftn: pd.DataFrame,
+    pbp: pd.DataFrame,
+    team: str,
+    through_week: int,
+) -> dict:
+    """
+    Real play-action and motion rates for one team through a given week.
+
+    These two fields were previously hardcoded to 0.20 and 0.40 for every
+    team in the league. The actual 2024 league play-action rate is 0.106,
+    so the old constant was roughly double reality and identical across all
+    32 teams, which made the column worthless as a feature.
+
+    Returns an empty dict when there is not enough charted data, so the
+    caller keeps its own defaults instead of writing a fake number.
+    """
+    if ftn.empty or pbp.empty:
+        return {}
+
+    plays = pbp[
+        (pbp["posteam"] == team)
+        & (pbp["week"] < through_week)
+        & (pbp["play_type"].isin(["run", "pass"]))
+    ][["game_id", "play_id"]]
+
+    if len(plays) < 50:
+        return {}
+
+    merged = plays.merge(
+        ftn,
+        left_on=["game_id", "play_id"],
+        right_on=["nflverse_game_id", "nflverse_play_id"],
+        how="inner",
+    )
+    if len(merged) < 50:
+        return {}
+
+    out = {
+        "play_action_rate": round(float(merged["is_play_action"].fillna(0).mean()), 3),
+        "motion_rate": round(float(merged["is_motion"].fillna(0).mean()), 3),
+    }
+    if "n_blitzers" in merged.columns:
+        out["blitz_rate_faced"] = round(
+            float((merged["n_blitzers"].fillna(0) > 0).mean()), 3
+        )
+    return out
+
+
+def _compute_tendencies(pbp: pd.DataFrame, team: str, through_week: int,
+                        ftn: Optional[pd.DataFrame] = None) -> dict:
     """
     Compute coaching tendencies for a team through a given week.
 
@@ -136,13 +200,17 @@ def _compute_tendencies(pbp: pd.DataFrame, team: str, through_week: int) -> dict
         motion_col = "motion" if "motion" in plays.columns else "pre_snap_motion"
         motion_rate = plays[motion_col].fillna(0).mean()
 
-    return {
+    result = {
         "pass_rate_over_expected": round(proe, 3),
         "early_down_pass_rate": round(early_down_pass_rate, 3),
         "play_action_rate": round(play_action_rate, 3),
         "fourth_down_go_rate": round(fourth_down_go_rate, 3),
         "motion_rate": round(motion_rate, 3),
     }
+    # Real charted values override the defaults where FTN covers the season.
+    if ftn is not None:
+        result.update(_compute_ftn_tendencies(ftn, pbp, team, through_week))
+    return result
 
 
 def build_coaching(season: int, data_dir: str = "data") -> pd.DataFrame:
@@ -173,11 +241,13 @@ def build_coaching(season: int, data_dir: str = "data") -> pd.DataFrame:
     # Load PBP for tendencies
     try:
         pbp = _load_pbp_raw(season, data_dir)
+        ftn = _load_ftn(season, data_dir)
         pbp["posteam"] = pbp["posteam"].apply(
             lambda x: normalize_team_code(str(x), "nflverse") if pd.notna(x) else x
         )
     except FileNotFoundError:
         pbp = pd.DataFrame()
+        ftn = pd.DataFrame()
 
     # Determine max week
     max_week = pbp["week"].max() if len(pbp) > 0 else 18
@@ -198,7 +268,7 @@ def build_coaching(season: int, data_dir: str = "data") -> pd.DataFrame:
 
             # Compute tendencies if PBP available
             if len(pbp) > 0:
-                tendencies = _compute_tendencies(pbp, team, week)
+                tendencies = _compute_tendencies(pbp, team, week, ftn)
             else:
                 tendencies = {
                     "pass_rate_over_expected": 0.0,
