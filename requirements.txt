@@ -3,3 +3,4 @@ pyarrow>=14.0.0
 python-dateutil>=2.9.0
 xgboost>=2.0.0
 nfl_data_py>=0.3.0
+nflreadpy>=0.1.0  # FTN charting source for the coaching bucket; rebuilds data/RAW_ftn/

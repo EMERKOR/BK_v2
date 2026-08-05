@@ -46,13 +46,17 @@ def _load_fp_coverage_matrix(season: int, week: int, data_dir: str = "data") -> 
     """
     base = Path(data_dir)
 
-    # Try RAW_fantasypoints directory
-    path = base / "RAW_fantasypoints" / f"coverage_matrix_def_{season}_w{week:02d}.csv"
-    if not path.exists():
-        # Try coverage subdirectory
-        path = base / "RAW_fantasypoints" / "coverage" / f"coverage_matrix_def_{season}_w{week:02d}.csv"
-
-    if not path.exists():
+    # Two naming schemes exist in this repo. 2025 files sit at the top level
+    # as coverage_matrix_def_*.csv; 2022-2024 files sit in coverage/defense/
+    # as coverage_defense_*.csv. The original code only checked the first,
+    # so every season before 2025 returned zero rows without an error.
+    candidates = [
+        base / "RAW_fantasypoints" / f"coverage_matrix_def_{season}_w{week:02d}.csv",
+        base / "RAW_fantasypoints" / "coverage" / "defense" / f"coverage_defense_{season}_w{week:02d}.csv",
+        base / "RAW_fantasypoints" / "coverage" / f"coverage_matrix_def_{season}_w{week:02d}.csv",
+    ]
+    path = next((p for p in candidates if p.exists()), None)
+    if path is None:
         return pd.DataFrame()
 
     # FantasyPoints CSVs have multi-row headers:
@@ -61,10 +65,17 @@ def _load_fp_coverage_matrix(season: int, week: int, data_dir: str = "data") -> 
     # We need to skip row 0 and use row 1 as the header
     try:
         df = pd.read_csv(path, skiprows=1, encoding='utf-8-sig')
-        return df
     except Exception:
-        # Fallback to default parsing
-        return pd.read_csv(path)
+        df = pd.read_csv(path)
+
+    # These exports append a column glossary to the bottom of the file
+    # ("Rank, Most to Least", "Dropbacks", "Cover 3 Rate", ...). Those rows
+    # have no Season value, so they are droppable. A 2024 week 10 file has
+    # 28 real teams followed by 19 glossary rows; without this the bucket
+    # treats "Games Played" as an NFL team.
+    if "Season" in df.columns:
+        df = df[df["Season"].notna()].copy()
+    return df
 
 
 def _load_fp_allowed_by_position(season: int, week: int, position: str, data_dir: str = "data") -> pd.DataFrame:
@@ -147,7 +158,10 @@ def build_coverage(season: int, data_dir: str = "data") -> pd.DataFrame:
     if not fp_dir.exists():
         return pd.DataFrame()
 
-    coverage_files = list(fp_dir.glob(f"coverage_matrix_def_{season}_w*.csv"))
+    coverage_files = (
+        list(fp_dir.glob(f"coverage_matrix_def_{season}_w*.csv"))
+        + list(fp_dir.glob(f"coverage/defense/coverage_defense_{season}_w*.csv"))
+    )
     if not coverage_files:
         return pd.DataFrame()
 
