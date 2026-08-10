@@ -10,19 +10,35 @@ Reproduce: `python3 audit_v3_raw_data/scripts/run_audit.py` → `audit_results.j
 |--------|--------------|--------|
 | A play-by-play | `game_id + play_id` | **UNIQUE** — 0 duplicate rows across all 16 season files (757,280 plays) |
 | B schedule | `game_id` (per season) | **UNIQUE** — 0 within-file dupes, 0 cross-week dupes; `teams==away@home` holds (0 mismatches) |
-| C scores | `game_id` (per season) | **UNIQUE** — 0 dupes; every scored game joins its schedule |
-| D spread | `game_id` | **UNIQUE** — 0 dupes; one line per game |
-| E total | `game_id` | **UNIQUE** — 0 dupes |
-| F moneyline | `game_id` | **UNIQUE** — 0 dupes; **1 game missing** in 2017 (266 vs 267) |
+| C scores | `game_id` (per season) | **UNIQUE** — 0 within-file dupes, **0 cross-week dupes**; every scored game joins its schedule |
+| D spread | `game_id` (per season) | **UNIQUE** — 0 within-file dupes, **0 cross-week dupes**; one line per game |
+| E total | `game_id` (per season) | **UNIQUE** — 0 within-file dupes, **0 cross-week dupes** |
+| F moneyline | `game_id` (per season) | **UNIQUE** — 0 within-file dupes, **0 cross-week dupes**; **1 game missing** in 2017 (266 vs 267) |
 | G injuries | `season+week+team+gsis_id` (candidate) | **KEY NOT ESTABLISHED** — see below |
 | H FTN | `nflverse_game_id + nflverse_play_id` | **UNIQUE** — 0 dupes all seasons |
-| I FP cov defense | `season+week+team` (post-glossary) | **UNIQUE** per file after glossary removal |
-| J FP cov offense | `season+week+team` (post-glossary) | **UNIQUE** per file after glossary removal |
+| I FP cov defense | `season+week+normalized_team` (post-glossary) | **UNIQUE** — family-wide: 2,124 rows, 2,124 unique keys, 0 dupes, 0 unmapped teams |
+| J FP cov offense | `season+week+normalized_team` (post-glossary) | **UNIQUE** — family-wide: 2,124 rows, 2,124 unique keys, 0 dupes, 0 unmapped teams |
 | K snap share | player identity | **KEY NOT ESTABLISHED** — no player_id; see below |
 | L target share | player identity | **KEY NOT ESTABLISHED** |
 | M route share | player identity | **KEY NOT ESTABLISHED** |
 | N fpts scored | player identity | **KEY NOT ESTABLISHED** |
-| O FP allowed | `season+week+team+position` | UNIQUE per file after glossary removal (32 teams/file) |
+| O FP allowed | `season+week+normalized_team+position` (post-glossary) | **UNIQUE** — family-wide: 2,304 rows, 2,304 unique keys, 0 dupes, 0 unmapped teams, 0 POS/filename mismatches |
+
+## Correction pass (2026-08) — four narrow checks
+
+Reproduce: `run_audit.py` → `audit_results.json :: correction_pass_2026_08`;
+negative control in `fp_deep_dive.json :: strict_parser_negative_control`.
+
+| Check | Old behaviour | New result |
+|-------|---------------|------------|
+| 1. FP coverage `season+week+normalized_team` | asserted "unique per file"; never **constructed** with a normalized team across the family | **explicitly built & tested family-wide** — def 2,124/2,124 unique, off 2,124/2,124 unique, 0 dupes, 0 unmapped names → **UNIQUE** |
+| 2. FP allowed `season+week+normalized_team+position` | asserted "unique per file (32 teams)"; no constructed key | **explicitly built & tested** — 2,304/2,304 unique, 0 dupes, 0 unmapped, 0 `POS`≠filename → **UNIQUE** |
+| 3. cross-week `game_id` for scores/spread/total/moneyline | cross-week check existed **only for schedule**; these four checked within-file only | **cross-week check added** — scores 0, spread 0, total 0, moneyline 0 duplicate game_ids across weekly files |
+| 4. strict FP row classification | football-or-glossary only → a malformed row would be **silently counted as glossary** | **three-way** football / recognized-glossary / unclassified; any unclassified ⇒ `contract_ok=False`. **0 unclassified across all FP files.** Negative control confirms injected malformed rows are flagged (1 football, 1 glossary, 2 unclassified, contract_ok=False). |
+
+**No new failures appeared.** All four checks pass. Team normalization uses an
+injective full-name→nflverse-code map (32 teams) in `fp_parsers.py`; an unmapped name
+would fail the check loudly (0 occurred).
 
 ## G — injuries: candidate key behavior (investigated, not auto-labeled bad)
 Candidate key `season + week + team + gsis_id`:

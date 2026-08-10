@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-08-10T17:07:14.282270+00:00",
+  "generated_at_utc": "2026-08-10T21:23:15.957828+00:00",
   "repo": "/home/user/BK_v2",
   "families": {
     "A_pbp": {
@@ -740,6 +740,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -749,6 +750,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -758,6 +760,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -767,6 +770,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -776,6 +780,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -785,6 +790,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -794,6 +800,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -803,6 +810,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -812,6 +820,7 @@
           "n_files": 21,
           "n_scored_games": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -821,6 +830,7 @@
           "n_files": 21,
           "n_scored_games": 269,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -830,6 +840,7 @@
           "n_files": 22,
           "n_scored_games": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -839,6 +850,7 @@
           "n_files": 22,
           "n_scored_games": 284,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -848,6 +860,7 @@
           "n_files": 22,
           "n_scored_games": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -857,6 +870,7 @@
           "n_files": 22,
           "n_scored_games": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -866,6 +880,7 @@
           "n_files": 16,
           "n_scored_games": 240,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "bad_or_negative_scores": 0,
           "scores_not_in_schedule": 0,
           "week_min": 1,
@@ -879,6 +894,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -889,6 +905,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -899,6 +916,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -909,6 +927,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -919,6 +938,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -929,6 +949,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -939,6 +960,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -949,6 +971,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -959,6 +982,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -969,6 +993,7 @@
           "n_files": 21,
           "n_rows": 269,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -979,6 +1004,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -989,6 +1015,7 @@
           "n_files": 22,
           "n_rows": 284,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -999,6 +1026,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1009,6 +1037,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1019,6 +1048,7 @@
           "n_files": 16,
           "n_rows": 240,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1036,6 +1066,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1046,6 +1077,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1056,6 +1088,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1066,6 +1099,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1076,6 +1110,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1086,6 +1121,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1096,6 +1132,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1106,6 +1143,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1116,6 +1154,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1126,6 +1165,7 @@
           "n_files": 21,
           "n_rows": 269,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1136,6 +1176,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1146,6 +1187,7 @@
           "n_files": 22,
           "n_rows": 284,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1156,6 +1198,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1166,6 +1209,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1176,6 +1220,7 @@
           "n_files": 16,
           "n_rows": 240,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1193,6 +1238,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1203,6 +1249,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1213,6 +1260,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1223,6 +1271,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1233,6 +1282,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1243,6 +1293,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1253,6 +1304,7 @@
           "n_files": 21,
           "n_rows": 266,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1263,6 +1315,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1273,6 +1326,7 @@
           "n_files": 21,
           "n_rows": 267,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1283,6 +1337,7 @@
           "n_files": 21,
           "n_rows": 269,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1293,6 +1348,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1303,6 +1359,7 @@
           "n_files": 22,
           "n_rows": 284,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1313,6 +1370,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1323,6 +1381,7 @@
           "n_files": 22,
           "n_rows": 285,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1333,6 +1392,7 @@
           "n_files": 16,
           "n_rows": 240,
           "dup_game_id": 0,
+          "cross_week_duplicate_games": 0,
           "rows_without_schedule_match": 0,
           "values_out_of_range": 0,
           "null_values": 0,
@@ -1661,6 +1721,18 @@
         "COVER 6 %"
       ],
       "season_mismatches": 0,
+      "key_uniqueness": {
+        "key": "season + week + normalized_team (after glossary removal)",
+        "n_key_rows": 2124,
+        "n_unique_keys": 2124,
+        "duplicate_rows": 0,
+        "unique": true,
+        "unmapped_team_names": [],
+        "duplicate_examples": []
+      },
+      "files_with_unclassified_rows": [],
+      "parser_vs_frame_mismatch": [],
+      "all_files_contract_ok": true,
       "per_file_sample": {
         "coverage_defense_2022_w01.csv": {
           "filename_season": 2022,
@@ -1668,6 +1740,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1681,6 +1755,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1694,6 +1770,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1710,6 +1788,7 @@
       "glossary_rows_typical": [
         19
       ],
+      "unclassified_rows_total": 0,
       "seasons": [
         2022,
         2023,
@@ -1747,6 +1826,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1760,6 +1841,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1773,6 +1856,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1786,6 +1871,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1799,6 +1886,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1812,6 +1901,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1825,6 +1916,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1838,6 +1931,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1851,6 +1946,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1864,6 +1961,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1877,6 +1976,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1890,6 +1991,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1903,6 +2006,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1916,6 +2021,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1929,6 +2036,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1942,6 +2051,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1955,6 +2066,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1968,6 +2081,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1981,6 +2096,8 @@
           "physical_data_rows": 31,
           "football_rows": 12,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -1994,6 +2111,8 @@
           "physical_data_rows": 27,
           "football_rows": 8,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2007,6 +2126,8 @@
           "physical_data_rows": 23,
           "football_rows": 4,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2020,6 +2141,8 @@
           "physical_data_rows": 21,
           "football_rows": 2,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2033,6 +2156,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2046,6 +2171,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2059,6 +2186,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2072,6 +2201,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2085,6 +2216,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2098,6 +2231,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2111,6 +2246,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2124,6 +2261,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2137,6 +2276,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2150,6 +2291,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2163,6 +2306,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2176,6 +2321,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2189,6 +2336,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2202,6 +2351,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2215,6 +2366,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2228,6 +2381,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2241,6 +2396,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2254,6 +2411,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2267,6 +2426,8 @@
           "physical_data_rows": 31,
           "football_rows": 12,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2280,6 +2441,8 @@
           "physical_data_rows": 27,
           "football_rows": 8,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2293,6 +2456,8 @@
           "physical_data_rows": 23,
           "football_rows": 4,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2306,6 +2471,8 @@
           "physical_data_rows": 21,
           "football_rows": 2,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -2319,6 +2486,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2332,6 +2501,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2345,6 +2516,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2358,6 +2531,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2371,6 +2546,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2384,6 +2561,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2397,6 +2576,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2410,6 +2591,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2423,6 +2606,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2436,6 +2621,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2449,6 +2636,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2462,6 +2651,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2475,6 +2666,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2488,6 +2681,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2501,6 +2696,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2514,6 +2711,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2527,6 +2726,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2540,6 +2741,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2553,6 +2756,8 @@
           "physical_data_rows": 31,
           "football_rows": 12,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2566,6 +2771,8 @@
           "physical_data_rows": 27,
           "football_rows": 8,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2579,6 +2786,8 @@
           "physical_data_rows": 23,
           "football_rows": 4,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2592,6 +2801,8 @@
           "physical_data_rows": 21,
           "football_rows": 2,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -2605,6 +2816,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2618,6 +2831,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2631,6 +2846,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2644,6 +2861,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2657,6 +2876,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2670,6 +2891,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2683,6 +2906,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2696,6 +2921,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2709,6 +2936,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2722,6 +2951,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2735,6 +2966,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2748,6 +2981,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2761,6 +2996,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2774,6 +3011,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -2811,6 +3050,18 @@
         "COVER 6 %"
       ],
       "season_mismatches": 0,
+      "key_uniqueness": {
+        "key": "season + week + normalized_team (after glossary removal)",
+        "n_key_rows": 2124,
+        "n_unique_keys": 2124,
+        "duplicate_rows": 0,
+        "unique": true,
+        "unmapped_team_names": [],
+        "duplicate_examples": []
+      },
+      "files_with_unclassified_rows": [],
+      "parser_vs_frame_mismatch": [],
+      "all_files_contract_ok": true,
       "per_file_sample": {
         "coverage_offense_2022_w01.csv": {
           "filename_season": 2022,
@@ -2818,6 +3069,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2831,6 +3084,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2844,6 +3099,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2860,6 +3117,7 @@
       "glossary_rows_typical": [
         19
       ],
+      "unclassified_rows_total": 0,
       "seasons": [
         2022,
         2023,
@@ -2897,6 +3155,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2910,6 +3170,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2923,6 +3185,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2936,6 +3200,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2949,6 +3215,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2962,6 +3230,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2975,6 +3245,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -2988,6 +3260,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3001,6 +3275,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3014,6 +3290,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3027,6 +3305,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3040,6 +3320,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3053,6 +3335,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3066,6 +3350,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3079,6 +3365,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3092,6 +3380,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3105,6 +3395,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3118,6 +3410,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3131,6 +3425,8 @@
           "physical_data_rows": 31,
           "football_rows": 12,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3144,6 +3440,8 @@
           "physical_data_rows": 27,
           "football_rows": 8,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3157,6 +3455,8 @@
           "physical_data_rows": 23,
           "football_rows": 4,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3170,6 +3470,8 @@
           "physical_data_rows": 21,
           "football_rows": 2,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2022"
@@ -3183,6 +3485,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3196,6 +3500,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3209,6 +3515,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3222,6 +3530,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3235,6 +3545,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3248,6 +3560,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3261,6 +3575,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3274,6 +3590,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3287,6 +3605,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3300,6 +3620,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3313,6 +3635,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3326,6 +3650,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3339,6 +3665,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3352,6 +3680,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3365,6 +3695,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3378,6 +3710,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3391,6 +3725,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3404,6 +3740,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3417,6 +3755,8 @@
           "physical_data_rows": 31,
           "football_rows": 12,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3430,6 +3770,8 @@
           "physical_data_rows": 27,
           "football_rows": 8,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3443,6 +3785,8 @@
           "physical_data_rows": 23,
           "football_rows": 4,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3456,6 +3800,8 @@
           "physical_data_rows": 21,
           "football_rows": 2,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2023"
@@ -3469,6 +3815,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3482,6 +3830,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3495,6 +3845,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3508,6 +3860,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3521,6 +3875,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3534,6 +3890,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3547,6 +3905,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3560,6 +3920,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3573,6 +3935,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3586,6 +3950,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3599,6 +3965,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3612,6 +3980,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3625,6 +3995,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3638,6 +4010,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3651,6 +4025,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3664,6 +4040,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3677,6 +4055,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3690,6 +4070,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3703,6 +4085,8 @@
           "physical_data_rows": 31,
           "football_rows": 12,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3716,6 +4100,8 @@
           "physical_data_rows": 27,
           "football_rows": 8,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3729,6 +4115,8 @@
           "physical_data_rows": 23,
           "football_rows": 4,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3742,6 +4130,8 @@
           "physical_data_rows": 21,
           "football_rows": 2,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2024"
@@ -3755,6 +4145,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3768,6 +4160,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3781,6 +4175,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3794,6 +4190,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3807,6 +4205,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3820,6 +4220,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3833,6 +4235,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3846,6 +4250,8 @@
           "physical_data_rows": 45,
           "football_rows": 26,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3859,6 +4265,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3872,6 +4280,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3885,6 +4295,8 @@
           "physical_data_rows": 49,
           "football_rows": 30,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3898,6 +4310,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3911,6 +4325,8 @@
           "physical_data_rows": 51,
           "football_rows": 32,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3924,6 +4340,8 @@
           "physical_data_rows": 47,
           "football_rows": 28,
           "glossary_rows": 19,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "header_rows": 2,
           "content_seasons": [
             "2025"
@@ -3966,6 +4384,8 @@
           "plain_read_csv_rows": 615,
           "football_rows": 590,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 614,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4000,6 +4420,8 @@
           "plain_read_csv_rows": 588,
           "football_rows": 563,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 587,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4034,6 +4456,8 @@
           "plain_read_csv_rows": 563,
           "football_rows": 538,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 562,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4068,6 +4492,8 @@
           "plain_read_csv_rows": 571,
           "football_rows": 546,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 570,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4102,6 +4528,8 @@
           "plain_read_csv_rows": 552,
           "football_rows": 527,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 551,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4136,6 +4564,8 @@
           "plain_read_csv_rows": 581,
           "football_rows": 556,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 580,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4166,6 +4596,8 @@
           "n_columns": 25
         }
       },
+      "files_with_unclassified_rows": [],
+      "all_files_contract_ok": true,
       "week_columns_example": [
         "W1",
         "W2",
@@ -4195,6 +4627,8 @@
           "plain_read_csv_rows": 567,
           "football_rows": 542,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 566,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4225,6 +4659,8 @@
           "n_columns": 25
         }
       },
+      "files_with_unclassified_rows": [],
+      "all_files_contract_ok": true,
       "week_columns_example": [
         "W1",
         "W2",
@@ -4254,6 +4690,8 @@
           "plain_read_csv_rows": 567,
           "football_rows": 542,
           "glossary_rows": 24,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 566,
           "delta_plain_minus_football": 25,
           "week_columns": [
@@ -4284,6 +4722,8 @@
           "n_columns": 25
         }
       },
+      "files_with_unclassified_rows": [],
+      "all_files_contract_ok": true,
       "week_columns_example": [
         "W1",
         "W2",
@@ -4313,6 +4753,8 @@
           "plain_read_csv_rows": 649,
           "football_rows": 623,
           "glossary_rows": 25,
+          "unclassified_rows": 0,
+          "contract_ok": true,
           "physical_data_rows": 648,
           "delta_plain_minus_football": 26,
           "week_columns": [
@@ -4343,6 +4785,8 @@
           "n_columns": 26
         }
       },
+      "files_with_unclassified_rows": [],
+      "all_files_contract_ok": true,
       "week_columns_example": [
         "W1",
         "W2",
@@ -4374,6 +4818,7 @@
             32
           ],
           "glossary_rows_total": 378,
+          "unclassified_rows_total": 0,
           "seasons": [
             2025
           ],
@@ -4407,6 +4852,7 @@
             32
           ],
           "glossary_rows_total": 378,
+          "unclassified_rows_total": 0,
           "seasons": [
             2025
           ],
@@ -4440,6 +4886,7 @@
             32
           ],
           "glossary_rows_total": 378,
+          "unclassified_rows_total": 0,
           "seasons": [
             2025
           ],
@@ -4473,6 +4920,7 @@
             32
           ],
           "glossary_rows_total": 378,
+          "unclassified_rows_total": 0,
           "seasons": [
             2025
           ],
@@ -4498,7 +4946,19 @@
           ],
           "season_mismatches": 0
         }
-      }
+      },
+      "key_uniqueness": {
+        "key": "season + week + normalized_team + position (after glossary removal)",
+        "n_key_rows": 2304,
+        "n_unique_keys": 2304,
+        "duplicate_rows": 0,
+        "unique": true,
+        "unmapped_team_names": [],
+        "pos_col_vs_filename_mismatch_rows": 0,
+        "duplicate_examples": []
+      },
+      "files_with_unclassified_rows": [],
+      "all_files_contract_ok": true
     },
     "I2_legacy_coverage_matrix": {
       "n_legacy_files": 18,
@@ -8748,5 +9208,55 @@
       "2025_18_TEN_JAX",
       "2025_18_WAS_PHI"
     ]
+  },
+  "correction_pass_2026_08": {
+    "check1_fp_coverage_key": {
+      "defense": {
+        "key": "season + week + normalized_team (after glossary removal)",
+        "n_key_rows": 2124,
+        "n_unique_keys": 2124,
+        "duplicate_rows": 0,
+        "unique": true,
+        "unmapped_team_names": [],
+        "duplicate_examples": []
+      },
+      "offense": {
+        "key": "season + week + normalized_team (after glossary removal)",
+        "n_key_rows": 2124,
+        "n_unique_keys": 2124,
+        "duplicate_rows": 0,
+        "unique": true,
+        "unmapped_team_names": [],
+        "duplicate_examples": []
+      }
+    },
+    "check2_fp_allowed_key": {
+      "key": "season + week + normalized_team + position (after glossary removal)",
+      "n_key_rows": 2304,
+      "n_unique_keys": 2304,
+      "duplicate_rows": 0,
+      "unique": true,
+      "unmapped_team_names": [],
+      "pos_col_vs_filename_mismatch_rows": 0,
+      "duplicate_examples": []
+    },
+    "check3_cross_week_duplicates": {
+      "scores": 0,
+      "spread": 0,
+      "total": 0,
+      "moneyline": 0,
+      "schedule_baseline": 0
+    },
+    "check4_strict_parser_unclassified": {
+      "coverage_defense_files_failing": 0,
+      "coverage_offense_files_failing": 0,
+      "fp_allowed_files_failing": 0,
+      "snap_share_files_failing": 0,
+      "target_share_files_failing": 0,
+      "route_share_files_failing": 0,
+      "fpts_scored_files_failing": 0,
+      "total_unclassified_rows": 0
+    },
+    "all_four_pass": true
   }
 }

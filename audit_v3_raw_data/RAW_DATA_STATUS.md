@@ -15,6 +15,14 @@ Language note: "PASS" below means **the parser contract and key/uniqueness check
 in the contract passed and the raw file is structurally usable**. It does **not**
 mean "verified clean" or "production-ready." Open items are marked UNRESOLVED.
 
+**Correction pass (2026-08):** four narrow checks were added and all pass (details in
+`keys_and_duplicates.md`): (1) FP coverage def/off `season+week+normalized_team` uniqueness
+(2,124 rows/side, 0 dupes); (2) FP allowed `season+week+normalized_team+position` uniqueness
+(2,304 rows, 0 dupes); (3) cross-week `game_id` duplicate checks for scores/spread/total/
+moneyline (all 0); (4) strict three-way FP row classification where any unclassified row
+fails the contract (0 unclassified across all FP files; verified by negative control). No
+new failures appeared.
+
 ## Compact status table
 
 | # | Family | Status | One-line reason |
@@ -118,8 +126,9 @@ loaders** (`roster.py`), not in the raw data.
 - **Path:** `data/RAW_fantasypoints/coverage/defense/coverage_defense_{season}_w{week}.csv`
 - **Parser:** row-index-1 header (super-header on row 0), then `Season`-non-null filter (dataset-specific).
   This matches `coverage.py` (`skiprows=1` + Season filter) — the correct parser for this family.
-- **Grain:** one team per season+week (**single-week**, `G==1`) — **Key:** `season+week+team` unique after glossary removal
-- **Files:** 80 (2022–2025, Wk 1–22) — single header structure (no drift) — **19 glossary rows/file**
+- **Grain:** one team per season+week (**single-week**, `G==1`) — **Key:** `season+week+normalized_team`
+  **constructed and tested family-wide → UNIQUE** (2,124 rows, 2,124 unique, 0 dupes, 0 unmapped teams)
+- **Files:** 80 (2022–2025, Wk 1–22) — single header structure (no drift) — **19 glossary rows/file**; **0 unclassified rows**
 - **Football rows/file:** 2–32 (few teams in late playoff-week files; 32 in full weeks)
 - **Units:** percentages are **0–100** (MAN % range 11.1–66.7). Do not mix with 0–1.
 - **Note:** header has 4 duplicate `FP/DB` columns (Man/Zone/1-HI/2-HI contexts) — must be disambiguated by
@@ -156,7 +165,9 @@ loaders** (`roster.py`), not in the raw data.
 
 ### O — FantasyPoints allowed by position
 - **Paths:** `fp_allowed_{qb,rb,wr,te}_2025_w{01..18}.csv` — 72 files, 2025 Wk 1–18.
-- **Grain:** team-week-position; 32 teams/file; 21 glossary rows/file. **Non-core** for the rebuild (contract O).
+- **Grain:** team-week-position; 32 teams/file; 21 glossary rows/file. **Key:** `season+week+normalized_team+position`
+  **constructed and tested → UNIQUE** (2,304 rows, 0 dupes, 0 unmapped, 0 `POS`≠filename); **0 unclassified rows**.
+  **Non-core** for the rebuild (contract O).
 
 ---
 

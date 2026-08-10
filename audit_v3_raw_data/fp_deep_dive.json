@@ -594,5 +594,34 @@
       }
     },
     "conclusion": "per-week coverage files are SINGLE-WEEK observations (G==1); grain = one team per season+week. The 2022_full_regular_season file is a season aggregate (different grain)."
+  },
+  "strict_parser_negative_control": {
+    "football_rows": 1,
+    "glossary_rows": 1,
+    "unclassified_rows": 2,
+    "contract_ok": false,
+    "unclassified_examples": [
+      [
+        5,
+        [
+          "Foobar",
+          "some definition",
+          "",
+          "",
+          ""
+        ]
+      ],
+      [
+        6,
+        [
+          "2",
+          "Ghost Team",
+          "1",
+          "banana",
+          "10.0"
+        ]
+      ]
+    ],
+    "passes_negative_control": true
   }
 }

@@ -13,18 +13,56 @@ family has its own physical layout:
   * a trailing glossary/footer block (key -> definition, one per line), often
     separated from the data by a physically blank line.
 
-The parsers below identify the real header, split football rows from glossary
-rows, and return raw counts so the audit can report physical vs football vs
-glossary vs header rows separately (contract global rule 8).
+Row classification (correction pass, 2026-08): every non-blank post-header row
+is classified as exactly one of:
+  * FOOTBALL           -> the Season cell is a 4-digit year,
+  * RECOGNIZED_GLOSSARY -> a key->definition line whose first cell is a real
+                          header token and whose columns beyond the definition
+                          are empty,
+  * UNCLASSIFIED       -> anything else (malformed / unexpected).
+Any UNCLASSIFIED row makes `contract_ok=False`. The audit treats that as a
+CONTRACT FAIL rather than silently counting the row as glossary.
 
 Nothing here mutates or rewrites the source files.
 """
 from __future__ import annotations
 
 import csv
-import io
 from dataclasses import dataclass, field
 from pathlib import Path
+
+# --------------------------------------------------------------------------
+# Team normalization for the team-grain FantasyPoints families (coverage,
+# fp_allowed). These files carry the FULL team name in the `Name` column.
+# Map full name -> nflverse team code. Injective by construction; the audit
+# asserts no two names collapse to the same code and that every football row
+# resolves to a code (an unmapped name is a loud failure, not a silent drop).
+# --------------------------------------------------------------------------
+NFLVERSE_TEAM_FROM_FULLNAME: dict[str, str] = {
+    "Arizona Cardinals": "ARI", "Atlanta Falcons": "ATL",
+    "Baltimore Ravens": "BAL", "Buffalo Bills": "BUF",
+    "Carolina Panthers": "CAR", "Chicago Bears": "CHI",
+    "Cincinnati Bengals": "CIN", "Cleveland Browns": "CLE",
+    "Dallas Cowboys": "DAL", "Denver Broncos": "DEN",
+    "Detroit Lions": "DET", "Green Bay Packers": "GB",
+    "Houston Texans": "HOU", "Indianapolis Colts": "IND",
+    "Jacksonville Jaguars": "JAX", "Kansas City Chiefs": "KC",
+    "Las Vegas Raiders": "LV", "Los Angeles Chargers": "LAC",
+    "Los Angeles Rams": "LA", "Miami Dolphins": "MIA",
+    "Minnesota Vikings": "MIN", "New England Patriots": "NE",
+    "New Orleans Saints": "NO", "New York Giants": "NYG",
+    "New York Jets": "NYJ", "Philadelphia Eagles": "PHI",
+    "Pittsburgh Steelers": "PIT", "San Francisco 49ers": "SF",
+    "Seattle Seahawks": "SEA", "Tampa Bay Buccaneers": "TB",
+    "Tennessee Titans": "TEN", "Washington Commanders": "WAS",
+}
+
+
+def normalize_team_fullname(name: str) -> str | None:
+    """Full FantasyPoints team name -> nflverse code, or None if unmapped."""
+    if name is None:
+        return None
+    return NFLVERSE_TEAM_FROM_FULLNAME.get(str(name).strip())
 
 
 @dataclass
@@ -33,11 +71,14 @@ class FPParseResult:
     physical_data_rows: int          # non-empty physical rows excluding the 2 header rows
     blank_rows: int                  # physically empty rows
     header_rows: int                 # super-header + real header (=2 when both present)
-    football_rows: int               # real football observations (Season populated & numeric-ish)
-    glossary_rows: int               # trailing key->definition rows
+    football_rows: int               # real football observations (Season = 4-digit year)
+    glossary_rows: int               # recognized key->definition rows
+    unclassified_rows: int           # malformed / unexpected rows (contract-fatal)
+    contract_ok: bool = True         # False if any unclassified row present or header bad
     real_header: list = field(default_factory=list)
     week_columns: list = field(default_factory=list)   # W1..Wn wide columns present
     season_values: list = field(default_factory=list)  # distinct Season values among football rows
+    unclassified_examples: list = field(default_factory=list)  # (physical_row_index, row)
     note: str = ""
 
 
@@ -54,53 +95,68 @@ def _is_blank(row: list[str]) -> bool:
     return all((c is None or str(c).strip() == "") for c in row)
 
 
+def _is_year(cell: str) -> bool:
+    c = (cell or "").strip()
+    return len(c) == 4 and c.isdigit()
+
+
 def parse_fp_table(path: str | Path) -> FPParseResult:
-    """Parse a FantasyPoints two-header table (coverage, fp_allowed, wide-weekly).
+    """Parse a FantasyPoints two-header table with strict row classification.
 
-    Contract rule: the real header is row index 1 (0-based) for every observed
-    FantasyPoints export; row 0 is the merged group-label band. We assert that
-    row 1 contains the anchor field 'Season', otherwise we refuse to guess.
+    The real header is row index 1 (0-based) for every observed FantasyPoints
+    export; row 0 is the merged group-label band. We assert row 1 contains the
+    anchor field 'Season', otherwise we refuse to guess (contract_ok=False).
 
-    Football rows are rows AFTER the real header whose 'Season' cell is a 4-digit
-    year. Glossary rows are trailing rows whose first cell is a known column
-    token and whose 'Season' position is not a year (they are key->definition
-    pairs). We classify every non-blank post-header row as either football or
-    glossary and never silently drop.
+    Classification of each non-blank row after the header:
+      football           : Season cell is a 4-digit year
+      recognized glossary : first cell is a header token AND every cell at
+                            index >= 2 is empty (i.e. a `key,"definition"` pair)
+      unclassified        : neither of the above  -> contract_ok=False
     """
     rows = _read_physical_rows(path)
     blank = sum(1 for r in rows if _is_blank(r))
 
     if len(rows) < 2:
-        return FPParseResult(str(path), 0, blank, 0, 0, 0, note="fewer than 2 physical rows")
+        return FPParseResult(str(path), 0, blank, 0, 0, 0, 0, contract_ok=False,
+                             note="fewer than 2 physical rows")
 
-    super_header = rows[0]
     real_header = rows[1]
-
     if "Season" not in real_header:
-        # Fail loudly per contract (no silent header guessing).
         return FPParseResult(
-            str(path), 0, blank, 0, 0, 0, real_header=real_header,
+            str(path), 0, blank, 0, 0, 0, 0, contract_ok=False,
+            real_header=real_header,
             note="CONTRACT FAIL: 'Season' not found in physical row index 1",
         )
 
     season_idx = real_header.index("Season")
+    header_tokens = {str(c).strip() for c in real_header if c is not None and str(c).strip() != ""}
     week_cols = [c for c in real_header if c and c.upper().startswith("W")
                  and c.upper()[1:].isdigit()]
 
     football_rows = 0
     glossary_rows = 0
+    unclassified = 0
+    unclassified_examples: list = []
     season_values: set[str] = set()
 
-    for r in rows[2:]:
+    for phys_idx, r in enumerate(rows[2:], start=2):
         if _is_blank(r):
             continue
-        cell = r[season_idx].strip() if len(r) > season_idx else ""
-        if len(cell) == 4 and cell.isdigit():
+        season_cell = r[season_idx].strip() if len(r) > season_idx else ""
+        col0 = (r[0] or "").strip() if len(r) > 0 else ""
+        if _is_year(season_cell):
             football_rows += 1
-            season_values.add(cell)
-        else:
-            # trailing glossary / footer definition line (or a short 2-col pair)
+            season_values.add(season_cell)
+            continue
+        # candidate glossary: key->definition, real header token, nothing past col1
+        tail_empty = all((c is None or str(c).strip() == "") for c in r[2:])
+        if col0 in header_tokens and tail_empty:
             glossary_rows += 1
+            continue
+        # anything else is malformed / unexpected
+        unclassified += 1
+        if len(unclassified_examples) < 5:
+            unclassified_examples.append((phys_idx, r))
 
     physical_data_rows = sum(1 for r in rows[2:] if not _is_blank(r))
 
@@ -111,10 +167,33 @@ def parse_fp_table(path: str | Path) -> FPParseResult:
         header_rows=2,
         football_rows=football_rows,
         glossary_rows=glossary_rows,
+        unclassified_rows=unclassified,
+        contract_ok=(unclassified == 0),
         real_header=real_header,
         week_columns=week_cols,
         season_values=sorted(season_values),
+        unclassified_examples=unclassified_examples,
+        note=("OK" if unclassified == 0 else
+              f"CONTRACT FAIL: {unclassified} unclassified row(s)"),
     )
+
+
+def football_frame(path: str | Path):
+    """Return only the football rows as a pandas DataFrame.
+
+    Uses the correct parser (row-1 header) and keeps rows whose `Season` is a
+    4-digit year — the same predicate as `parse_fp_table`. Callers cross-check
+    len(df) against `parse_fp_table(...).football_rows` for consistency.
+    """
+    import pandas as pd
+    df = pd.read_csv(path, skiprows=1, encoding="utf-8-sig")
+    if "Season" not in df.columns:
+        return df.iloc[0:0]
+    # pandas may read Season as float (e.g. 2024.0) because glossary rows make
+    # the column NaN-typed; match a 4-digit year via numeric comparison.
+    yr = pd.to_numeric(df["Season"], errors="coerce")
+    mask = yr.notna() & (yr == yr.round(0)) & (yr >= 1900) & (yr <= 2100)
+    return df[mask].copy()
 
 
 def plain_read_csv_row_count(path: str | Path) -> int:
@@ -130,12 +209,7 @@ def plain_read_csv_row_count(path: str | Path) -> int:
 
 
 def skiprows1_read_count(path: str | Path) -> int:
-    """Row count the coverage.py parser reports BEFORE the Season-notna filter.
-
-    coverage.py does: read_csv(skiprows=1) then df[df['Season'].notna()].
-    This returns the pre-filter length (glossary rows still present as NaN-Season
-    rows) so we can show the delta the Season filter removes.
-    """
+    """Row count the coverage.py parser reports BEFORE the Season-notna filter."""
     import pandas as pd
     df = pd.read_csv(path, skiprows=1, encoding="utf-8-sig")
     return len(df)

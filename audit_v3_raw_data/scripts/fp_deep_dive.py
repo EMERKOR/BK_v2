@@ -174,5 +174,39 @@ out["coverage_grain"] = {"per_week_sample": grain,
                                        "grain = one team per season+week. The 2022_full_regular_season "
                                        "file is a season aggregate (different grain)."}
 
+# 7. negative control for the strict parser (correction #4) -----------------
+# Build a synthetic FP-style table with one football row, one genuine glossary
+# row, and TWO malformed rows, and confirm parse_fp_table classifies each
+# correctly and fails the contract on the malformed rows (i.e. it does NOT
+# silently count them as glossary).
+import csv as _csv
+import tempfile as _tmp
+
+def _negative_control():
+    header0 = ["Team Details", "", "", "", ""]
+    header1 = ["Rank", "Name", "G", "Season", "MAN %"]
+    football = ["1", "Buffalo Bills", "1", "2024", "27.3"]
+    glossary_ok = ["MAN %", "Dropback Man Coverage Rate", "", "", ""]   # header token + tail empty
+    malformed_key = ["Foobar", "some definition", "", "", ""]           # col0 not a header token
+    malformed_data = ["2", "Ghost Team", "1", "banana", "10.0"]         # Season not a year
+    rows = [header0, header1, football, glossary_ok, [], malformed_key, malformed_data]
+    fd, path = _tmp.mkstemp(suffix=".csv")
+    with open(fd, "w", newline="", encoding="utf-8-sig") as fh:
+        _csv.writer(fh).writerows(rows)
+    r = fp_parsers.parse_fp_table(path)
+    os.remove(path)
+    return {
+        "football_rows": r.football_rows,          # expect 1
+        "glossary_rows": r.glossary_rows,          # expect 1 (only the header-token line)
+        "unclassified_rows": r.unclassified_rows,  # expect 2 (the two malformed lines)
+        "contract_ok": r.contract_ok,              # expect False
+        "unclassified_examples": r.unclassified_examples,
+        "passes_negative_control": (r.football_rows == 1 and r.glossary_rows == 1
+                                    and r.unclassified_rows == 2 and r.contract_ok is False),
+    }
+
+out["strict_parser_negative_control"] = _negative_control()
+
 (OUT / "fp_deep_dive.json").write_text(json.dumps(out, indent=2, default=str))
 print("FP deep-dive complete ->", OUT / "fp_deep_dive.json")
+print("negative control:", out["strict_parser_negative_control"]["passes_negative_control"])

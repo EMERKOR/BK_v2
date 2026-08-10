@@ -12,8 +12,32 @@ tail   : glossary / footer           (key -> human definition, e.g. "COVER 3 %",
 
 Parser used: `audit_v3_raw_data/scripts/fp_parsers.py :: parse_fp_table` — reads every
 physical row with the `csv` module, asserts `Season` is in **row index 1** (fails loudly
-otherwise), counts football rows (`Season` = 4-digit year) separately from glossary rows.
+otherwise), then classifies every non-blank post-header row into exactly one class.
 Reproduce: `python3 audit_v3_raw_data/scripts/fp_deep_dive.py` → `fp_deep_dive.json`.
+
+**Strict row classification (correction pass, 2026-08).** Each non-blank row after the
+two header rows is exactly one of:
+- **football** — the `Season` cell is a 4-digit year;
+- **recognized glossary** — the first cell is a real header token *and* every cell at
+  index ≥ 2 is empty (a `key,"definition"` pair);
+- **unclassified** — anything else.
+
+Any unclassified row sets `contract_ok = False` — the file **fails the parser contract**
+instead of the malformed row being silently counted as glossary. Across **all**
+FantasyPoints files (coverage def/off, fp_allowed, snap/target/route/fpts) the audit found
+**0 unclassified rows**. A negative control (`fp_deep_dive.json ::
+strict_parser_negative_control`) injects two malformed rows into a synthetic table and
+confirms the parser reports `football=1, glossary=1, unclassified=2, contract_ok=False`.
+
+**Key uniqueness (constructed & tested, not assumed).** Using an injective full-team-name
+→ nflverse-code map (32 teams):
+- coverage **defense** `season+week+normalized_team` → 2,124 rows, 2,124 unique, 0 dupes, 0 unmapped;
+- coverage **offense** `season+week+normalized_team` → 2,124 rows, 2,124 unique, 0 dupes, 0 unmapped;
+- **fp_allowed** `season+week+normalized_team+position` → 2,304 rows, 2,304 unique, 0 dupes, 0 unmapped, 0 `POS`≠filename.
+
+The pandas football-row frame count matches the `csv`-parser football count for every
+coverage file (0 parser-vs-frame mismatches), so the glossary-removal predicate is
+consistent across both code paths.
 
 The **old/plain parser** modeled here is `pandas.read_csv(path)` with **no `skiprows`** —
 exactly what `ball_knower/profiles/roster.py` uses for the wide files. It takes row 0 (the
