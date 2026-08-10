@@ -1,0 +1,69 @@
+{
+  "pbp_2025": {
+    "rows": 48771,
+    "dup_game_play": 0,
+    "week_min": 1,
+    "week_max": 22,
+    "seasons": [
+      2025
+    ],
+    "n_columns": 372,
+    "missing_required_subset": []
+  },
+  "ftn_2025_join_to_pbp": {
+    "ftn_rows": 47316,
+    "matched": 47316,
+    "join_rate": 1.0,
+    "note": "was 0.7323 pre-refresh"
+  },
+  "injuries_2025": {
+    "rows": 6068,
+    "candidate_key": "season+week+team+gsis_id",
+    "candidate_dups": 0,
+    "dup_groups_multi_date_modified": 0,
+    "week_min": 1,
+    "week_max": 22,
+    "seasons": [
+      2025
+    ]
+  },
+  "schedule_2025": {
+    "n_files": 22,
+    "rows": 285,
+    "unique_games": 285,
+    "dup_within": 0,
+    "cross_week_dups": 0
+  },
+  "scores_2025": {
+    "n_files": 22,
+    "rows": 285,
+    "unique_games": 285,
+    "dup_within": 0,
+    "cross_week_dups": 0,
+    "all_in_schedule": true
+  },
+  "spread_2025": {
+    "n_files": 22,
+    "rows": 285,
+    "unique_games": 285,
+    "dup_within": 0,
+    "cross_week_dups": 0,
+    "all_in_schedule": true
+  },
+  "total_2025": {
+    "n_files": 22,
+    "rows": 285,
+    "unique_games": 285,
+    "dup_within": 0,
+    "cross_week_dups": 0,
+    "all_in_schedule": true
+  },
+  "moneyline_2025": {
+    "n_files": 22,
+    "rows": 285,
+    "unique_games": 285,
+    "dup_within": 0,
+    "cross_week_dups": 0,
+    "all_in_schedule": true
+  }
+}
