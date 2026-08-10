@@ -1,0 +1,598 @@
+{
+  "parser_deltas_wide": {
+    "snap_share_2021.csv": {
+      "family": "snap_share",
+      "old_plain_read_csv_rows": 615,
+      "correct_football_rows": 590,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "snap_share_2022.csv": {
+      "family": "snap_share",
+      "old_plain_read_csv_rows": 588,
+      "correct_football_rows": 563,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "snap_share_2023.csv": {
+      "family": "snap_share",
+      "old_plain_read_csv_rows": 563,
+      "correct_football_rows": 538,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "snap_share_2024.csv": {
+      "family": "snap_share",
+      "old_plain_read_csv_rows": 571,
+      "correct_football_rows": 546,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "snap_share_2025.csv": {
+      "family": "snap_share",
+      "old_plain_read_csv_rows": 552,
+      "correct_football_rows": 527,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "snap_share_2025_full.csv": {
+      "family": "snap_share",
+      "old_plain_read_csv_rows": 581,
+      "correct_football_rows": 556,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "target_share_2025_full.csv": {
+      "family": "target_share",
+      "old_plain_read_csv_rows": 567,
+      "correct_football_rows": 542,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "route_share_2025_full.csv": {
+      "family": "route_share",
+      "old_plain_read_csv_rows": 567,
+      "correct_football_rows": 542,
+      "glossary_rows": 24,
+      "delta": 25,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    },
+    "fpts_scored_2025_full.csv": {
+      "family": "fpts_scored",
+      "old_plain_read_csv_rows": 649,
+      "correct_football_rows": 623,
+      "glossary_rows": 25,
+      "delta": 26,
+      "n_week_columns": 18,
+      "week_columns": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18"
+      ]
+    }
+  },
+  "parser_deltas_coverage_2024": {
+    "defense": {
+      "n_files_2024": 22,
+      "skiprows1_prefilter_rows_total": 988,
+      "football_rows_total": 570,
+      "glossary_rows_total": 418,
+      "note": "coverage.py applies Season-notna filter AFTER skiprows=1, which correctly removes the glossary block"
+    },
+    "offense": {
+      "n_files_2024": 22,
+      "skiprows1_prefilter_rows_total": 988,
+      "football_rows_total": 570,
+      "glossary_rows_total": 418,
+      "note": "coverage.py applies Season-notna filter AFTER skiprows=1, which correctly removes the glossary block"
+    }
+  },
+  "offense_vs_defense": {
+    "2024_w05": {
+      "n_teams_def": 28,
+      "n_teams_off": 28,
+      "value_comparison": {
+        "MAN %": {
+          "mean_abs_diff": 14.521,
+          "identical": false
+        },
+        "ZONE %": {
+          "mean_abs_diff": 13.057,
+          "identical": false
+        },
+        "COVER 2 %": {
+          "mean_abs_diff": 9.964,
+          "identical": false
+        },
+        "COVER 3 %": {
+          "mean_abs_diff": 12.771,
+          "identical": false
+        },
+        "DB": {
+          "mean_abs_diff": 11.357,
+          "identical": false
+        }
+      }
+    },
+    "2024_w10": {
+      "n_teams_def": 28,
+      "n_teams_off": 28,
+      "value_comparison": {
+        "MAN %": {
+          "mean_abs_diff": 15.357,
+          "identical": false
+        },
+        "ZONE %": {
+          "mean_abs_diff": 15.236,
+          "identical": false
+        },
+        "COVER 2 %": {
+          "mean_abs_diff": 7.536,
+          "identical": false
+        },
+        "COVER 3 %": {
+          "mean_abs_diff": 13.007,
+          "identical": false
+        },
+        "DB": {
+          "mean_abs_diff": 11.5,
+          "identical": false
+        }
+      }
+    },
+    "conclusion": "offense and defense coverage files are DISTINCT football measures (offense = coverage faced by the offense); identical header, different values"
+  },
+  "legacy_vs_canonical_2025": {
+    "n_weeks": 18,
+    "n_identical": 13,
+    "n_divergent": 1,
+    "divergent_weeks": [
+      12
+    ],
+    "per_week": [
+      {
+        "week": 1,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 32,
+        "canonical_rows": 32
+      },
+      {
+        "week": 2,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 32,
+        "canonical_rows": 32
+      },
+      {
+        "week": 3,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 32,
+        "canonical_rows": 32
+      },
+      {
+        "week": 4,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 32,
+        "canonical_rows": 32
+      },
+      {
+        "week": 5,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 28,
+        "canonical_rows": 28
+      },
+      {
+        "week": 6,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 30,
+        "canonical_rows": 30
+      },
+      {
+        "week": 7,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 30,
+        "canonical_rows": 30
+      },
+      {
+        "week": 8,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 26,
+        "canonical_rows": 26
+      },
+      {
+        "week": 9,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 28,
+        "canonical_rows": 28
+      },
+      {
+        "week": 10,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 28,
+        "canonical_rows": 28
+      },
+      {
+        "week": 11,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 30,
+        "canonical_rows": 30
+      },
+      {
+        "week": 12,
+        "identical_ignoring_rank": false,
+        "legacy_rows": 28,
+        "canonical_rows": 28
+      },
+      {
+        "week": 13,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 32,
+        "canonical_rows": 32
+      },
+      {
+        "week": 14,
+        "identical_ignoring_rank": true,
+        "legacy_rows": 28,
+        "canonical_rows": 28
+      },
+      {
+        "week": 15,
+        "canonical_exists": false
+      },
+      {
+        "week": 16,
+        "canonical_exists": false
+      },
+      {
+        "week": 17,
+        "canonical_exists": false
+      },
+      {
+        "week": 18,
+        "canonical_exists": false
+      }
+    ],
+    "conclusion": "top-level coverage_matrix_def_2025_* duplicate canonical per-week defense coverage (re-ranked) for all weeks except the divergent one(s), where the two snapshots disagree \u2014 a provenance/point-in-time flag"
+  },
+  "player_identity": {
+    "per_file": {
+      "snap_share_2021.csv": {
+        "football_rows": 590,
+        "id_columns": [],
+        "dup_name": 0,
+        "dup_name_team": 0,
+        "n_team_tokens": 60,
+        "n_multiteam_tokens": 28,
+        "multiteam_examples": [
+          "ARZ, DET",
+          "ARZ, PHI",
+          "BLT, SF",
+          "BLT, TB",
+          "BUF, JAX",
+          "CAR, HST",
+          "CAR, JAX",
+          "CAR, LV"
+        ]
+      },
+      "snap_share_2022.csv": {
+        "football_rows": 563,
+        "id_columns": [],
+        "dup_name": 1,
+        "dup_name_team": 1,
+        "n_team_tokens": 60,
+        "n_multiteam_tokens": 28,
+        "multiteam_examples": [
+          "ARZ, BLT",
+          "ARZ, TEN",
+          "BLT, GB",
+          "BLT, NE",
+          "BUF, IND",
+          "BUF, NYG",
+          "BUF, TB",
+          "CAR, ARZ"
+        ]
+      },
+      "snap_share_2023.csv": {
+        "football_rows": 538,
+        "id_columns": [],
+        "dup_name": 0,
+        "dup_name_team": 0,
+        "n_team_tokens": 43,
+        "n_multiteam_tokens": 11,
+        "multiteam_examples": [
+          "ARZ, NO",
+          "ARZ, NYJ",
+          "ATL, LA",
+          "ATL, PIT",
+          "BLT, GB",
+          "CHI, MIA",
+          "DET, CLV",
+          "MIN, LA"
+        ]
+      },
+      "snap_share_2024.csv": {
+        "football_rows": 546,
+        "id_columns": [],
+        "dup_name": 0,
+        "dup_name_team": 0,
+        "n_team_tokens": 55,
+        "n_multiteam_tokens": 23,
+        "multiteam_examples": [
+          "BLT, HST",
+          "BUF, NO",
+          "CAR, BLT, HST",
+          "CAR, CHI",
+          "CAR, DAL",
+          "CHI, PHI",
+          "CIN, CHI",
+          "CLV, BUF"
+        ]
+      },
+      "snap_share_2025.csv": {
+        "football_rows": 527,
+        "id_columns": [],
+        "dup_name": 0,
+        "dup_name_team": 0,
+        "n_team_tokens": 46,
+        "n_multiteam_tokens": 14,
+        "multiteam_examples": [
+          "ARZ, NE",
+          "CLV, HST",
+          "DEN, NYG",
+          "GB, MIN",
+          "JAX, PHI",
+          "LV, JAX",
+          "MIN, JAX",
+          "NO, BLT"
+        ]
+      },
+      "snap_share_2025_full.csv": {
+        "football_rows": 556,
+        "id_columns": [],
+        "dup_name": 0,
+        "dup_name_team": 0,
+        "n_team_tokens": 58,
+        "n_multiteam_tokens": 26,
+        "multiteam_examples": [
+          "ARZ, DAL",
+          "ARZ, DEN",
+          "ARZ, NE",
+          "ATL, NYG",
+          "BUF, NO",
+          "CAR, JAX",
+          "HST, CLV",
+          "HST, KC"
+        ]
+      }
+    },
+    "conclusion": "wide FP files carry NO player_id; identity rests on Name(+POS). Traded players get comma-joined multi-team tokens (e.g. 'BLT, HST'), so the Team field is a season aggregate, not a point-in-time team. FantasyPoints team codes (BLT/HST/CLV/ARZ...) are NOT nflverse codes and need normalization. => KEY NOT ESTABLISHED for a robust player-team-week key."
+  },
+  "units": {
+    "coverage_MAN_pct": {
+      "min": 11.1,
+      "max": 66.7,
+      "scale": "0-100"
+    },
+    "snap_share_W1_pct": {
+      "min": 1.4,
+      "max": 100.0,
+      "scale": "0-100"
+    },
+    "fpts_scored_W1": {
+      "min": -0.2,
+      "max": 38.8,
+      "scale": "fantasy points (not pct)"
+    },
+    "warning": "percentages are 0-100 in raw files; do NOT mix with 0-1 fallbacks"
+  },
+  "coverage_grain": {
+    "per_week_sample": {
+      "2024_w01": {
+        "n_teams": 32,
+        "G_distinct": [
+          1.0
+        ]
+      },
+      "2024_w05": {
+        "n_teams": 28,
+        "G_distinct": [
+          1.0
+        ]
+      },
+      "2024_w10": {
+        "n_teams": 28,
+        "G_distinct": [
+          1.0
+        ]
+      },
+      "2024_w22": {
+        "n_teams": 2,
+        "G_distinct": [
+          1.0
+        ]
+      }
+    },
+    "conclusion": "per-week coverage files are SINGLE-WEEK observations (G==1); grain = one team per season+week. The 2022_full_regular_season file is a season aggregate (different grain)."
+  }
+}
