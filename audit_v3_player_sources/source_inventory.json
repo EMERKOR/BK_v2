@@ -1,0 +1,2424 @@
+{
+  "generated_at_utc": "2026-08-11T14:43:04.358892+00:00",
+  "families": {
+    "players": {
+      "path": "data/v3/raw_player_sources/players/players.parquet",
+      "rows": 25041,
+      "grain": "one player identity",
+      "candidate_key": "gsis_id",
+      "gsis_id_unique_incl_null_excluded": true,
+      "gsis_null_rows": 0,
+      "id_coverage": {
+        "gsis_id": {
+          "non_null": 25041,
+          "null": 0,
+          "unique_non_null": 25041
+        },
+        "esb_id": {
+          "non_null": 25041,
+          "null": 0,
+          "unique_non_null": 25039
+        },
+        "nfl_id": {
+          "non_null": 12103,
+          "null": 12938,
+          "unique_non_null": 12103
+        },
+        "pfr_id": {
+          "non_null": 22553,
+          "null": 2488,
+          "unique_non_null": 22553
+        },
+        "pff_id": {
+          "non_null": 11249,
+          "null": 13792,
+          "unique_non_null": 11249
+        },
+        "otc_id": {
+          "non_null": 9340,
+          "null": 15701,
+          "unique_non_null": 9340
+        },
+        "espn_id": {
+          "non_null": 16755,
+          "null": 8286,
+          "unique_non_null": 16755
+        },
+        "smart_id": {
+          "non_null": 25041,
+          "null": 0,
+          "unique_non_null": 25039
+        }
+      },
+      "alt_id_conflicts": {
+        "esb_id": {
+          "alt_ids_mapping_to_multiple_gsis": 2,
+          "examples": [
+            "EKE080143",
+            "PRY456541"
+          ]
+        },
+        "nfl_id": {
+          "alt_ids_mapping_to_multiple_gsis": 0,
+          "examples": []
+        },
+        "pfr_id": {
+          "alt_ids_mapping_to_multiple_gsis": 0,
+          "examples": []
+        },
+        "pff_id": {
+          "alt_ids_mapping_to_multiple_gsis": 0,
+          "examples": []
+        },
+        "otc_id": {
+          "alt_ids_mapping_to_multiple_gsis": 0,
+          "examples": []
+        },
+        "espn_id": {
+          "alt_ids_mapping_to_multiple_gsis": 0,
+          "examples": []
+        },
+        "smart_id": {
+          "alt_ids_mapping_to_multiple_gsis": 2,
+          "examples": [
+            "3200454b-4508-0143-f843-6dec13481f10",
+            "32005052-5945-6541-b8ff-63047ad93bc7"
+          ]
+        }
+      },
+      "position_vocab": [
+        "C",
+        "CB",
+        "DB",
+        "DE",
+        "DL",
+        "DT",
+        "FB",
+        "FS",
+        "G",
+        "ILB",
+        "K",
+        "LB",
+        "LS",
+        "MLB",
+        "NT",
+        "OL",
+        "OLB",
+        "OT",
+        "P",
+        "QB",
+        "RB",
+        "S",
+        "SAF",
+        "TE",
+        "WR"
+      ],
+      "position_group_vocab": [
+        "DB",
+        "DL",
+        "LB",
+        "OL",
+        "QB",
+        "RB",
+        "SPEC",
+        "TE",
+        "WR"
+      ],
+      "columns": [
+        "gsis_id",
+        "display_name",
+        "common_first_name",
+        "first_name",
+        "last_name",
+        "short_name",
+        "football_name",
+        "suffix",
+        "esb_id",
+        "nfl_id",
+        "pfr_id",
+        "pff_id",
+        "otc_id",
+        "espn_id",
+        "smart_id",
+        "birth_date",
+        "position_group",
+        "position",
+        "ngs_position_group",
+        "ngs_position",
+        "height",
+        "weight",
+        "headshot",
+        "college_name",
+        "college_conference",
+        "jersey_number",
+        "rookie_season",
+        "last_season",
+        "latest_team",
+        "status",
+        "ngs_status",
+        "ngs_status_short_description",
+        "years_of_experience",
+        "pff_position",
+        "pff_status",
+        "draft_year",
+        "draft_round",
+        "draft_pick",
+        "draft_team"
+      ],
+      "dtypes": {
+        "gsis_id": "string",
+        "display_name": "string",
+        "common_first_name": "string",
+        "first_name": "string",
+        "last_name": "string",
+        "short_name": "string",
+        "football_name": "string",
+        "suffix": "string",
+        "esb_id": "string",
+        "nfl_id": "string",
+        "pfr_id": "string",
+        "pff_id": "string",
+        "otc_id": "string",
+        "espn_id": "string",
+        "smart_id": "string",
+        "birth_date": "string",
+        "position_group": "string",
+        "position": "string",
+        "ngs_position_group": "string",
+        "ngs_position": "string",
+        "height": "int32",
+        "weight": "int32",
+        "headshot": "string",
+        "college_name": "string",
+        "college_conference": "string",
+        "jersey_number": "string",
+        "rookie_season": "int32",
+        "last_season": "int32",
+        "latest_team": "string",
+        "status": "string",
+        "ngs_status": "string",
+        "ngs_status_short_description": "string",
+        "years_of_experience": "int32",
+        "pff_position": "string",
+        "pff_status": "string",
+        "draft_year": "int32",
+        "draft_round": "int32",
+        "draft_pick": "int32",
+        "draft_team": "string"
+      }
+    },
+    "rosters_seasonal": {
+      "subdir": "rosters_seasonal",
+      "seasons_available": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "schema_eras": [
+        {
+          "seasons": [
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "n_columns": 36,
+          "columns": [
+            "season",
+            "team",
+            "position",
+            "depth_chart_position",
+            "jersey_number",
+            "status",
+            "full_name",
+            "first_name",
+            "last_name",
+            "birth_date",
+            "height",
+            "weight",
+            "college",
+            "gsis_id",
+            "espn_id",
+            "sportradar_id",
+            "yahoo_id",
+            "rotowire_id",
+            "pff_id",
+            "pfr_id",
+            "fantasy_data_id",
+            "sleeper_id",
+            "years_exp",
+            "headshot_url",
+            "ngs_position",
+            "week",
+            "game_type",
+            "status_description_abbr",
+            "football_name",
+            "esb_id",
+            "gsis_it_id",
+            "smart_id",
+            "entry_year",
+            "rookie_year",
+            "draft_club",
+            "draft_number"
+          ]
+        }
+      ],
+      "per_season": {
+        "2010": {
+          "rows": 2152,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 3,
+            "season+gsis_id": 115,
+            "season+week+team+gsis_id": 3
+          },
+          "gsis_null": 2,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2011": {
+          "rows": 2099,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 1,
+            "season+gsis_id": 76,
+            "season+week+team+gsis_id": 1
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2012": {
+          "rows": 2120,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 88,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2013": {
+          "rows": 2137,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 104,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2014": {
+          "rows": 2153,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 99,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2015": {
+          "rows": 2190,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 125,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2016": {
+          "rows": 3061,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 0,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2017": {
+          "rows": 3082,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 0,
+          "team_unknown_codes": [],
+          "week_values": [
+            5,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2018": {
+          "rows": 3142,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [],
+          "week_values": [
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2019": {
+          "rows": 3114,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 1,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            6,
+            7,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2020": {
+          "rows": 3068,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            3,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2021": {
+          "rows": 2961,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2022": {
+          "rows": 3134,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2023": {
+          "rows": 3090,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2024": {
+          "rows": 3216,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 0,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2025": {
+          "rows": 3137,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 0,
+            "season+gsis_id": 2,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 3,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        }
+      },
+      "team_unknown_codes_all": [
+        "ARZ",
+        "BLT",
+        "CLV",
+        "HST",
+        "SL"
+      ],
+      "gsis_null_total": 17,
+      "grain": "player-season"
+    },
+    "rosters_weekly": {
+      "subdir": "rosters_weekly",
+      "seasons_available": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "schema_eras": [
+        {
+          "seasons": [
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "n_columns": 36,
+          "columns": [
+            "season",
+            "team",
+            "position",
+            "depth_chart_position",
+            "jersey_number",
+            "status",
+            "full_name",
+            "first_name",
+            "last_name",
+            "birth_date",
+            "height",
+            "weight",
+            "college",
+            "gsis_id",
+            "espn_id",
+            "sportradar_id",
+            "yahoo_id",
+            "rotowire_id",
+            "pff_id",
+            "pfr_id",
+            "fantasy_data_id",
+            "sleeper_id",
+            "years_exp",
+            "headshot_url",
+            "ngs_position",
+            "week",
+            "game_type",
+            "status_description_abbr",
+            "football_name",
+            "esb_id",
+            "gsis_it_id",
+            "smart_id",
+            "entry_year",
+            "rookie_year",
+            "draft_club",
+            "draft_number"
+          ]
+        }
+      ],
+      "per_season": {
+        "2010": {
+          "rows": 31926,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 29777,
+            "season+gsis_id": 29889,
+            "season+week+team+gsis_id": 1724
+          },
+          "gsis_null": 2,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2011": {
+          "rows": 31338,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 29240,
+            "season+gsis_id": 29315,
+            "season+week+team+gsis_id": 1143
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2012": {
+          "rows": 31431,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 29311,
+            "season+gsis_id": 29399,
+            "season+week+team+gsis_id": 1246
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2013": {
+          "rows": 31901,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 29764,
+            "season+gsis_id": 29868,
+            "season+week+team+gsis_id": 1717
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2014": {
+          "rows": 31964,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 29811,
+            "season+gsis_id": 29910,
+            "season+week+team+gsis_id": 1768
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2015": {
+          "rows": 32098,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 29908,
+            "season+gsis_id": 30033,
+            "season+week+team+gsis_id": 1896
+          },
+          "gsis_null": 1,
+          "team_unknown_codes": [
+            "ARZ",
+            "BLT",
+            "CLV",
+            "HST",
+            "SL"
+          ],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2016": {
+          "rows": 35020,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 31703,
+            "season+gsis_id": 31959,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 0,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2017": {
+          "rows": 51321,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 47731,
+            "season+gsis_id": 48239,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 0,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2018": {
+          "rows": 52238,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 48581,
+            "season+gsis_id": 49096,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 38,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2019": {
+          "rows": 51632,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 47969,
+            "season+gsis_id": 48519,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 2,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2020": {
+          "rows": 44130,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 40579,
+            "season+gsis_id": 41062,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 6,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21
+          ]
+        },
+        "2021": {
+          "rows": 46696,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 43216,
+            "season+gsis_id": 43735,
+            "season+week+team+gsis_id": 1
+          },
+          "gsis_null": 26,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2022": {
+          "rows": 46163,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 42563,
+            "season+gsis_id": 43029,
+            "season+week+team+gsis_id": 6
+          },
+          "gsis_null": 27,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2023": {
+          "rows": 45655,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 42146,
+            "season+gsis_id": 42565,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 5,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2024": {
+          "rows": 46579,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 42868,
+            "season+gsis_id": 43363,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 7,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        },
+        "2025": {
+          "rows": 46849,
+          "dup_by_candidate_key": {
+            "season+team+gsis_id": 43205,
+            "season+gsis_id": 43714,
+            "season+week+team+gsis_id": 0
+          },
+          "gsis_null": 18,
+          "team_unknown_codes": [],
+          "week_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ]
+        }
+      },
+      "team_unknown_codes_all": [
+        "ARZ",
+        "BLT",
+        "CLV",
+        "HST",
+        "SL"
+      ],
+      "gsis_null_total": 136,
+      "grain": "player-team-week"
+    },
+    "snap_counts": {
+      "seasons_available": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "schema_eras": [
+        {
+          "seasons": [
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024,
+            2025
+          ],
+          "n_columns": 16,
+          "columns": [
+            "game_id",
+            "pfr_game_id",
+            "season",
+            "game_type",
+            "week",
+            "player",
+            "pfr_player_id",
+            "position",
+            "team",
+            "opponent",
+            "offense_snaps",
+            "offense_pct",
+            "defense_snaps",
+            "defense_pct",
+            "st_snaps",
+            "st_pct"
+          ]
+        }
+      ],
+      "per_season": {
+        "2012": {
+          "rows": 0,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": NaN,
+          "team_unknown_codes": []
+        },
+        "2013": {
+          "rows": 23799,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2014": {
+          "rows": 23864,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2015": {
+          "rows": 23842,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2016": {
+          "rows": 23890,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2017": {
+          "rows": 23862,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2018": {
+          "rows": 23877,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2019": {
+          "rows": 23862,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2020": {
+          "rows": 24999,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2021": {
+          "rows": 26468,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2022": {
+          "rows": 26381,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2023": {
+          "rows": 26540,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2024": {
+          "rows": 26615,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        },
+        "2025": {
+          "rows": 26612,
+          "grain": "player-game",
+          "candidate_key": "game_id+pfr_player_id",
+          "dup_by_key": 0,
+          "pfr_player_id_null": 0,
+          "has_offense_defense_st_counts": true,
+          "has_offense_defense_st_pct": true,
+          "game_id_join_rate_to_canonical": 1.0,
+          "team_unknown_codes": []
+        }
+      },
+      "player_id_namespace": "pfr_player_id (Pro-Football-Reference), NOT gsis",
+      "team_unknown_codes_all": []
+    },
+    "participation": {
+      "seasons_available": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "schema_eras": [
+        {
+          "seasons": [
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ],
+          "n_columns": 20,
+          "columns": [
+            "nflverse_game_id",
+            "old_game_id",
+            "play_id",
+            "possession_team",
+            "offense_formation",
+            "offense_personnel",
+            "defenders_in_box",
+            "defense_personnel",
+            "number_of_pass_rushers",
+            "players_on_play",
+            "offense_players",
+            "defense_players",
+            "n_offense",
+            "n_defense",
+            "ngs_air_yards",
+            "time_to_throw",
+            "was_pressure",
+            "route",
+            "defense_man_zone_type",
+            "defense_coverage_type"
+          ]
+        },
+        {
+          "seasons": [
+            2023,
+            2024,
+            2025
+          ],
+          "n_columns": 26,
+          "columns": [
+            "nflverse_game_id",
+            "old_game_id",
+            "play_id",
+            "possession_team",
+            "offense_formation",
+            "offense_personnel",
+            "defenders_in_box",
+            "defense_personnel",
+            "number_of_pass_rushers",
+            "players_on_play",
+            "offense_players",
+            "defense_players",
+            "n_offense",
+            "n_defense",
+            "ngs_air_yards",
+            "time_to_throw",
+            "was_pressure",
+            "route",
+            "defense_man_zone_type",
+            "defense_coverage_type",
+            "offense_names",
+            "defense_names",
+            "offense_positions",
+            "defense_positions",
+            "offense_numbers",
+            "defense_numbers"
+          ]
+        }
+      ],
+      "per_season": {
+        "2016": {
+          "rows": 48434,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": ""
+        },
+        "2017": {
+          "rows": 47998,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": ""
+        },
+        "2018": {
+          "rows": 47875,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": ""
+        },
+        "2019": {
+          "rows": 48034,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": ""
+        },
+        "2020": {
+          "rows": 48513,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": ""
+        },
+        "2021": {
+          "rows": 50714,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": ""
+        },
+        "2022": {
+          "rows": 50150,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": ""
+        },
+        "2023": {
+          "rows": 46168,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": "00-0037095;00-0039149;00-0036403;00-0038635;00-0034465;00-00"
+        },
+        "2024": {
+          "rows": 45919,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": "00-0037493;00-0039430;00-0039436;00-0035413;00-0037594;00-00"
+        },
+        "2025": {
+          "rows": 45184,
+          "grain": "play (nflverse_game_id+play_id)",
+          "candidate_key": "nflverse_game_id+play_id",
+          "dup_by_key": 0,
+          "player_lists_present": [
+            "offense_players",
+            "defense_players"
+          ],
+          "player_list_sample": "00-0031357;00-0040251;00-0038738;00-0037578;00-0036870;00-00"
+        }
+      },
+      "player_id_namespace": "gsis_id lists in offense_players/defense_players",
+      "era_break_note": "pre-2023 vs 2023+ upstream provenance/update timing differ (per contract)"
+    },
+    "depth_charts": {
+      "seasons_available": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "schema_eras": [
+        {
+          "seasons": [
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n_columns": 15,
+          "columns": [
+            "season",
+            "club_code",
+            "week",
+            "game_type",
+            "depth_team",
+            "last_name",
+            "first_name",
+            "football_name",
+            "formation",
+            "gsis_id",
+            "jersey_number",
+            "position",
+            "elias_id",
+            "depth_position",
+            "full_name"
+          ]
+        },
+        {
+          "seasons": [
+            2025
+          ],
+          "n_columns": 12,
+          "columns": [
+            "dt",
+            "team",
+            "player_name",
+            "espn_id",
+            "gsis_id",
+            "pos_grp_id",
+            "pos_grp",
+            "pos_id",
+            "pos_name",
+            "pos_abb",
+            "pos_slot",
+            "pos_rank"
+          ]
+        }
+      ],
+      "per_season": {
+        "2010": {
+          "rows": 38421,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2011": {
+          "rows": 37941,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2012": {
+          "rows": 37312,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2013": {
+          "rows": 37066,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2014": {
+          "rows": 32542,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2015": {
+          "rows": 37058,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2016": {
+          "rows": 36612,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2017": {
+          "rows": 36620,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2018": {
+          "rows": 36560,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2019": {
+          "rows": 36308,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2020": {
+          "rows": 36168,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2021": {
+          "rows": 37487,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2022": {
+          "rows": 37780,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2023": {
+          "rows": 37327,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2024": {
+          "rows": 37312,
+          "team_column": "club_code",
+          "has_timestamp_dt": false,
+          "has_week": true,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2025": {
+          "rows": 554215,
+          "team_column": "team",
+          "has_timestamp_dt": true,
+          "has_week": false,
+          "gsis_null": 5577,
+          "team_unknown_codes": []
+        }
+      },
+      "team_unknown_codes_all": [],
+      "schema_change_2025_note": "2025 switches to a timestamped snapshot schema (dt column, no week)"
+    },
+    "injuries": {
+      "seasons_available": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "schema_eras": [
+        {
+          "seasons": [
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023,
+            2024
+          ],
+          "n_columns": 16,
+          "columns": [
+            "season",
+            "game_type",
+            "team",
+            "week",
+            "gsis_id",
+            "position",
+            "full_name",
+            "first_name",
+            "last_name",
+            "report_primary_injury",
+            "report_secondary_injury",
+            "report_status",
+            "practice_primary_injury",
+            "practice_secondary_injury",
+            "practice_status",
+            "date_modified"
+          ]
+        },
+        {
+          "seasons": [
+            2025
+          ],
+          "n_columns": 16,
+          "columns": [
+            "season",
+            "season_type",
+            "game_type",
+            "team",
+            "week",
+            "gsis_id",
+            "position",
+            "full_name",
+            "first_name",
+            "last_name",
+            "report_primary_injury",
+            "report_secondary_injury",
+            "report_status",
+            "practice_primary_injury",
+            "practice_secondary_injury",
+            "practice_status"
+          ]
+        }
+      ],
+      "per_season": {
+        "2010": {
+          "rows": 4491,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2011": {
+          "rows": 4971,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2012": {
+          "rows": 5533,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2013": {
+          "rows": 5070,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2014": {
+          "rows": 5078,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2015": {
+          "rows": 5232,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2016": {
+          "rows": 5115,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2017": {
+          "rows": 5104,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2018": {
+          "rows": 5133,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2019": {
+          "rows": 5392,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2020": {
+          "rows": 5661,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2021": {
+          "rows": 5587,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2022": {
+          "rows": 5682,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2023": {
+          "rows": 5599,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2024": {
+          "rows": 6215,
+          "has_date_modified": true,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 2,
+          "dup_groups_multi_date_modified": 2,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        },
+        "2025": {
+          "rows": 6068,
+          "has_date_modified": false,
+          "candidate_key": "season+week+team+gsis_id",
+          "dup_by_candidate_key": 0,
+          "dup_groups_multi_date_modified": null,
+          "gsis_null": 0,
+          "team_unknown_codes": []
+        }
+      },
+      "team_unknown_codes_all": []
+    }
+  },
+  "identity_crosswalk_probe": {
+    "players_with_pfr_id": 22553,
+    "pfr_ids_mapping_to_multiple_gsis": 0,
+    "ambiguous_examples": [],
+    "snap_distinct_pfr_ids": 7095,
+    "snap_pfr_found_in_players": 7065,
+    "snap_pfr_missing_from_players": 30,
+    "deterministic_pfr_to_gsis_possible": true,
+    "note": "crosswalk is BUILT in Phase 2B; here we only measure feasibility"
+  },
+  "point_in_time_capability": {
+    "players": {
+      "grade": "RETROSPECTIVE_ONLY",
+      "source_known_time": "none (latest identity snapshot)",
+      "note": "identity table; position_latest is a current snapshot, not a historical feature"
+    },
+    "rosters_seasonal": {
+      "grade": "WEEK_ONLY",
+      "source_known_time": "none",
+      "note": "season-level aggregate; week column unreliable as a within-week time"
+    },
+    "rosters_weekly": {
+      "grade": "WEEK_ONLY",
+      "source_known_time": "none",
+      "note": "season/week known, no within-week timestamp; 2010-2015 is a weaker retrospective reconstruction (status dups, alt team codes)"
+    },
+    "snap_counts": {
+      "grade": "RETROSPECTIVE_ONLY",
+      "source_known_time": "game event_time only (postgame PFR compile)",
+      "note": "postgame truth; safe for prior-week features, never for same-game pregame"
+    },
+    "participation": {
+      "grade": "RETROSPECTIVE_ONLY",
+      "source_known_time": "game event_time only",
+      "note": "play-level postgame; 2023+ explicitly not an in-season live feed"
+    },
+    "depth_charts": {
+      "2010-2024": {
+        "grade": "WEEK_ONLY",
+        "source_known_time": "none",
+        "note": "week field only, no capture timestamp"
+      },
+      "2025": {
+        "grade": "SNAPSHOT_BOUND",
+        "source_known_time": "dt (ISO8601 capture time, 221 distinct snapshots)",
+        "note": "dt bounds availability no later than capture; not proven to be the team's publish time"
+      }
+    },
+    "injuries": {
+      "2010-2024": {
+        "grade": "EXACT",
+        "source_known_time": "date_modified (datetime64[UTC], 0 nulls in sampled seasons)",
+        "note": "date_modified proves report availability -> supports exact decision-time reconstruction"
+      },
+      "2025": {
+        "grade": "WEEK_ONLY",
+        "source_known_time": "none (no date_modified)",
+        "note": "per contract 7.4: retain as weekly facts; pregame_feature_eligible=false for strict backtests"
+      },
+      "_has_date_modified_by_season": {
+        "2010": true,
+        "2011": true,
+        "2012": true,
+        "2013": true,
+        "2014": true,
+        "2015": true,
+        "2016": true,
+        "2017": true,
+        "2018": true,
+        "2019": true,
+        "2020": true,
+        "2021": true,
+        "2022": true,
+        "2023": true,
+        "2024": true,
+        "2025": false
+      }
+    }
+  }
+}
