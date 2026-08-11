@@ -26,7 +26,17 @@ def main() -> dict:
         "canonical_version": common.CANONICAL_VERSION,
         "position_map_version": positions.POSITION_MAP_VERSION,
         "build_timestamp_utc": common.utc_now_iso(),
-        "git_commit": common.git_commit(),
+        # Unambiguous provenance: git_commit_at_build is HEAD when the build ran.
+        # If working_tree_dirty is true, that commit is the base/source, NOT the
+        # builder version — a superseding provenance_correction records
+        # builder_git_commit once the builder code is committed.
+        "git_commit_at_build": common.git_commit(),
+        "working_tree_dirty": common.working_tree_dirty(),
+        "provenance_note": (
+            "git_commit_at_build is HEAD at build time. When working_tree_dirty is "
+            "true it is the source/base commit, not the exact committed builder "
+            "version; see a provenance_correction record for builder_git_commit."
+        ),
         "player_layer_schema_version": "player_layer_v0.1",
         "phase2a_source_manifest_ref": "audit_v3_player_sources/manifests/raw_source_manifest.json",
         "players_source": {"path": prov["source_file"], "sha256": prov["source_sha256"],

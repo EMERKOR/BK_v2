@@ -1,0 +1,224 @@
+{
+  "non_gsis_total": 6087,
+  "match_namespace": {
+    "rosters_seasonal": "esb_id",
+    "rosters_weekly": "esb_id",
+    "injuries": "gsis_id",
+    "participation": "gsis lists",
+    "depth_charts": "gsis_id (+espn_id 2025/2026)",
+    "snap_counts": "pfr_player_id via PFR crosswalk"
+  },
+  "families": {
+    "rosters_seasonal": {
+      "seasons_scanned": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "distinct_nongsis_identities": 12,
+      "total_source_rows_involved": 16,
+      "by_season": {
+        "2019": {
+          "rows": 3,
+          "distinct_identities": 3
+        },
+        "2020": {
+          "rows": 1,
+          "distinct_identities": 1
+        },
+        "2021": {
+          "rows": 3,
+          "distinct_identities": 3
+        },
+        "2022": {
+          "rows": 1,
+          "distinct_identities": 1
+        },
+        "2024": {
+          "rows": 1,
+          "distinct_identities": 1
+        },
+        "2025": {
+          "rows": 4,
+          "distinct_identities": 4
+        },
+        "2026": {
+          "rows": 3,
+          "distinct_identities": 3
+        }
+      }
+    },
+    "rosters_weekly": {
+      "seasons_scanned": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "distinct_nongsis_identities": 16,
+      "total_source_rows_involved": 130,
+      "by_season": {
+        "2018": {
+          "rows": 15,
+          "distinct_identities": 1
+        },
+        "2019": {
+          "rows": 33,
+          "distinct_identities": 3
+        },
+        "2020": {
+          "rows": 1,
+          "distinct_identities": 1
+        },
+        "2021": {
+          "rows": 41,
+          "distinct_identities": 5
+        },
+        "2022": {
+          "rows": 8,
+          "distinct_identities": 2
+        },
+        "2024": {
+          "rows": 4,
+          "distinct_identities": 1
+        },
+        "2025": {
+          "rows": 25,
+          "distinct_identities": 4
+        },
+        "2026": {
+          "rows": 3,
+          "distinct_identities": 3
+        }
+      }
+    },
+    "injuries": {
+      "seasons_scanned": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "distinct_nongsis_identities": 0,
+      "total_source_rows_involved": 0,
+      "by_season": {}
+    },
+    "participation": {
+      "seasons_scanned": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "distinct_nongsis_identities": 0,
+      "total_source_rows_involved": 0,
+      "by_season": {}
+    },
+    "depth_charts": {
+      "seasons_scanned": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "distinct_nongsis_identities": 11,
+      "total_source_rows_involved": 2498,
+      "by_season": {
+        "2025": {
+          "rows": 432,
+          "distinct_identities": 4
+        },
+        "2026": {
+          "rows": 2066,
+          "distinct_identities": 11
+        }
+      }
+    },
+    "snap_counts": {
+      "seasons_scanned": [
+        2012,
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "distinct_nongsis_identities": 1,
+      "total_source_rows_involved": 1,
+      "by_season": {
+        "2014": {
+          "rows": 1,
+          "distinct_identities": 1
+        }
+      }
+    }
+  },
+  "union_distinct_nongsis_identities_appearing": 24,
+  "non_gsis_identities_never_appearing": 6063
+}

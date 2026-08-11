@@ -544,5 +544,17 @@
       "unexpected_collisions": 0,
       "null_gsis_measurements": 1
     }
+  },
+  {
+    "record_type": "provenance_correction",
+    "phase": "2B_provenance_correction",
+    "created_at_utc": "2026-08-11T18:26:05.802488+00:00",
+    "supersedes_build_snapshot_id": "cbuild_20260811T155516Z_0a6eca6cde",
+    "corrected_field": "git_commit",
+    "prior_git_commit_value": "0a6eca6cde0207f2300c572a6347ae2acd94ef44",
+    "prior_value_semantics": "HEAD at build time (source/base commit). The working tree was DIRTY when the Phase 2B build ran, so this commit does NOT contain the builder code.",
+    "builder_git_commit": "9c6ae78470c4a4ed0f3454cda9f97373cad34600",
+    "builder_git_commit_semantics": "the exact committed version of the Phase 2B builder (positions.py, players.py, player_crosswalk.py, build_phase2b.py) that produced the superseded canonical_players / player_source_crosswalk outputs.",
+    "note": "append-only correction; the prior record is preserved unchanged."
   }
 ]

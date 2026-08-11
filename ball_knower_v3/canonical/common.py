@@ -100,6 +100,23 @@ def git_commit() -> str:
         return "UNKNOWN"
 
 
+def working_tree_dirty() -> bool:
+    """True if the working tree has uncommitted changes at build time.
+
+    When dirty, HEAD does NOT contain the builder code, so `git_commit()` is a
+    base/source commit, not the exact committed builder version. Recording this
+    flag keeps build provenance unambiguous. Unknown git state -> True (assume
+    dirty, the conservative choice).
+    """
+    try:
+        out = subprocess.check_output(
+            ["git", "status", "--porcelain"], cwd=str(REPO), text=True
+        )
+        return bool(out.strip())
+    except Exception:
+        return True
+
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as fh:
