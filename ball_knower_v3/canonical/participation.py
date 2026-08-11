@@ -1,22 +1,29 @@
 """
-canonical_participation — one player + team + completed game (Phase 2C).
+canonical_participation — one player + team + completed game (Phase 2C, corrected).
 
 Primary key: game_id + team + player_id.
 
-Row source = SNAP COUNTS (2013-2025), the verified per-player-game snap source.
-PFR tokens are resolved to GSIS only through accepted crosswalk rows; the 31
-unresolved tokens (incl. the 1 non-GSIS-fallback token) stay in quarantine. Every
-snap-count row is represented canonically or quarantined.
+Two evidence sources are aggregated BEFORE joining, so lineup-only players are
+never silently dropped:
+  * SNAP COUNTS (2013-2025): verified offense/defense/ST counts + pcts (0-1).
+    PFR tokens resolve to GSIS via accepted crosswalk only.
+  * PLAY-LEVEL PARTICIPATION (2016-2025): a complete aggregate keyed
+    (game_id, team, player_id). For each side the token stream is de-duplicated
+    at (game_id, play_id, side, token) so a token repeated within one play list
+    counts once. Team is directly supported: offense -> possession_team,
+    defense -> the game's other participant. If the source cannot establish an
+    unambiguous game-participant team, the evidence is quarantined (never
+    inferred from roster/latest/future/name/position).
 
-Play-level participation (2016-2025) is SUPPLEMENTAL: after de-duplicating at the
-verified play key (nflverse_game_id, play_id), it contributes
-participation_plays_offense/defense — counts of plays in which a resolved GSIS
-player appears in the offense/defense list. These are NOT snap totals.
+A merged snap+lineup row preserves BOTH source files/snapshot times. A
+lineup-only row (authoritative player, canonical game, unambiguous team, no snap
+row) is preserved with snaps null, snap_count_source_available=false,
+participation_source_available=true, did_play=true.
 
-Point-in-time: participation is retrospective truth -> RETROSPECTIVE_ONLY. The
-game event time is stored separately; the frozen file's retrieval time is never
-presented as historical availability. No name-only rows, no roster-manufactured
-rows, no active/starter inference.
+Null-vs-zero: participation play counts are a real 0 ONLY when the game is
+covered by the participation source; otherwise null (absence is not proof).
+
+All rows RETROSPECTIVE_ONLY; same-game never pregame-eligible.
 """
 from __future__ import annotations
 
@@ -35,11 +42,11 @@ SNAP_DIR = common.REPO / "data" / "v3" / "raw_player_sources" / "snap_counts"
 PART_DIR = common.REPO / "data" / "v3" / "raw_player_sources" / "participation"
 PHASE2A_MANIFEST = common.REPO / "audit_v3_player_sources" / "manifests" / "raw_source_manifest.json"
 SNAP_SEASONS = list(range(2013, 2026))       # 2012 empty upstream
-PART_SEASONS = set(range(2016, 2026))
 GSIS_RE = re.compile(r"^00-\d{7}$")
 
 PART_POSMAP_VERSION = "partposmap_v0.1"
-# game position group from the PFR snap `position` primary component (deliberate).
+# game position group from the PFR snap `position` PRIMARY component (deliberate).
+# Primary rule: split on "/" then "-", take the first token, uppercase.
 _PART_POS = {
     "C": "OL", "CB": "CB", "DB": "OTHER", "DE": "EDGE", "DL": "DL", "DT": "DL",
     "FB": "RB", "FS": "S", "G": "OL", "HB": "RB", "ILB": "LB", "K": "K", "LB": "LB",
@@ -49,15 +56,21 @@ _PART_POS = {
 }
 
 
-def _part_pos_group(pos):
+def _pos_primary(pos):
     if pos is None or (isinstance(pos, float) and pd.isna(pos)):
         return None
     primary = str(pos).split("/")[0].split("-")[0].strip().upper()
-    if primary == "":
-        return None
+    return primary or None
+
+
+def _pos_detail_and_group(pos):
+    """(position_game, position_group_game). Fails on unseen primary component."""
+    primary = _pos_primary(pos)
+    if primary is None:
+        return None, None
     if primary not in _PART_POS:
-        raise ValueError(f"Unseen snap position primary component {primary!r} ({PART_POSMAP_VERSION})")
-    return _PART_POS[primary]
+        raise ValueError(f"Unseen snap position primary {primary!r} ({PART_POSMAP_VERSION})")
+    return primary, _PART_POS[primary]
 
 
 def _pfr_to_gsis() -> dict:
@@ -84,57 +97,104 @@ def _games_index():
     return g.set_index("game_id")
 
 
-def _participation_agg(season: int, authoritative: set):
-    """Return (off_counts, def_counts) dicts keyed (game_id, gsis) + measurements."""
+def _lineup_evidence(season: int, authoritative: set, games: pd.DataFrame):
+    """Complete aggregated lineup evidence for a season.
+
+    Returns (agg, unresolved_tokens, team_unresolved, meas, covered_games) where
+    agg maps (game_id, team, gsis) -> {"off": n, "def": n}.
+    """
     p = PART_DIR / f"pbp_participation_{season}.parquet"
-    meas = {"malformed_list_tokens": 0, "unresolved_list_gsis": 0, "duplicate_source_plays": 0,
-            "plays": 0}
+    meas = {"malformed_token_occ": 0, "duplicate_token_in_play_occ": 0,
+            "unresolved_identity_occ": 0, "team_unresolved_occ": 0,
+            "unmatched_game_occ": 0, "resolved_team_ok_occ": 0,
+            "wellformed_token_occ": 0, "distinct_resolved_keys": 0,
+            "plays": 0, "duplicate_source_plays": 0}
     if not p.exists():
-        return {}, {}, meas, False
-    df = pd.read_parquet(p, columns=["nflverse_game_id", "play_id", "offense_players", "defense_players"])
-    dup = int(df.duplicated(["nflverse_game_id", "play_id"]).sum())
-    meas["duplicate_source_plays"] = dup
+        return {}, {}, [], meas, set()
+    df = pd.read_parquet(p, columns=["nflverse_game_id", "play_id", "possession_team",
+                                     "offense_players", "defense_players"])
+    meas["duplicate_source_plays"] = int(df.duplicated(["nflverse_game_id", "play_id"]).sum())
     df = df.drop_duplicates(["nflverse_game_id", "play_id"])
     meas["plays"] = len(df)
-    unresolved_tokens = set()
+    covered = set(df["nflverse_game_id"].astype(str).unique())
+    game_ids = set(games.index)
 
-    def counts(col):
-        s = df[["nflverse_game_id", col]].copy()
+    agg: dict = {}
+    unresolved_tokens: dict = {}
+    team_unresolved: list = []
+    ha = games[["home_team", "away_team"]]
+    norm_map = common.BK_TEAM_NORMALIZATION
+
+    for side, col in (("off", "offense_players"), ("def", "defense_players")):
+        s = df[["nflverse_game_id", "play_id", "possession_team", col]].copy()
+        s["gid"] = s["nflverse_game_id"].astype(str)
         s["tok"] = s[col].fillna("").astype(str).str.split(";")
         s = s.explode("tok")
         s = s[s["tok"] != ""]
-        wellformed = s["tok"].str.match(GSIS_RE)
-        meas["malformed_list_tokens"] += int((~wellformed).sum())
-        s = s[wellformed]
+        # de-dup a token repeated within one play list (must not count twice)
+        before = len(s)
+        s = s.drop_duplicates(["gid", "play_id", "tok"])
+        meas["duplicate_token_in_play_occ"] += before - len(s)
+        # malformed (non-GSIS format)
+        wf = s["tok"].str.match(GSIS_RE)
+        meas["malformed_token_occ"] += int((~wf).sum())
+        s = s[wf]
+        meas["wellformed_token_occ"] += len(s)
+        # identity resolution
         resolved = s["tok"].isin(authoritative)
-        meas["unresolved_list_gsis"] += int((~resolved).sum())
-        unresolved_tokens.update(s.loc[~resolved, "tok"].unique().tolist())
-        s = s[resolved]
-        c = s.groupby(["nflverse_game_id", "tok"]).size()
-        return {(str(gid), str(tok)): int(n) for (gid, tok), n in c.items()}
+        for tok, sub in s[~resolved].groupby("tok"):
+            e = unresolved_tokens.setdefault(str(tok), {"season": season, "off": 0, "def": 0, "games": set()})
+            e[side] += len(sub)
+            e["games"].update(sub["gid"].tolist())
+        meas["unresolved_identity_occ"] += int((~resolved).sum())
+        s = s[resolved].copy()
+        # --- vectorized team resolution ---
+        in_game = s["gid"].isin(game_ids)
+        meas["unmatched_game_occ"] += int((~in_game).sum())
+        s = s[in_game]
+        s["posn"] = s["possession_team"].astype(str).map(norm_map)
+        j = s.join(ha, on="gid")
+        valid = s["posn"].notna() & ((s["posn"] == j["home_team"]) | (s["posn"] == j["away_team"]))
+        bad = s[~valid]
+        meas["team_unresolved_occ"] += int(len(bad))
+        for gid, pos, tok in zip(bad["gid"], bad["possession_team"], bad["tok"]):
+            team_unresolved.append({"game_id": gid, "player_id": tok, "side": side,
+                                    "possession_team_raw": (None if pd.isna(pos) else str(pos)),
+                                    "reason": "possession_team not an unambiguous game participant"})
+        sv = s[valid].copy()
+        jv = j[valid]
+        if side == "off":
+            sv["team"] = sv["posn"]
+        else:
+            sv["team"] = jv["away_team"].where(sv["posn"] == jv["home_team"], jv["home_team"])
+        meas["resolved_team_ok_occ"] += int(len(sv))
+        c = sv.groupby(["gid", "team", "tok"]).size()
+        for (gid, team, tok), n in c.items():
+            e = agg.setdefault((str(gid), str(team), str(tok)), {"off": 0, "def": 0})
+            e[side] += int(n)
 
-    off, deff = counts("offense_players"), counts("defense_players")
-    meas["unresolved_list_gsis_distinct"] = sorted(unresolved_tokens)
-    return off, deff, meas, True
+    meas["distinct_resolved_keys"] = len(agg)
+    return agg, unresolved_tokens, team_unresolved, meas, covered
 
 
 def build_participation(season: int, build_snapshot_id: str, pfr_map: dict,
-                        authoritative: set, games: pd.DataFrame):
+                        authoritative: set, games: pd.DataFrame, gdict: dict):
     snap = pd.read_parquet(SNAP_DIR / f"snap_counts_{season}.parquet")
     prov = _manifest_rec("snap_counts", season)
-    part_prov = _manifest_rec("pbp_participation", season)
-    off_counts, def_counts, part_meas, part_avail = _participation_agg(season, authoritative)
-    game_ids = set(games.index)
+    part_prov = _manifest_rec("participation", season)
+    agg, unresolved_tokens, team_unresolved, part_meas, covered = _lineup_evidence(season, authoritative, games)
+    game_ids = set(gdict)
+    part_available = len(covered) > 0
 
-    canon, quar_id, quar_game, quar_team = [], [], [], []
+    rows, quar_id, quar_game, quar_team = [], [], [], []
+    snap_keys_present = set()
+
     for row in snap.to_dict("records"):
         gid = str(row["game_id"])
         pfr = None if pd.isna(row.get("pfr_player_id")) else str(row["pfr_player_id"])
         gsis = pfr_map.get(pfr) if pfr is not None else None
         team_src = row.get("team")
         team = common.normalize_team(team_src) if pd.notna(team_src) else None
-
-        # identity resolution
         if gsis is None or gsis not in authoritative:
             quar_id.append({"source_family": SNAP_FAMILY, "season": season, "game_id": gid,
                             "source_id_type": "pfr_player_id", "source_token": pfr,
@@ -143,78 +203,123 @@ def build_participation(season: int, build_snapshot_id: str, pfr_map: dict,
                                        else "resolved gsis not in canonical_players"),
                             "resolution_status": "UNRESOLVED"})
             continue
-        # game resolution
         if gid not in game_ids:
             quar_game.append({"source_family": SNAP_FAMILY, "season": season, "game_id": gid,
                               "player_id": gsis, "reason": "game_id not in canonical_games",
                               "resolution_status": "UNRESOLVED"})
             continue
-        grow = games.loc[gid]
-        if team not in (grow.home_team, grow.away_team):
+        grow = gdict[gid]
+        if team not in (grow["home_team"], grow["away_team"]):
             quar_team.append({"source_family": SNAP_FAMILY, "season": season, "game_id": gid,
                               "player_id": gsis, "source_team": _s(team_src), "team": team,
-                              "home_team": grow.home_team, "away_team": grow.away_team,
-                              "reason": "team not a participant of the game",
-                              "resolution_status": "UNRESOLVED"})
+                              "reason": "team not a participant of the game", "resolution_status": "UNRESOLVED"})
             continue
-        opponent = grow.away_team if team == grow.home_team else grow.home_team
-
+        opponent = grow["away_team"] if team == grow["home_team"] else grow["home_team"]
+        game_covered = gid in covered
+        le = agg.get((gid, team, gsis), {"off": 0, "def": 0})
+        pp_off = le["off"] if game_covered else None
+        pp_def = le["def"] if game_covered else None
+        pos_detail, pos_group = _pos_detail_and_group(row.get("position"))
         off_snaps = _int(row.get("offense_snaps")); def_snaps = _int(row.get("defense_snaps"))
         st_snaps = _int(row.get("st_snaps"))
-        off_pct = _f(row.get("offense_pct")); def_pct = _f(row.get("defense_pct")); st_pct = _f(row.get("st_pct"))
-        pp_off = off_counts.get((gid, gsis), 0)
-        pp_def = def_counts.get((gid, gsis), 0)
         snaps_sum = sum(x for x in (off_snaps, def_snaps, st_snaps) if x is not None)
-        did_play = True if (snaps_sum and snaps_sum > 0) or pp_off or pp_def else None
+        did_play = True if (snaps_sum and snaps_sum > 0) or (pp_off or 0) or (pp_def or 0) else None
+        snap_keys_present.add((gid, team, gsis))
+        rows.append(_mk_row(
+            gid, row["season"], row["week"], grow, team, opponent, gsis,
+            source_team=_s(team_src),
+            source_position=_s(row.get("position")), pos_detail=pos_detail, pos_group=pos_group,
+            did_play=did_play, off_snaps=off_snaps, def_snaps=def_snaps, st_snaps=st_snaps,
+            off_pct=_f(row.get("offense_pct")), def_pct=_f(row.get("defense_pct")), st_pct=_f(row.get("st_pct")),
+            pp_off=pp_off, pp_def=pp_def, snap_avail=True, part_avail=game_covered,
+            evidence=("snap_and_lineup" if game_covered else "snap_only"),
+            src_family=SNAP_FAMILY, snap_file=prov["source_file"], snap_time=prov["source_snapshot_time"],
+            part_file=(part_prov["source_file"] if game_covered else None),
+            part_time=(part_prov["source_snapshot_time"] if game_covered else None),
+            snap_snap_id=prov["source_snapshot_id"], build_snapshot_id=build_snapshot_id))
 
-        canon.append({
-            "game_id": gid, "season": int(row["season"]), "week": int(row["week"]),
-            "game_type": grow.game_type,
-            "source_team": _s(team_src), "team": team, "opponent": opponent,
-            "player_id": gsis,
-            "source_position_game": _s(row.get("position")),
-            "position_group_game": _part_pos_group(row.get("position")),
-            "did_play": did_play, "was_active": None, "was_starter": None,
-            "offense_snaps": off_snaps, "defense_snaps": def_snaps, "special_teams_snaps": st_snaps,
-            "offense_snap_pct_raw": off_pct, "defense_snap_pct_raw": def_pct,
-            "special_teams_snap_pct_raw": st_pct,
-            # snap pct verified already 0-1 in-source -> canonical share == raw (no conversion)
-            "offense_snap_share": off_pct, "defense_snap_share": def_pct,
-            "special_teams_snap_share": st_pct,
-            "participation_plays_offense": pp_off, "participation_plays_defense": pp_def,
-            "snap_count_source_available": True,
-            "participation_source_available": bool(part_avail),
-            "event_time": pd.Timestamp(grow.kickoff).tz_convert("UTC") if pd.notna(grow.kickoff) else None,
-            "source_known_time": None, "source_known_time_available": False,
-            "point_in_time_grade": "RETROSPECTIVE_ONLY",
-            "pregame_feature_eligible": False,
-            "source_family": SNAP_FAMILY, "source_file": prov["source_file"],
-            "participation_source_file": part_prov["source_file"],
-            "source_season": season, "source_snapshot_id": prov["source_snapshot_id"],
-            "source_snapshot_time": prov["source_snapshot_time"],
-            "canonical_version": common.CANONICAL_VERSION,
-            "part_posmap_version": PART_POSMAP_VERSION,
-            "build_snapshot_id": build_snapshot_id,
-        })
+    # lineup-only rows: aggregated keys with no snap row
+    # lineup-only candidate rows (agg keys with no snap row). Team conflicts are
+    # resolved in one complete post-processing pass below, not here.
+    for (gid, team, gsis), c in agg.items():
+        if (gid, team, gsis) in snap_keys_present:
+            continue
+        grow = gdict[gid]
+        opponent = grow["away_team"] if team == grow["home_team"] else grow["home_team"]
+        rows.append(_mk_row(
+            gid, int(grow["season"]), int(grow["week"]), grow, team, opponent, gsis,
+            source_team=None,
+            source_position=None, pos_detail=None, pos_group=None, did_play=True,
+            off_snaps=None, def_snaps=None, st_snaps=None, off_pct=None, def_pct=None, st_pct=None,
+            pp_off=c["off"], pp_def=c["def"], snap_avail=False, part_avail=True,
+            evidence="lineup_only", src_family=PART_FAMILY, snap_file=None, snap_time=None,
+            part_file=part_prov["source_file"], part_time=part_prov["source_snapshot_time"],
+            snap_snap_id=part_prov["source_snapshot_id"], build_snapshot_id=build_snapshot_id))
 
-    df = pd.DataFrame(canon)
-    # dual-team conflict: a player with rows for >1 team in one game
+    df = pd.DataFrame(rows)
     dual = []
     if len(df):
-        gp = df.groupby(["game_id", "player_id"])["team"].nunique()
-        for (gid, pid) in gp[gp > 1].index:
-            dual.append({"game_id": gid, "player_id": pid, "season": season,
-                         "reason": "player appears for multiple teams in one game",
-                         "resolution_status": "NEEDS_INVESTIGATION"})
-    return df, {"unresolved_identity": quar_id, "unmatched_game": quar_game,
-                "invalid_team": quar_team, "dual_team": dual}, part_meas, len(snap)
+        # Complete dual-team resolution (vectorized to touch only conflicts):
+        # for any (game, player) with >1 team, keep ONLY the authoritative
+        # snap-derived team (snap counts are the verified team source, 100%
+        # consistent with games); remove and quarantine the conflicting rows. If
+        # there is no single snap team, remove and quarantine ALL of them.
+        snap_ev = {"snap_only", "snap_and_lineup"}
+        nteams = df.groupby(["game_id", "player_id"])["team"].transform("nunique")
+        conf = df[nteams > 1]
+        drop_idx = []
+        for (gid, pid), grp in conf.groupby(["game_id", "player_id"]):
+            snap_teams = set(grp.loc[grp["row_evidence"].isin(snap_ev), "team"])
+            keep_team = next(iter(snap_teams)) if len(snap_teams) == 1 else None
+            for idx, r in grp.iterrows():
+                if keep_team is not None and r["team"] == keep_team:
+                    continue
+                drop_idx.append(idx)
+                dual.append({"game_id": gid, "player_id": pid, "season": season,
+                             "removed_team": r["team"], "row_evidence": r["row_evidence"],
+                             "authoritative_snap_team": keep_team,
+                             "reason": ("lineup team conflicts with the snap team"
+                                        if keep_team else
+                                        "conflicting team evidence with no single snap team"),
+                             "resolution_status": "NEEDS_INVESTIGATION"})
+        if drop_idx:
+            df = df.drop(index=drop_idx).reset_index(drop=True)
+
+    return (df, {"unresolved_identity": quar_id, "unmatched_game": quar_game,
+                 "invalid_team": quar_team, "dual_team": dual,
+                 "lineup_team_unresolved": team_unresolved},
+            part_meas, unresolved_tokens, len(snap), part_available)
+
+
+def _mk_row(gid, season, week, grow, team, opponent, gsis, *, source_team, source_position, pos_detail,
+            pos_group, did_play, off_snaps, def_snaps, st_snaps, off_pct, def_pct, st_pct, pp_off, pp_def,
+            snap_avail, part_avail, evidence, src_family, snap_file, snap_time, part_file, part_time,
+            snap_snap_id, build_snapshot_id):
+    return {
+        "game_id": gid, "season": int(season), "week": int(week), "game_type": grow["game_type"],
+        "source_team": source_team, "team": team, "opponent": opponent, "player_id": gsis,
+        "source_position_game": source_position, "position_game": pos_detail,
+        "position_group_game": pos_group,
+        "did_play": did_play, "was_active": None, "was_starter": None,
+        "offense_snaps": off_snaps, "defense_snaps": def_snaps, "special_teams_snaps": st_snaps,
+        "offense_snap_pct_raw": off_pct, "defense_snap_pct_raw": def_pct, "special_teams_snap_pct_raw": st_pct,
+        # snap pct verified already 0-1 in-source -> canonical share == raw (no conversion)
+        "offense_snap_share": off_pct, "defense_snap_share": def_pct, "special_teams_snap_share": st_pct,
+        "participation_plays_offense": pp_off, "participation_plays_defense": pp_def,
+        "snap_count_source_available": snap_avail, "participation_source_available": part_avail,
+        "row_evidence": evidence,
+        "event_time": pd.Timestamp(grow["kickoff"]).tz_convert("UTC") if pd.notna(grow["kickoff"]) else None,
+        "source_known_time": None, "source_known_time_available": False,
+        "point_in_time_grade": "RETROSPECTIVE_ONLY", "pregame_feature_eligible": False,
+        "source_family": src_family,
+        "snap_source_file": snap_file, "snap_source_snapshot_time": snap_time,
+        "participation_source_file": part_file, "participation_source_snapshot_time": part_time,
+        "source_snapshot_id": snap_snap_id, "canonical_version": common.CANONICAL_VERSION,
+        "part_posmap_version": PART_POSMAP_VERSION, "build_snapshot_id": build_snapshot_id,
+    }
 
 
 def _snap_reconciliation(df: pd.DataFrame) -> dict:
-    """Independent consistency check: implied team offensive snaps (snaps/pct)
-    must agree across a team-game. Uses only high-pct players (>=0.8) so the
-    2-decimal pct rounding does not dominate; a spread > 1 snap is a real
-    discrepancy. Reports, never alters."""
     if not len(df):
         return {"team_games_checked": 0, "team_games_inconsistent": 0, "pct_threshold": 0.8}
     d = df[(df["offense_snap_pct_raw"].fillna(0) >= 0.8) & df["offense_snaps"].notna()].copy()
@@ -243,52 +348,77 @@ def main(build_snapshot_id: str | None = None):
     authoritative = set(pd.read_parquet(common.OUT_DIR / "players.parquet",
                                         columns=["player_id"])["player_id"].astype(str))
     games = _games_index()
+    gdict = games.to_dict("index")
+    nong = pd.read_parquet(common.OUT_DIR / "player_nongsis_identity.parquet",
+                           columns=["source_token", "pfr_id"])
+    nong_pfr_to_esb = {str(p): str(t) for p, t in zip(nong["pfr_id"], nong["source_token"]) if pd.notna(p)}
 
-    metas, quar = [], {"unresolved_identity": [], "unmatched_game": [], "invalid_team": [], "dual_team": []}
+    metas = []
+    quar = {"unresolved_identity": [], "unmatched_game": [], "invalid_team": [], "dual_team": [],
+            "lineup_team_unresolved": [], "unresolved_lineup_identity": []}
     part_meas_by_season, recon_by_season = {}, {}
-    raw_total = canon_total = 0
+    unresolved_tok_all: dict = {}
+    raw_total = canon_total = lineup_only_total = 0
+
     for s in SNAP_SEASONS:
-        df, q, pm, n_raw = build_participation(s, build_snapshot_id, pfr_map, authoritative, games)
+        df, q, pm, utoks, n_raw, part_avail = build_participation(
+            s, build_snapshot_id, pfr_map, authoritative, games, gdict)
         meta = common.write_parquet(df, common.OUT_DIR / f"participation_{s}.parquet")
+        n_lineup_only = int((df["row_evidence"] == "lineup_only").sum()) if len(df) else 0
         meta.update({"table": "canonical_participation", "season": s, "raw_snap_rows": n_raw,
+                     "rows_snap_derived": int(len(df) - n_lineup_only), "rows_lineup_only": n_lineup_only,
                      "quarantined_identity": len(q["unresolved_identity"])})
         metas.append(meta)
         for k in quar:
-            quar[k].extend(q[k])
+            if k in q:
+                quar[k].extend(q[k])
         part_meas_by_season[s] = pm
         recon_by_season[s] = _snap_reconciliation(df)
-        raw_total += n_raw; canon_total += len(df)
-        # raw-row accounting: canonical + identity/game/team quarantine == raw snaps
-        acct = len(df) + len(q["unresolved_identity"]) + len(q["unmatched_game"]) + len(q["invalid_team"])
-        assert acct == n_raw, f"snap row accounting {s}: {acct} != {n_raw}"
+        raw_total += n_raw; canon_total += len(df); lineup_only_total += n_lineup_only
+        # snap raw-row accounting: snap-derived canonical + snap quarantines == raw snaps
+        acct = (int(len(df) - n_lineup_only) + len(q["unresolved_identity"])
+                + len(q["unmatched_game"]) + len(q["invalid_team"]))
+        assert acct == n_raw, f"snap accounting {s}: {acct} != {n_raw}"
+        # merge per-token unresolved aggregates
+        for tok, e in utoks.items():
+            g = unresolved_tok_all.setdefault(tok, {"season_first": s, "season_last": s,
+                                                     "off": 0, "def": 0, "games": set()})
+            g["season_last"] = s; g["off"] += e["off"]; g["def"] += e["def"]; g["games"].update(e["games"])
+        # token-level accounting per season: wellformed == team_ok + team_unresolved + unresolved_identity
+        wf = pm["wellformed_token_occ"]
+        parts = pm["resolved_team_ok_occ"] + pm["team_unresolved_occ"] + pm["unresolved_identity_occ"] + pm["unmatched_game_occ"]
+        assert wf == parts, f"token accounting {s}: {wf} != {parts}"
 
-    # annotate unresolved snap identities with non-GSIS (esb) fallback linkage,
-    # confirming the single fallback-linked snap token with ESB/PFR evidence.
-    nong = pd.read_parquet(common.OUT_DIR / "player_nongsis_identity.parquet",
-                           columns=["source_token", "pfr_id", "source_name"])
-    nong_pfr_to_esb = {str(p): str(t) for p, t in zip(nong["pfr_id"], nong["source_token"]) if pd.notna(p)}
-    fallback_tokens = set()
-    for rec in quar["unresolved_identity"]:
-        tok = rec.get("source_token")
-        if tok in nong_pfr_to_esb:
-            rec["linked_non_gsis_esb"] = nong_pfr_to_esb[tok]
-            rec["reason"] = "pfr matches only a non-GSIS (esb) fallback identity; no authoritative GSIS"
-            fallback_tokens.add(tok)
+    # build unresolved-lineup-identity quarantine records
+    for tok, e in sorted(unresolved_tok_all.items()):
+        gsorted = sorted(e["games"])
+        quar["unresolved_lineup_identity"].append({
+            "source_family": PART_FAMILY, "source_id_type": "gsis_list_token",
+            "player_token": tok, "season_first": e["season_first"], "season_last": e["season_last"],
+            "offense_occurrences": e["off"], "defense_occurrences": e["def"],
+            "distinct_games": len(e["games"]), "first_game": (gsorted[0] if gsorted else None),
+            "last_game": (gsorted[-1] if gsorted else None),
+            "reason": "well-formed GSIS list token not present in canonical_players",
+            "resolution_status": "UNRESOLVED"})
 
     (common.OUT_DIR / "participation_quarantine.json").write_text(json.dumps({
         "unresolved_identity_count": len(quar["unresolved_identity"]),
         "unresolved_identity_distinct_pfr_tokens": len({q["source_token"] for q in quar["unresolved_identity"]}),
-        "fallback_linked_pfr_tokens": sorted(fallback_tokens),
+        "fallback_linked_pfr_tokens": sorted({q["source_token"] for q in quar["unresolved_identity"]
+                                              if q["source_token"] in nong_pfr_to_esb}),
         "unmatched_game_count": len(quar["unmatched_game"]),
         "invalid_team_count": len(quar["invalid_team"]),
         "dual_team_count": len(quar["dual_team"]),
+        "lineup_team_unresolved_count": len(quar["lineup_team_unresolved"]),
+        "unresolved_lineup_identity_count": len(quar["unresolved_lineup_identity"]),
         "participation_list_measurements_by_season": part_meas_by_season,
         "snap_reconciliation_by_season": recon_by_season,
         "records": quar,
     }, indent=2, default=str))
-    print(f"canonical_participation: {canon_total} rows; raw_snaps={raw_total}; "
-          f"unresolved_id={len(quar['unresolved_identity'])} unmatched_game={len(quar['unmatched_game'])} "
-          f"invalid_team={len(quar['invalid_team'])} dual_team={len(quar['dual_team'])}")
+    print(f"canonical_participation: {canon_total} rows ({lineup_only_total} lineup-only); "
+          f"raw_snaps={raw_total}; unresolved_id={len(quar['unresolved_identity'])} "
+          f"unmatched_game={len(quar['unmatched_game'])} invalid_team={len(quar['invalid_team'])} "
+          f"dual_team={len(quar['dual_team'])} unresolved_lineup_tokens={len(quar['unresolved_lineup_identity'])}")
     return metas, quar, part_meas_by_season, recon_by_season, raw_total, canon_total
 
 

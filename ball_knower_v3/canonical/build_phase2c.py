@@ -32,11 +32,22 @@ def main() -> dict:
     commit = common.git_commit()
     dirty = common.working_tree_dirty()
 
+    # find the prior Phase 2C build to supersede (append-only; never rewritten)
+    prior = None
+    if common.SNAPSHOTS_JSON.exists():
+        for r in json.loads(common.SNAPSHOTS_JSON.read_text()):
+            if r.get("phase") == "2C_event_status_facts" and r.get("build_snapshot_id"):
+                prior = r["build_snapshot_id"]
+
     inj_metas, inj_quar, inj_raw, inj_canon = injuries.main(build_snapshot_id)
     par_metas, par_quar, par_meas, par_recon, par_raw, par_canon = participation.main(build_snapshot_id)
 
     record = {
         "phase": "2C_event_status_facts",
+        "supersedes_build_snapshot_id": prior,
+        "correction_note": ("supersedes the prior Phase 2C build: adds participation-only "
+                            "lineup rows, complete dual-team resolution, position_game, "
+                            "expanded lineup quarantines, and token-level accounting."),
         "build_snapshot_id": build_snapshot_id,
         "canonical_version": common.CANONICAL_VERSION,
         "injury_obs_id_version": injuries.OBS_ID_VERSION,
@@ -64,6 +75,7 @@ def main() -> dict:
             "injuries_raw": inj_raw, "injuries_canonical": inj_canon,
             "injuries_quarantined": len(inj_quar),
             "participation_raw_snaps": par_raw, "participation_canonical": par_canon,
+            "participation_rows_lineup_only": int((par_canon - sum(m["rows_snap_derived"] for m in par_metas))),
             "participation_unresolved_identity": len(par_quar["unresolved_identity"]),
         },
         "quarantine_counts": {
@@ -72,6 +84,8 @@ def main() -> dict:
             "participation_unmatched_game": len(par_quar["unmatched_game"]),
             "participation_invalid_team": len(par_quar["invalid_team"]),
             "participation_dual_team": len(par_quar["dual_team"]),
+            "participation_lineup_team_unresolved": len(par_quar["lineup_team_unresolved"]),
+            "participation_unresolved_lineup_identity": len(par_quar["unresolved_lineup_identity"]),
         },
         "injury_pit_grade_counts": _grade_counts("injuries_*.parquet", "point_in_time_grade"),
         "participation_pit_grade_counts": _grade_counts("participation_*.parquet", "point_in_time_grade"),
