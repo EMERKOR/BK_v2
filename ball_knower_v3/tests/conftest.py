@@ -11,7 +11,8 @@ import json
 import pandas as pd
 import pytest
 
-from ball_knower_v3.canonical import common, build_all, players, player_crosswalk
+from ball_knower_v3.canonical import (common, build_all, players, player_crosswalk,
+                                       injuries, participation)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -26,6 +27,11 @@ def _ensure_built():
         players.main("test_build")
     if not (common.OUT_DIR / "player_source_crosswalk.parquet").exists():
         player_crosswalk.main("test_build")
+    # Phase 2C outputs — regenerate via build functions (no registry append).
+    if not (common.OUT_DIR / "injuries_2024.parquet").exists():
+        injuries.main("test_build")
+    if not (common.OUT_DIR / "participation_2024.parquet").exists():
+        participation.main("test_build")
     return True
 
 
@@ -67,3 +73,23 @@ def crosswalk_df():
 @pytest.fixture(scope="session")
 def quarantine():
     return json.loads((common.OUT_DIR / "player_identity_quarantine.json").read_text())
+
+
+@pytest.fixture(scope="session")
+def injuries_reader():
+    return lambda season: _read(f"injuries_{season}.parquet")
+
+
+@pytest.fixture(scope="session")
+def participation_reader():
+    return lambda season: _read(f"participation_{season}.parquet")
+
+
+@pytest.fixture(scope="session")
+def injury_quarantine():
+    return json.loads((common.OUT_DIR / "injury_identity_quarantine.json").read_text())
+
+
+@pytest.fixture(scope="session")
+def participation_quarantine():
+    return json.loads((common.OUT_DIR / "participation_quarantine.json").read_text())
