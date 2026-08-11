@@ -1,0 +1,211 @@
+[
+  {
+    "snapshot_id": "cbuild_20260811T131023Z_18606c1006",
+    "canonical_version": "canonical_v0.1",
+    "build_timestamp_utc": "2026-08-11T13:10:48.883159+00:00",
+    "git_commit": "18606c10068c8f46bd692cf291c3575552a946c0",
+    "sources": {
+      "nflverse_games_snapshot_csv": {
+        "path": "data/v3/canonical/_sources/nflverse_games_snapshot.csv",
+        "sha256": "29f468ff0075f593d2dbee03de85aff98e62b2b22ad08bb3e38239dd4cd62c46",
+        "url": "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv"
+      },
+      "raw_2025_manifest": {
+        "path": "audit_v3_raw_data/snapshot_2025/raw_snapshot_manifest_2025.json",
+        "sha256": "98340b4f39b9075c7f2bcd2929c93b77a0f60adf7494b74ba6e1b0d38fbeebc0"
+      },
+      "raw_pbp": "data/RAW_pbp/pbp_{season}.parquet (2010-2025)",
+      "raw_market": "data/RAW_market/{spread,total,moneyline}/{season}/*.csv (2011-2025)",
+      "raw_ftn": "data/RAW_ftn/ftn_{season}.parquet (2022-2025)"
+    },
+    "outputs": {
+      "canonical_games": {
+        "path": "data/v3/canonical/games.parquet",
+        "rows": 4363,
+        "sha256": "b9008b03384cd76815d7d23d20ad437ae5b60b965b46b51fecdbdfa543d6556f",
+        "table": "canonical_games"
+      },
+      "canonical_market": {
+        "path": "data/v3/canonical/market.parquet",
+        "rows": 4096,
+        "sha256": "209d251ba272840d3bd60619a8f10b16e37dfaa3a2712abbc5d7ebb20cba374c",
+        "table": "canonical_market",
+        "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+      },
+      "canonical_plays": [
+        {
+          "path": "data/v3/canonical/plays_2010.parquet",
+          "rows": 46892,
+          "sha256": "164b94fabfcecc82553e7018f6688cb7cc3a44a806a67be6b1ec91db7411f7fc",
+          "table": "canonical_plays",
+          "season": 2010,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2011.parquet",
+          "rows": 47448,
+          "sha256": "2b94d47d4dd13457e149739b535629aadf836acf341ad6f493a50a0b901daa2c",
+          "table": "canonical_plays",
+          "season": 2011,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2012.parquet",
+          "rows": 47834,
+          "sha256": "5eeb6e8bc44e41e1b70322950579c8ad9b950c21fe61bac301706cc9b3c61c6e",
+          "table": "canonical_plays",
+          "season": 2012,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2013.parquet",
+          "rows": 48158,
+          "sha256": "fd77fa55969c13eafeb36b4958a52b965960b1e03f7a235d08d287e0c3c7db5a",
+          "table": "canonical_plays",
+          "season": 2013,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2014.parquet",
+          "rows": 47629,
+          "sha256": "ca599e2e581c49b026d647aceb28ad404646e5f6d273340c8f993c9d91b47fdb",
+          "table": "canonical_plays",
+          "season": 2014,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2015.parquet",
+          "rows": 48122,
+          "sha256": "922807398ca048ddee950491f21fb1304adf5747d862a150c19b8d17e3c113f3",
+          "table": "canonical_plays",
+          "season": 2015,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2016.parquet",
+          "rows": 47651,
+          "sha256": "e3607e9aabccf44384a7490090fba9e1005882a13b055f8aee0421d83e50e055",
+          "table": "canonical_plays",
+          "season": 2016,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2017.parquet",
+          "rows": 47245,
+          "sha256": "276816d90cfcea2d50fd3329c0982f7e49ca35464a98d97f7f99edfd850d6a73",
+          "table": "canonical_plays",
+          "season": 2017,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2018.parquet",
+          "rows": 47109,
+          "sha256": "f7b86dd9c446dcadc3d2d772148a80e36ead611bf6115bdb31cc9726113fadcf",
+          "table": "canonical_plays",
+          "season": 2018,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2019.parquet",
+          "rows": 47260,
+          "sha256": "814f0f896975f81295361e7317443078da08976ae07bb3fefaf906b4a42364a9",
+          "table": "canonical_plays",
+          "season": 2019,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2020.parquet",
+          "rows": 47705,
+          "sha256": "ab637d26996f631afe8490a0b16436809e147ae875ceeee4ee23403499fc8ae3",
+          "table": "canonical_plays",
+          "season": 2020,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2021.parquet",
+          "rows": 49922,
+          "sha256": "a2d265ef30620031cf26380b18f8a2d8f6831498cb79eaecf735a1525c1561ad",
+          "table": "canonical_plays",
+          "season": 2021,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2022.parquet",
+          "rows": 49434,
+          "sha256": "917287bfc801e0c4ebaa206ce5ddbb1aef80b04562c6c52115ae0e8373c175ff",
+          "table": "canonical_plays",
+          "season": 2022,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2023.parquet",
+          "rows": 49665,
+          "sha256": "952146580c24a2f23c970bc4d0ff5db9a7b82bca12bf179ef1521154207a4bd2",
+          "table": "canonical_plays",
+          "season": 2023,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2024.parquet",
+          "rows": 49492,
+          "sha256": "637d45e6f513728f2ad641f9a0c3f52393f259092155fe15fba6480eeee45e3b",
+          "table": "canonical_plays",
+          "season": 2024,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        },
+        {
+          "path": "data/v3/canonical/plays_2025.parquet",
+          "rows": 48771,
+          "sha256": "4eba555e49c1f7fffb6bfaa4d11f61407f56b166a0cbc14ef4b494edbb8a8401",
+          "table": "canonical_plays",
+          "season": 2025,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006"
+        }
+      ],
+      "canonical_ftn": [
+        {
+          "path": "data/v3/canonical/ftn_2022.parquet",
+          "rows": 41643,
+          "sha256": "32184d2ddab500db42c052f3eb5dac1f3c8981754bf1486854e6c50e65b32134",
+          "table": "canonical_ftn",
+          "season": 2022,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006",
+          "join_rate": 1.0
+        },
+        {
+          "path": "data/v3/canonical/ftn_2023.parquet",
+          "rows": 48225,
+          "sha256": "c8a5ada1d2f9d3f555aba29d9d5135684f88ccb2f8922a386d0458274dfbb430",
+          "table": "canonical_ftn",
+          "season": 2023,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006",
+          "join_rate": 1.0
+        },
+        {
+          "path": "data/v3/canonical/ftn_2024.parquet",
+          "rows": 48031,
+          "sha256": "3d91903ee72d1402c1dac46fc02d12d500ff7686e5beadc959f2f7e5353b0445",
+          "table": "canonical_ftn",
+          "season": 2024,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006",
+          "join_rate": 1.0
+        },
+        {
+          "path": "data/v3/canonical/ftn_2025.parquet",
+          "rows": 47316,
+          "sha256": "f64ebe4c77a0419a330c51f8358434eb750647e44c324955e3a2d4e90bb6e654",
+          "table": "canonical_ftn",
+          "season": 2025,
+          "snapshot_id": "cbuild_20260811T131023Z_18606c1006",
+          "join_rate": 1.0
+        }
+      ]
+    },
+    "row_counts": {
+      "canonical_games": 4363,
+      "canonical_market": 4096,
+      "canonical_plays_total": 770337,
+      "canonical_ftn_total": 185215
+    }
+  }
+]
