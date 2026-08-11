@@ -416,5 +416,133 @@
       "canonical_plays_total": 770337,
       "canonical_ftn_total": 185215
     }
+  },
+  {
+    "phase": "2B_player_identity",
+    "build_snapshot_id": "cbuild_20260811T155516Z_0a6eca6cde",
+    "canonical_version": "canonical_v0.1",
+    "position_map_version": "posmap_v0.1",
+    "build_timestamp_utc": "2026-08-11T15:55:19.780885+00:00",
+    "git_commit": "0a6eca6cde0207f2300c572a6347ae2acd94ef44",
+    "player_layer_schema_version": "player_layer_v0.1",
+    "phase2a_source_manifest_ref": "audit_v3_player_sources/manifests/raw_source_manifest.json",
+    "players_source": {
+      "path": "data/v3/raw_player_sources/players/players.parquet",
+      "sha256": "a23d1bffc3a8c4efd567536bc18e8bd2698869baf79bc093a25766b46e879e2f",
+      "source_snapshot_id": "pfreeze_20260811T143703Z",
+      "source_snapshot_time": "2026-08-11T14:37:03.970183+00:00"
+    },
+    "outputs": {
+      "canonical_players": {
+        "path": "data/v3/canonical/players.parquet",
+        "rows": 18954,
+        "sha256": "51f4f0c727e7615080a8ca4014b03cf08d1fce4e11c5ff6747daf382cb208a13",
+        "table": "canonical_players",
+        "build_snapshot_id": "cbuild_20260811T155516Z_0a6eca6cde"
+      },
+      "player_source_crosswalk": {
+        "path": "data/v3/canonical/player_source_crosswalk.parquet",
+        "rows": 85077,
+        "sha256": "ff71fc8852b486ea3f61bc39cc9b70c147d1b8836c2cdf0ab486959f99377fb9",
+        "table": "player_source_crosswalk",
+        "build_snapshot_id": "cbuild_20260811T155516Z_0a6eca6cde",
+        "measurements": {
+          "players_source_rows": 25041,
+          "authoritative_valid_gsis_rows": 18954,
+          "non_gsis_identity_rows_quarantined": 6087,
+          "accepted_rows": 85077,
+          "accepted_by_id_type": {
+            "espn_id": 16584,
+            "gsis_id": 18954,
+            "nfl_id": 12103,
+            "otc_id": 9340,
+            "pff_id": 11249,
+            "pfr_id": 16847
+          },
+          "accepted_by_method": {
+            "EXACT_ALTERNATE_ID": 66123,
+            "EXACT_STABLE_ID": 18954
+          },
+          "alt_id_conflicts_among_valid_gsis": {
+            "pfr_id": 0,
+            "espn_id": 0,
+            "nfl_id": 0,
+            "pff_id": 0,
+            "otc_id": 0
+          },
+          "esb_smart_conflicts_source_level_quarantined": 4,
+          "snap_pfr_distinct": 7095,
+          "snap_pfr_unresolved_total": 31,
+          "snap_pfr_not_in_players": 30,
+          "snap_pfr_only_non_gsis": 1,
+          "snap_pfr_unresolved_with_name_candidate": 22,
+          "null_gsis_2025_depth": {
+            "source_family": "nflverse_depth_charts",
+            "source_season": 2025,
+            "null_gsis_rows": 5577,
+            "null_gsis_rows_with_espn_id": 5577,
+            "espn_deterministically_resolvable": 999,
+            "distinct_espn_ids_null_gsis": 204,
+            "distinct_espn_ids_resolvable": 19,
+            "reason": "MEASUREMENT ONLY \u2014 no depth-chart/roster output built in Phase 2B",
+            "resolution_status": "MEASURED",
+            "notes": "conflict-free ESPN crosswalk coverage over 2025 depth null-gsis rows"
+          }
+        }
+      }
+    },
+    "row_counts": {
+      "canonical_players": 18954,
+      "player_source_crosswalk": 85077
+    },
+    "crosswalk_measurements": {
+      "players_source_rows": 25041,
+      "authoritative_valid_gsis_rows": 18954,
+      "non_gsis_identity_rows_quarantined": 6087,
+      "accepted_rows": 85077,
+      "accepted_by_id_type": {
+        "espn_id": 16584,
+        "gsis_id": 18954,
+        "nfl_id": 12103,
+        "otc_id": 9340,
+        "pff_id": 11249,
+        "pfr_id": 16847
+      },
+      "accepted_by_method": {
+        "EXACT_ALTERNATE_ID": 66123,
+        "EXACT_STABLE_ID": 18954
+      },
+      "alt_id_conflicts_among_valid_gsis": {
+        "pfr_id": 0,
+        "espn_id": 0,
+        "nfl_id": 0,
+        "pff_id": 0,
+        "otc_id": 0
+      },
+      "esb_smart_conflicts_source_level_quarantined": 4,
+      "snap_pfr_distinct": 7095,
+      "snap_pfr_unresolved_total": 31,
+      "snap_pfr_not_in_players": 30,
+      "snap_pfr_only_non_gsis": 1,
+      "snap_pfr_unresolved_with_name_candidate": 22,
+      "null_gsis_2025_depth": {
+        "source_family": "nflverse_depth_charts",
+        "source_season": 2025,
+        "null_gsis_rows": 5577,
+        "null_gsis_rows_with_espn_id": 5577,
+        "espn_deterministically_resolvable": 999,
+        "distinct_espn_ids_null_gsis": 204,
+        "distinct_espn_ids_resolvable": 19,
+        "reason": "MEASUREMENT ONLY \u2014 no depth-chart/roster output built in Phase 2B",
+        "resolution_status": "MEASURED",
+        "notes": "conflict-free ESPN crosswalk coverage over 2025 depth null-gsis rows"
+      }
+    },
+    "quarantine_counts": {
+      "conflicting_alternate_ids": 4,
+      "unmatched_pfr_ids": 31,
+      "unexpected_collisions": 0,
+      "null_gsis_measurements": 1
+    }
   }
 ]

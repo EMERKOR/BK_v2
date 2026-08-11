@@ -51,7 +51,13 @@ BK_CANONICAL_TEAMS = frozenset(_MODERN_TEAMS)
 # Ball Knower canonical mapping). LAC (Chargers) is unaffected.
 _RELOCATIONS = {"OAK": "LV", "SD": "LAC", "STL": "LAR", "LA": "LAR"}
 
-BK_TEAM_NORMALIZATION = {**{t: t for t in _MODERN_TEAMS}, **_RELOCATIONS}
+# Approved Phase 2A historical source aliases (nflverse legacy gsis-feed codes
+# seen in 2010-2015 rosters). These are SOURCE ALIASES, not new canonical teams;
+# the canonical set stays exactly 32. Source codes are always preserved by the
+# callers (source_team columns).
+_SOURCE_ALIASES = {"ARZ": "ARI", "BLT": "BAL", "CLV": "CLE", "HST": "HOU", "SL": "LAR"}
+
+BK_TEAM_NORMALIZATION = {**{t: t for t in _MODERN_TEAMS}, **_RELOCATIONS, **_SOURCE_ALIASES}
 
 
 def normalize_team(code):

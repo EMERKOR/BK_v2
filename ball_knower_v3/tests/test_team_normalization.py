@@ -31,3 +31,34 @@ def test_series_normalizes_source_la_and_stl():
     out = common.normalize_team_series(s)
     assert list(out[:4]) == ["LAR", "LAR", "LAR", "LAC"]
     assert out.iloc[4] is None or pd.isna(out.iloc[4])
+
+
+# ---- Phase 2B approved historical source aliases -------------------------
+@pytest.mark.parametrize("src,expected", [
+    ("ARZ", "ARI"),
+    ("BLT", "BAL"),
+    ("CLV", "CLE"),
+    ("HST", "HOU"),
+    ("SL", "LAR"),
+])
+def test_phase2b_historical_aliases(src, expected):
+    assert common.normalize_team(src) == expected
+
+
+def test_aliases_are_not_new_canonical_teams():
+    # aliases resolve to existing teams; the canonical set stays exactly 32
+    for a in ["ARZ", "BLT", "CLV", "HST", "SL"]:
+        assert a not in common.BK_CANONICAL_TEAMS
+    assert len(common.BK_CANONICAL_TEAMS) == 32
+
+
+def test_unknown_code_still_raises():
+    for bad in ["XYZ", "ZZ", "FOO"]:
+        with pytest.raises(ValueError):
+            common.normalize_team(bad)
+
+
+def test_lac_distinct_from_lar_after_aliases():
+    assert common.normalize_team("LAC") == "LAC"
+    assert common.normalize_team("SL") == "LAR"
+    assert common.normalize_team("LAC") != common.normalize_team("SL")

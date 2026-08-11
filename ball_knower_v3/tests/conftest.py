@@ -6,11 +6,12 @@ exposes cached readers for the built parquet tables.
 from __future__ import annotations
 
 import functools
+import json
 
 import pandas as pd
 import pytest
 
-from ball_knower_v3.canonical import common, build_all
+from ball_knower_v3.canonical import common, build_all, players, player_crosswalk
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -19,6 +20,12 @@ def _ensure_built():
     ftn_p = common.OUT_DIR / "ftn_2025.parquet"
     if not (games_p.exists() and ftn_p.exists()):
         build_all.main()
+    # Phase 2B outputs — regenerate via the build FUNCTIONS (no registry append,
+    # which only build_phase2b performs) if missing.
+    if not (common.OUT_DIR / "players.parquet").exists():
+        players.main("test_build")
+    if not (common.OUT_DIR / "player_source_crosswalk.parquet").exists():
+        player_crosswalk.main("test_build")
     return True
 
 
@@ -45,3 +52,18 @@ def plays_reader():
 @pytest.fixture(scope="session")
 def ftn_reader():
     return lambda season: _read(f"ftn_{season}.parquet")
+
+
+@pytest.fixture(scope="session")
+def players_df():
+    return _read("players.parquet")
+
+
+@pytest.fixture(scope="session")
+def crosswalk_df():
+    return _read("player_source_crosswalk.parquet")
+
+
+@pytest.fixture(scope="session")
+def quarantine():
+    return json.loads((common.OUT_DIR / "player_identity_quarantine.json").read_text())
