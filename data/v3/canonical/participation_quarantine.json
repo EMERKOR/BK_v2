@@ -6,100 +6,165 @@
   ],
   "unmatched_game_count": 0,
   "invalid_team_count": 0,
-  "dual_team_count": 0,
+  "dual_team_count": 215,
+  "lineup_team_unresolved_count": 175,
+  "unresolved_lineup_identity_count": 3,
   "participation_list_measurements_by_season": {
     "2013": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
-      "plays": 0
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 0,
+      "wellformed_token_occ": 0,
+      "distinct_resolved_keys": 0,
+      "plays": 0,
+      "duplicate_source_plays": 0
     },
     "2014": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
-      "plays": 0
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 0,
+      "wellformed_token_occ": 0,
+      "distinct_resolved_keys": 0,
+      "plays": 0,
+      "duplicate_source_plays": 0
     },
     "2015": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
-      "plays": 0
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 0,
+      "wellformed_token_occ": 0,
+      "distinct_resolved_keys": 0,
+      "plays": 0,
+      "duplicate_source_plays": 0
     },
     "2016": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 87,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 968770,
+      "wellformed_token_occ": 968857,
+      "distinct_resolved_keys": 23674,
       "plays": 48434,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     },
     "2017": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 1,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 1,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 966792,
+      "wellformed_token_occ": 966793,
+      "distinct_resolved_keys": 23864,
       "plays": 47998,
-      "unresolved_list_gsis_distinct": [
-        "00-0030153"
-      ]
+      "duplicate_source_plays": 0
     },
     "2018": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 1320,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 1320,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 963397,
+      "wellformed_token_occ": 964717,
+      "distinct_resolved_keys": 23917,
       "plays": 47875,
-      "unresolved_list_gsis_distinct": [
-        "00-0034821",
-        "00-0034826"
-      ]
+      "duplicate_source_plays": 0
     },
     "2019": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 467,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 969107,
+      "wellformed_token_occ": 969107,
+      "distinct_resolved_keys": 23894,
       "plays": 48034,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     },
     "2020": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 22,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 975855,
+      "wellformed_token_occ": 975877,
+      "distinct_resolved_keys": 25000,
       "plays": 48513,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     },
     "2021": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 44,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 1019047,
+      "wellformed_token_occ": 1019091,
+      "distinct_resolved_keys": 26470,
       "plays": 50714,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     },
     "2022": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 22,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 1008775,
+      "wellformed_token_occ": 1008797,
+      "distinct_resolved_keys": 26381,
       "plays": 50150,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     },
     "2023": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 0,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 1015592,
+      "wellformed_token_occ": 1015592,
+      "distinct_resolved_keys": 26542,
       "plays": 46168,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     },
     "2024": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 2,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 1010088,
+      "wellformed_token_occ": 1010088,
+      "distinct_resolved_keys": 26617,
       "plays": 45919,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     },
     "2025": {
-      "malformed_list_tokens": 0,
-      "unresolved_list_gsis": 0,
-      "duplicate_source_plays": 0,
+      "malformed_token_occ": 0,
+      "duplicate_token_in_play_occ": 1,
+      "unresolved_identity_occ": 0,
+      "team_unresolved_occ": 0,
+      "unmatched_game_occ": 0,
+      "resolved_team_ok_occ": 993948,
+      "wellformed_token_occ": 993948,
+      "distinct_resolved_keys": 26620,
       "plays": 45184,
-      "unresolved_list_gsis_distinct": []
+      "duplicate_source_plays": 0
     }
   },
   "snap_reconciliation_by_season": {
@@ -278,9 +343,8 @@
         "source_token": "BatePh00",
         "source_name": "Phil Bates",
         "source_team": "SEA",
-        "reason": "pfr matches only a non-GSIS (esb) fallback identity; no authoritative GSIS",
-        "resolution_status": "UNRESOLVED",
-        "linked_non_gsis_esb": "BAT138483"
+        "reason": "pfr not in accepted crosswalk",
+        "resolution_status": "UNRESOLVED"
       },
       {
         "source_family": "nflverse_snap_counts",
@@ -2683,6 +2747,3428 @@
     ],
     "unmatched_game": [],
     "invalid_team": [],
-    "dual_team": []
+    "dual_team": [
+      {
+        "game_id": "2018_01_DAL_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_01_DAL_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "DAL",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_02_CAR_ATL",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "ATL",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_02_CAR_ATL",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_03_CIN_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_03_CIN_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CIN",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_05_NYG_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_05_NYG_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "NYG",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_06_CAR_WAS",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_06_CAR_WAS",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "WAS",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_07_CAR_PHI",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_07_CAR_PHI",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "PHI",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_12_SEA_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_12_SEA_CAR",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "SEA",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_13_CAR_TB",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_13_CAR_TB",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_17_CAR_NO",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_17_CAR_NO",
+        "player_id": "00-0034876",
+        "season": 2018,
+        "removed_team": "NO",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0019596",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0024270",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0024333",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0026160",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0026293",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0026327",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0026672",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027010",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027136",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027150",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027440",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027560",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027647",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027648",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027656",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027855",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027925",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0027958",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0028076",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0028171",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0028237",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0028394",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0028872",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029542",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029570",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029621",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029630",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029669",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029670",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029689",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029854",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029886",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0029984",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0030041",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0030288",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0030383",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0030431",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0030442",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0030578",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0030986",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031062",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031236",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031360",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031388",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031389",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031566",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031580",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031785",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031814",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031852",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031856",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0031943",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032052",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032071",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032143",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032165",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032208",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032228",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032241",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032242",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032248",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032261",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032391",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032442",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032445",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032455",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032580",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032677",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032786",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0032793",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033106",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033110",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033246",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033266",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033381",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033895",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033927",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033943",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033945",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0033947",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034435",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034591",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034803",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034804",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034805",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034806",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034808",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034813",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034845",
+        "season": 2018,
+        "removed_team": "NE",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2018_21_NE_LA",
+        "player_id": "00-0034854",
+        "season": 2018,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NE",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_06_CAR_TB",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_06_CAR_TB",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_09_TEN_CAR",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_09_TEN_CAR",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "TEN",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_10_CAR_GB",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_10_CAR_GB",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "GB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_11_ATL_CAR",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "ATL",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_11_ATL_CAR",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_12_CAR_NO",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_12_CAR_NO",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "NO",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_13_WAS_CAR",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "CAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2019_13_WAS_CAR",
+        "player_id": "00-0034876",
+        "season": 2019,
+        "removed_team": "WAS",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": null,
+        "reason": "conflicting team evidence with no single snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0019596",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0026564",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0026968",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0027656",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0027793",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0027855",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0027867",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0027986",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0028074",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0028101",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0029164",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0029562",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0029895",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030382",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030386",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030459",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030503",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030506",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030615",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030665",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030757",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0030829",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031016",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031052",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031101",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031273",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031325",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031348",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031366",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031408",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031957",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0031958",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032065",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032210",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032215",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032217",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032243",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032419",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032637",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032762",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032772",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032775",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0032933",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033006",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033040",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033196",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033303",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033481",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033595",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033831",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033856",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033873",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033902",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0033921",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034192",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034296",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034297",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034301",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034319",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034374",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034573",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034613",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034668",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034680",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034773",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034778",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034781",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034816",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034818",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0034824",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035140",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035147",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035149",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035157",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035239",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035254",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035298",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035625",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035681",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035699",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035707",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035881",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035889",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0035890",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0036045",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0036360",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0036374",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0036378",
+        "season": 2020,
+        "removed_team": "KC",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "TB",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0036406",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0036411",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2020_21_KC_TB",
+        "player_id": "00-0036427",
+        "season": 2020,
+        "removed_team": "TB",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "KC",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2023_03_LA_CIN",
+        "player_id": "00-0035629",
+        "season": 2023,
+        "removed_team": "CIN",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "LAR",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2023_03_LA_CIN",
+        "player_id": "00-0035944",
+        "season": 2023,
+        "removed_team": "LAR",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "CIN",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2025_01_ARI_NO",
+        "player_id": "00-0035629",
+        "season": 2025,
+        "removed_team": "ARI",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "NO",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      },
+      {
+        "game_id": "2025_01_ARI_NO",
+        "player_id": "00-0035944",
+        "season": 2025,
+        "removed_team": "NO",
+        "row_evidence": "lineup_only",
+        "authoritative_snap_team": "ARI",
+        "reason": "lineup team conflicts with the snap team",
+        "resolution_status": "NEEDS_INVESTIGATION"
+      }
+    ],
+    "lineup_team_unresolved": [
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0027694",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0031058",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0030472",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0032053",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0029709",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0029119",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0031330",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0031333",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0030090",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0027002",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0030761",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0027676",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0029604",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0032362",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0033120",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0024221",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0026292",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0032371",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0031047",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0030576",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0029408",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_11_GB_WAS",
+        "player_id": "00-0031829",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0033106",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0029640",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0031386",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0030411",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0029669",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0027647",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0028274",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0032242",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0029795",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0027006",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0031566",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0032244",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0032247",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0027010",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0031218",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0026142",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0027985",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0031360",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0031555",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0027975",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0033111",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_13_LA_NE",
+        "player_id": "00-0030383",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0032954",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0027864",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0029679",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0028129",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0022531",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0027064",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0031299",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0032574",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0032218",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0031296",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0030511",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0032770",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0027986",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0028027",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0027060",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0030061",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0025424",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0022161",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0032950",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0024341",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_15_PHI_BAL",
+        "player_id": "00-0031549",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0029255",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0031051",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0029762",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0026950",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0026618",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0032777",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0030504",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0028037",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0026232",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0032210",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0029295",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0028092",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0032112",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0027733",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0030287",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0031175",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0021429",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0022921",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0029958",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0032187",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0027869",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2016_16_ARI_SEA",
+        "player_id": "00-0029191",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0033891",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0029542",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0027993",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0031338",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0027647",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0034981",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0034759",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0031280",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0035700",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0034385",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0031632",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0031367",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0034591",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0030442",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0033947",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0035125",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0027136",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0031610",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0033920",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0028171",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0035278",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2020_03_LV_NE",
+        "player_id": "00-0036369",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0033662",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0034418",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0034352",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0036358",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0036376",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0036036",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0033579",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0036335",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0032389",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0029709",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0036330",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0031052",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0027701",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0031256",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0031554",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0030573",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0036350",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0031402",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0033591",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0033045",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0034383",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_08_DAL_MIN",
+        "player_id": "00-0029606",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0034759",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0028180",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0036369",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0036892",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0034355",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0029568",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0032969",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0033290",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0033868",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0035190",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0034981",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0036266",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0034198",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0033973",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0035638",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0034763",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0035646",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0034856",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0035404",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0034161",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0035428",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2021_15_LV_CLE",
+        "player_id": "00-0036118",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0037743",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036935",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0035771",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0038041",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0037293",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036432",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036298",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0028908",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0034756",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036646",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0037275",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036854",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0035413",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036314",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036139",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0035399",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0037569",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0037570",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0037665",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0037801",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0036857",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      },
+      {
+        "game_id": "2022_02_CIN_DAL",
+        "player_id": "00-0033526",
+        "side": "def",
+        "possession_team_raw": "",
+        "reason": "possession_team not an unambiguous game participant"
+      }
+    ],
+    "unresolved_lineup_identity": [
+      {
+        "source_family": "nflverse_pbp_participation",
+        "source_id_type": "gsis_list_token",
+        "player_token": "00-0030153",
+        "season_first": 2017,
+        "season_last": 2017,
+        "offense_occurrences": 0,
+        "defense_occurrences": 1,
+        "distinct_games": 1,
+        "first_game": "2017_02_CLE_BAL",
+        "last_game": "2017_02_CLE_BAL",
+        "reason": "well-formed GSIS list token not present in canonical_players",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_pbp_participation",
+        "source_id_type": "gsis_list_token",
+        "player_token": "00-0034821",
+        "season_first": 2018,
+        "season_last": 2018,
+        "offense_occurrences": 1006,
+        "defense_occurrences": 0,
+        "distinct_games": 17,
+        "first_game": "2018_01_CIN_IND",
+        "last_game": "2018_19_IND_KC",
+        "reason": "well-formed GSIS list token not present in canonical_players",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_pbp_participation",
+        "source_id_type": "gsis_list_token",
+        "player_token": "00-0034826",
+        "season_first": 2018,
+        "season_last": 2018,
+        "offense_occurrences": 314,
+        "defense_occurrences": 0,
+        "distinct_games": 14,
+        "first_game": "2018_01_SEA_DEN",
+        "last_game": "2018_17_LAC_DEN",
+        "reason": "well-formed GSIS list token not present in canonical_players",
+        "resolution_status": "UNRESOLVED"
+      }
+    ]
   }
 }

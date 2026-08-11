@@ -1029,5 +1029,572 @@
         "pct_threshold": 0.8
       }
     }
+  },
+  {
+    "phase": "2C_event_status_facts",
+    "supersedes_build_snapshot_id": "cbuild_20260811T191248Z_f51bd8d10b",
+    "correction_note": "supersedes the prior Phase 2C build: adds participation-only lineup rows, complete dual-team resolution, position_game, expanded lineup quarantines, and token-level accounting.",
+    "build_snapshot_id": "cbuild_20260811T202916Z_64a67c866e",
+    "canonical_version": "canonical_v0.1",
+    "injury_obs_id_version": "injobs_v0.1",
+    "participation_posmap_version": "partposmap_v0.1",
+    "build_timestamp_utc": "2026-08-11T20:30:01.136561+00:00",
+    "git_commit_at_build": "64a67c866e375e2fce182c249bed1f40e3adf251",
+    "working_tree_dirty": false,
+    "builder_git_commit": "64a67c866e375e2fce182c249bed1f40e3adf251",
+    "provenance_note": "git_commit_at_build is HEAD at build time. builder_git_commit is set only when working_tree_dirty is false (clean committed builder).",
+    "player_layer_schema_version": "player_layer_v0.1",
+    "phase2a_source_manifest_ref": "audit_v3_player_sources/manifests/raw_source_manifest.json",
+    "outputs": {
+      "canonical_injuries": {
+        "per_season": [
+          {
+            "path": "data/v3/canonical/injuries_2010.parquet",
+            "rows": 4491,
+            "sha256": "cee706312ac531463636ffb3884482f04a871a6f9c682ecc8fd1ee28b8760fd9",
+            "table": "canonical_injuries",
+            "season": 2010,
+            "raw_rows": 4491,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2011.parquet",
+            "rows": 4971,
+            "sha256": "de414015ed0b15ef6b591910bb3c8e6f4aa90cf73ea3249e1513a3c9086e3fae",
+            "table": "canonical_injuries",
+            "season": 2011,
+            "raw_rows": 4971,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2012.parquet",
+            "rows": 5533,
+            "sha256": "18f06a5cc44608fff7c5146979d73f7ec636e6050a427e8f2a2e4997d235c159",
+            "table": "canonical_injuries",
+            "season": 2012,
+            "raw_rows": 5533,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2013.parquet",
+            "rows": 5070,
+            "sha256": "41c3b8707f16bdb9cfc294255849beb7d9a6fb9ccf80405e4e7cf1f294876267",
+            "table": "canonical_injuries",
+            "season": 2013,
+            "raw_rows": 5070,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2014.parquet",
+            "rows": 5078,
+            "sha256": "8760a7fa6e05a304dac3a2c7e3bbabebd300e6f4bfb70a158adeec25cbf090a5",
+            "table": "canonical_injuries",
+            "season": 2014,
+            "raw_rows": 5078,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2015.parquet",
+            "rows": 5232,
+            "sha256": "f358df9638ed4051e6826bd1b3f27faf536d2722c11d60bc7b7c96b81281b5f4",
+            "table": "canonical_injuries",
+            "season": 2015,
+            "raw_rows": 5232,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2016.parquet",
+            "rows": 5115,
+            "sha256": "e34f2d3156d5be91d35ceeb4abb6aea8e63d57ebc7cc46d04b0d8e0c0e409273",
+            "table": "canonical_injuries",
+            "season": 2016,
+            "raw_rows": 5115,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2017.parquet",
+            "rows": 5104,
+            "sha256": "59d71c3427f5cae0bdfd784cdfe48035cb63f216c64b3e8058240cb3267456b1",
+            "table": "canonical_injuries",
+            "season": 2017,
+            "raw_rows": 5104,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2018.parquet",
+            "rows": 5133,
+            "sha256": "b4e8ff4ceb3b257f6efedc632d4e4661111f8e63ed4544ec6a824bbe31e9a13b",
+            "table": "canonical_injuries",
+            "season": 2018,
+            "raw_rows": 5133,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2019.parquet",
+            "rows": 5392,
+            "sha256": "561da028bd411769b7c5f737913a1951a97bfd6f04c10386fa95e2821e2e8d06",
+            "table": "canonical_injuries",
+            "season": 2019,
+            "raw_rows": 5392,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2020.parquet",
+            "rows": 5661,
+            "sha256": "cb026ae0f52f38f382cba95c07a22445102662f6f9ac5b8aff38e7c0eb4db585",
+            "table": "canonical_injuries",
+            "season": 2020,
+            "raw_rows": 5661,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2021.parquet",
+            "rows": 5587,
+            "sha256": "f94b66f62a22243af1ab9a69e6ec10cffc81dcaaaad2a8ff3ae8c72ac81f0b78",
+            "table": "canonical_injuries",
+            "season": 2021,
+            "raw_rows": 5587,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2022.parquet",
+            "rows": 5682,
+            "sha256": "54c254cc2843f0f80c6fb8dd332332977da08ace08212a063b2acef098b397e7",
+            "table": "canonical_injuries",
+            "season": 2022,
+            "raw_rows": 5682,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2023.parquet",
+            "rows": 5599,
+            "sha256": "d84edd7ecf6fc3990ff62f63d5cdfb4feee5826ede3944d4654148cf1d6bae28",
+            "table": "canonical_injuries",
+            "season": 2023,
+            "raw_rows": 5599,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2024.parquet",
+            "rows": 6215,
+            "sha256": "812edc222727b33c7a396d7fe6c3ce0426cd470631fe847c5b4f4336fa3afcdd",
+            "table": "canonical_injuries",
+            "season": 2024,
+            "raw_rows": 6215,
+            "quarantined": 0
+          },
+          {
+            "path": "data/v3/canonical/injuries_2025.parquet",
+            "rows": 6068,
+            "sha256": "9e79dee027c77df8491491c6bfd9964a634c0f747dea48061ceae38f8c790c29",
+            "table": "canonical_injuries",
+            "season": 2025,
+            "raw_rows": 6068,
+            "quarantined": 0
+          }
+        ]
+      },
+      "canonical_participation": {
+        "per_season": [
+          {
+            "path": "data/v3/canonical/participation_2013.parquet",
+            "rows": 23795,
+            "sha256": "d49666b33854369f3080f00577817ba2c544277aa8085665b4d9b109990f0bbf",
+            "table": "canonical_participation",
+            "season": 2013,
+            "raw_snap_rows": 23799,
+            "rows_snap_derived": 23795,
+            "rows_lineup_only": 0,
+            "quarantined_identity": 4
+          },
+          {
+            "path": "data/v3/canonical/participation_2014.parquet",
+            "rows": 23856,
+            "sha256": "7f25817df800758f5f6392e8391a7c3b99fd344b312b97b6849ebe0c676c7006",
+            "table": "canonical_participation",
+            "season": 2014,
+            "raw_snap_rows": 23864,
+            "rows_snap_derived": 23856,
+            "rows_lineup_only": 0,
+            "quarantined_identity": 8
+          },
+          {
+            "path": "data/v3/canonical/participation_2015.parquet",
+            "rows": 23839,
+            "sha256": "da47d3f51ecc5124719f04b6cec1184d1cd9c5a9698c51c5becdfc1bb5e007d5",
+            "table": "canonical_participation",
+            "season": 2015,
+            "raw_snap_rows": 23842,
+            "rows_snap_derived": 23839,
+            "rows_lineup_only": 0,
+            "quarantined_identity": 3
+          },
+          {
+            "path": "data/v3/canonical/participation_2016.parquet",
+            "rows": 23897,
+            "sha256": "bee6d7684196e96921c29fbb53582d1a90f2a80f714a83121af67dc3d5e9b9f5",
+            "table": "canonical_participation",
+            "season": 2016,
+            "raw_snap_rows": 23890,
+            "rows_snap_derived": 23883,
+            "rows_lineup_only": 14,
+            "quarantined_identity": 7
+          },
+          {
+            "path": "data/v3/canonical/participation_2017.parquet",
+            "rows": 23864,
+            "sha256": "742edf3b9a4d8d9b607f39d6e425defb0ef088c2dbd845c74db830c4f9989ea6",
+            "table": "canonical_participation",
+            "season": 2017,
+            "raw_snap_rows": 23862,
+            "rows_snap_derived": 23862,
+            "rows_lineup_only": 2,
+            "quarantined_identity": 0
+          },
+          {
+            "path": "data/v3/canonical/participation_2018.parquet",
+            "rows": 23899,
+            "sha256": "d74b664f2bfddb340acb2f399b227c8113263ba3b2b28338c26ec17bd1953bd5",
+            "table": "canonical_participation",
+            "season": 2018,
+            "raw_snap_rows": 23877,
+            "rows_snap_derived": 23877,
+            "rows_lineup_only": 22,
+            "quarantined_identity": 0
+          },
+          {
+            "path": "data/v3/canonical/participation_2019.parquet",
+            "rows": 23886,
+            "sha256": "959b407a8ec2f2489f393c1554580803c89ae8caaeec60587a20590768af778c",
+            "table": "canonical_participation",
+            "season": 2019,
+            "raw_snap_rows": 23862,
+            "rows_snap_derived": 23831,
+            "rows_lineup_only": 55,
+            "quarantined_identity": 31
+          },
+          {
+            "path": "data/v3/canonical/participation_2020.parquet",
+            "rows": 25010,
+            "sha256": "e40eac771c6e7bcd11a3e662f8abc1ef0ec57d00e27e7afb0c92185df7c35b27",
+            "table": "canonical_participation",
+            "season": 2020,
+            "raw_snap_rows": 24999,
+            "rows_snap_derived": 24978,
+            "rows_lineup_only": 32,
+            "quarantined_identity": 21
+          },
+          {
+            "path": "data/v3/canonical/participation_2021.parquet",
+            "rows": 26500,
+            "sha256": "f9788232ae399ee4126d7ec3388e2666423f4b70179aa2b7beea5234fbe18a6f",
+            "table": "canonical_participation",
+            "season": 2021,
+            "raw_snap_rows": 26468,
+            "rows_snap_derived": 26434,
+            "rows_lineup_only": 66,
+            "quarantined_identity": 34
+          },
+          {
+            "path": "data/v3/canonical/participation_2022.parquet",
+            "rows": 26414,
+            "sha256": "a9a5c24ace568a23e1add3810e53a059f724fbd38ca7b4627408f97c2537c7a5",
+            "table": "canonical_participation",
+            "season": 2022,
+            "raw_snap_rows": 26381,
+            "rows_snap_derived": 26373,
+            "rows_lineup_only": 41,
+            "quarantined_identity": 8
+          },
+          {
+            "path": "data/v3/canonical/participation_2023.parquet",
+            "rows": 26575,
+            "sha256": "09eed098525f807859a58e92ac456fef15e8a265095a3a83393ddd072049fa2b",
+            "table": "canonical_participation",
+            "season": 2023,
+            "raw_snap_rows": 26540,
+            "rows_snap_derived": 26526,
+            "rows_lineup_only": 49,
+            "quarantined_identity": 14
+          },
+          {
+            "path": "data/v3/canonical/participation_2024.parquet",
+            "rows": 26640,
+            "sha256": "8e48f7ebc526bf40ec987cb65ead198219646aca75bc501ad9734f7862d947e9",
+            "table": "canonical_participation",
+            "season": 2024,
+            "raw_snap_rows": 26615,
+            "rows_snap_derived": 26573,
+            "rows_lineup_only": 67,
+            "quarantined_identity": 42
+          },
+          {
+            "path": "data/v3/canonical/participation_2025.parquet",
+            "rows": 26653,
+            "sha256": "de0329e273825d4b9fc69c449dfdf2074a469891c42a638f53bf4831ce98c006",
+            "table": "canonical_participation",
+            "season": 2025,
+            "raw_snap_rows": 26612,
+            "rows_snap_derived": 26556,
+            "rows_lineup_only": 97,
+            "quarantined_identity": 56
+          }
+        ]
+      }
+    },
+    "row_counts": {
+      "canonical_injuries_total": 85931,
+      "canonical_participation_total": 324828
+    },
+    "raw_row_accounting": {
+      "injuries_raw": 85931,
+      "injuries_canonical": 85931,
+      "injuries_quarantined": 0,
+      "participation_raw_snaps": 324611,
+      "participation_canonical": 324828,
+      "participation_rows_lineup_only": 445,
+      "participation_unresolved_identity": 228
+    },
+    "quarantine_counts": {
+      "injury_identity": 0,
+      "participation_unresolved_identity": 228,
+      "participation_unmatched_game": 0,
+      "participation_invalid_team": 0,
+      "participation_dual_team": 215,
+      "participation_lineup_team_unresolved": 175,
+      "participation_unresolved_lineup_identity": 3
+    },
+    "injury_pit_grade_counts": {
+      "EXACT": 79801,
+      "WEEK_ONLY": 6130
+    },
+    "participation_pit_grade_counts": {
+      "RETROSPECTIVE_ONLY": 324828
+    },
+    "participation_list_measurements_by_season": {
+      "2013": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 0,
+        "wellformed_token_occ": 0,
+        "distinct_resolved_keys": 0,
+        "plays": 0,
+        "duplicate_source_plays": 0
+      },
+      "2014": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 0,
+        "wellformed_token_occ": 0,
+        "distinct_resolved_keys": 0,
+        "plays": 0,
+        "duplicate_source_plays": 0
+      },
+      "2015": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 0,
+        "wellformed_token_occ": 0,
+        "distinct_resolved_keys": 0,
+        "plays": 0,
+        "duplicate_source_plays": 0
+      },
+      "2016": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 87,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 968770,
+        "wellformed_token_occ": 968857,
+        "distinct_resolved_keys": 23674,
+        "plays": 48434,
+        "duplicate_source_plays": 0
+      },
+      "2017": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 1,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 966792,
+        "wellformed_token_occ": 966793,
+        "distinct_resolved_keys": 23864,
+        "plays": 47998,
+        "duplicate_source_plays": 0
+      },
+      "2018": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 1320,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 963397,
+        "wellformed_token_occ": 964717,
+        "distinct_resolved_keys": 23917,
+        "plays": 47875,
+        "duplicate_source_plays": 0
+      },
+      "2019": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 467,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 969107,
+        "wellformed_token_occ": 969107,
+        "distinct_resolved_keys": 23894,
+        "plays": 48034,
+        "duplicate_source_plays": 0
+      },
+      "2020": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 22,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 975855,
+        "wellformed_token_occ": 975877,
+        "distinct_resolved_keys": 25000,
+        "plays": 48513,
+        "duplicate_source_plays": 0
+      },
+      "2021": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 44,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 1019047,
+        "wellformed_token_occ": 1019091,
+        "distinct_resolved_keys": 26470,
+        "plays": 50714,
+        "duplicate_source_plays": 0
+      },
+      "2022": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 22,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 1008775,
+        "wellformed_token_occ": 1008797,
+        "distinct_resolved_keys": 26381,
+        "plays": 50150,
+        "duplicate_source_plays": 0
+      },
+      "2023": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 0,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 1015592,
+        "wellformed_token_occ": 1015592,
+        "distinct_resolved_keys": 26542,
+        "plays": 46168,
+        "duplicate_source_plays": 0
+      },
+      "2024": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 2,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 1010088,
+        "wellformed_token_occ": 1010088,
+        "distinct_resolved_keys": 26617,
+        "plays": 45919,
+        "duplicate_source_plays": 0
+      },
+      "2025": {
+        "malformed_token_occ": 0,
+        "duplicate_token_in_play_occ": 1,
+        "unresolved_identity_occ": 0,
+        "team_unresolved_occ": 0,
+        "unmatched_game_occ": 0,
+        "resolved_team_ok_occ": 993948,
+        "wellformed_token_occ": 993948,
+        "distinct_resolved_keys": 26620,
+        "plays": 45184,
+        "duplicate_source_plays": 0
+      }
+    },
+    "snap_reconciliation_by_season": {
+      "2013": {
+        "team_games_checked": 534,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2014": {
+        "team_games_checked": 534,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2015": {
+        "team_games_checked": 534,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2016": {
+        "team_games_checked": 534,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2017": {
+        "team_games_checked": 534,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2018": {
+        "team_games_checked": 534,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2019": {
+        "team_games_checked": 534,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2020": {
+        "team_games_checked": 538,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2021": {
+        "team_games_checked": 570,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2022": {
+        "team_games_checked": 568,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2023": {
+        "team_games_checked": 570,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2024": {
+        "team_games_checked": 570,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      },
+      "2025": {
+        "team_games_checked": 570,
+        "team_games_inconsistent": 0,
+        "pct_threshold": 0.8
+      }
+    }
   }
 ]
