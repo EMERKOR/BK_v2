@@ -40,14 +40,16 @@ RAW_2025_MANIFEST = REPO / "audit_v3_raw_data" / "snapshot_2025" / "raw_snapshot
 # --------------------------------------------------------------------------
 _MODERN_TEAMS = [
     "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN",
-    "DET", "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "LV", "MIA",
+    "DET", "GB", "HOU", "IND", "JAX", "KC", "LAR", "LAC", "LV", "MIA",
     "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB",
     "TEN", "WAS",
 ]
 BK_CANONICAL_TEAMS = frozenset(_MODERN_TEAMS)
 
-# relocations observed across 2010-2025 nflverse sources
-_RELOCATIONS = {"OAK": "LV", "SD": "LAC", "STL": "LA"}
+# Source->canonical remaps. Includes historical relocations and the nflverse
+# `LA` Rams code, which BK normalizes to `LAR` (consistent with the existing
+# Ball Knower canonical mapping). LAC (Chargers) is unaffected.
+_RELOCATIONS = {"OAK": "LV", "SD": "LAC", "STL": "LAR", "LA": "LAR"}
 
 BK_TEAM_NORMALIZATION = {**{t: t for t in _MODERN_TEAMS}, **_RELOCATIONS}
 

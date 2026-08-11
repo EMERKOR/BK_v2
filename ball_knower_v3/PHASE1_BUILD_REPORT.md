@@ -6,11 +6,19 @@ No player/injury/participation/rating/feature work; no v2 code modified.
 
 ## Branch & commit
 - **Branch:** `claude/bk-v3-dataset-validation-ctb5z2`
-- **HEAD at build:** `18606c10068c8f46bd692cf291c3575552a946c0`
-- **Build snapshot_id:** `cbuild_20260811T131023Z_18606c1006`
+- **Original build HEAD:** `18606c10068c8f46bd692cf291c3575552a946c0` (snapshot `cbuild_20260811T131023Z_18606c1006`).
+- **LAR-correction rebuild HEAD:** `e3158bbc67217dab1ba5435ee07166b7e41cc040`
+  (snapshot `cbuild_20260811T135456Z_e3158bbc67`) — latest record in `snapshots.json` (append-only; the
+  original record is retained).
 - **Preconditions confirmed:** clean tree; refreshed 2025 raw files present
   (PBP `pbp_2025.parquet`, `injuries_2025.parquet`, 22 weekly schedule/scores/market files);
   `audit_v3_raw_data/snapshot_2025/raw_snapshot_manifest_2025.json` present.
+
+> **Correction (Rams = LAR).** The BK canonical Rams code is `LAR` (was `LA`), consistent with the
+> existing Ball Knower canonical mapping: `LA→LAR`, `STL→LAR`, `LAR→LAR`; `LAC` (Chargers) unchanged.
+> Source codes are still preserved verbatim. All four tables were rebuilt: row counts, key uniqueness,
+> and all game/play/FTN/market joins are unchanged; the full suite passes (166). No other Phase 1
+> semantics changed; no v2 code modified.
 
 ## Files created
 ```
@@ -77,10 +85,11 @@ lacking a moneyline) — pairing preserved, not imputed.
   exist only **2016–2024**. For **2010–2015 and 2025** each canonical column is written **all-null**
   with an accompanying `{col}_available = False` flag; for 2016–2024 the flag is `True`. Nothing is
   fabricated for 2025's missing advanced fields (consistent with the audit).
-- **Team normalization** maps relocations to modern codes (`OAK→LV`, `SD→LAC`, `STL→LA`; else
-  identity → 32-team canonical set) and **preserves the source code** (`source_home_team`,
-  `source_away_team`, `source_posteam`, `source_defteam`). An unknown non-null code raises rather
-  than defaulting. No code was lost or ambiguously mapped.
+- **Team normalization** maps to modern BK codes (`OAK→LV`, `SD→LAC`, `STL→LAR`, nflverse `LA→LAR`;
+  else identity → 32-team canonical set; the Rams canonical code is **`LAR`**, the Chargers remain
+  `LAC`) and **preserves the source code** (`source_home_team`, `source_away_team`, `source_posteam`,
+  `source_defteam`). An unknown non-null code raises rather than defaulting. No code was lost or
+  ambiguously mapped.
 - **Market semantics preserved, not upgraded.** Raw `market_closing_spread` is kept as
   `source_spread_line`; the canonical `spread_home` uses the same value (BK convention
   negative = home favorite) and is tested against the nflverse `spread_line` sign. `line_timing_label`
@@ -94,7 +103,7 @@ per-output paths, row counts, and sha256 hashes. Every canonical row carries
 `source_family`, `snapshot_id`, and `canonical_version` columns; plays/ftn also carry `source_season`.
 
 ## Test results
-**159 passed** (`python3 -m pytest ball_knower_v3/tests/`, ~9s):
+**166 passed** (`python3 -m pytest ball_knower_v3/tests/`, ~9s):
 - `test_canonical_games.py`: 14 — unique id; home≠away; canonical team set; source→normalized
   round-trip; nonnegative scores; exact margin/total; winner/loser; game_type values; tz-aware kickoff;
   **schedule one-to-one** and **score reconciliation** vs the independent per-week files; **game_type vs
@@ -108,6 +117,8 @@ per-output paths, row counts, and sha256 hashes. Every canonical row carries
   `air_yards` (2014/2024); game_type populated.
 - `test_canonical_ftn.py`: 17 — unique source key; exact alias; **measured PBP join rate by season**;
   required source fields preserved; **no rate/computed columns**.
+- `test_team_normalization.py`: 7 — Rams/Chargers regression: `LA→LAR`, `STL→LAR`, `LAR→LAR`,
+  `LAC→LAC`; `LAR` in the canonical set and `LA` not; Chargers distinct from Rams; series normalization.
 
 Independent-relationship tests were preferred over formula-duplicating tests (e.g. scores reconciled
 against the per-week files; spread sign against `games.csv`; game_type against PBP `season_type`).
@@ -125,7 +136,7 @@ None rose to a blocking contradiction, but two source facts required an explicit
 
 A related non-issue: `games.csv`/schedule use historical relocation codes (OAK/SD/STL) while PBP already
 uses modern codes (LV/LAC/LA). The join key is `game_id` (identical strings across sources), so this does
-not affect joins; both sides normalize to the same modern code with the source preserved.
+not affect joins; both sides normalize to the same modern BK code (Rams → `LAR`) with the source preserved.
 
 ## Unresolved questions (for later phases, not blocking Phase 1)
 1. **Market line timing/semantics.** The nflverse line's timing ("closing" vs otherwise) is still
