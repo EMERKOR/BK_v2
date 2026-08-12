@@ -102,15 +102,78 @@ def test_participation_only_rows_shape(participation_reader):
     assert ((lo["participation_plays_offense"].fillna(0) + lo["participation_plays_defense"].fillna(0)) > 0).all()
 
 
-def test_merged_snap_plus_lineup_dual_provenance(participation_reader):
+REQUIRED_GLOBAL_PROV = ["source_family", "source_file", "source_season",
+                        "source_snapshot_id", "source_snapshot_time",
+                        "canonical_version", "build_snapshot_id"]
+DUAL_PROV = ["snap_source_file", "snap_source_snapshot_id", "snap_source_snapshot_time",
+             "participation_source_file", "participation_source_snapshot_id",
+             "participation_source_snapshot_time"]
+
+
+def test_required_global_provenance_present_and_populated(participation_reader):
+    for s in [2013, 2024, 2025]:
+        df = participation_reader(s)
+        for c in REQUIRED_GLOBAL_PROV:
+            assert c in df.columns, f"{s} missing {c}"
+            assert df[c].notna().all(), f"{s} {c} has nulls"
+
+
+def test_generic_provenance_points_to_primary_source(participation_reader):
     df = participation_reader(2024)
-    m = df[df["row_evidence"] == "snap_and_lineup"]
-    assert len(m) > 0
-    # both source identities present on merged rows
-    assert m["snap_source_file"].notna().all()
-    assert m["participation_source_file"].notna().all()
-    assert m["snap_source_snapshot_time"].notna().all()
-    assert m["participation_source_snapshot_time"].notna().all()
+    snap = df[df["row_evidence"].isin(["snap_only", "snap_and_lineup"])]
+    lo = df[df["row_evidence"] == "lineup_only"]
+    assert (snap["source_family"] == "nflverse_snap_counts").all()
+    assert snap["source_file"].str.contains("snap_counts").all()
+    if len(lo):
+        assert (lo["source_family"] == "nflverse_pbp_participation").all()
+        assert lo["source_file"].str.contains("participation").all()
+
+
+def test_dual_source_provenance_nulling(participation_reader):
+    # snap_only (2013): snap set, participation null
+    d13 = participation_reader(2013)
+    so = d13[d13["row_evidence"] == "snap_only"]
+    assert so["snap_source_file"].notna().all()
+    assert so["participation_source_file"].isna().all()
+    assert so["participation_source_snapshot_id"].isna().all()
+    # merged (2024): both set
+    d24 = participation_reader(2024)
+    m = d24[d24["row_evidence"] == "snap_and_lineup"]
+    assert m["snap_source_file"].notna().all() and m["participation_source_file"].notna().all()
+    assert m["snap_source_snapshot_id"].notna().all() and m["participation_source_snapshot_id"].notna().all()
+    # lineup-only (2024): snap null, participation set
+    lo = d24[d24["row_evidence"] == "lineup_only"]
+    assert lo["snap_source_file"].isna().all()
+    assert lo["snap_source_snapshot_id"].isna().all()
+    assert lo["participation_source_file"].notna().all()
+
+
+def test_raw_possession_team_evidence_and_derivation(participation_reader):
+    df = participation_reader(2024)
+    assert "participation_possession_team_raw" in df.columns
+    assert "participation_team_derivation_method" in df.columns
+    allowed = {"snap_team_raw", "participation_offense_possession",
+               "participation_defense_other_participant", "participation_offense_and_defense"}
+    assert set(df["participation_team_derivation_method"].dropna()) <= allowed
+    # snap-derived rows use the snap team; lineup-only use a participation method
+    snap = df[df["row_evidence"].isin(["snap_only", "snap_and_lineup"])]
+    assert (snap["participation_team_derivation_method"] == "snap_team_raw").all()
+    lo = df[df["row_evidence"] == "lineup_only"]
+    if len(lo):
+        assert lo["participation_team_derivation_method"].str.startswith("participation_").all()
+        # participation-derived rows keep raw possession evidence but NOT source_team
+        assert lo["participation_possession_team_raw"].notna().all()
+        assert lo["source_team"].isna().all()
+
+
+def test_possession_raw_is_sorted_distinct(participation_reader):
+    # when multiple raw possession tokens contribute, they are comma-joined & sorted-distinct
+    df = participation_reader(2024)
+    multi = df["participation_possession_team_raw"].dropna()
+    multi = multi[multi.str.contains(",")]
+    if len(multi):
+        v = multi.iloc[0].split(",")
+        assert v == sorted(set(v))
 
 
 def test_null_vs_zero_supplemental(participation_reader):
@@ -199,3 +262,41 @@ def test_participation_builder_deterministic():
     a = P.build_participation(2024, "X", pfr, auth, games, gdict)[0]
     b = P.build_participation(2024, "X", pfr, auth, games, gdict)[0]
     assert a.equals(b)
+
+
+def test_no_forced_exit_workaround_in_code():
+    # Contract: no forced-exit workaround (the low-level immediate-exit call) anywhere.
+    import pathlib
+    import re
+    needle = re.compile(r"os\._" + r"exit")  # split so this test never self-matches
+    root = pathlib.Path(participation.__file__).resolve().parents[1]
+    hits = []
+    for p in root.rglob("*.py"):
+        for i, line in enumerate(p.read_text().splitlines(), 1):
+            if needle.search(line):
+                hits.append(f"{p}:{i}: {line.strip()}")
+    assert hits == [], "forced-exit workaround still present:\n" + "\n".join(hits)
+
+
+def test_report_values_match_registry_and_quarantine():
+    # The build report must state numbers that match the live registry + quarantine.
+    import json
+    import pathlib
+    report = (pathlib.Path(participation.__file__).resolve().parents[1]
+              / "PHASE2C_EVENT_STATUS_BUILD_REPORT.md").read_text()
+    recs = json.loads((common.OUT_DIR / "snapshots.json").read_text())
+    q = json.loads((common.OUT_DIR / "participation_quarantine.json").read_text())
+    builds2c = [r for r in recs if r.get("phase") == "2C_event_status_facts"
+                and r.get("build_snapshot_id")]
+    latest = builds2c[-1]
+    part_total = latest["row_counts"]["canonical_participation_total"]
+
+    # canonical participation total (comma-grouped) present in report
+    assert f"{part_total:,}" in report, f"report missing participation total {part_total:,}"
+    # dual-team quarantine count present and labelled as quarantined rows (not zero)
+    assert str(q["dual_team_count"]) in report
+    assert q["dual_team_count"] == 215
+    # registry record count stated in the report matches the live registry
+    assert f"{len(recs)} records" in report, f"report must state {len(recs)} records"
+    # unresolved-identity quarantine rows present
+    assert str(q["unresolved_identity_count"]) in report

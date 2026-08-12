@@ -167,11 +167,17 @@ def _lineup_evidence(season: int, authoritative: set, games: pd.DataFrame):
             sv["team"] = sv["posn"]
         else:
             sv["team"] = jv["away_team"].where(sv["posn"] == jv["home_team"], jv["home_team"])
+        sv["poss_raw"] = sv["possession_team"].astype(str)
         meas["resolved_team_ok_occ"] += int(len(sv))
         c = sv.groupby(["gid", "team", "tok"]).size()
         for (gid, team, tok), n in c.items():
-            e = agg.setdefault((str(gid), str(team), str(tok)), {"off": 0, "def": 0})
+            e = agg.setdefault((str(gid), str(team), str(tok)),
+                               {"off": 0, "def": 0, "poss": set(), "sides": set()})
             e[side] += int(n)
+            e["sides"].add(side)
+        pk = sv.groupby(["gid", "team", "tok"])["poss_raw"].agg(lambda x: set(x))
+        for (gid, team, tok), pset in pk.items():
+            agg[(str(gid), str(team), str(tok))]["poss"].update(pset)
 
     meas["distinct_resolved_keys"] = len(agg)
     return agg, unresolved_tokens, team_unresolved, meas, covered
@@ -216,9 +222,10 @@ def build_participation(season: int, build_snapshot_id: str, pfr_map: dict,
             continue
         opponent = grow["away_team"] if team == grow["home_team"] else grow["home_team"]
         game_covered = gid in covered
-        le = agg.get((gid, team, gsis), {"off": 0, "def": 0})
-        pp_off = le["off"] if game_covered else None
-        pp_def = le["def"] if game_covered else None
+        le = agg.get((gid, team, gsis))
+        pp_off = (le["off"] if le else 0) if game_covered else None
+        pp_def = (le["def"] if le else 0) if game_covered else None
+        poss_raw = (sorted(le["poss"]) if (game_covered and le and le["poss"]) else None)
         pos_detail, pos_group = _pos_detail_and_group(row.get("position"))
         off_snaps = _int(row.get("offense_snaps")); def_snaps = _int(row.get("defense_snaps"))
         st_snaps = _int(row.get("st_snaps"))
@@ -233,12 +240,10 @@ def build_participation(season: int, build_snapshot_id: str, pfr_map: dict,
             off_pct=_f(row.get("offense_pct")), def_pct=_f(row.get("defense_pct")), st_pct=_f(row.get("st_pct")),
             pp_off=pp_off, pp_def=pp_def, snap_avail=True, part_avail=game_covered,
             evidence=("snap_and_lineup" if game_covered else "snap_only"),
-            src_family=SNAP_FAMILY, snap_file=prov["source_file"], snap_time=prov["source_snapshot_time"],
-            part_file=(part_prov["source_file"] if game_covered else None),
-            part_time=(part_prov["source_snapshot_time"] if game_covered else None),
-            snap_snap_id=prov["source_snapshot_id"], build_snapshot_id=build_snapshot_id))
+            poss_raw=poss_raw, derivation="snap_team_raw",
+            snap_prov=prov, part_prov=(part_prov if game_covered else None),
+            build_snapshot_id=build_snapshot_id))
 
-    # lineup-only rows: aggregated keys with no snap row
     # lineup-only candidate rows (agg keys with no snap row). Team conflicts are
     # resolved in one complete post-processing pass below, not here.
     for (gid, team, gsis), c in agg.items():
@@ -246,15 +251,19 @@ def build_participation(season: int, build_snapshot_id: str, pfr_map: dict,
             continue
         grow = gdict[gid]
         opponent = grow["away_team"] if team == grow["home_team"] else grow["home_team"]
+        sides = c["sides"]
+        deriv = ("participation_offense_and_defense" if sides == {"off", "def"}
+                 else "participation_offense_possession" if sides == {"off"}
+                 else "participation_defense_other_participant")
         rows.append(_mk_row(
             gid, int(grow["season"]), int(grow["week"]), grow, team, opponent, gsis,
             source_team=None,
             source_position=None, pos_detail=None, pos_group=None, did_play=True,
             off_snaps=None, def_snaps=None, st_snaps=None, off_pct=None, def_pct=None, st_pct=None,
             pp_off=c["off"], pp_def=c["def"], snap_avail=False, part_avail=True,
-            evidence="lineup_only", src_family=PART_FAMILY, snap_file=None, snap_time=None,
-            part_file=part_prov["source_file"], part_time=part_prov["source_snapshot_time"],
-            snap_snap_id=part_prov["source_snapshot_id"], build_snapshot_id=build_snapshot_id))
+            evidence="lineup_only", poss_raw=(sorted(c["poss"]) if c["poss"] else None),
+            derivation=deriv, snap_prov=None, part_prov=part_prov,
+            build_snapshot_id=build_snapshot_id))
 
     df = pd.DataFrame(rows)
     dual = []
@@ -293,8 +302,20 @@ def build_participation(season: int, build_snapshot_id: str, pfr_map: dict,
 
 def _mk_row(gid, season, week, grow, team, opponent, gsis, *, source_team, source_position, pos_detail,
             pos_group, did_play, off_snaps, def_snaps, st_snaps, off_pct, def_pct, st_pct, pp_off, pp_def,
-            snap_avail, part_avail, evidence, src_family, snap_file, snap_time, part_file, part_time,
-            snap_snap_id, build_snapshot_id):
+            snap_avail, part_avail, evidence, poss_raw, derivation, snap_prov, part_prov, build_snapshot_id):
+    # dual-source provenance (null a source that did not contribute to the row)
+    snap_file = snap_prov["source_file"] if snap_prov else None
+    snap_sid = snap_prov["source_snapshot_id"] if snap_prov else None
+    snap_time = snap_prov["source_snapshot_time"] if snap_prov else None
+    part_file = part_prov["source_file"] if part_prov else None
+    part_sid = part_prov["source_snapshot_id"] if part_prov else None
+    part_time = part_prov["source_snapshot_time"] if part_prov else None
+    # generic provenance points to the PRIMARY source: snap when snap contributed,
+    # else the participation source (lineup-only rows).
+    if snap_prov is not None:
+        g_family, g_file, g_sid, g_time = SNAP_FAMILY, snap_file, snap_sid, snap_time
+    else:
+        g_family, g_file, g_sid, g_time = PART_FAMILY, part_file, part_sid, part_time
     return {
         "game_id": gid, "season": int(season), "week": int(week), "game_type": grow["game_type"],
         "source_team": source_team, "team": team, "opponent": opponent, "player_id": gsis,
@@ -308,14 +329,21 @@ def _mk_row(gid, season, week, grow, team, opponent, gsis, *, source_team, sourc
         "participation_plays_offense": pp_off, "participation_plays_defense": pp_def,
         "snap_count_source_available": snap_avail, "participation_source_available": part_avail,
         "row_evidence": evidence,
+        # raw participation team evidence + how the team was derived
+        "participation_possession_team_raw": (",".join(poss_raw) if poss_raw else None),
+        "participation_team_derivation_method": derivation,
         "event_time": pd.Timestamp(grow["kickoff"]).tz_convert("UTC") if pd.notna(grow["kickoff"]) else None,
         "source_known_time": None, "source_known_time_available": False,
         "point_in_time_grade": "RETROSPECTIVE_ONLY", "pregame_feature_eligible": False,
-        "source_family": src_family,
-        "snap_source_file": snap_file, "snap_source_snapshot_time": snap_time,
-        "participation_source_file": part_file, "participation_source_snapshot_time": part_time,
-        "source_snapshot_id": snap_snap_id, "canonical_version": common.CANONICAL_VERSION,
-        "part_posmap_version": PART_POSMAP_VERSION, "build_snapshot_id": build_snapshot_id,
+        # required GLOBAL provenance (§3.8) — generic fields point to the primary source
+        "source_family": g_family, "source_file": g_file, "source_season": int(season),
+        "source_snapshot_id": g_sid, "source_snapshot_time": g_time,
+        "canonical_version": common.CANONICAL_VERSION, "build_snapshot_id": build_snapshot_id,
+        # explicit dual-source provenance (null for a non-contributing source)
+        "snap_source_file": snap_file, "snap_source_snapshot_id": snap_sid, "snap_source_snapshot_time": snap_time,
+        "participation_source_file": part_file, "participation_source_snapshot_id": part_sid,
+        "participation_source_snapshot_time": part_time,
+        "part_posmap_version": PART_POSMAP_VERSION,
     }
 
 

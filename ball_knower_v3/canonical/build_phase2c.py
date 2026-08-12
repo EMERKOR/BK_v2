@@ -45,9 +45,12 @@ def main() -> dict:
     record = {
         "phase": "2C_event_status_facts",
         "supersedes_build_snapshot_id": prior,
-        "correction_note": ("supersedes the prior Phase 2C build: adds participation-only "
-                            "lineup rows, complete dual-team resolution, position_game, "
-                            "expanded lineup quarantines, and token-level accounting."),
+        "correction_note": ("supersedes the prior Phase 2C build: provenance-only rebuild "
+                            "adding required row-level global provenance (source_family/file/"
+                            "season/snapshot_id/snapshot_time, canonical_version, build_snapshot_id) "
+                            "and participation team evidence (participation_possession_team_raw, "
+                            "participation_team_derivation_method). No participation redesign; "
+                            "row counts and quarantines are unchanged (column-only)."),
         "build_snapshot_id": build_snapshot_id,
         "canonical_version": common.CANONICAL_VERSION,
         "injury_obs_id_version": injuries.OBS_ID_VERSION,
