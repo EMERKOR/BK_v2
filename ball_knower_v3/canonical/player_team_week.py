@@ -666,14 +666,38 @@ def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
                           out_root=None, canonical_build_id=None, inputs=None,
                           clock=None, verify_lineage=None,
                           expected_lineage_map=None, expected_lineage_set_id=None):
-    """Build one immutable state snapshot recoverably-atomically.
+    """PUBLIC snapshot API. A production snapshot (`dry_run=False`) always verifies
+    canonical build lineage and always materializes from the internally loaded,
+    verified canonical/raw paths — it cannot disable verification or inject inputs.
 
-    Outputs are written to a temp location, validated + hashed, promoted, and
-    only then is the registry appended (atomic replace under a lock). If the
-    registry append fails after promotion, the promoted output is rolled back so
-    no orphan, temp, or partial record survives. dry_run=True writes nothing to
-    the production registry and cleans up.
+    Injected `inputs`, injected `clock`, and lineage bypass (`verify_lineage=False`)
+    are available only for dry runs (and, for the atomic mechanics, the private
+    `_create_snapshot_impl` used by lower-level unit tests).
     """
+    if not dry_run:
+        if verify_lineage is False:
+            raise ValueError("a production state snapshot cannot disable lineage verification "
+                             "(verify_lineage=False is refused)")
+        if inputs is not None:
+            raise ValueError("a production state snapshot cannot use caller-supplied inputs; "
+                             "inputs are loaded from the verified canonical/raw paths")
+        verify_lineage = True   # always run lineage verification in production
+    return _create_snapshot_impl(
+        season, week, as_of, mode, model_run_id=model_run_id, market_input=market_input,
+        note=note, dry_run=dry_run, out_root=out_root, canonical_build_id=canonical_build_id,
+        inputs=inputs, clock=clock, verify_lineage=verify_lineage,
+        expected_lineage_map=expected_lineage_map, expected_lineage_set_id=expected_lineage_set_id)
+
+
+def _create_snapshot_impl(season, week, as_of, mode, *, model_run_id=None,
+                          market_input=None, note=None, dry_run=True,
+                          out_root=None, canonical_build_id=None, inputs=None,
+                          clock=None, verify_lineage=None,
+                          expected_lineage_map=None, expected_lineage_set_id=None):
+    """Private worker. Outputs are written to a temp location, validated + hashed,
+    then promotion + registry append happen as one locked transaction with a
+    commit-boundary re-verification of the input hashes. Injected inputs / clock /
+    lineage bypass are permitted here for dry runs and lower-level unit tests."""
     as_of = state_registry.require_aware_utc(as_of)
     if mode not in state_registry.VALID_MODES:
         raise ValueError(f"unknown mode {mode!r}")
@@ -749,10 +773,13 @@ def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
 
     # promotion + registry append are ONE recoverable transaction under a single
     # exclusive lock (dup id + destination re-checked, promoted dir rolled back on
-    # a persistence failure). No nested lock acquisition.
+    # a persistence failure). A commit-boundary re-verification runs UNDER the lock
+    # so a required input mutated after resolution cannot produce a registered
+    # snapshot. No nested lock acquisition.
     record = _repoint(record, tmp, root)
+    precommit = (lambda: build_lineage.reverify(lineage)) if lineage else None
     try:
-        state_registry.commit_snapshot(record, tmp, root)
+        state_registry.commit_snapshot(record, tmp, root, precommit=precommit)
     except Exception:
         shutil.rmtree(tmp, ignore_errors=True)   # loser cleans its own temp; winner untouched
         raise
@@ -797,13 +824,21 @@ def _build_record(sid, season, week, as_of, mode, model_run_id, market_val, note
             src_files.append({"family": pr["family"], "path": pr["path"], "sha256": pr["sha256"],
                               "source_snapshot_id": pr["source_snapshot_id"],
                               "source_snapshot_time": pr["source_snapshot_time"]})
-    canon_files = []
-    for name in (f"depth_charts_{season}.parquet", f"depth_provisional_{season}.parquet",
-                 f"injuries_{season}.parquet", f"participation_{season}.parquet",
-                 "games.parquet", "players.parquet"):
-        p = common.OUT_DIR / name
-        if p.exists():
-            canon_files.append({"path": relpath(p), "sha256": common.sha256_file(p)})
+    # the registered canonical input list is EXACTLY the verified set (every file
+    # actually verified for this snapshot, incl. crosswalk + depth-provisional
+    # support) so verify_registry() re-hashes the complete verified basis.
+    if lineage:
+        canon_files = [{"path": p, "sha256": info["sha256"], "input": info["input"],
+                        "reference": info["reference"]}
+                       for p, info in lineage["verified_canonical_files"].items()]
+    else:
+        canon_files = []
+        for name in (f"depth_charts_{season}.parquet", f"depth_provisional_{season}.parquet",
+                     f"injuries_{season}.parquet", f"participation_{season}.parquet",
+                     "games.parquet", "players.parquet"):
+            p = common.OUT_DIR / name
+            if p.exists():
+                canon_files.append({"path": relpath(p), "sha256": common.sha256_file(p)})
     record = {
         "state_registry_version": state_registry.STATE_REGISTRY_VERSION,
         "state_snapshot_id": sid,

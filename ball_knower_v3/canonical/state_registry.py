@@ -132,13 +132,14 @@ def append_state_record(record: dict) -> None:
         _atomic_write_json(STATE_REGISTRY_JSON, recs)
 
 
-def commit_snapshot(record: dict, tmp_dir, dest_dir) -> None:
+def commit_snapshot(record: dict, tmp_dir, dest_dir, precommit=None) -> None:
     """Promote a completed temp output AND append the registry as ONE recoverable
     transaction under a SINGLE exclusive lock (no nested acquisition).
 
     Sequence: acquire lock -> re-read+validate registry -> re-check duplicate id
-    and destination path -> promote temp dir -> atomic registry append -> roll
-    back the promoted dir if persistence fails -> release lock. A concurrent
+    and destination path -> run `precommit()` (commit-boundary revalidation, e.g.
+    re-hash the verified inputs) -> promote temp dir -> atomic registry append ->
+    roll back the promoted dir if persistence fails -> release lock. A concurrent
     writer for the same id cannot delete or overwrite the winner's output.
     """
     import os
@@ -156,6 +157,8 @@ def commit_snapshot(record: dict, tmp_dir, dest_dir) -> None:
             raise ValueError(f"state_snapshot_id {sid} already exists; snapshots are immutable")
         if dest_dir.exists():
             raise ValueError(f"destination {dest_dir} already exists; refusing to overwrite")
+        if precommit is not None:
+            precommit()   # e.g. re-verify input hashes; raises to abort BEFORE promotion
         os.rename(tmp_dir, dest_dir)   # promote under the lock
         try:
             recs.append(record)

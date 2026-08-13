@@ -15,7 +15,35 @@ cutoff. Phase 1 semantics unchanged; Phase 2B/2C untouched; v2 untouched.
 - **Lineage/atomicity-closure builders + tests (clean tree):** `d2efae1`.
 - **Authoritative closure build:** `build_snapshot_id = cbuild_20260813T135811Z_d2efae1a87`, `working_tree_dirty = false`, `builder_git_commit = d2efae1…`, **`supersedes_build_snapshot_id = cbuild_20260813T000155Z_1635117447`**. Appended to the **canonical build registry** (`snapshots.json`, now **10 records**; the prior nine are byte-identical). This canonical build record is **not** a `state_snapshot_id`.
 
-## Lineage/atomicity closure (this pass)
+## Production-boundary closure (this pass — `runtime-only`)
+A production snapshot could previously still claim verified canonical lineage while
+materializing from injected inputs or with verification disabled. Closed by a
+production-boundary hardening of `create_state_snapshot` — **runtime code only; no
+canonical Phase 2D output or registered provenance changed, so no rebuild record
+was appended** (registry stays at 10, byte-identical).
+1. **Verification cannot be bypassed in production.** For `dry_run=False`,
+   `verify_lineage=False` is **rejected** and lineage verification always runs.
+2. **No injected inputs in production.** A `dry_run=False` call with caller
+   `inputs` is **rejected**; inputs are loaded internally from the exact
+   canonical/raw paths resolved and verified by the lineage bundle, so the
+   DataFrames materialized are the ones whose hashes appear in
+   `verified_canonical_files` / `verified_raw_sources`.
+3. **Private test-only path.** Injected inputs, injected clocks, and the lineage
+   bypass remain available only for dry runs and, for the atomic mechanics, the
+   private `_create_snapshot_impl` used by lower-level unit tests — never through
+   the public production API.
+4. **Commit-boundary re-verification.** Under the single registry lock, before
+   promotion, every verified input is re-hashed (`build_lineage.reverify`); a
+   required input mutated after resolution cannot produce a registered snapshot.
+5. **Complete registered input set.** The registered canonical input list is
+   exactly the verified set — including the **crosswalk** and **depth-provisional
+   support** — and `verify_registry()` re-hashes that whole set (15 files for a
+   season: 7 canonical + 5 raw + output/provisional/quarantine), not a smaller
+   manually maintained subset.
+6. The optional exact `expected_lineage_map` / `expected_lineage_set_id` remain
+   accepted as assertions but can never disable verification.
+
+## Lineage/atomicity closure (prior pass — `d2efae1`)
 Six narrowly scoped closures; the weekly-state model and all Phase 1/2B/2C outputs are unchanged.
 1. **`depth_provisional_support` is a registered, verified input.** `depth_provisional_<season>.parquet` (an actual input to `build_state_rows`) is now a versioned Phase 2D output with path/season/rows/sha256 and a distinct lineage table. The target season's provisional-depth Parquet is hashed in production lineage verification and recorded in the state record; a missing or hash-mismatched provisional-depth file is refused (the tracked quarantine summary is never a substitute for hashing the Parquet actually consumed).
 2. **Lineage references are genuinely exact.** `build_lineage` resolves an immutable per-table reference for every input (games, players, crosswalk, injuries, participation, depth, depth-provisional): a versioned build uses its `build_snapshot_id`; a legacy Phase-1 record (no build id) receives a deterministic hash of its canonicalized registry record (never rewritten). Two non-superseded **versioned** builds for one table fail as **ambiguous** (no silent last-pick). A deterministic **`canonical_lineage_set_id`** is derived from the whole map and stamps row/build provenance; a caller-supplied lineage map or set-id is validated **exactly** (arbitrary / missing / extra / superseded / mismatched references refused), replacing the old non-null-only `canonical_build_id` check (so `"bogus"` no longer passes).
@@ -272,9 +300,9 @@ neither delete nor overwrite the winner's output. A naive `as_of_time` is
 rejected; `verify_registry()` re-hashes every registered input and output.
 
 ## Test results (real exit codes)
-- `python3 -m pytest ball_knower_v3/tests/` → **exit 0, 342 passed** (Phase 2D
+- `python3 -m pytest ball_knower_v3/tests/` → **exit 0, 348 passed** (Phase 2D
   suite: roster 7, depth 5, state-registry 6, build-lineage 12,
-  player-team-week 48).
+  player-team-week 54).
 - `python3 -m pytest audit_v3_player_sources/tests/` → **exit 0, 13 passed**.
 - `python3 -m ball_knower_v3.canonical.build_phase2d` → **exit 0**.
 - `python3 -m ball_knower_v3.tools.clean_verify <phase1-baseline>` → **exit 0**

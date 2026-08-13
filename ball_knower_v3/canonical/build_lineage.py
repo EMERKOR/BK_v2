@@ -197,6 +197,24 @@ def verify_and_bundle(required, raw_records, *, expected_map=None, expected_set_
             "unavailable_by_source_era": unavailable}
 
 
+def reverify(bundle) -> None:
+    """Commit-boundary revalidation: re-hash every verified input and raise if any
+    changed or vanished since the bundle was resolved. Proves the bytes actually
+    materialized still match the recorded hashes (closes the TOCTOU window)."""
+    for path, info in (bundle.get("verified_canonical_files") or {}).items():
+        p = common.REPO / path
+        if not p.exists():
+            raise ValueError(f"verified canonical input {path} vanished before commit")
+        if common.sha256_file(p) != info["sha256"]:
+            raise ValueError(f"verified canonical input {path} changed before commit (hash mismatch)")
+    for path, sha in (bundle.get("verified_raw_sources") or {}).items():
+        p = common.REPO / path
+        if not p.exists():
+            raise ValueError(f"verified raw source {path} vanished before commit")
+        if common.sha256_file(p) != sha:
+            raise ValueError(f"verified raw source {path} changed before commit (hash mismatch)")
+
+
 # ---- retained helpers (used by earlier tests / callers) --------------------
 def verify_canonical_files(paths) -> dict:
     auth = resolve_authoritative_builds()

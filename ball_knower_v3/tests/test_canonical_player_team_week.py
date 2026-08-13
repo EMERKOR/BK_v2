@@ -362,7 +362,7 @@ def _strict_inputs():
 
 def test_atomic_snapshot_write_verify_and_immutability(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
-    out = P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+    out = P._create_snapshot_impl(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
                                   inputs=_strict_inputs(), verify_lineage=False)
     sid = out["record"]["state_snapshot_id"]
     assert (tmp_path / sid).exists()
@@ -379,7 +379,7 @@ def test_validation_failure_leaves_nothing(tmp_path, monkeypatch):
     monkeypatch.setattr(P, "_validate_invariants",
                         lambda *a, **k: (_ for _ in ()).throw(AssertionError("boom")))
     with pytest.raises(AssertionError):
-        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+        P._create_snapshot_impl(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
                                 inputs=_strict_inputs(), verify_lineage=False)
     assert not (tmp_path / "state_snapshot_registry.json").exists()
     assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []
@@ -392,7 +392,7 @@ def test_output_write_failure_leaves_no_temp(tmp_path, monkeypatch):
         raise IOError("disk full")
     monkeypatch.setattr(pd.DataFrame, "to_parquet", boom)
     with pytest.raises(IOError):
-        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+        P._create_snapshot_impl(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
                                 inputs=_strict_inputs(), verify_lineage=False)
     monkeypatch.setattr(pd.DataFrame, "to_parquet", real)
     assert list(tmp_path.glob("*.tmp")) == [] and [p for p in tmp_path.glob("state_*") if p.is_dir()] == []
@@ -404,7 +404,7 @@ def test_registry_write_failure_rolls_back_promotion(tmp_path, monkeypatch):
     monkeypatch.setattr(SR, "_atomic_write_json",
                         lambda path, data: (_ for _ in ()).throw(IOError("registry down")))
     with pytest.raises(IOError):
-        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+        P._create_snapshot_impl(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
                                 inputs=_strict_inputs(), verify_lineage=False)
     # promoted orphan rolled back; no temp; registry never persisted
     assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []
@@ -414,7 +414,7 @@ def test_registry_write_failure_rolls_back_promotion(tmp_path, monkeypatch):
 
 def test_duplicate_id_race_refused(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
-    out = P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+    out = P._create_snapshot_impl(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
                                   inputs=_strict_inputs(), verify_lineage=False)
     # a second writer that produced the same id is refused under the lock
     with pytest.raises(ValueError):
@@ -451,7 +451,7 @@ def test_corrupted_existing_registry_not_silently_overwritten(tmp_path, monkeypa
     _mk(tmp_path, monkeypatch)
     (tmp_path / "state_snapshot_registry.json").write_text("{ this is not json")
     with pytest.raises(Exception):        # corrupt registry cannot be parsed -> refuse
-        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+        P._create_snapshot_impl(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
                                 inputs=_strict_inputs(), verify_lineage=False)
     assert (tmp_path / "state_snapshot_registry.json").read_text() == "{ this is not json"
     assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []   # no promoted snapshot dir
@@ -619,18 +619,98 @@ def test_market_input_verified_and_time_bounded(tmp_path):
 def test_production_ignores_injected_clock(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
     # a caller clock claiming "now == as_of" must NOT authorize a backdated
-    # production LIVE_FREEZE — production uses the real system UTC clock.
+    # production LIVE_FREEZE — production uses the real system UTC clock. Uses the
+    # private impl so the clock behavior is tested directly (not preempted by the
+    # public production guards).
     fake_now = pd.Timestamp("2025-10-08T12:10:00Z")   # would make AOF look contemporaneous
     with pytest.raises(ValueError):
-        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
+        P._create_snapshot_impl(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
                                 inputs=_inputs(weekly=_wr([dict(week=5, team="KC",
                                     gsis_id="00-0000001", status="ACT", position="WR")])),
                                 clock=lambda: fake_now, verify_lineage=False)
-    # the same injected clock IS honored for a dry run
+    # the same injected clock IS honored for a dry run (public API)
     P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True,
                             inputs=_inputs(weekly=_wr([dict(week=5, team="KC",
                                 gsis_id="00-0000001", status="ACT", position="WR")])),
                             clock=lambda: fake_now)
+
+
+# == production boundary: verification cannot be bypassed ================
+_HIST_AOF = pd.Timestamp("2024-10-03T16:00:00Z")
+
+
+def test_production_rejects_verify_lineage_false():
+    with pytest.raises(ValueError):
+        P.create_state_snapshot(2024, 5, _HIST_AOF, "HISTORICAL_STRICT",
+                                dry_run=False, verify_lineage=False)
+
+
+def test_production_rejects_caller_inputs():
+    with pytest.raises(ValueError):
+        P.create_state_snapshot(2024, 5, _HIST_AOF, "HISTORICAL_STRICT",
+                                dry_run=False, inputs=_inputs())
+
+
+def test_production_uses_internally_loaded_verified_inputs(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    out = P.create_state_snapshot(2024, 5, _HIST_AOF, "HISTORICAL_STRICT", dry_run=False)
+    rec = out["record"]
+    # rows came from internally-loaded canonical inputs (match a direct build)
+    ref = P.build_state_rows(2024, 5, _HIST_AOF, "HISTORICAL_STRICT",
+                             P.load_inputs(2024), state_snapshot_id="X")["canon"]
+    assert rec["output"]["rows"] == len(ref)
+    # the registered canonical inputs are exactly the verified set (incl crosswalk + depth prov)
+    paths = {c["path"] for c in rec["inputs"]["canonical_files"]}
+    assert any("player_source_crosswalk" in p for p in paths)
+    assert any("depth_provisional_2024" in p for p in paths)
+    assert rec["canonical_lineage_set_id"].startswith("lineageset_")
+    # verify_registry re-hashes the complete verified set (all canonical + raw + outputs)
+    v = SR.verify_registry()
+    assert v["mismatches"] == [] and v["missing"] == [] and v["checked"] >= 15
+
+
+def test_registered_inputs_include_crosswalk_and_depth_provisional(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    rec = P.create_state_snapshot(2024, 5, _HIST_AOF, "HISTORICAL_STRICT", dry_run=False)["record"]
+    inputs_by_key = {c.get("input") for c in rec["inputs"]["canonical_files"]}
+    assert {"games", "players", "crosswalk", "injuries", "participation",
+            "depth", "depth_provisional"} <= inputs_by_key
+
+
+def test_mutation_before_commit_refused(tmp_path, monkeypatch):
+    # commit-boundary re-verification: if a verified input's on-disk bytes change
+    # after resolution but before promotion, the snapshot is refused with nothing left.
+    _mk(tmp_path, monkeypatch)
+    from ball_knower_v3.canonical import build_lineage as BL
+    real_reverify = BL.reverify
+    monkeypatch.setattr(BL, "reverify",
+                        lambda bundle: (_ for _ in ()).throw(ValueError("input changed before commit")))
+    with pytest.raises(ValueError):
+        P.create_state_snapshot(2024, 5, _HIST_AOF, "HISTORICAL_STRICT", dry_run=False)
+    assert len(SR.load_registry()) == 0                       # nothing registered
+    assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []
+    assert list(tmp_path.glob("*.tmp")) == []
+
+
+def test_reverify_detects_changed_input(tmp_path):
+    from ball_knower_v3.canonical import build_lineage as BL
+    f = tmp_path / "x.parquet"
+    pd.DataFrame({"a": [1]}).to_parquet(f)
+    rel = str(f) if not str(f).startswith(str(common.REPO)) else str(f.relative_to(common.REPO))
+    # absolute path outside repo: reverify resolves common.REPO/rel; emulate via a repo-relative copy
+    import shutil
+    dst = common.OUT_DIR / "_reverify_probe.parquet"
+    shutil.copy(f, dst)
+    try:
+        relp = str(dst.relative_to(common.REPO))
+        bundle = {"verified_canonical_files": {relp: {"sha256": common.sha256_file(dst)}},
+                  "verified_raw_sources": {}}
+        BL.reverify(bundle)                                    # matches -> ok
+        pd.DataFrame({"a": [1, 2, 3]}).to_parquet(dst)         # mutate
+        with pytest.raises(ValueError):
+            BL.reverify(bundle)
+    finally:
+        dst.unlink(missing_ok=True)
 
 
 # == correction 5: provisional preserves depth source_name/source_position ==
