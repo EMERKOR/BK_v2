@@ -6,7 +6,8 @@ import pandas as pd
 from ball_knower_v3.canonical import common, players, player_crosswalk
 
 KEY = ["source_family", "source_id_type", "source_player_token"]
-ACCEPTED_METHODS = {"EXACT_STABLE_ID", "EXACT_ALTERNATE_ID", "MANUAL_REVIEW"}
+ACCEPTED_METHODS = {"EXACT_STABLE_ID", "EXACT_ALTERNATE_ID",
+                    "EXACT_NORMALIZED_NAME_TEAM", "MANUAL_REVIEW"}
 ACCEPTED_STATUSES = {"AUTO_ACCEPTED", "MANUALLY_ACCEPTED", "REJECTED", "UNRESOLVED"}
 
 
