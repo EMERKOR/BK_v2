@@ -10,9 +10,29 @@ cutoff. Phase 1 semantics unchanged; Phase 2B/2C untouched; v2 untouched.
 
 ## Branch & commits
 - **Branch:** `claude/bk-v3-dataset-validation-ctb5z2`; Phase 2D start `9f07b1f`.
-- **Original builders + tests:** `baac73f`; original build `cbuild_20260812T151817Z_baac73fd69` (superseded).
-- **Integrity-correction builders + tests (clean tree):** `1635117`.
-- **Authoritative corrected build:** `build_snapshot_id = cbuild_20260813T000155Z_1635117447`, `working_tree_dirty = false`, `builder_git_commit = 1635117…`, **`supersedes_build_snapshot_id = cbuild_20260812T151817Z_baac73fd69`**. Appended to the **canonical build registry** (`snapshots.json`, now **9 records**; the prior eight are byte-identical). This canonical build record is **not** a `state_snapshot_id`.
+- **Original builders + tests:** `baac73f` (build superseded).
+- **Behavioral-correction builders + tests:** `1635117` (build superseded).
+- **Lineage/atomicity-closure builders + tests (clean tree):** `d2efae1`.
+- **Authoritative closure build:** `build_snapshot_id = cbuild_20260813T135811Z_d2efae1a87`, `working_tree_dirty = false`, `builder_git_commit = d2efae1…`, **`supersedes_build_snapshot_id = cbuild_20260813T000155Z_1635117447`**. Appended to the **canonical build registry** (`snapshots.json`, now **10 records**; the prior nine are byte-identical). This canonical build record is **not** a `state_snapshot_id`.
+
+## Lineage/atomicity closure (this pass)
+Six narrowly scoped closures; the weekly-state model and all Phase 1/2B/2C outputs are unchanged.
+1. **`depth_provisional_support` is a registered, verified input.** `depth_provisional_<season>.parquet` (an actual input to `build_state_rows`) is now a versioned Phase 2D output with path/season/rows/sha256 and a distinct lineage table. The target season's provisional-depth Parquet is hashed in production lineage verification and recorded in the state record; a missing or hash-mismatched provisional-depth file is refused (the tracked quarantine summary is never a substitute for hashing the Parquet actually consumed).
+2. **Lineage references are genuinely exact.** `build_lineage` resolves an immutable per-table reference for every input (games, players, crosswalk, injuries, participation, depth, depth-provisional): a versioned build uses its `build_snapshot_id`; a legacy Phase-1 record (no build id) receives a deterministic hash of its canonicalized registry record (never rewritten). Two non-superseded **versioned** builds for one table fail as **ambiguous** (no silent last-pick). A deterministic **`canonical_lineage_set_id`** is derived from the whole map and stamps row/build provenance; a caller-supplied lineage map or set-id is validated **exactly** (arbitrary / missing / extra / superseded / mismatched references refused), replacing the old non-null-only `canonical_build_id` check (so `"bogus"` no longer passes).
+3. **Required inputs fail closed.** The required set is explicit by source era — games/players/crosswalk always; injuries/depth/depth-provisional for supported seasons; participation only where the canonical source era supports it, otherwise an explicit **`NOT_AVAILABLE_BY_SOURCE_ERA`** entry. An absent required file raises rather than silently dropping out of verification.
+4. **The whole promotion is one locked transaction.** `state_registry.commit_snapshot` holds a **single** exclusive lock across: re-read + validate registry → re-check duplicate id and destination → promote the temp dir → atomic registry append → roll back the promoted dir on persistence failure. No nested lock acquisition. A genuine two-thread race for the same id yields exactly one valid record/output pair; the loser can neither delete nor overwrite the winner's output.
+5. **Factual-output fixes.** `_prov_row` preserves depth-provisional `source_name`/`source_position` (not only `full_name`/`position`). The conflict wording is now "no uniquely latest eligible observation," and both the resolved and quarantined notes state that observation time is **not** a transaction's legal effective time.
+6. **Production clock cannot be injected.** A `LIVE_FREEZE` production snapshot (`dry_run=False`) uses the real system UTC invocation time; a caller-supplied `clock` is honored only for dry runs/tests and can never authorize a backdated production snapshot.
+
+## Behavioral correction (prior pass — `1635117`)
+Eight contract-driven corrections; the participation-model and canonical outputs of Phase 1/2B/2C are untouched.
+1. **`LIVE_FREEZE` is now a genuine contemporaneous freeze.** `create_state_snapshot` requires a `LIVE_FREEZE` `as_of_time` to sit within a documented tolerance (backdate ≤ 1 h, future skew ≤ 5 min) of the actual invocation time; it rejects future and materially backdated timestamps and records **both** the requested `as_of_time` and the actual creation time. Historical reconstruction uses `HISTORICAL_STRICT`. The earlier real-data dry runs labelled `LIVE_FREEZE` in 2025/Feb-2026 were invalid (BK did not freeze those inputs then) and are **replaced** by real-data `HISTORICAL_STRICT` dry runs plus synthetic injected-clock `LIVE_FREEZE` tests. The report no longer claims the 2025 run used "roster+depth": the August-2026 weekly-roster snapshot is ineligible for an October-2025 `as_of`, so `HISTORICAL_STRICT` 2025 rows come from the historically timestamped 2025 depth chart.
+2. **Bye rows require roster evidence.** A bye row is created only when eligible weekly/timestamped **roster** membership exists; depth-only, injury-only, participation-only, or season-roster-only association no longer yields a bye row, and a missing game is never auto-labeled a bye.
+3. **Provisional passthrough is eligibility-gated.** Only evidence eligible under the snapshot's mode + `as_of` enters that snapshot's provisional output (an ineligible `WEEK_ONLY` source stays in the Phase 2A/2B audit). This fixes the old `HISTORICAL_STRICT 2018 wk5` bug that reported 216 provisional rows from a 2026-frozen `WEEK_ONLY` source (now **0**). Each provisional record carries eligibility, PIT grade, the proof timestamp, the raw token, all alternate IDs, raw+normalized team, source position, and full source provenance. Depth null-GSIS rows are preserved as a loadable provisional support table (not pre-dropped), and non-null but non-authoritative depth IDs route to provisional rather than being silently dropped.
+4. **Recoverably-atomic snapshot creation** (further hardened in this closure into a single locked transaction; see above).
+5. **Exact canonical build lineage** (`build_lineage.py`; made genuinely exact in this closure; see above).
+6. **Validated market input.** A supplied `market_input` must carry a path/immutable ref, sha256, and a market snapshot time ≤ `as_of`, and must hash-verify; an arbitrary unverified dict is rejected. Absence is recorded explicitly as a player-state-only freeze.
+7. **Conflict terminology corrected.** `RESOLVED_LATEST_EFFECTIVE` → **`RESOLVED_LATEST_ELIGIBLE_OBSERVATION`** — a depth/roster observation time is when an association was *reported*, not a transaction's legal *effective* time.
 
 ## Integrity correction (this pass)
 Eight contract-driven corrections; the participation-model and canonical outputs of Phase 1/2B/2C are untouched.
@@ -35,8 +55,8 @@ ball_knower_v3/canonical/build_phase2d.py        orchestrator (HISTORICAL_STRICT
 ball_knower_v3/tests/test_roster_status.py       (7 tests)
 ball_knower_v3/tests/test_depth_charts.py        (5 tests)
 ball_knower_v3/tests/test_state_registry.py      (6 tests)
-ball_knower_v3/tests/test_build_lineage.py       (6 tests, NEW)
-ball_knower_v3/tests/test_canonical_player_team_week.py  (44 tests)
+ball_knower_v3/tests/test_build_lineage.py       (12 tests)
+ball_knower_v3/tests/test_canonical_player_team_week.py  (48 tests)
 ball_knower_v3/PHASE2D_WEEKLY_STATE_BUILD_REPORT.md      (this report)
 data/v3/canonical/depth_charts_{2010..2025}.parquet     (gitignored, canonical table)
 data/v3/canonical/depth_provisional_{2010..2025}.parquet(gitignored, null-id provisional support)
@@ -222,29 +242,39 @@ snapshot (e.g. 4016 of the 2025 null-identity rows for the wk10 `as_of`). Every
 eligible unresolved roster/depth row enters the provisional output or an explicit
 quarantine (exact-accounting tested).
 
-## Build lineage verification
-Each snapshot resolves the authoritative non-superseded canonical build per input
-table and verifies file + raw-source hashes before creation:
-`games ← canonical_games`, `players/crosswalk ← Phase 2B`, `injuries/participation
-← Phase 2C (cbuild_…24aa558468)`, `depth ← Phase 2D (cbuild_…1635117447)`. A
-production snapshot refuses `canonical_build_id=None`, and any missing/superseded/
-mismatched reference (tested).
+## Build lineage verification (exact)
+Each production snapshot resolves an EXACT immutable reference per input table and
+a deterministic `canonical_lineage_set_id` over the whole map, then verifies every
+required file (including the season's `depth_provisional_<season>.parquet`) against
+its build's recorded hash and every raw source against the Phase 2A manifest —
+before creation. Current resolved set (season 2024 example, set id
+`lineageset_611a7b9e6247885d`): `games ← canonical_games (legacy Phase-1 ref)`,
+`players/crosswalk ← Phase 2B`, `injuries/participation ← Phase 2C
+(cbuild_…24aa558468)`, `depth + depth_provisional_support ← Phase 2D
+(cbuild_…d2efae1a87)`. Two non-superseded versioned builds for one table fail as
+ambiguous; a caller lineage map/set-id is validated exactly (arbitrary/missing/
+extra/superseded/mismatched refused); a required file that is absent raises, and a
+table unavailable for the season's source era is recorded
+`NOT_AVAILABLE_BY_SOURCE_ERA` (all tested). The verified reference map, set id, and
+hashes are stored in the state record.
 
-## Immutability & recoverable-atomic-write results
-Snapshot creation is recoverably atomic: outputs are built in a temp location, all
-invariants validated + hashed, promoted, and only then is the registry appended
-(temp file + atomic replace under an exclusive lock). Failure-injection tests
-prove no temp/orphan/partial record survives a **validation failure**, an
-**output-write failure**, a **registry-write failure after promotion** (promoted
-output rolled back), a **duplicate-id race** (refused under the lock), or a
-**corrupted existing registry** (left byte-unchanged, snapshot refused). A naive
-`as_of_time` is rejected; `verify_registry()` re-hashes every registered input and
-output.
+## Immutability & single-transaction atomic-write results
+Promotion and registry append are **one recoverable transaction under a single
+exclusive lock** (`state_registry.commit_snapshot`): re-read + validate registry →
+re-check duplicate id and destination → promote the temp dir → atomic
+temp-file/replace registry append → roll back the promoted dir on persistence
+failure. Failure-injection tests prove no temp/orphan/partial record survives a
+**validation failure**, an **output-write failure**, a **registry-write failure
+after promotion** (promoted output rolled back), or a **corrupted existing
+registry** (left byte-unchanged, snapshot refused). A **genuine two-thread race**
+for the same id yields exactly one valid record/output pair — the loser can
+neither delete nor overwrite the winner's output. A naive `as_of_time` is
+rejected; `verify_registry()` re-hashes every registered input and output.
 
 ## Test results (real exit codes)
-- `python3 -m pytest ball_knower_v3/tests/` → **exit 0, 332 passed** (Phase 2D
-  suite: roster 7, depth 5, state-registry 6, build-lineage 6,
-  player-team-week 44).
+- `python3 -m pytest ball_knower_v3/tests/` → **exit 0, 342 passed** (Phase 2D
+  suite: roster 7, depth 5, state-registry 6, build-lineage 12,
+  player-team-week 48).
 - `python3 -m pytest audit_v3_player_sources/tests/` → **exit 0, 13 passed**.
 - `python3 -m ball_knower_v3.canonical.build_phase2d` → **exit 0**.
 - `python3 -m ball_knower_v3.tools.clean_verify <phase1-baseline>` → **exit 0**
@@ -254,8 +284,8 @@ output.
 - **Phase 1 canonical byte-for-byte unchanged** (22/22 parquets; `clean_verify` PASS).
 - **Phase 2B/2C outputs unchanged** — injuries/participation/players/crosswalk
   parquets byte-identical; determinism PASS.
-- **Canonical build registry append-only** — 9 records; the prior eight are
-  byte-identical and the corrected Phase 2D record supersedes the prior one by id.
+- **Canonical build registry append-only** — 10 records; the prior nine are
+  byte-identical and the closure Phase 2D record supersedes the prior one by id.
 - **No production decision snapshot created** — the decision-state registry is
   empty; only deterministic dry-runs (temporary outputs) were used.
 - **No universal weekly cutoff** — eligibility is driven solely by an explicit

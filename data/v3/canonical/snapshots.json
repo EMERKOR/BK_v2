@@ -2856,5 +2856,483 @@
     ],
     "dry_run_mode_note": "all real-data dry runs are HISTORICAL_STRICT; LIVE_FREEZE is validated only via synthetic injected-clock tests because BK did not freeze these historical inputs contemporaneously.",
     "no_production_state_snapshot": true
+  },
+  {
+    "phase": "2D_weekly_state_implementation",
+    "supersedes_build_snapshot_id": "cbuild_20260813T000155Z_1635117447",
+    "correction_note": "supersedes the prior Phase 2D build (lineage/atomicity closure): registers depth_provisional_support as a versioned output and lineage input; exact per-table reference map + deterministic canonical_lineage_set_id (ambiguous/superseded/mismatched refused, legacy records hashed); required inputs fail closed with explicit NOT_AVAILABLE_BY_SOURCE_ERA; promotion+registry-append is one locked recoverable transaction; production LIVE_FREEZE ignores injected clocks; provisional rows preserve source_name/source_position.",
+    "note": "Phase 2D integrity correction. NO production decision snapshot created.",
+    "build_snapshot_id": "cbuild_20260813T135811Z_d2efae1a87",
+    "canonical_version": "canonical_v0.1",
+    "roster_map_version": "rosterstatus_v0.1",
+    "depth_parser_version": "depthparse_v0.1",
+    "ptw_schema_version": "player_team_week_v0.1",
+    "position_group_version": "posgroup_v0.1",
+    "state_registry_version": "state_registry_v0.1",
+    "build_timestamp_utc": "2026-08-13T13:59:33.834240+00:00",
+    "git_commit_at_build": "d2efae1a8778915ec21db48a37a33ed4d1933690",
+    "working_tree_dirty": false,
+    "builder_git_commit": "d2efae1a8778915ec21db48a37a33ed4d1933690",
+    "provenance_note": "git_commit_at_build is HEAD at build time; builder_git_commit is set only when the tree is clean (committed builder).",
+    "phase2a_source_manifest_ref": "audit_v3_player_sources/manifests/raw_source_manifest.json",
+    "outputs": {
+      "canonical_depth_charts": {
+        "per_season": [
+          {
+            "path": "data/v3/canonical/depth_charts_2010.parquet",
+            "rows": 38421,
+            "sha256": "d78a3ddfa313c45e7c915da5ddae3b574b659ee38c04a4887049ab64f420c104",
+            "table": "canonical_depth_charts",
+            "season": 2010
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2011.parquet",
+            "rows": 37941,
+            "sha256": "3831c23aaa2a2bd8059cdcc0a13aa11ef908d0395325219724e413922734b54b",
+            "table": "canonical_depth_charts",
+            "season": 2011
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2012.parquet",
+            "rows": 37312,
+            "sha256": "818889911afed081e44ef983e799da663484289fba4dc794a3459e47017e38aa",
+            "table": "canonical_depth_charts",
+            "season": 2012
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2013.parquet",
+            "rows": 37066,
+            "sha256": "a591373338c440a5287d252aff55b6e6bc71879f8dc3c7c4bd4faae0c406db14",
+            "table": "canonical_depth_charts",
+            "season": 2013
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2014.parquet",
+            "rows": 32542,
+            "sha256": "4012e37ea9430855abfd91cb9b80961d0d2b51b92d4a1910ac8627c126521870",
+            "table": "canonical_depth_charts",
+            "season": 2014
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2015.parquet",
+            "rows": 37058,
+            "sha256": "82597d4302836ed9f0c163ee43780d37b37aa7158fe6c16cf33c43b5386b9486",
+            "table": "canonical_depth_charts",
+            "season": 2015
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2016.parquet",
+            "rows": 36612,
+            "sha256": "326e7c1d6903c70e2b209b334a536de864726b0749f2be0719b05fbeaf0fabdb",
+            "table": "canonical_depth_charts",
+            "season": 2016
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2017.parquet",
+            "rows": 36620,
+            "sha256": "a7abb8cc82ddd9e5af042d9d03d1eee107637f6e351d5c0057faaa4d66ee22f9",
+            "table": "canonical_depth_charts",
+            "season": 2017
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2018.parquet",
+            "rows": 36560,
+            "sha256": "bad8822c596ae986d8a807bc37a363071a0e850684c97dcf488ab9f239ac3121",
+            "table": "canonical_depth_charts",
+            "season": 2018
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2019.parquet",
+            "rows": 36308,
+            "sha256": "26d5b3d5ac570cbcff0b7a6bd7fcb1238ad6460842167d677389220266c00432",
+            "table": "canonical_depth_charts",
+            "season": 2019
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2020.parquet",
+            "rows": 36168,
+            "sha256": "61f107cb79928734b003de56dba9d4484f0d002eb1c6f8f2f98b56e0ea551db6",
+            "table": "canonical_depth_charts",
+            "season": 2020
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2021.parquet",
+            "rows": 37487,
+            "sha256": "3d3bbaf901067ab2f125e1680aa9a12625465ab43c2618f5b8473c5c98af8f9f",
+            "table": "canonical_depth_charts",
+            "season": 2021
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2022.parquet",
+            "rows": 37780,
+            "sha256": "ccccff4ca5ed7bc733609d621796ff8ed990dd3d8f43eb57dee2ab2f5de0a314",
+            "table": "canonical_depth_charts",
+            "season": 2022
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2023.parquet",
+            "rows": 37327,
+            "sha256": "63f545f181fa7568f691eb67cf3573ffbbbe29534b87c244d9c51af60019af29",
+            "table": "canonical_depth_charts",
+            "season": 2023
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2024.parquet",
+            "rows": 37312,
+            "sha256": "728b33b54dcf346892c30ca0503e570cf22643e2eeae30c5acd1ff315617f61f",
+            "table": "canonical_depth_charts",
+            "season": 2024
+          },
+          {
+            "path": "data/v3/canonical/depth_charts_2025.parquet",
+            "rows": 548638,
+            "sha256": "62ec8109f078ec2997127d72f3c3c78ce28bb2a16d91ed219642d8bd93c65d51",
+            "table": "canonical_depth_charts",
+            "season": 2025
+          }
+        ]
+      },
+      "depth_provisional_support": {
+        "per_season": [
+          {
+            "path": "data/v3/canonical/depth_provisional_2010.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2010
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2011.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2011
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2012.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2012
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2013.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2013
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2014.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2014
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2015.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2015
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2016.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2016
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2017.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2017
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2018.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2018
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2019.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2019
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2020.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2020
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2021.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2021
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2022.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2022
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2023.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2023
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2024.parquet",
+            "rows": 0,
+            "sha256": "cd9225d1c4474875f27908d757a422d710e90f3321b3cb30aaa3d94e77f5e4ed",
+            "table": "depth_provisional_support",
+            "season": 2024
+          },
+          {
+            "path": "data/v3/canonical/depth_provisional_2025.parquet",
+            "rows": 5577,
+            "sha256": "d7cef4d1cf0fa98b15562a38f7adf5c322a6aa65f2266a3c3f8bc870ea6695f0",
+            "table": "depth_provisional_support",
+            "season": 2025
+          }
+        ]
+      }
+    },
+    "row_counts": {
+      "canonical_depth_charts_total": 1101152,
+      "depth_provisional_support_total": 5577
+    },
+    "depth_provisional_accounting": {
+      "provisional_row_total": 5577,
+      "provisional_distinct_source_tokens": 204,
+      "phase2b_active_provisional_identities": 24,
+      "reconciliation_note": "depth null-identity source rows are preserved as provisional support (row total vs distinct source tokens reported separately); the state builder admits only the eligible ones."
+    },
+    "quarantine_counts": {
+      "depth_unparseable_rank": 0
+    },
+    "depth_measurements_by_season": {
+      "2010": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 38421,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 38421,
+        "provisional_rows": 0
+      },
+      "2011": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37941,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37941,
+        "provisional_rows": 0
+      },
+      "2012": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37312,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37312,
+        "provisional_rows": 0
+      },
+      "2013": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37066,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37066,
+        "provisional_rows": 0
+      },
+      "2014": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 32542,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 32542,
+        "provisional_rows": 0
+      },
+      "2015": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37058,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37058,
+        "provisional_rows": 0
+      },
+      "2016": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 36612,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 36612,
+        "provisional_rows": 0
+      },
+      "2017": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 36620,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 36620,
+        "provisional_rows": 0
+      },
+      "2018": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 36560,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 36560,
+        "provisional_rows": 0
+      },
+      "2019": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 36308,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 36308,
+        "provisional_rows": 0
+      },
+      "2020": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 36168,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 36168,
+        "provisional_rows": 0
+      },
+      "2021": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37487,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37487,
+        "provisional_rows": 0
+      },
+      "2022": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37780,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37780,
+        "provisional_rows": 0
+      },
+      "2023": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37327,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37327,
+        "provisional_rows": 0
+      },
+      "2024": {
+        "era": "weekly_2010_2024",
+        "raw_rows": 37312,
+        "null_gsis": 0,
+        "unparseable_rank": 0,
+        "canon_rows": 37312,
+        "provisional_rows": 0
+      },
+      "2025": {
+        "era": "timestamped_2025",
+        "raw_rows": 554215,
+        "null_gsis": 5577,
+        "unparseable_rank": 0,
+        "canon_rows": 548638,
+        "provisional_rows": 5577
+      }
+    },
+    "roster_status_vocabulary": [
+      "ACT",
+      "CUT",
+      "DEV",
+      "E01",
+      "E14",
+      "EXE",
+      "INA",
+      "NWT",
+      "PUP",
+      "RES",
+      "RET",
+      "RFA",
+      "RSN",
+      "RSR",
+      "SUS",
+      "TRC",
+      "TRD",
+      "TRT",
+      "UDF",
+      "UFA"
+    ],
+    "dry_run_materializations": [
+      {
+        "mode": "HISTORICAL_STRICT",
+        "season": 2024,
+        "week": 5,
+        "as_of_time": "2024-10-03T16:00:00Z",
+        "rows": 27,
+        "bye_rows": 0,
+        "provisional_rows": 0,
+        "provisional_distinct_tokens": 0,
+        "team_conflict_quarantined": 0,
+        "status_conflict_quarantined": 0,
+        "multi_team_reported": 0,
+        "content_sha256": "be355343150304444057979baa69f657d67f39cd831cfa049ecc4c2eaef4c2fc"
+      },
+      {
+        "mode": "HISTORICAL_STRICT",
+        "season": 2018,
+        "week": 5,
+        "as_of_time": "2018-10-03T16:00:00Z",
+        "rows": 28,
+        "bye_rows": 0,
+        "provisional_rows": 0,
+        "provisional_distinct_tokens": 0,
+        "team_conflict_quarantined": 0,
+        "status_conflict_quarantined": 0,
+        "multi_team_reported": 0,
+        "content_sha256": "0ef8e872b3d449ba59742d548f8efb5afd443205de917d2920c867efb2da4ecb"
+      },
+      {
+        "mode": "HISTORICAL_STRICT",
+        "season": 2025,
+        "week": 10,
+        "as_of_time": "2025-11-05T16:00:00Z",
+        "rows": 2586,
+        "bye_rows": 0,
+        "provisional_rows": 4016,
+        "provisional_distinct_tokens": 197,
+        "team_conflict_quarantined": 1,
+        "status_conflict_quarantined": 0,
+        "multi_team_reported": 220,
+        "content_sha256": "84143bc1f93377f4c18343862208469adb73c5725737ee51a8739b9c42ca83cd"
+      },
+      {
+        "mode": "HISTORICAL_STRICT",
+        "season": 2024,
+        "week": 20,
+        "as_of_time": "2025-01-16T16:00:00Z",
+        "rows": 2,
+        "bye_rows": 0,
+        "provisional_rows": 0,
+        "provisional_distinct_tokens": 0,
+        "team_conflict_quarantined": 0,
+        "status_conflict_quarantined": 0,
+        "multi_team_reported": 0,
+        "content_sha256": "707ab03ac5148c724f9603f131ee3c2ac638c2cf1e1a488fe88e2003b30e002a"
+      }
+    ],
+    "dry_run_mode_note": "all real-data dry runs are HISTORICAL_STRICT; LIVE_FREEZE is validated only via synthetic injected-clock tests because BK did not freeze these historical inputs contemporaneously.",
+    "no_production_state_snapshot": true
   }
 ]
