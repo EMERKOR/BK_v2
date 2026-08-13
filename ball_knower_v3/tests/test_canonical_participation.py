@@ -296,9 +296,11 @@ def test_report_values_match_registry_and_quarantine():
     # dual-team quarantine count present and labelled as quarantined rows (not zero)
     assert str(q["dual_team_count"]) in report
     assert q["dual_team_count"] == 215
-    # registry record count AT PHASE 2C CLOSURE (append-only: later phases add records,
-    # which must not retroactively break this phase's report).
-    n_through_2c = sum(1 for r in recs if not str(r.get("phase", "")).startswith("2D"))
+    # registry record count AT PHASE 2C CLOSURE = records up to and including the last
+    # Phase 2C build (append-only: later phases 2D/2E/... add records that must not
+    # retroactively break this phase's report).
+    last_2c = max(i for i, r in enumerate(recs) if str(r.get("phase", "")).startswith("2C"))
+    n_through_2c = last_2c + 1
     assert f"{n_through_2c} records" in report, f"report must state {n_through_2c} records"
     # unresolved-identity quarantine rows present
     assert str(q["unresolved_identity_count"]) in report
