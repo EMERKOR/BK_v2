@@ -8,7 +8,7 @@ from ball_knower_v3.canonical import depth_charts as D, common
 
 
 def test_weekly_era_grade_and_rank():
-    df, quar, meas = D.parse_depth_season(2024, "T")
+    df, prov, quar, meas = D.parse_depth_season(2024, "T")
     assert meas["era"] == "weekly_2010_2024"
     assert (df["depth_point_in_time_grade"] == "WEEK_ONLY").all()
     assert df["depth_chart_known_time"].isna().all()      # no within-week timestamp
@@ -18,7 +18,7 @@ def test_weekly_era_grade_and_rank():
 
 
 def test_timestamped_era_grade_and_time():
-    df, quar, meas = D.parse_depth_season(2025, "T")
+    df, prov, quar, meas = D.parse_depth_season(2025, "T")
     assert meas["era"] == "timestamped_2025"
     assert (df["depth_point_in_time_grade"] == "SNAPSHOT_BOUND").all()
     assert df["depth_chart_known_time"].notna().all()     # dt is a genuine snapshot time
@@ -28,16 +28,20 @@ def test_timestamped_era_grade_and_time():
 
 
 def test_team_normalized_and_source_preserved():
-    df, _, _ = D.parse_depth_season(2015, "T")   # 2010-2015 has legacy aliases
+    df, _, _, _ = D.parse_depth_season(2015, "T")   # 2010-2015 has legacy aliases
     assert set(df["team"]).issubset(common.BK_CANONICAL_TEAMS)
     assert df["source_team"].notna().all()
 
 
-def test_null_identity_quarantined_not_dropped():
-    df, quar, meas = D.parse_depth_season(2025, "T")
-    # every raw row is either canonical or quarantined (no silent drop)
-    assert meas["canon_rows"] + len(quar) == meas["raw_rows"]
-    assert meas["null_gsis"] == sum(1 for q in quar if q["reason"] == "null gsis_id")
+def test_null_identity_preserved_as_provisional_not_dropped():
+    df, prov, quar, meas = D.parse_depth_season(2025, "T")
+    # every raw row is canonical, provisional (null id), or quarantined (bad rank) — no drop
+    assert meas["canon_rows"] + meas["provisional_rows"] + meas["unparseable_rank"] == meas["raw_rows"]
+    assert meas["null_gsis"] == meas["provisional_rows"] == len(prov)
+    # provisional rows carry enough evidence to identify the source
+    for c in ["espn_id", "source_name", "team", "source_position", "depth_rank",
+              "depth_slot", "depth_chart_known_time", "depth_point_in_time_grade"]:
+        assert c in prov.columns
     for q in quar:
         assert q["resolution_status"] == "UNRESOLVED"
 

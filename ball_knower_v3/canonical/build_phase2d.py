@@ -1,22 +1,20 @@
 """
-Phase 2D build orchestrator — weekly-state implementation.
+Phase 2D build orchestrator — weekly-state implementation (integrity-corrected).
 
 This build:
-  1. materializes the NEW canonical depth-chart table (both source eras) + its
-     quarantine;
-  2. runs DETERMINISTIC DRY-RUN player-team-week materializations against
-     temporary outputs (no production decision snapshot is created);
-  3. appends ONE Phase 2D IMPLEMENTATION record to the append-only CANONICAL
-     build registry (`snapshots.json`) — NOT a state_snapshot_id, and NOT to the
-     decision-state registry.
+  1. materializes the canonical depth-chart table (both eras) + its provisional
+     null-identity support table + quarantine;
+  2. runs DETERMINISTIC real-data dry-run materializations. These are
+     HISTORICAL_STRICT only — Ball Knower did not contemporaneously freeze those
+     inputs, so labelling a backfilled reconstruction LIVE_FREEZE would be false.
+     LIVE_FREEZE is exercised separately by synthetic injected-clock tests.
+  3. appends ONE SUPERSEDING Phase 2D record to the append-only CANONICAL build
+     registry — never rewriting the existing records, and never a state snapshot.
 
-It never creates a production state snapshot (contract §15.5): decision snapshots
-are only minted when the model is actually run or the user explicitly asks to
-freeze current state.
+No production decision snapshot is created.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 import tempfile
 from pathlib import Path
@@ -25,12 +23,13 @@ import pandas as pd
 
 from . import common, depth_charts, player_team_week as ptw, roster_status, state_registry
 
-# fixed, timezone-aware targets that exercise the contract's edge cases.
+# Real-data dry runs are HISTORICAL_STRICT where source timestamps genuinely
+# support reconstruction: EXACT injuries (2010-2024) and 2025 timestamped depth.
 DRY_RUNS = [
-    ("LIVE_FREEZE", 2025, 5, "2025-10-08T12:00:00Z", "live in-season: roster+depth+byes"),
-    ("HISTORICAL_STRICT", 2024, 5, "2024-10-03T16:00:00Z", "strict historical: EXACT injuries only"),
-    ("LIVE_FREEZE", 2025, 22, "2026-02-06T00:00:00Z", "postseason (Super Bowl week)"),
-    ("HISTORICAL_STRICT", 2018, 5, "2018-10-03T16:00:00Z", "old-era strict: WEEK_ONLY excluded"),
+    ("HISTORICAL_STRICT", 2024, 5, "2024-10-03T16:00:00Z", "EXACT injuries mid-week"),
+    ("HISTORICAL_STRICT", 2018, 5, "2018-10-03T16:00:00Z", "old-era: WEEK_ONLY roster excluded"),
+    ("HISTORICAL_STRICT", 2025, 10, "2025-11-05T16:00:00Z", "2025 timestamped depth (SNAPSHOT_BOUND)"),
+    ("HISTORICAL_STRICT", 2024, 20, "2025-01-16T16:00:00Z", "postseason (divisional round)"),
 ]
 
 
@@ -43,11 +42,16 @@ def _dry_run_digest(mode, season, week, as_of, build_id):
         p = Path(td) / "c.parquet"
         canon.to_parquet(p, index=False)
         h = common.sha256_file(p)
+    prov = res["provisional"]
+    prov_tokens = 0
+    if len(prov) and "provisional_token" in prov.columns:
+        prov_tokens = int(prov["provisional_token"].dropna().nunique())
     return {
         "mode": mode, "season": season, "week": week, "as_of_time": as_of,
         "rows": int(len(canon)),
         "bye_rows": (int(canon["is_bye_week"].sum()) if len(canon) else 0),
-        "provisional_rows": int(len(res["provisional"])),
+        "provisional_rows": int(len(prov)),
+        "provisional_distinct_tokens": prov_tokens,
         "team_conflict_quarantined": len(res["quarantine"]["team_conflict"]),
         "status_conflict_quarantined": len(res["quarantine"]["status_conflict"]),
         "multi_team_reported": len(res["multi_team"]),
@@ -55,21 +59,48 @@ def _dry_run_digest(mode, season, week, as_of, build_id):
     }
 
 
+def _prior_phase2d_build():
+    if not common.SNAPSHOTS_JSON.exists():
+        return None
+    prior = None
+    for r in json.loads(common.SNAPSHOTS_JSON.read_text()):
+        if r.get("phase") == "2D_weekly_state_implementation" and r.get("build_snapshot_id"):
+            prior = r["build_snapshot_id"]
+    return prior
+
+
+def _phase2b_active_provisional_count():
+    p = common.REPO / "audit_v3_player_sources" / "nongsis_active_coverage.json"
+    if not p.exists():
+        return None
+    d = json.loads(p.read_text())
+    # distinct non-GSIS identities appearing in active sources (Phase 2B measure)
+    if isinstance(d, dict) and "union_distinct_nongsis_identities_appearing" in d:
+        return d["union_distinct_nongsis_identities_appearing"]
+    return None
+
+
 def main() -> dict:
     build_snapshot_id = common.make_snapshot_id()
     commit = common.git_commit()
     dirty = common.working_tree_dirty()
+    prior = _prior_phase2d_build()
 
-    depth_metas, depth_quar, depth_meas, depth_total = depth_charts.main(build_snapshot_id)
+    depth_metas, depth_quar, depth_meas, depth_total, depth_prov_total, depth_prov_tokens = \
+        depth_charts.main(build_snapshot_id)
 
     digests = [_dry_run_digest(m, s, w, a, build_snapshot_id) for (m, s, w, a, _n) in DRY_RUNS]
 
     record = {
         "phase": "2D_weekly_state_implementation",
-        "note": ("Phase 2D implementation: canonical depth-chart table + roster-status "
-                 "normalization + append-only decision-state registry + "
-                 "canonical_player_team_week materializer. NO production decision "
-                 "snapshot created (dry-run digests only)."),
+        "supersedes_build_snapshot_id": prior,
+        "correction_note": ("supersedes the prior Phase 2D build: LIVE_FREEZE now requires a "
+                            "contemporaneous clock (dry runs are HISTORICAL_STRICT only); bye "
+                            "rows require eligible roster evidence; provisional passthrough is "
+                            "eligibility-gated and preserves non-authoritative depth identities; "
+                            "recoverably-atomic writes; exact canonical build lineage; validated "
+                            "market input; conflict wording is RESOLVED_LATEST_ELIGIBLE_OBSERVATION."),
+        "note": "Phase 2D integrity correction. NO production decision snapshot created.",
         "build_snapshot_id": build_snapshot_id,
         "canonical_version": common.CANONICAL_VERSION,
         "roster_map_version": roster_status.ROSTER_MAP_VERSION,
@@ -86,19 +117,32 @@ def main() -> dict:
         "phase2a_source_manifest_ref": "audit_v3_player_sources/manifests/raw_source_manifest.json",
         "outputs": {"canonical_depth_charts": {"per_season": depth_metas}},
         "row_counts": {"canonical_depth_charts_total": depth_total},
-        "quarantine_counts": {"depth_charts": len(depth_quar)},
+        "depth_provisional_accounting": {
+            "provisional_row_total": depth_prov_total,
+            "provisional_distinct_source_tokens": depth_prov_tokens,
+            "phase2b_active_provisional_identities": _phase2b_active_provisional_count(),
+            "reconciliation_note": ("depth null-identity source rows are preserved as provisional "
+                                    "support (row total vs distinct source tokens reported "
+                                    "separately); the state builder admits only the eligible ones."),
+        },
+        "quarantine_counts": {"depth_unparseable_rank": len(depth_quar)},
         "depth_measurements_by_season": depth_meas,
         "roster_status_vocabulary": sorted(roster_status.known_statuses()),
         "dry_run_materializations": digests,
+        "dry_run_mode_note": ("all real-data dry runs are HISTORICAL_STRICT; LIVE_FREEZE is "
+                              "validated only via synthetic injected-clock tests because BK did "
+                              "not freeze these historical inputs contemporaneously."),
         "no_production_state_snapshot": True,
     }
     common.append_snapshot_record(record)
-    print(f"\nPhase 2D build complete. build_snapshot_id={build_snapshot_id} dirty={dirty}")
-    print("depth rows:", depth_total, "| depth quarantine:", len(depth_quar))
+    print(f"\nPhase 2D build complete. build_snapshot_id={build_snapshot_id} dirty={dirty} "
+          f"supersedes={prior}")
+    print(f"depth rows: {depth_total} | provisional(null-gsis): {depth_prov_total} "
+          f"(distinct tokens {depth_prov_tokens}) | unparseable-rank quar: {len(depth_quar)}")
     for d in digests:
         print(f"  dry-run {d['mode']} {d['season']} wk{d['week']}: rows={d['rows']} "
-              f"byes={d['bye_rows']} team_conf={d['team_conflict_quarantined']} "
-              f"multi_team={d['multi_team_reported']}")
+              f"byes={d['bye_rows']} prov={d['provisional_rows']} "
+              f"team_conf={d['team_conflict_quarantined']} multi_team={d['multi_team_reported']}")
     return record
 
 

@@ -27,12 +27,19 @@ output. Null status stays null — never healthy/active/zero.
 from __future__ import annotations
 
 import json
-from datetime import timezone
+import shutil
+from datetime import timedelta
 from pathlib import Path
 
 import pandas as pd
 
-from . import common, roster_status, state_registry
+from . import build_lineage, common, roster_status, state_registry
+
+# LIVE_FREEZE must be a genuinely contemporaneous freeze (contract §1): the
+# requested as_of_time must sit within a small tolerance of the actual invocation
+# time. Historical reconstruction uses HISTORICAL_STRICT instead.
+LIVE_FREEZE_BACKDATE_TOLERANCE = timedelta(hours=1)
+LIVE_FREEZE_FUTURE_SKEW = timedelta(minutes=5)
 
 PTW_SCHEMA_VERSION = "player_team_week_v0.1"
 POSITION_GROUP_VERSION = "posgroup_v0.1"
@@ -134,6 +141,8 @@ def load_inputs(season: int, canonical_build_id: str | None = None) -> dict:
 
     depth_path = common.OUT_DIR / f"depth_charts_{season}.parquet"
     depth = pd.read_parquet(depth_path) if depth_path.exists() else pd.DataFrame()
+    dpv_path = common.OUT_DIR / f"depth_provisional_{season}.parquet"
+    depth_provisional = pd.read_parquet(dpv_path) if dpv_path.exists() else pd.DataFrame()
 
     inj_path = common.OUT_DIR / f"injuries_{season}.parquet"
     inj = pd.read_parquet(inj_path) if inj_path.exists() else pd.DataFrame()
@@ -145,7 +154,8 @@ def load_inputs(season: int, canonical_build_id: str | None = None) -> dict:
         "games": games, "players": players, "display": disp,
         "weekly_roster": wr, "weekly_roster_prov": _src_prov("rosters_weekly", season),
         "seasonal_roster": rs, "seasonal_roster_prov": _src_prov("rosters_seasonal", season),
-        "depth": depth, "depth_prov": _src_prov("depth_charts", season),
+        "depth": depth, "depth_provisional": depth_provisional,
+        "depth_prov": _src_prov("depth_charts", season),
         "injuries": inj, "injuries_prov": _src_prov("injuries", season),
         "participation": part, "participation_prov": _src_prov("participation", season),
         "canonical_build_id": canonical_build_id,
@@ -183,20 +193,24 @@ def build_state_rows(season, week, as_of, mode, inputs, *,
     provisional = []
 
     # -- roster (weekly) evidence -----------------------------------------
+    # A provisional row is emitted ONLY for evidence that is ELIGIBLE under this
+    # snapshot's mode + as_of (contract §3): an ineligible source row never enters
+    # this snapshot's provisional output (it stays in the Phase 2A/2B audit).
     rprov = inputs["weekly_roster_prov"]
     roster_ev = {}   # (team, gsis) -> list of dict(status fields, source_position, used_time)
     wr = inputs["weekly_roster"]
     wr_wk = wr[wr["week"] == week] if "week" in wr.columns else wr.iloc[0:0]
     for r in wr_wk.itertuples(index=False):
+        ok, ug, ut = eligible("WEEK_ONLY", None, rprov["source_snapshot_time"], mode, as_of)
+        if not ok:
+            continue   # ineligible: not part of this snapshot at all
         gsis = _clean(getattr(r, "gsis_id", None))
         team_src = _clean(getattr(r, "team", None))
         team = common.normalize_team(team_src) if team_src else None
-        ok, ug, ut = eligible("WEEK_ONLY", None, rprov["source_snapshot_time"], mode, as_of)
         if gsis is None or gsis not in players:
             provisional.append(_prov_row("rosters_weekly", rprov, season, week, r,
-                                          team_src, team, gsis, "roster_weekly"))
-            continue
-        if not ok:
+                                          team_src, team, gsis, "roster_weekly",
+                                          pit_grade="WEEK_ONLY", used_grade=ug, used_time=ut))
             continue
         norm = roster_status.normalize_status(getattr(r, "status", None),
                                               getattr(r, "status_description_abbr", None))
@@ -217,17 +231,18 @@ def build_state_rows(season, week, as_of, mode, inputs, *,
         if "week" in d.columns:
             d = d[(d["week"].isna()) | (d["week"] == week)]
         for r in d.itertuples(index=False):
-            gsis = _clean(getattr(r, "player_id", None))
-            team = _clean(getattr(r, "team", None))
             grade = getattr(r, "depth_point_in_time_grade", None)
             ok, ug, ut = eligible(grade, getattr(r, "depth_chart_known_time", None),
                                   dprov["source_snapshot_time"], mode, as_of)
-            if gsis is None or gsis not in players:
-                if gsis is None:
-                    provisional.append(_prov_row("depth_charts", dprov, season, week, r,
-                                                  getattr(r, "source_team", None), team, gsis, "depth_chart"))
-                continue
             if not ok:
+                continue   # ineligible: not part of this snapshot at all
+            gsis = _clean(getattr(r, "player_id", None))
+            team = _clean(getattr(r, "team", None))
+            # a non-null but NON-AUTHORITATIVE id is preserved as provisional, never dropped
+            if gsis is None or gsis not in players:
+                provisional.append(_prov_row("depth_charts", dprov, season, week, r,
+                                              getattr(r, "source_team", None), team, gsis, "depth_chart",
+                                              pit_grade=grade, used_grade=ug, used_time=ut))
                 continue
             key = (team, gsis)
             prev = depth_ev.get(key)
@@ -239,6 +254,23 @@ def build_state_rows(season, week, as_of, mode, inputs, *,
                     "known_time": _to_utc(getattr(r, "depth_chart_known_time", None)),
                     "used_time": ut, "used_grade": ug,
                 }
+
+    # -- provisional depth evidence (null-GSIS depth rows held out of the
+    #    canonical table): include only rows ELIGIBLE under this snapshot -----
+    dpv = inputs.get("depth_provisional")
+    if dpv is not None and len(dpv):
+        dpvf = dpv[dpv["season"] == season] if "season" in dpv.columns else dpv
+        for r in dpvf.itertuples(index=False):
+            grade = getattr(r, "depth_point_in_time_grade", None)
+            ok, ug, ut = eligible(grade, getattr(r, "depth_chart_known_time", None),
+                                  dprov["source_snapshot_time"], mode, as_of)
+            if not ok:
+                continue
+            provisional.append(_prov_row("depth_charts", dprov, season, week, r,
+                                          getattr(r, "source_team", None),
+                                          _clean(getattr(r, "team", None)),
+                                          _clean(getattr(r, "player_id", None)), "depth_chart",
+                                          pit_grade=grade, used_grade=ug, used_time=ut))
 
     # -- injury evidence (latest eligible per (team, gsis)) ---------------
     iprov = inputs["injuries_prov"]
@@ -295,6 +327,8 @@ def build_state_rows(season, week, as_of, mode, inputs, *,
                 evs.append((team, depth_ev[(team, gsis)]["used_time"]))
             if (team, gsis) in inj_ev:
                 evs.append((team, inj_ev[(team, gsis)]["used_time"]))
+        # NOTE: `ut` is an eligible OBSERVATION time (when the association was
+        # reported/frozen), NOT a transaction's legal effective time.
         timed = [(t, ut) for (t, ut) in evs if ut is not None]
         resolved_team = None
         if timed and len(timed) == len(evs):
@@ -306,8 +340,12 @@ def build_state_rows(season, week, as_of, mode, inputs, *,
             for team in teams - {resolved_team}:
                 blocked.add((team, gsis))
             multi_team.append({"season": season, "week": week, "player_id": gsis,
-                               "teams": sorted(teams), "resolution": "RESOLVED_LATEST_EFFECTIVE",
-                               "resolved_team": resolved_team})
+                               "teams": sorted(teams),
+                               "resolution": "RESOLVED_LATEST_ELIGIBLE_OBSERVATION",
+                               "resolved_team": resolved_team,
+                               "note": ("resolved to the team of the latest ELIGIBLE OBSERVATION; "
+                                        "this is reported-observation time, not a transaction's "
+                                        "legal effective time")})
         else:
             for team in teams:
                 blocked.add((team, gsis))
@@ -329,8 +367,9 @@ def build_state_rows(season, week, as_of, mode, inputs, *,
             target_game_id, target_kickoff, game_type = tgt
             is_bye = False
         else:
-            # bye only for a real regular-season team in a regular-season week
-            if is_reg_week and team in reg_teams:
+            # a bye row requires eligible ROSTER membership evidence (contract §9.3):
+            # depth/injury/participation/seasonal-only association is NOT enough.
+            if is_reg_week and team in reg_teams and (team, gsis) in roster_ev:
                 target_game_id, target_kickoff, game_type, is_bye = None, None, "REG", True
             else:
                 continue  # not attributable to a target this week
@@ -491,41 +530,134 @@ def _prior_participation(inputs, gsis, season, week, as_of, mode):
     }
 
 
-def _prov_row(family, prov, season, week, r, team_src, team, gsis, evidence_kind):
+def _prov_row(family, prov, season, week, r, team_src, team, gsis, evidence_kind,
+              *, pit_grade=None, used_grade=None, used_time=None):
+    """A provisional (non-authoritative identity) record for evidence that IS
+    eligible under the snapshot's mode + as_of. Carries the eligibility proof,
+    the point-in-time grade, the raw token, all alternate IDs, raw+normalized
+    team, source position, and full source provenance."""
     def g(name):
         return _clean(getattr(r, name, None))
+    alt = {k: g(k) for k in ("esb_id", "elias_id", "espn_id", "pfr_id", "sportradar_id",
+                             "smart_id", "gsis_it_id", "yahoo_id", "sleeper_id")
+           if g(k) is not None}
+    token = g("esb_id") or g("elias_id") or g("espn_id") or g("smart_id") or g("gsis_it_id")
+    reason = ("null gsis_id in an active source" if gsis is None
+              else "gsis_id present but not in canonical_players")
     return {
-        "provisional_token": (g("esb_id") or g("elias_id") or g("smart_id") or g("gsis_it_id")),
+        "provisional_token": token,
         "gsis_id_raw": gsis,
-        "alternate_ids": {k: g(k) for k in ("esb_id", "elias_id", "espn_id", "pfr_id",
-                                            "sportradar_id", "smart_id", "gsis_it_id")
-                          if g(k) is not None},
+        "alternate_ids": alt,
         "source_family": family, "source_name": (g("full_name") or g("player_name")),
         "source_team": team_src, "team": team, "source_position": (g("position") or g("pos_abb")),
         "evidence_kind": evidence_kind, "season": int(season),
         "week": (int(week) if week is not None else None),
-        "source_file": prov["path"], "source_snapshot_id": prov["source_snapshot_id"],
+        # eligibility proof for THIS snapshot:
+        "evidence_eligible": True,
+        "point_in_time_grade": pit_grade,
+        "eligibility_grade": used_grade,
+        "eligibility_time_used": (used_time.isoformat() if used_time is not None else None),
+        # full source provenance:
+        "source_file": prov["path"], "source_sha256": prov.get("sha256"),
+        "source_snapshot_id": prov["source_snapshot_id"],
         "source_snapshot_time": prov["source_snapshot_time"],
-        "reason": "non-GSIS / unresolved identity in an active source",
+        "reason": reason,
         "identity_status": "PROVISIONAL_UNRESOLVED",
     }
 
 
 # --------------------------------------------------------------------------
-# Atomic snapshot creation
+# LIVE_FREEZE clock, market validation, lineage
+# --------------------------------------------------------------------------
+def check_live_freeze_clock(as_of, clock=None):
+    """A LIVE_FREEZE must be contemporaneous: `as_of` within tolerance of the
+    actual invocation time (injectable `clock` for tests). Rejects future and
+    materially backdated timestamps. Returns the actual invocation time."""
+    now = state_registry.require_aware_utc(clock() if clock else pd.Timestamp.now(tz="UTC"))
+    if as_of > now + LIVE_FREEZE_FUTURE_SKEW:
+        raise ValueError(f"LIVE_FREEZE as_of_time {as_of} is in the future vs invocation {now}")
+    if as_of < now - LIVE_FREEZE_BACKDATE_TOLERANCE:
+        raise ValueError(f"LIVE_FREEZE as_of_time {as_of} is materially backdated vs invocation "
+                         f"{now}; use HISTORICAL_STRICT for historical reconstruction")
+    return now
+
+
+def validate_market_input(market_input, as_of):
+    """Validate an optional market input; reject an arbitrary unverified dict.
+    Absent input is recorded explicitly as a player-state-only freeze."""
+    if market_input is None:
+        return {"used": False, "reason": "player-state-only freeze; no market input"}
+    if not isinstance(market_input, dict):
+        raise ValueError("market_input must be a mapping (path/snapshot_ref, sha256, "
+                         "market_snapshot_time)")
+    path = market_input.get("path") or market_input.get("snapshot_ref")
+    sha = market_input.get("sha256")
+    mst = market_input.get("market_snapshot_time")
+    if not path or not sha or not mst:
+        raise ValueError("market_input requires path/snapshot_ref, sha256, and market_snapshot_time")
+    mst_t = state_registry.require_aware_utc(mst)
+    if mst_t > as_of:
+        raise ValueError(f"market_snapshot_time {mst_t} is later than as_of_time {as_of}")
+    p = Path(path) if Path(path).is_absolute() else (common.REPO / path)
+    if not p.exists():
+        raise ValueError(f"market_input path {path} not found")
+    if common.sha256_file(p) != sha:
+        raise ValueError(f"market_input hash mismatch for {path}")
+    return {"used": True, "path": str(path), "sha256": sha,
+            "market_snapshot_time": mst_t.isoformat(), "verified": True}
+
+
+def _lineage_targets(inputs, season):
+    canonical_paths, raw_records = [], []
+    for name in ("games.parquet", "players.parquet", "player_source_crosswalk.parquet",
+                 f"injuries_{season}.parquet", f"participation_{season}.parquet",
+                 f"depth_charts_{season}.parquet"):
+        p = common.OUT_DIR / name
+        if p.exists():
+            canonical_paths.append(str(p.relative_to(common.REPO)))
+    for key in ("weekly_roster_prov", "seasonal_roster_prov", "depth_prov",
+                "injuries_prov", "participation_prov"):
+        pr = inputs.get(key) or {}
+        if pr.get("path"):
+            raw_records.append({"path": pr["path"], "sha256": pr.get("sha256")})
+    return canonical_paths, raw_records
+
+
+# --------------------------------------------------------------------------
+# Recoverably-atomic snapshot creation
 # --------------------------------------------------------------------------
 def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
                           market_input=None, note=None, dry_run=True,
-                          out_root=None, canonical_build_id=None, inputs=None):
-    """Build one immutable state snapshot atomically.
+                          out_root=None, canonical_build_id=None, inputs=None,
+                          clock=None, verify_lineage=None):
+    """Build one immutable state snapshot recoverably-atomically.
 
-    Outputs are written to a temp location, validated + hashed, and only then
-    moved into place with the registry appended. dry_run=True writes nothing to
-    the production registry and cleans up (used for verification).
+    Outputs are written to a temp location, validated + hashed, promoted, and
+    only then is the registry appended (atomic replace under a lock). If the
+    registry append fails after promotion, the promoted output is rolled back so
+    no orphan, temp, or partial record survives. dry_run=True writes nothing to
+    the production registry and cleans up.
     """
     as_of = state_registry.require_aware_utc(as_of)
+    if mode not in state_registry.VALID_MODES:
+        raise ValueError(f"unknown mode {mode!r}")
+    actual_now = None
+    if mode == "LIVE_FREEZE":
+        actual_now = check_live_freeze_clock(as_of, clock)
+    market_val = validate_market_input(market_input, as_of)
     if inputs is None:
         inputs = load_inputs(season, canonical_build_id)
+
+    # exact canonical build lineage — mandatory for a production snapshot
+    do_lineage = (not dry_run) if verify_lineage is None else verify_lineage
+    lineage = None
+    if do_lineage:
+        if not dry_run and inputs.get("canonical_build_id") is None:
+            raise ValueError("a production state snapshot requires exact canonical build lineage; "
+                             "canonical_build_id=None is refused")
+        canonical_paths, raw_records = _lineage_targets(inputs, season)
+        lineage = build_lineage.require_clean_lineage(canonical_paths, raw_records)
+
     sid = state_registry.make_state_snapshot_id(as_of)
     res = build_state_rows(season, week, as_of, mode, inputs,
                            state_snapshot_id=sid, model_run_id=model_run_id)
@@ -535,28 +667,31 @@ def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
     root = Path(out_root) if out_root else (state_registry.STATE_DIR / sid)
     tmp = root.with_name(root.name + ".tmp")
     if tmp.exists():
-        import shutil; shutil.rmtree(tmp)
+        shutil.rmtree(tmp)
     tmp.mkdir(parents=True, exist_ok=True)
-    out_path = tmp / f"player_team_week_{season}_wk{week}.parquet"
-    if "source_file" in canon.columns and len(canon):
-        canon = canon.copy()
-        canon["source_file"] = str((root / out_path.name).relative_to(common.REPO)) \
-            if str(root).startswith(str(common.REPO)) else out_path.name
-    canon.to_parquet(out_path, index=False)
-    prov_path = tmp / f"player_team_week_provisional_{season}_wk{week}.parquet"
-    res["provisional"].to_parquet(prov_path, index=False)
-    quar_path = tmp / f"player_team_week_quarantine_{season}_wk{week}.json"
-    quar_path.write_text(json.dumps({
-        "team_conflict": res["quarantine"]["team_conflict"],
-        "status_conflict": res["quarantine"]["status_conflict"],
-        "multi_team_report": res["multi_team"],
-    }, indent=2, default=str))
-
-    record = _build_record(sid, season, week, as_of, mode, model_run_id, market_input,
-                           note, inputs, canon, res, out_path, prov_path, quar_path, tmp)
+    try:
+        out_path = tmp / f"player_team_week_{season}_wk{week}.parquet"
+        if "source_file" in canon.columns and len(canon):
+            canon = canon.copy()
+            canon["source_file"] = (str((root / out_path.name).relative_to(common.REPO))
+                                    if str(root).startswith(str(common.REPO)) else out_path.name)
+        canon.to_parquet(out_path, index=False)
+        prov_path = tmp / f"player_team_week_provisional_{season}_wk{week}.parquet"
+        res["provisional"].to_parquet(prov_path, index=False)
+        quar_path = tmp / f"player_team_week_quarantine_{season}_wk{week}.json"
+        quar_path.write_text(json.dumps({
+            "team_conflict": res["quarantine"]["team_conflict"],
+            "status_conflict": res["quarantine"]["status_conflict"],
+            "multi_team_report": res["multi_team"],
+        }, indent=2, default=str))
+        record = _build_record(sid, season, week, as_of, mode, model_run_id, market_val,
+                               note, inputs, canon, res, out_path, prov_path, quar_path, tmp,
+                               lineage=lineage, actual_now=actual_now)
+    except Exception:
+        shutil.rmtree(tmp, ignore_errors=True)   # no temp output survives a build failure
+        raise
 
     if dry_run:
-        import shutil
         digest = {"state_snapshot_id": sid, "rows": int(len(canon)),
                   "output_sha256": record["output"]["sha256"],
                   "provisional_rows": int(len(res["provisional"])),
@@ -568,13 +703,21 @@ def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
         shutil.rmtree(tmp)
         return {"record": record, "digest": digest, "dry_run": True}
 
-    # promote atomically: move temp into place, then append the registry
-    if root.exists():
-        raise ValueError(f"output dir {root} already exists; snapshots are immutable")
-    tmp.rename(root)
-    # re-point provenance paths to the promoted location
-    record = _repoint(record, tmp, root)
-    state_registry.append_state_record(record)
+    try:
+        # reject a duplicate id BEFORE promotion (and again under lock in the append).
+        # existing_ids() reading a corrupt registry raises here -> we refuse and clean up.
+        if sid in state_registry.existing_ids() or root.exists():
+            raise ValueError(f"state_snapshot_id {sid} already exists; snapshots are immutable")
+        tmp.rename(root)                  # promote
+        try:
+            record = _repoint(record, tmp, root)
+            state_registry.append_state_record(record)   # atomic; re-checks dup under lock
+        except Exception:
+            shutil.rmtree(root, ignore_errors=True)       # roll back the promoted orphan
+            raise
+    except Exception:
+        shutil.rmtree(tmp, ignore_errors=True)            # no temp/orphan survives a failure
+        raise
     return {"record": record, "dry_run": False}
 
 
@@ -599,8 +742,9 @@ def _validate_invariants(canon, games, season, week, sid, as_of):
         assert r.team in common.BK_CANONICAL_TEAMS, f"non-canonical team {r.team}"
 
 
-def _build_record(sid, season, week, as_of, mode, model_run_id, market_input, note,
-                  inputs, canon, res, out_path, prov_path, quar_path, tmp):
+def _build_record(sid, season, week, as_of, mode, model_run_id, market_val, note,
+                  inputs, canon, res, out_path, prov_path, quar_path, tmp,
+                  *, lineage=None, actual_now=None):
     def relpath(p):
         p = Path(p)
         try:
@@ -624,7 +768,10 @@ def _build_record(sid, season, week, as_of, mode, model_run_id, market_input, no
     record = {
         "state_registry_version": state_registry.STATE_REGISTRY_VERSION,
         "state_snapshot_id": sid,
+        "requested_as_of_time": as_of.isoformat(),
         "as_of_time": as_of.isoformat(),
+        "actual_creation_time_utc": (actual_now.isoformat() if actual_now is not None
+                                     else common.utc_now_iso()),
         "snapshot_mode": mode,
         "target_season": int(season), "target_week": int(week),
         "builder_git_commit": common.git_commit(),
@@ -637,6 +784,9 @@ def _build_record(sid, season, week, as_of, mode, model_run_id, market_input, no
         "position_group_version": POSITION_GROUP_VERSION,
         "identity_crosswalk_ref": "player_source_crosswalk.parquet",
         "canonical_build_id_used": inputs.get("canonical_build_id"),
+        "canonical_build_lineage": (lineage["build_reference_map"] if lineage else None),
+        "verified_canonical_files": (lineage["verified_canonical_files"] if lineage else None),
+        "verified_raw_sources": (lineage["verified_raw_sources"] if lineage else None),
         "inputs": {"source_files": src_files, "canonical_files": canon_files},
         "output": {"path": relpath(out_path), "rows": int(len(canon)),
                    "sha256": common.sha256_file(out_path)},
@@ -648,8 +798,7 @@ def _build_record(sid, season, week, as_of, mode, model_run_id, market_input, no
                        "multi_team_count": len(res["multi_team"]),
                        "sha256": common.sha256_file(quar_path)},
         "model_run_id": model_run_id,
-        "market_input": (market_input if market_input else
-                         {"used": False, "reason": "player-state-only freeze; no market input"}),
+        "market_input": market_val,
         "note": note,
         "created_at_utc": common.utc_now_iso(),
     }

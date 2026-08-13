@@ -16,6 +16,9 @@ Rules enforced here:
 from __future__ import annotations
 
 import json
+import os
+import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -26,8 +29,55 @@ from . import common
 STATE_REGISTRY_VERSION = "state_registry_v0.1"
 STATE_DIR = common.REPO / "data" / "v3" / "state_snapshots"
 STATE_REGISTRY_JSON = STATE_DIR / "state_snapshot_registry.json"
+LOCK_NAME = ".registry.lock"
 
 VALID_MODES = ("HISTORICAL_STRICT", "LIVE_FREEZE")
+
+
+class _ExclusiveLock:
+    """A simple O_CREAT|O_EXCL file lock so concurrent writers cannot accept the
+    same state (exclusive reservation). Best-effort with a bounded wait."""
+
+    def __init__(self, path: Path, timeout=5.0):
+        self.path = path
+        self.timeout = timeout
+        self.fd = None
+
+    def __enter__(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        deadline = time.time() + self.timeout
+        while True:
+            try:
+                self.fd = os.open(str(self.path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                return self
+            except FileExistsError:
+                if time.time() > deadline:
+                    raise TimeoutError(f"could not acquire registry lock {self.path}")
+                time.sleep(0.05)
+
+    def __exit__(self, *exc):
+        if self.fd is not None:
+            os.close(self.fd)
+        try:
+            os.unlink(self.path)
+        except FileNotFoundError:
+            pass
+
+
+def _atomic_write_json(path: Path, data) -> None:
+    """Write JSON through a temp file + atomic replace; prior bytes stay intact
+    until the replace succeeds (no partial/corrupt registry on failure)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=".reg_", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            f.write(json.dumps(data, indent=2, default=str))
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)   # atomic on POSIX
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
 
 
 def require_aware_utc(ts) -> pd.Timestamp:
@@ -63,21 +113,23 @@ def existing_ids() -> set:
 
 
 def append_state_record(record: dict) -> None:
-    """Append (never overwrite) a decision-state snapshot record.
+    """Append (never overwrite) a decision-state snapshot record, atomically.
 
-    Refuses a duplicate `state_snapshot_id` (immutability): an existing snapshot
-    can never be mutated in place.
+    Under an exclusive lock: re-checks the duplicate `state_snapshot_id`
+    (immutability, even against a concurrent writer) and writes through a temp
+    file + atomic replace so prior registry bytes are never corrupted.
     """
     sid = record.get("state_snapshot_id")
     if not sid:
         raise ValueError("state record missing state_snapshot_id")
-    if sid in existing_ids():
-        raise ValueError(f"state_snapshot_id {sid} already exists; snapshots are immutable "
-                         f"(create a new snapshot instead)")
     STATE_DIR.mkdir(parents=True, exist_ok=True)
-    recs = load_registry()
-    recs.append(record)
-    STATE_REGISTRY_JSON.write_text(json.dumps(recs, indent=2, default=str))
+    with _ExclusiveLock(STATE_DIR / LOCK_NAME):
+        recs = load_registry()
+        if sid in {r.get("state_snapshot_id") for r in recs}:
+            raise ValueError(f"state_snapshot_id {sid} already exists; snapshots are immutable "
+                             f"(create a new snapshot instead)")
+        recs.append(record)
+        _atomic_write_json(STATE_REGISTRY_JSON, recs)
 
 
 def verify_registry() -> dict:

@@ -75,16 +75,19 @@ def _parse_utc(v):
 
 
 def parse_depth_season(season: int, build_snapshot_id: str):
-    """Return (canon_df, quarantine_records, measurements) for one season.
+    """Return (canon_df, provisional_df, quar_records, measurements) for a season.
 
-    canon rows require a non-null gsis_id and a parseable rank; rows missing
-    identity or with an unparseable/duplicate-conflicting rank are quarantined.
+    canon rows require a non-null AUTHORITATIVE-format gsis_id and a parseable
+    rank. A null-gsis row is NOT dropped: it is preserved as a full-evidence
+    PROVISIONAL row (raw token(s), name, team, position, slot, rank, timestamp,
+    grade, provenance) so the state builder can admit the eligible ones. Only an
+    unparseable rank is a true quarantine.
     """
     prov = _manifest_rec(season)
     df = pd.read_parquet(DEPTH_DIR / f"depth_charts_{season}.parquet")
     cols = set(df.columns)
     meas = {"raw_rows": int(len(df)), "null_gsis": 0, "unparseable_rank": 0,
-            "canon_rows": 0}
+            "canon_rows": 0, "provisional_rows": 0}
 
     if _WEEKLY_COLS.issubset(cols):
         era, grade = "weekly_2010_2024", "WEEK_ONLY"
@@ -94,10 +97,9 @@ def parse_depth_season(season: int, build_snapshot_id: str):
         raise RuntimeError(f"depth_charts {season}: unknown schema {sorted(cols)} "
                            f"({DEPTH_PARSER_VERSION})")
 
-    rows, quar = [], []
+    rows, provisional, quar = [], [], []
     if era == "weekly_2010_2024":
-        src_team_raw = df["club_code"]
-        team_norm = common.normalize_team_series(src_team_raw)
+        team_norm = common.normalize_team_series(df["club_code"])
         for i, r in enumerate(df.itertuples(index=False)):
             gsis = _clean(r.gsis_id)
             rank = _int_or_none(r.depth_team)
@@ -106,6 +108,9 @@ def parse_depth_season(season: int, build_snapshot_id: str):
                 "game_type": _clean(r.game_type),
                 "source_team": _clean(r.club_code), "team": team_norm.iloc[i],
                 "player_id": gsis,
+                "source_name": (_clean(getattr(r, "full_name", None))
+                                or _clean(getattr(r, "football_name", None))),
+                "espn_id": None, "elias_id": _clean(getattr(r, "elias_id", None)),
                 "source_position": _clean(r.position),
                 "depth_unit_raw": _clean(r.formation),
                 "depth_position_raw": _clean(r.depth_position),
@@ -117,17 +122,16 @@ def parse_depth_season(season: int, build_snapshot_id: str):
                 "depth_chart_available": True,
                 "depth_point_in_time_grade": grade,
             }
-            if gsis is None:
-                meas["null_gsis"] += 1
-                quar.append({**_qbase(base, prov, season), "reason": "null gsis_id"}); continue
             if rank is None:
                 meas["unparseable_rank"] += 1
                 quar.append({**_qbase(base, prov, season),
                              "reason": f"unparseable depth_team {r.depth_team!r}"}); continue
+            if gsis is None:
+                meas["null_gsis"] += 1
+                provisional.append(_finish(base, prov, season, build_snapshot_id)); continue
             rows.append(_finish(base, prov, season, build_snapshot_id))
     else:  # timestamped_2025
-        src_team_raw = df["team"]
-        team_norm = common.normalize_team_series(src_team_raw)
+        team_norm = common.normalize_team_series(df["team"])
         for i, r in enumerate(df.itertuples(index=False)):
             gsis = _clean(r.gsis_id)
             rank = _int_or_none(r.pos_rank)
@@ -136,6 +140,8 @@ def parse_depth_season(season: int, build_snapshot_id: str):
                 "season": int(season), "week": None, "game_type": None,
                 "source_team": _clean(r.team), "team": team_norm.iloc[i],
                 "player_id": gsis,
+                "source_name": _clean(getattr(r, "player_name", None)),
+                "espn_id": _clean(getattr(r, "espn_id", None)), "elias_id": None,
                 "source_position": _clean(r.pos_abb),
                 "depth_unit_raw": _clean(r.pos_grp),
                 "depth_position_raw": _clean(r.pos_name),
@@ -147,25 +153,28 @@ def parse_depth_season(season: int, build_snapshot_id: str):
                 "depth_chart_available": True,
                 "depth_point_in_time_grade": grade,
             }
-            if gsis is None:
-                meas["null_gsis"] += 1
-                quar.append({**_qbase(base, prov, season), "reason": "null gsis_id"}); continue
             if rank is None:
                 meas["unparseable_rank"] += 1
                 quar.append({**_qbase(base, prov, season),
                              "reason": f"unparseable pos_rank {r.pos_rank!r}"}); continue
+            if gsis is None:
+                meas["null_gsis"] += 1
+                provisional.append(_finish(base, prov, season, build_snapshot_id)); continue
             rows.append(_finish(base, prov, season, build_snapshot_id))
 
     canon = pd.DataFrame(rows)
+    prov_df = pd.DataFrame(provisional)
     meas["canon_rows"] = int(len(canon))
-    return canon, quar, {"era": era, **meas}
+    meas["provisional_rows"] = int(len(prov_df))
+    return canon, prov_df, quar, {"era": era, **meas}
 
 
 def _qbase(base, prov, season):
     return {"source_family": DEPTH_FAMILY, "source_file": prov["source_file"],
             "season": int(season), "source_team": base["source_team"],
-            "player_id": base["player_id"], "depth_parser_version": DEPTH_PARSER_VERSION,
-            "resolution_status": "UNRESOLVED"}
+            "player_id": base["player_id"], "depth_position_raw": base.get("depth_position_raw"),
+            "depth_rank_raw": base.get("depth_rank_raw"),
+            "depth_parser_version": DEPTH_PARSER_VERSION, "resolution_status": "UNRESOLVED"}
 
 
 def _finish(base, prov, season, build_snapshot_id):
@@ -183,19 +192,33 @@ def _finish(base, prov, season, build_snapshot_id):
 def main(build_snapshot_id: str | None = None):
     if build_snapshot_id is None:
         build_snapshot_id = common.make_snapshot_id()
-    metas, quar_all, meas_by_season, canon_total = [], [], {}, 0
+    metas, quar_all, meas_by_season = [], [], {}
+    canon_total, prov_total = 0, 0
+    prov_tokens = set()
     for s in SEASONS:
-        df, quar, meas = parse_depth_season(s, build_snapshot_id)
+        df, prov_df, quar, meas = parse_depth_season(s, build_snapshot_id)
         meta = common.write_parquet(df, common.OUT_DIR / f"depth_charts_{s}.parquet")
         meta.update({"table": "canonical_depth_charts", "season": s})
+        # provisional support table (loadable by the state builder)
+        common.write_parquet(prov_df, common.OUT_DIR / f"depth_provisional_{s}.parquet")
         metas.append(meta); quar_all.extend(quar); meas_by_season[str(s)] = meas
-        canon_total += len(df)
-    (common.OUT_DIR / "depth_charts_quarantine.json").write_text(
-        json.dumps({"count": len(quar_all), "measurements_by_season": meas_by_season,
-                    "records": quar_all}, indent=2, default=str))
+        canon_total += len(df); prov_total += len(prov_df)
+        if len(prov_df):
+            for tok in prov_df.get("espn_id", pd.Series(dtype=object)).dropna().astype(str):
+                prov_tokens.add(("espn_id", tok))
+            for tok in prov_df.get("elias_id", pd.Series(dtype=object)).dropna().astype(str):
+                prov_tokens.add(("elias_id", tok))
+    (common.OUT_DIR / "depth_charts_quarantine.json").write_text(json.dumps({
+        "unparseable_rank_count": len(quar_all),
+        "provisional_row_total": prov_total,
+        "provisional_distinct_source_tokens": len(prov_tokens),
+        "measurements_by_season": meas_by_season,
+        "unparseable_rank_records": quar_all,
+    }, indent=2, default=str))
     print(f"canonical_depth_charts: {canon_total} rows across {len(SEASONS)} seasons; "
-          f"quarantined={len(quar_all)}")
-    return metas, quar_all, meas_by_season, canon_total
+          f"provisional(null-gsis)={prov_total} (distinct tokens={len(prov_tokens)}); "
+          f"unparseable_rank_quarantine={len(quar_all)}")
+    return metas, quar_all, meas_by_season, canon_total, prov_total, len(prov_tokens)
 
 
 if __name__ == "__main__":

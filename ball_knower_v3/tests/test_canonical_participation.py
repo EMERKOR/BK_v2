@@ -296,7 +296,9 @@ def test_report_values_match_registry_and_quarantine():
     # dual-team quarantine count present and labelled as quarantined rows (not zero)
     assert str(q["dual_team_count"]) in report
     assert q["dual_team_count"] == 215
-    # registry record count stated in the report matches the live registry
-    assert f"{len(recs)} records" in report, f"report must state {len(recs)} records"
+    # registry record count AT PHASE 2C CLOSURE (append-only: later phases add records,
+    # which must not retroactively break this phase's report).
+    n_through_2c = sum(1 for r in recs if not str(r.get("phase", "")).startswith("2D"))
+    assert f"{n_through_2c} records" in report, f"report must state {n_through_2c} records"
     # unresolved-identity quarantine rows present
     assert str(q["unresolved_identity_count"]) in report

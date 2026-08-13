@@ -193,7 +193,8 @@ def test_trade_resolved_by_latest_effective_time():
     r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _inputs(depth=depth))
     c = r["canon"]
     assert len(c) == 1 and c.iloc[0]["team"] == "LAC"
-    assert any(m["resolution"] == "RESOLVED_LATEST_EFFECTIVE" for m in r["multi_team"])
+    assert any(m["resolution"] == "RESOLVED_LATEST_ELIGIBLE_OBSERVATION" for m in r["multi_team"])
+    assert not any("EFFECTIVE" == m.get("resolution") for m in r["multi_team"])
 
 
 # -- early-era duplicate roster status -----------------------------------
@@ -340,42 +341,101 @@ def test_deterministic_rebuild():
 
 
 # -- atomic write / immutability / verification --------------------------
-def test_atomic_snapshot_write_verify_and_immutability(tmp_path, monkeypatch):
+# LIVE_FREEZE requires a contemporaneous clock; inject one close to as_of.
+_CLOCK = lambda: pd.Timestamp("2025-10-08T12:05:00Z")   # noqa: E731
+
+
+def _mk(tmp_path, monkeypatch):
     monkeypatch.setattr(SR, "STATE_DIR", tmp_path)
     monkeypatch.setattr(SR, "STATE_REGISTRY_JSON", tmp_path / "state_snapshot_registry.json")
+
+
+def test_atomic_snapshot_write_verify_and_immutability(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
     wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
     inp = _inputs(weekly=wr)
-    out = P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False, inputs=inp)
+    out = P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False, inputs=inp,
+                                  clock=_CLOCK, verify_lineage=False)
     sid = out["record"]["state_snapshot_id"]
     assert (tmp_path / sid).exists()
     assert len(SR.load_registry()) == 1
-    # duplicate id refused (immutability)
-    with pytest.raises(ValueError):
+    # requested + actual creation time both recorded
+    assert out["record"]["requested_as_of_time"] and out["record"]["actual_creation_time_utc"]
+    with pytest.raises(ValueError):        # duplicate id refused (immutability)
         SR.append_state_record(out["record"])
 
 
-def test_atomic_failure_leaves_no_record(tmp_path, monkeypatch):
-    monkeypatch.setattr(SR, "STATE_DIR", tmp_path)
-    monkeypatch.setattr(SR, "STATE_REGISTRY_JSON", tmp_path / "state_snapshot_registry.json")
-    # force a validation failure: a non-bye row whose target game is absent from the spine
-    bad_games = pd.DataFrame([dict(game_id="ONLY", season=2025, week=5, home_team="KC",
-                                   away_team="LAC", kickoff=pd.Timestamp("2025-10-08T17:00Z"),
-                                   game_type="REG")])
+def test_validation_failure_leaves_nothing(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
     monkeypatch.setattr(P, "_validate_invariants",
                         lambda *a, **k: (_ for _ in ()).throw(AssertionError("boom")))
     wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
     with pytest.raises(AssertionError):
         P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
-                                inputs=_inputs(weekly=wr, games=bad_games))
-    assert not (tmp_path / "state_snapshot_registry.json").exists()   # no partial record
-    assert list(tmp_path.glob("state_*")) == []                      # no promoted output
+                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
+    assert not (tmp_path / "state_snapshot_registry.json").exists()
+    assert list(tmp_path.glob("state_*")) == []
+
+
+def test_output_write_failure_leaves_no_temp(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    import ball_knower_v3.canonical.player_team_week as MOD
+    real = pd.DataFrame.to_parquet
+    def boom(self, *a, **k):
+        raise IOError("disk full")
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", boom)
+    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
+    with pytest.raises(IOError):
+        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
+                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", real)
+    assert list(tmp_path.glob("*.tmp")) == [] and list(tmp_path.glob("state_*")) == []
+
+
+def test_registry_write_failure_rolls_back_promotion(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    monkeypatch.setattr(SR, "append_state_record",
+                        lambda rec: (_ for _ in ()).throw(IOError("registry down")))
+    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
+    with pytest.raises(IOError):
+        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
+                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
+    # promoted orphan rolled back; no temp; registry never created
+    assert list(tmp_path.glob("state_*")) == []
+    assert list(tmp_path.glob("*.tmp")) == []
+    assert not (tmp_path / "state_snapshot_registry.json").exists()
+
+
+def test_duplicate_id_race_refused(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
+    out = P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
+                                  inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
+    sid = out["record"]["state_snapshot_id"]
+    # a second writer that produced the same id is refused under the lock
+    dup = dict(out["record"])
+    with pytest.raises(ValueError):
+        SR.append_state_record(dup)
+    assert len(SR.load_registry()) == 1
+
+
+def test_corrupted_existing_registry_not_silently_overwritten(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    (tmp_path / "state_snapshot_registry.json").write_text("{ this is not json")
+    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
+    with pytest.raises(Exception):        # corrupt registry cannot be parsed -> refuse
+        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
+                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
+    # the corrupted bytes are left as-is (not clobbered by a partial write)
+    assert (tmp_path / "state_snapshot_registry.json").read_text() == "{ this is not json"
+    assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []   # no promoted snapshot dir
 
 
 def test_dry_run_creates_no_state_snapshot(tmp_path, monkeypatch):
-    monkeypatch.setattr(SR, "STATE_DIR", tmp_path)
-    monkeypatch.setattr(SR, "STATE_REGISTRY_JSON", tmp_path / "state_snapshot_registry.json")
+    _mk(tmp_path, monkeypatch)
     wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
-    P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True, inputs=_inputs(weekly=wr))
+    P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True, inputs=_inputs(weekly=wr),
+                            clock=_CLOCK)
     assert not (tmp_path / "state_snapshot_registry.json").exists()
 
 
@@ -386,3 +446,146 @@ def test_no_canonical_registry_mutation_during_tests():
     P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _inputs(weekly=wr))
     h2 = hashlib.sha256((common.OUT_DIR / "snapshots.json").read_bytes()).hexdigest()
     assert h == h2
+
+
+# == correction 1: LIVE_FREEZE contemporaneous clock (injected) ==========
+def test_live_freeze_requires_contemporaneous_clock(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
+    inp = _inputs(weekly=wr)
+    # contemporaneous: accepted
+    P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True, inputs=inp,
+                            clock=lambda: pd.Timestamp("2025-10-08T12:20:00Z"))
+    # materially backdated: rejected
+    with pytest.raises(ValueError):
+        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True, inputs=inp,
+                                clock=lambda: pd.Timestamp("2025-10-09T00:00:00Z"))
+    # future as_of: rejected
+    with pytest.raises(ValueError):
+        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True, inputs=inp,
+                                clock=lambda: pd.Timestamp("2025-10-08T11:00:00Z"))
+
+
+def test_historical_strict_needs_no_clock(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    inj = pd.DataFrame([_inj_row("00-0000001", "KC", 5, pd.Timestamp("2024-10-02T12:00Z"))])
+    inp = _inputs(injuries=inj)
+    # a historical as_of far from "now" is fine in HISTORICAL_STRICT (no clock check)
+    out = P.create_state_snapshot(2024, 5, pd.Timestamp("2024-10-03T16:00Z"),
+                                  "HISTORICAL_STRICT", dry_run=True, inputs=inp)
+    assert out["dry_run"] is True
+
+
+# == correction 2: bye rows require roster evidence ======================
+def _bye_inputs(**kw):
+    return _inputs(**kw)
+
+
+def test_bye_rejected_for_depth_only():
+    depth = pd.DataFrame([_depth_row("00-0000001", "NYJ", pd.Timestamp("2025-10-07T00:00Z"), 1)])
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _bye_inputs(depth=depth))
+    assert len(r["canon"]) == 0        # depth-only on a bye team -> no bye row
+
+
+def test_bye_rejected_for_injury_only():
+    inj = pd.DataFrame([_inj_row("00-0000001", "NYJ", 5, pd.Timestamp("2025-10-07T12:00Z"))])
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _bye_inputs(injuries=inj))
+    assert len(r["canon"]) == 0        # injury-only on a bye team -> no bye row
+
+
+def test_bye_rejected_for_season_roster_only():
+    seasonal = pd.DataFrame([dict(gsis_id="00-0000001", full_name="P One", team="NYJ")])
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _bye_inputs(seasonal=seasonal))
+    assert len(r["canon"]) == 0
+
+
+def test_bye_accepted_for_roster_evidence():
+    wr = _wr([dict(week=5, team="NYJ", gsis_id="00-0000001", status="ACT", position="WR")])
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _bye_inputs(weekly=wr))
+    c = r["canon"]
+    assert len(c) == 1 and bool(c.iloc[0]["is_bye_week"]) is True
+
+
+def test_missing_game_not_auto_bye():
+    # a team with roster evidence but NOT a real regular-season team that week -> no row
+    wr = _wr([dict(week=5, team="JAX", gsis_id="00-0000001", status="ACT", position="WR")])
+    # JAX has no games in the fixture spine at all
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _bye_inputs(weekly=wr))
+    assert len(r["canon"]) == 0
+
+
+# == correction 3: provisional eligibility + accounting ==================
+def test_ineligible_provisional_excluded_but_eligible_included():
+    # roster provisional (WEEK_ONLY) is excluded in HISTORICAL_STRICT, included in LIVE_FREEZE
+    wr = _wr([dict(week=5, team="KC", gsis_id=None, esb_id="ESB1", full_name="Ghost",
+                   status="ACT", position="TE")])
+    strict = P.build_state_rows(2025, 5, AOF, "HISTORICAL_STRICT", _inputs(weekly=wr))
+    live = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _inputs(weekly=wr))
+    assert len(strict["provisional"]) == 0        # WEEK_ONLY roster ineligible in strict
+    assert len(live["provisional"]) == 1          # eligible in live
+    row = live["provisional"].iloc[0]
+    for f in ["evidence_eligible", "point_in_time_grade", "eligibility_time_used",
+              "provisional_token", "alternate_ids", "source_team", "team",
+              "source_position", "source_file", "source_snapshot_id", "reason"]:
+        assert f in row.index
+
+
+def test_depth_non_authoritative_id_not_dropped():
+    # a non-null depth id absent from canonical_players must become provisional, not vanish
+    depth = pd.DataFrame([_depth_row("99-9999999", "KC", pd.Timestamp("2025-10-07T00:00Z"), 1)])
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _inputs(depth=depth))
+    assert len(r["canon"]) == 0
+    assert len(r["provisional"]) == 1
+    assert r["provisional"].iloc[0]["gsis_id_raw"] == "99-9999999"
+
+
+def test_provisional_exact_accounting():
+    # every eligible unresolved roster/depth row lands in provisional (or an explicit quarantine)
+    wr = _wr([
+        dict(week=5, team="KC", gsis_id=None, esb_id="E1", status="ACT", position="WR"),
+        dict(week=5, team="KC", gsis_id="99-0000000", status="ACT", position="RB"),  # non-auth
+        dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="TE"),  # authoritative
+    ])
+    dpv = pd.DataFrame([
+        dict(season=2025, player_id=None, espn_id="X9", team="KC", source_team="KC",
+             source_position="QB", depth_position_raw="QB", depth_slot=1, depth_rank=1,
+             depth_chart_known_time=pd.Timestamp("2025-10-07T00:00Z"),
+             depth_point_in_time_grade="SNAPSHOT_BOUND"),
+    ])
+    inp = _inputs(weekly=wr)
+    inp["depth_provisional"] = dpv
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", inp)
+    # 1 authoritative canonical row; 2 roster-provisional + 1 depth-provisional = 3
+    assert len(r["canon"]) == 1
+    assert len(r["provisional"]) == 3
+    assert (r["provisional"]["evidence_eligible"] == True).all()  # noqa: E712
+
+
+# == correction 6: market input validation ===============================
+def test_market_input_absent_recorded_as_player_state_only():
+    assert P.validate_market_input(None, AOF) == {
+        "used": False, "reason": "player-state-only freeze; no market input"}
+
+
+def test_market_input_arbitrary_dict_rejected():
+    with pytest.raises(ValueError):
+        P.validate_market_input({"lines": [1, 2, 3]}, AOF)     # no path/sha/time
+    with pytest.raises(ValueError):
+        P.validate_market_input("not-a-dict", AOF)
+
+
+def test_market_input_verified_and_time_bounded(tmp_path):
+    f = tmp_path / "market.parquet"
+    pd.DataFrame({"line": [-3.5]}).to_parquet(f)
+    sha = common.sha256_file(f)
+    good = {"path": str(f), "sha256": sha, "market_snapshot_time": "2025-10-08T09:00:00Z"}
+    v = P.validate_market_input(good, AOF)
+    assert v["used"] is True and v["verified"] is True
+    # market snapshot AFTER as_of is rejected
+    late = dict(good, market_snapshot_time="2025-10-08T18:00:00Z")
+    with pytest.raises(ValueError):
+        P.validate_market_input(late, AOF)
+    # hash mismatch rejected
+    bad = dict(good, sha256="0" * 64)
+    with pytest.raises(ValueError):
+        P.validate_market_input(bad, AOF)
