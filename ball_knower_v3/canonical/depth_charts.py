@@ -192,15 +192,18 @@ def _finish(base, prov, season, build_snapshot_id):
 def main(build_snapshot_id: str | None = None):
     if build_snapshot_id is None:
         build_snapshot_id = common.make_snapshot_id()
-    metas, quar_all, meas_by_season = [], [], {}
+    metas, prov_metas, quar_all, meas_by_season = [], [], [], {}
     canon_total, prov_total = 0, 0
     prov_tokens = set()
     for s in SEASONS:
         df, prov_df, quar, meas = parse_depth_season(s, build_snapshot_id)
         meta = common.write_parquet(df, common.OUT_DIR / f"depth_charts_{s}.parquet")
         meta.update({"table": "canonical_depth_charts", "season": s})
-        # provisional support table (loadable by the state builder)
-        common.write_parquet(prov_df, common.OUT_DIR / f"depth_provisional_{s}.parquet")
+        # provisional support table (a REAL input to build_state_rows): register it
+        # as a versioned output with path/season/rows/sha256 so lineage can hash it.
+        pmeta = common.write_parquet(prov_df, common.OUT_DIR / f"depth_provisional_{s}.parquet")
+        pmeta.update({"table": "depth_provisional_support", "season": s})
+        prov_metas.append(pmeta)
         metas.append(meta); quar_all.extend(quar); meas_by_season[str(s)] = meas
         canon_total += len(df); prov_total += len(prov_df)
         if len(prov_df):
@@ -218,7 +221,9 @@ def main(build_snapshot_id: str | None = None):
     print(f"canonical_depth_charts: {canon_total} rows across {len(SEASONS)} seasons; "
           f"provisional(null-gsis)={prov_total} (distinct tokens={len(prov_tokens)}); "
           f"unparseable_rank_quarantine={len(quar_all)}")
-    return metas, quar_all, meas_by_season, canon_total, prov_total, len(prov_tokens)
+    return {"metas": metas, "provisional_metas": prov_metas, "quar": quar_all,
+            "meas": meas_by_season, "canon_total": canon_total,
+            "prov_total": prov_total, "prov_tokens": len(prov_tokens)}
 
 
 if __name__ == "__main__":

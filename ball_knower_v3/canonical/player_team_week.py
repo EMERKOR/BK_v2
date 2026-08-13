@@ -350,10 +350,16 @@ def build_state_rows(season, week, as_of, mode, inputs, *,
             for team in teams:
                 blocked.add((team, gsis))
             multi_team.append({"season": season, "week": week, "player_id": gsis,
-                               "teams": sorted(teams), "resolution": "UNRESOLVED_CONFLICT"})
+                               "teams": sorted(teams), "resolution": "UNRESOLVED_CONFLICT",
+                               "note": ("no uniquely latest eligible observation across teams; "
+                                        "observation time is reported time, not a transaction's "
+                                        "legal effective time")})
             quar_team_conflict.append({"season": season, "week": week, "player_id": gsis,
                                        "teams": sorted(teams),
-                                       "reason": "conflicting team evidence without effective time",
+                                       "reason": ("no uniquely latest eligible observation to "
+                                                  "resolve the team (conflicting team evidence); "
+                                                  "observation time is not legal transaction-"
+                                                  "effective time"),
                                        "resolution_status": "NEEDS_INVESTIGATION"})
 
     # -- build canonical rows ---------------------------------------------
@@ -544,12 +550,16 @@ def _prov_row(family, prov, season, week, r, team_src, team, gsis, evidence_kind
     token = g("esb_id") or g("elias_id") or g("espn_id") or g("smart_id") or g("gsis_it_id")
     reason = ("null gsis_id in an active source" if gsis is None
               else "gsis_id present but not in canonical_players")
+    # depth-provisional support rows already expose `source_name`/`source_position`;
+    # roster rows expose full_name/player_name and position/pos_abb — check both.
+    src_name = g("source_name") or g("full_name") or g("player_name")
+    src_pos = g("source_position") or g("position") or g("pos_abb")
     return {
         "provisional_token": token,
         "gsis_id_raw": gsis,
         "alternate_ids": alt,
-        "source_family": family, "source_name": (g("full_name") or g("player_name")),
-        "source_team": team_src, "team": team, "source_position": (g("position") or g("pos_abb")),
+        "source_family": family, "source_name": src_name,
+        "source_team": team_src, "team": team, "source_position": src_pos,
         "evidence_kind": evidence_kind, "season": int(season),
         "week": (int(week) if week is not None else None),
         # eligibility proof for THIS snapshot:
@@ -607,20 +617,45 @@ def validate_market_input(market_input, as_of):
             "market_snapshot_time": mst_t.isoformat(), "verified": True}
 
 
-def _lineage_targets(inputs, season):
-    canonical_paths, raw_records = [], []
-    for name in ("games.parquet", "players.parquet", "player_source_crosswalk.parquet",
-                 f"injuries_{season}.parquet", f"participation_{season}.parquet",
-                 f"depth_charts_{season}.parquet"):
-        p = common.OUT_DIR / name
-        if p.exists():
-            canonical_paths.append(str(p.relative_to(common.REPO)))
+def _required_inputs(season):
+    """input_key -> {"path": repo-rel path (or None), "available": bool} by source era.
+
+    Fail-closed contract: games/players/crosswalk are always required; injuries,
+    depth, and depth-provisional support are required for their supported seasons;
+    participation is required only where the canonical source era supports it,
+    otherwise it is recorded NOT_AVAILABLE_BY_SOURCE_ERA (never silently omitted).
+    """
+    from . import depth_charts as _dc, injuries as _inj, participation as _part
+
+    def rel(name):
+        return str((common.OUT_DIR / name).relative_to(common.REPO))
+
+    inj_ok = season in set(_inj.SEASONS)
+    dc_ok = season in set(_dc.SEASONS)
+    part_ok = season in set(_part.SNAP_SEASONS)
+    return {
+        "games": {"path": rel("games.parquet"), "available": True},
+        "players": {"path": rel("players.parquet"), "available": True},
+        "crosswalk": {"path": rel("player_source_crosswalk.parquet"), "available": True},
+        "injuries": {"path": (rel(f"injuries_{season}.parquet") if inj_ok else None),
+                     "available": inj_ok},
+        "depth": {"path": (rel(f"depth_charts_{season}.parquet") if dc_ok else None),
+                  "available": dc_ok},
+        "depth_provisional": {"path": (rel(f"depth_provisional_{season}.parquet") if dc_ok else None),
+                              "available": dc_ok},
+        "participation": {"path": (rel(f"participation_{season}.parquet") if part_ok else None),
+                          "available": part_ok},
+    }
+
+
+def _raw_records(inputs):
+    raw = []
     for key in ("weekly_roster_prov", "seasonal_roster_prov", "depth_prov",
                 "injuries_prov", "participation_prov"):
         pr = inputs.get(key) or {}
         if pr.get("path"):
-            raw_records.append({"path": pr["path"], "sha256": pr.get("sha256")})
-    return canonical_paths, raw_records
+            raw.append({"path": pr["path"], "sha256": pr.get("sha256")})
+    return raw
 
 
 # --------------------------------------------------------------------------
@@ -629,7 +664,8 @@ def _lineage_targets(inputs, season):
 def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
                           market_input=None, note=None, dry_run=True,
                           out_root=None, canonical_build_id=None, inputs=None,
-                          clock=None, verify_lineage=None):
+                          clock=None, verify_lineage=None,
+                          expected_lineage_map=None, expected_lineage_set_id=None):
     """Build one immutable state snapshot recoverably-atomically.
 
     Outputs are written to a temp location, validated + hashed, promoted, and
@@ -643,20 +679,28 @@ def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
         raise ValueError(f"unknown mode {mode!r}")
     actual_now = None
     if mode == "LIVE_FREEZE":
-        actual_now = check_live_freeze_clock(as_of, clock)
+        # PRODUCTION must use the real system UTC clock; an injected clock is honored
+        # only for dry runs/tests and can NEVER authorize a backdated production snapshot.
+        actual_now = check_live_freeze_clock(as_of, clock if dry_run else None)
     market_val = validate_market_input(market_input, as_of)
     if inputs is None:
         inputs = load_inputs(season, canonical_build_id)
 
-    # exact canonical build lineage — mandatory for a production snapshot
+    # exact canonical build lineage — a verified per-table reference bundle +
+    # deterministic canonical_lineage_set_id (mandatory for a production snapshot)
     do_lineage = (not dry_run) if verify_lineage is None else verify_lineage
     lineage = None
     if do_lineage:
-        if not dry_run and inputs.get("canonical_build_id") is None:
-            raise ValueError("a production state snapshot requires exact canonical build lineage; "
-                             "canonical_build_id=None is refused")
-        canonical_paths, raw_records = _lineage_targets(inputs, season)
-        lineage = build_lineage.require_clean_lineage(canonical_paths, raw_records)
+        lineage = build_lineage.verify_and_bundle(
+            _required_inputs(season), _raw_records(inputs),
+            expected_map=expected_lineage_map, expected_set_id=expected_lineage_set_id)
+        set_id = lineage["canonical_lineage_set_id"]
+        cb = inputs.get("canonical_build_id")
+        if cb is not None and cb != set_id:
+            raise ValueError(f"caller canonical_build_id {cb!r} does not match the resolved "
+                             f"canonical_lineage_set_id {set_id}; refusing an unchecked reference")
+        # stamp rows/provenance with the VERIFIED lineage-set id, not a caller string
+        inputs = {**inputs, "canonical_build_id": set_id}
 
     sid = state_registry.make_state_snapshot_id(as_of)
     res = build_state_rows(season, week, as_of, mode, inputs,
@@ -703,20 +747,14 @@ def create_state_snapshot(season, week, as_of, mode, *, model_run_id=None,
         shutil.rmtree(tmp)
         return {"record": record, "digest": digest, "dry_run": True}
 
+    # promotion + registry append are ONE recoverable transaction under a single
+    # exclusive lock (dup id + destination re-checked, promoted dir rolled back on
+    # a persistence failure). No nested lock acquisition.
+    record = _repoint(record, tmp, root)
     try:
-        # reject a duplicate id BEFORE promotion (and again under lock in the append).
-        # existing_ids() reading a corrupt registry raises here -> we refuse and clean up.
-        if sid in state_registry.existing_ids() or root.exists():
-            raise ValueError(f"state_snapshot_id {sid} already exists; snapshots are immutable")
-        tmp.rename(root)                  # promote
-        try:
-            record = _repoint(record, tmp, root)
-            state_registry.append_state_record(record)   # atomic; re-checks dup under lock
-        except Exception:
-            shutil.rmtree(root, ignore_errors=True)       # roll back the promoted orphan
-            raise
+        state_registry.commit_snapshot(record, tmp, root)
     except Exception:
-        shutil.rmtree(tmp, ignore_errors=True)            # no temp/orphan survives a failure
+        shutil.rmtree(tmp, ignore_errors=True)   # loser cleans its own temp; winner untouched
         raise
     return {"record": record, "dry_run": False}
 
@@ -760,8 +798,9 @@ def _build_record(sid, season, week, as_of, mode, model_run_id, market_val, note
                               "source_snapshot_id": pr["source_snapshot_id"],
                               "source_snapshot_time": pr["source_snapshot_time"]})
     canon_files = []
-    for name in (f"depth_charts_{season}.parquet", f"injuries_{season}.parquet",
-                 f"participation_{season}.parquet", "games.parquet", "players.parquet"):
+    for name in (f"depth_charts_{season}.parquet", f"depth_provisional_{season}.parquet",
+                 f"injuries_{season}.parquet", f"participation_{season}.parquet",
+                 "games.parquet", "players.parquet"):
         p = common.OUT_DIR / name
         if p.exists():
             canon_files.append({"path": relpath(p), "sha256": common.sha256_file(p)})
@@ -783,10 +822,12 @@ def _build_record(sid, season, week, as_of, mode, model_run_id, market_val, note
         "ptw_schema_version": PTW_SCHEMA_VERSION,
         "position_group_version": POSITION_GROUP_VERSION,
         "identity_crosswalk_ref": "player_source_crosswalk.parquet",
+        "canonical_lineage_set_id": (lineage["canonical_lineage_set_id"] if lineage else None),
         "canonical_build_id_used": inputs.get("canonical_build_id"),
-        "canonical_build_lineage": (lineage["build_reference_map"] if lineage else None),
+        "canonical_reference_map": (lineage["reference_map"] if lineage else None),
         "verified_canonical_files": (lineage["verified_canonical_files"] if lineage else None),
         "verified_raw_sources": (lineage["verified_raw_sources"] if lineage else None),
+        "lineage_unavailable_by_source_era": (lineage["unavailable_by_source_era"] if lineage else None),
         "inputs": {"source_files": src_files, "canonical_files": canon_files},
         "output": {"path": relpath(out_path), "rows": int(len(canon)),
                    "sha256": common.sha256_file(out_path)},

@@ -132,6 +132,39 @@ def append_state_record(record: dict) -> None:
         _atomic_write_json(STATE_REGISTRY_JSON, recs)
 
 
+def commit_snapshot(record: dict, tmp_dir, dest_dir) -> None:
+    """Promote a completed temp output AND append the registry as ONE recoverable
+    transaction under a SINGLE exclusive lock (no nested acquisition).
+
+    Sequence: acquire lock -> re-read+validate registry -> re-check duplicate id
+    and destination path -> promote temp dir -> atomic registry append -> roll
+    back the promoted dir if persistence fails -> release lock. A concurrent
+    writer for the same id cannot delete or overwrite the winner's output.
+    """
+    import os
+    import shutil
+    from pathlib import Path
+
+    sid = record.get("state_snapshot_id")
+    if not sid:
+        raise ValueError("state record missing state_snapshot_id")
+    tmp_dir, dest_dir = Path(tmp_dir), Path(dest_dir)
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    with _ExclusiveLock(STATE_DIR / LOCK_NAME):
+        recs = load_registry()   # raises on a corrupt registry -> refuse before promotion
+        if sid in {r.get("state_snapshot_id") for r in recs}:
+            raise ValueError(f"state_snapshot_id {sid} already exists; snapshots are immutable")
+        if dest_dir.exists():
+            raise ValueError(f"destination {dest_dir} already exists; refusing to overwrite")
+        os.rename(tmp_dir, dest_dir)   # promote under the lock
+        try:
+            recs.append(record)
+            _atomic_write_json(STATE_REGISTRY_JSON, recs)
+        except Exception:
+            shutil.rmtree(dest_dir, ignore_errors=True)   # roll back the promoted output
+            raise
+
+
 def verify_registry() -> dict:
     """Re-hash every registered input and output; report mismatches.
 

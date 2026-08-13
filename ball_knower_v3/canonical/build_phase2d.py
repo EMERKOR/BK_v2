@@ -86,20 +86,24 @@ def main() -> dict:
     dirty = common.working_tree_dirty()
     prior = _prior_phase2d_build()
 
-    depth_metas, depth_quar, depth_meas, depth_total, depth_prov_total, depth_prov_tokens = \
-        depth_charts.main(build_snapshot_id)
+    dc = depth_charts.main(build_snapshot_id)
+    depth_metas, depth_prov_metas = dc["metas"], dc["provisional_metas"]
+    depth_quar, depth_meas = dc["quar"], dc["meas"]
+    depth_total, depth_prov_total, depth_prov_tokens = dc["canon_total"], dc["prov_total"], dc["prov_tokens"]
 
     digests = [_dry_run_digest(m, s, w, a, build_snapshot_id) for (m, s, w, a, _n) in DRY_RUNS]
 
     record = {
         "phase": "2D_weekly_state_implementation",
         "supersedes_build_snapshot_id": prior,
-        "correction_note": ("supersedes the prior Phase 2D build: LIVE_FREEZE now requires a "
-                            "contemporaneous clock (dry runs are HISTORICAL_STRICT only); bye "
-                            "rows require eligible roster evidence; provisional passthrough is "
-                            "eligibility-gated and preserves non-authoritative depth identities; "
-                            "recoverably-atomic writes; exact canonical build lineage; validated "
-                            "market input; conflict wording is RESOLVED_LATEST_ELIGIBLE_OBSERVATION."),
+        "correction_note": ("supersedes the prior Phase 2D build (lineage/atomicity closure): "
+                            "registers depth_provisional_support as a versioned output and lineage "
+                            "input; exact per-table reference map + deterministic "
+                            "canonical_lineage_set_id (ambiguous/superseded/mismatched refused, "
+                            "legacy records hashed); required inputs fail closed with explicit "
+                            "NOT_AVAILABLE_BY_SOURCE_ERA; promotion+registry-append is one locked "
+                            "recoverable transaction; production LIVE_FREEZE ignores injected "
+                            "clocks; provisional rows preserve source_name/source_position."),
         "note": "Phase 2D integrity correction. NO production decision snapshot created.",
         "build_snapshot_id": build_snapshot_id,
         "canonical_version": common.CANONICAL_VERSION,
@@ -115,8 +119,10 @@ def main() -> dict:
         "provenance_note": ("git_commit_at_build is HEAD at build time; builder_git_commit "
                             "is set only when the tree is clean (committed builder)."),
         "phase2a_source_manifest_ref": "audit_v3_player_sources/manifests/raw_source_manifest.json",
-        "outputs": {"canonical_depth_charts": {"per_season": depth_metas}},
-        "row_counts": {"canonical_depth_charts_total": depth_total},
+        "outputs": {"canonical_depth_charts": {"per_season": depth_metas},
+                    "depth_provisional_support": {"per_season": depth_prov_metas}},
+        "row_counts": {"canonical_depth_charts_total": depth_total,
+                       "depth_provisional_support_total": depth_prov_total},
         "depth_provisional_accounting": {
             "provisional_row_total": depth_prov_total,
             "provisional_distinct_source_tokens": depth_prov_tokens,

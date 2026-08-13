@@ -350,15 +350,24 @@ def _mk(tmp_path, monkeypatch):
     monkeypatch.setattr(SR, "STATE_REGISTRY_JSON", tmp_path / "state_snapshot_registry.json")
 
 
+# atomic-mechanics tests use HISTORICAL_STRICT (no clock gate) with an eligible
+# EXACT injury for membership, and verify_lineage=False (synthetic inputs).
+_STRICT_INJ = None
+
+
+def _strict_inputs():
+    inj = pd.DataFrame([_inj_row("00-0000001", "KC", 5, pd.Timestamp("2025-10-07T12:00Z"))])
+    return _inputs(injuries=inj)
+
+
 def test_atomic_snapshot_write_verify_and_immutability(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
-    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
-    inp = _inputs(weekly=wr)
-    out = P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False, inputs=inp,
-                                  clock=_CLOCK, verify_lineage=False)
+    out = P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+                                  inputs=_strict_inputs(), verify_lineage=False)
     sid = out["record"]["state_snapshot_id"]
     assert (tmp_path / sid).exists()
     assert len(SR.load_registry()) == 1
+    assert out["record"]["output"]["rows"] >= 1
     # requested + actual creation time both recorded
     assert out["record"]["requested_as_of_time"] and out["record"]["actual_creation_time_utc"]
     with pytest.raises(ValueError):        # duplicate id refused (immutability)
@@ -369,73 +378,88 @@ def test_validation_failure_leaves_nothing(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
     monkeypatch.setattr(P, "_validate_invariants",
                         lambda *a, **k: (_ for _ in ()).throw(AssertionError("boom")))
-    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
     with pytest.raises(AssertionError):
-        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
-                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
+        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+                                inputs=_strict_inputs(), verify_lineage=False)
     assert not (tmp_path / "state_snapshot_registry.json").exists()
-    assert list(tmp_path.glob("state_*")) == []
+    assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []
 
 
 def test_output_write_failure_leaves_no_temp(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
-    import ball_knower_v3.canonical.player_team_week as MOD
     real = pd.DataFrame.to_parquet
     def boom(self, *a, **k):
         raise IOError("disk full")
     monkeypatch.setattr(pd.DataFrame, "to_parquet", boom)
-    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
     with pytest.raises(IOError):
-        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
-                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
+        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+                                inputs=_strict_inputs(), verify_lineage=False)
     monkeypatch.setattr(pd.DataFrame, "to_parquet", real)
-    assert list(tmp_path.glob("*.tmp")) == [] and list(tmp_path.glob("state_*")) == []
+    assert list(tmp_path.glob("*.tmp")) == [] and [p for p in tmp_path.glob("state_*") if p.is_dir()] == []
 
 
 def test_registry_write_failure_rolls_back_promotion(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
-    monkeypatch.setattr(SR, "append_state_record",
-                        lambda rec: (_ for _ in ()).throw(IOError("registry down")))
-    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
+    # fail the atomic registry persistence AFTER the temp dir is promoted under the lock
+    monkeypatch.setattr(SR, "_atomic_write_json",
+                        lambda path, data: (_ for _ in ()).throw(IOError("registry down")))
     with pytest.raises(IOError):
-        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
-                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
-    # promoted orphan rolled back; no temp; registry never created
-    assert list(tmp_path.glob("state_*")) == []
+        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+                                inputs=_strict_inputs(), verify_lineage=False)
+    # promoted orphan rolled back; no temp; registry never persisted
+    assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []
     assert list(tmp_path.glob("*.tmp")) == []
     assert not (tmp_path / "state_snapshot_registry.json").exists()
 
 
 def test_duplicate_id_race_refused(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
-    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
-    out = P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
-                                  inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
-    sid = out["record"]["state_snapshot_id"]
+    out = P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+                                  inputs=_strict_inputs(), verify_lineage=False)
     # a second writer that produced the same id is refused under the lock
-    dup = dict(out["record"])
     with pytest.raises(ValueError):
-        SR.append_state_record(dup)
+        SR.append_state_record(dict(out["record"]))
     assert len(SR.load_registry()) == 1
+
+
+def test_concurrent_writers_same_id_one_valid_pair(tmp_path, monkeypatch):
+    # genuine interleaving: two writers race commit_snapshot for the SAME id; the
+    # loser cannot delete/overwrite the winner's output, exactly one record survives.
+    import threading
+    _mk(tmp_path, monkeypatch)
+    results = {}
+    def worker(name):
+        t = tmp_path / f"{name}.tmp"; t.mkdir()
+        (t / "marker.txt").write_text(name)
+        rec = {"state_snapshot_id": "state_RACE", "who": name}
+        try:
+            SR.commit_snapshot(rec, t, tmp_path / "state_RACE"); results[name] = "won"
+        except Exception:
+            results[name] = "lost"
+    a = threading.Thread(target=worker, args=("A",)); b = threading.Thread(target=worker, args=("B",))
+    a.start(); b.start(); a.join(); b.join()
+    recs = SR.load_registry()
+    assert sorted(results.values()) == ["lost", "won"]
+    assert len(recs) == 1
+    winner = (tmp_path / "state_RACE" / "marker.txt").read_text()
+    assert recs[0]["who"] == winner                       # winner's output is the surviving pair
+    loser = "B" if winner == "A" else "A"
+    assert (tmp_path / f"{loser}.tmp" / "marker.txt").read_text() == loser  # loser's temp untouched
 
 
 def test_corrupted_existing_registry_not_silently_overwritten(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
     (tmp_path / "state_snapshot_registry.json").write_text("{ this is not json")
-    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
     with pytest.raises(Exception):        # corrupt registry cannot be parsed -> refuse
-        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
-                                inputs=_inputs(weekly=wr), clock=_CLOCK, verify_lineage=False)
-    # the corrupted bytes are left as-is (not clobbered by a partial write)
+        P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=False,
+                                inputs=_strict_inputs(), verify_lineage=False)
     assert (tmp_path / "state_snapshot_registry.json").read_text() == "{ this is not json"
     assert [p for p in tmp_path.glob("state_*") if p.is_dir()] == []   # no promoted snapshot dir
 
 
 def test_dry_run_creates_no_state_snapshot(tmp_path, monkeypatch):
     _mk(tmp_path, monkeypatch)
-    wr = _wr([dict(week=5, team="KC", gsis_id="00-0000001", status="ACT", position="WR")])
-    P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True, inputs=_inputs(weekly=wr),
-                            clock=_CLOCK)
+    P.create_state_snapshot(2025, 5, AOF, "HISTORICAL_STRICT", dry_run=True, inputs=_strict_inputs())
     assert not (tmp_path / "state_snapshot_registry.json").exists()
 
 
@@ -589,3 +613,52 @@ def test_market_input_verified_and_time_bounded(tmp_path):
     bad = dict(good, sha256="0" * 64)
     with pytest.raises(ValueError):
         P.validate_market_input(bad, AOF)
+
+
+# == correction 6: production ignores injected clock =====================
+def test_production_ignores_injected_clock(tmp_path, monkeypatch):
+    _mk(tmp_path, monkeypatch)
+    # a caller clock claiming "now == as_of" must NOT authorize a backdated
+    # production LIVE_FREEZE — production uses the real system UTC clock.
+    fake_now = pd.Timestamp("2025-10-08T12:10:00Z")   # would make AOF look contemporaneous
+    with pytest.raises(ValueError):
+        P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=False,
+                                inputs=_inputs(weekly=_wr([dict(week=5, team="KC",
+                                    gsis_id="00-0000001", status="ACT", position="WR")])),
+                                clock=lambda: fake_now, verify_lineage=False)
+    # the same injected clock IS honored for a dry run
+    P.create_state_snapshot(2025, 5, AOF, "LIVE_FREEZE", dry_run=True,
+                            inputs=_inputs(weekly=_wr([dict(week=5, team="KC",
+                                gsis_id="00-0000001", status="ACT", position="WR")])),
+                            clock=lambda: fake_now)
+
+
+# == correction 5: provisional preserves depth source_name/source_position ==
+def test_prov_row_preserves_depth_source_name_and_position():
+    dpv = pd.DataFrame([dict(season=2025, player_id=None, espn_id="X9", team="KC",
+                             source_team="KC", source_name="Depth Guy", source_position="LDE",
+                             depth_position_raw="Left Defensive End", depth_slot=1, depth_rank=1,
+                             depth_chart_known_time=pd.Timestamp("2025-10-07T00:00Z"),
+                             depth_point_in_time_grade="SNAPSHOT_BOUND")])
+    r = next(dpv.itertuples(index=False))
+    prov = P._prov_row("depth_charts",
+                       {"path": "d", "sha256": "h", "source_snapshot_id": "s",
+                        "source_snapshot_time": "t"},
+                       2025, 5, r, "KC", "KC", None, "depth_chart",
+                       pit_grade="SNAPSHOT_BOUND", used_grade="SNAPSHOT_BOUND",
+                       used_time=pd.Timestamp("2025-10-07T00:00Z"))
+    assert prov["source_name"] == "Depth Guy"
+    assert prov["source_position"] == "LDE"
+    assert prov["provisional_token"] == "X9"
+
+
+def test_conflict_wording_has_no_effective_time_claim():
+    # the resolved/quarantine wording must not claim legal transaction-effective time
+    depth = pd.DataFrame([
+        _depth_row("00-0000001", "KC", pd.Timestamp("2025-10-01T00:00Z"), rank=2),
+        _depth_row("00-0000001", "LAC", pd.Timestamp("2025-10-07T00:00Z"), rank=1),
+    ])
+    r = P.build_state_rows(2025, 5, AOF, "LIVE_FREEZE", _inputs(depth=depth))
+    m = [x for x in r["multi_team"] if x["player_id"] == "00-0000001"][0]
+    assert m["resolution"] == "RESOLVED_LATEST_ELIGIBLE_OBSERVATION"
+    assert "not a transaction" in m["note"] or "not legal" in m["note"].lower()
