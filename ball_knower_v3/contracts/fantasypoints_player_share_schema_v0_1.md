@@ -60,6 +60,13 @@ non-empty and every cell index ≥ 2 empty), or **unclassified**. Any unclassifi
 - `metric_type` is derived from the summary header via a fixed vocabulary:
   `Snap % → snap_share`, `TM RTE % → route_share`, `TM TGT % → target_share`.
   An unknown summary/metric fails the build (`SCHEMA_ERROR`).
+- **Per-row season match (fail loud).** Every football row's `Season` value must equal
+  the season assigned to that source file; any mismatch fails the build
+  (`SCHEMA_ERROR`), never a silent accept.
+- **Weekly value validation.** A numeric weekly share must be a **finite** number
+  **within 0–100** (raw percentage). A non-numeric, non-finite (`NaN`/`inf`),
+  negative, or `> 100` cell is `INVALID_VALUE` (observation preserved with a null
+  value; the numeric-derived resolved row is quarantined, never accepted).
 
 ## 4. Source-snapshot identity
 Each file is one immutable snapshot: `source_snapshot_id = "fpss_" + sha256(content)[:12]`
@@ -83,10 +90,12 @@ Required fields: `fp_share_observation_id`, `source_snapshot_id`, `source_file`,
 `source_snapshot_time`, `point_in_time_grade`, `pregame_feature_eligible`, plus
 standard provenance (`canonical_version`, `build_snapshot_id`, `fp_schema_version`).
 
-- `source_value_raw` = original cell text; `value_pct` = raw 0–100 float (null if
-  blank); `value_share` = deterministic `value_pct / 100` (0–1, null if blank).
-- `value_available = false` for a blank cell (null value); a numeric **zero** is a
-  real `0.0` with `value_available = true`, distinguishable from blank.
+- `source_value_raw` = original cell text; `value_pct` = the validated **finite**
+  raw percentage in **0–100** (null if blank or invalid); `value_share` =
+  deterministic `value_pct / 100` (0–1, null if blank or invalid).
+- `value_available = false` for a blank OR invalid cell (null value); a numeric
+  **zero** is a real `0.0` with `value_available = true`, distinguishable from blank.
+  A non-finite or out-of-range value is `INVALID_VALUE`, never coerced to a number.
 - `fp_share_observation_id` = versioned deterministic sha256 (`fpobs_v0.1`) over
   `{source_snapshot_id, source_sha256, source_row_number, week, metric_type,
   source_player_token, source_value_raw}`. Unique + reproducible.
@@ -134,14 +143,18 @@ team-season evidence identifies exactly one player**:
   (`_norm_name`: lowercase; strip `.-'`; strip trailing `jr/sr/ii/iii/iv/v`; collapse
   spaces).
 - Candidates = `canonical_players` whose normalized `display_name` equals it.
-- **Unique name** (1 candidate) **and** the candidate has `canonical_participation`
-  in that FantasyPoints season → accept.
-- **Multiple candidates** → disambiguate by the FantasyPoints `Team` token(s)
-  (normalized via the shared Phase 1 map) cross-referenced with each candidate's
-  `canonical_participation` teams that season; accept only if **exactly one** matches.
-- Otherwise **quarantine** (`UNRESOLVED_IDENTITY` if no candidate,
-  `AMBIGUOUS_IDENTITY` if >1 survives). **Name alone never accepts**; position, rank,
-  share values, and statistical similarity never establish identity; no fuzzy match is
+- **Team-season agreement is required for EVERY candidate, including a unique name.**
+  Normalize the FantasyPoints `Team` token(s) via the shared Phase 1 map and require
+  that at least one intersects the candidate's `canonical_participation` teams for that
+  season. Accept only if **exactly one** candidate satisfies name + team-season
+  agreement. A unique normalized name is **never** accepted on the season alone (or on
+  the name alone) — the FantasyPoints team must authoritatively agree with
+  participation.
+- Otherwise **quarantine**: `UNRESOLVED_IDENTITY` when no canonical name candidate
+  exists, or when a single name candidate's team-season does not agree;
+  `AMBIGUOUS_IDENTITY` when more than one name candidate exists and team-season does
+  not resolve to exactly one. **Name alone never accepts**; position, rank, share
+  values, and statistical similarity never establish identity; no fuzzy match is
   auto-accepted.
 
 **Token policy (deliberately versioned key).** Because a normalized name can be reused
@@ -219,10 +232,12 @@ never silently dropped. No row or cell disappears.
 
 ## 11. Acceptance tests
 Parsing (BOM/two-row header, glossary excluded, W1–W18 reshape, unknown metric/schema
-fails, numeric-zero stays zero, blank stays null, pct↔share reconcile, both 2025 snaps
-independent, deterministic). Identity (existing crosswalk rows unchanged+ordered, new
-keys unique, accepted joins players, no fuzzy/name-only accept, one token→one player,
-ambiguous stay non-authoritative). Team/game (resolved joins games+players, team in
+fails, **per-row Season mismatch fails loudly**, numeric-zero stays zero, blank stays
+null, **negative/over-100/NaN/inf → INVALID_VALUE**, pct↔share reconcile, both 2025
+snaps independent, deterministic). Identity (existing crosswalk rows unchanged+ordered,
+new keys unique, accepted joins players, no fuzzy/name-only accept, **unique-name
+candidates require team-season agreement — a season-only or team-mismatched unique name
+is quarantined**, one token→one player, ambiguous stay non-authoritative). Team/game (resolved joins games+players, team in
 game, opponent correct, multi-team strings never assign membership, missing/multiple
 participation quarantine, traded players not resolved via latest team). Timing/leakage
 (2021–2024 retrospective, partial 2025 ≥ 2025-12-23 bound, full 2025 ≥ 2026-01-13

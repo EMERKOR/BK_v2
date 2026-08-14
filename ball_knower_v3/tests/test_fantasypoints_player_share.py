@@ -65,6 +65,75 @@ def test_unknown_metric_and_schema_fail_loudly(tmp_path):
         fp.parse_fp_file(str(p2), "snap_share")
 
 
+# ---- blocker 1: value validation (finite, within 0-100) ----------------
+def test_value_validation_classifier():
+    assert fp._parse_share_value("") == ("blank", None, None)
+    assert fp._parse_share_value("50.0") == ("numeric", 50.0, 0.5)
+    assert fp._parse_share_value("0") == ("numeric", 0.0, 0.0)          # real zero stays numeric
+    assert fp._parse_share_value("100") == ("numeric", 100.0, 1.0)     # boundary allowed
+    for bad in ["-5", "-0.1", "150", "100.01", "NaN", "nan", "inf", "-inf", "Infinity", "abc"]:
+        assert fp._parse_share_value(bad)[0] == "invalid", bad          # negative/over-100/NaN/inf
+
+
+def test_invalid_values_quarantined_as_invalid_value(tmp_path):
+    p = tmp_path / "iv.csv"
+    weeks = ["-5.0", "150.0", "NaN", "inf", "50.0", "0.0"] + [""] * 12   # 4 invalid, 2 numeric, 12 blank
+    dr = _football_row("Justin Jefferson", "MIN", "WR", "11", "2025", weeks)
+    _write_synth(p, data_rows=[dr])
+    football, meta = fp.parse_fp_file(str(p), "snap_share", expected_season=2025)
+    kinds = [fp._parse_share_value((football[0]["cells"][i] if i < len(football[0]["cells"]) else "").strip())[0]
+             for i, _wk in meta["wcols"]]
+    assert kinds.count("invalid") == 4 and kinds.count("numeric") == 2 and kinds.count("blank") == 12
+
+
+def test_invalid_reason_present_in_quarantine_vocab():
+    # INVALID_VALUE is a real quarantine reason category in the contract
+    assert "INVALID_VALUE" in {"UNRESOLVED_IDENTITY", "AMBIGUOUS_IDENTITY", "REJECTED_IDENTITY",
+                               "NO_PLAYER_GAME_MATCH", "AMBIGUOUS_PLAYER_GAME_MATCH", "INVALID_TEAM",
+                               "INVALID_WEEK", "INVALID_VALUE", "SCHEMA_ERROR"}
+
+
+# ---- blocker 2: Season value must equal the file-assigned season -------
+def test_season_mismatch_fails_loudly(tmp_path):
+    p = tmp_path / "sm.csv"
+    good = _football_row("Real Player", "KC", "WR", "5", "2024", ["50.0"] * 18)
+    mismatch = _football_row("Other Player", "KC", "WR", "5", "2023", ["50.0"] * 18)  # 2023 in a 2024 file
+    _write_synth(p, data_rows=[good, mismatch])
+    with pytest.raises(RuntimeError):
+        fp.parse_fp_file(str(p), "snap_share", expected_season=2024)
+    # the matching season parses cleanly
+    p2 = tmp_path / "ok.csv"
+    _write_synth(p2, data_rows=[good])
+    football, _ = fp.parse_fp_file(str(p2), "snap_share", expected_season=2024)
+    assert len(football) == 1
+
+
+# ---- blocker 3: team-season agreement required for unique-name too -----
+def test_unique_name_requires_team_season_agreement():
+    name_index = {"john doe": {"00-0000001"}}                 # unique normalized name
+    part_team = {(2024, "00-0000001"): {"KC"}}                # participated 2024 for KC only
+    # FP team agrees -> accepted
+    pid, reason, cands = fp.resolve_identity("john doe", 2024, "KC", name_index, part_team)
+    assert pid == "00-0000001" and reason is None
+    # FP team DISAGREES (player did not play for DEN in 2024) -> NOT accepted, quarantined
+    pid2, reason2, _ = fp.resolve_identity("john doe", 2024, "DEN", name_index, part_team)
+    assert pid2 is None and reason2 == "UNRESOLVED_IDENTITY"
+    # no participation that season at all -> not accepted on the season alone
+    pid3, reason3, _ = fp.resolve_identity("john doe", 2023, "KC", name_index, part_team)
+    assert pid3 is None and reason3 == "UNRESOLVED_IDENTITY"
+
+
+def test_multi_name_still_requires_team_season():
+    name_index = {"mike smith": {"00-0000001", "00-0000002"}}
+    part_team = {(2024, "00-0000001"): {"KC"}, (2024, "00-0000002"): {"DEN"}}
+    # FP team KC -> only candidate 1 has KC that season -> resolves
+    pid, reason, _ = fp.resolve_identity("mike smith", 2024, "KC", name_index, part_team)
+    assert pid == "00-0000001"
+    # FP team that neither played -> ambiguous (still >1 name candidate, none agrees)
+    pid2, reason2, _ = fp.resolve_identity("mike smith", 2024, "SF", name_index, part_team)
+    assert pid2 is None and reason2 == "AMBIGUOUS_IDENTITY"
+
+
 def test_unclassified_row_fails_build(tmp_path):
     p = tmp_path / "u.csv"
     # a row that is neither football (Season not a year) nor glossary (cells >=2 nonempty)

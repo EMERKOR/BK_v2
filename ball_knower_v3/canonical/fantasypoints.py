@@ -16,6 +16,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import math
 import re
 import subprocess
 from pathlib import Path
@@ -84,9 +85,11 @@ def _grade_for(season: int, committer_time: pd.Timestamp) -> str:
 # --------------------------------------------------------------------------
 # Parser (fail-loud)
 # --------------------------------------------------------------------------
-def parse_fp_file(rel_path: str, expected_metric: str):
+def parse_fp_file(rel_path: str, expected_metric: str, expected_season: int | None = None):
     """Return (rows, meta). rows: list of dicts with the raw football row + physical
-    row number + week columns. Fails loudly on schema/metric/classification errors."""
+    row number + week columns. Fails loudly on schema/metric/classification errors,
+    and (when expected_season is given) on any football row whose Season value does
+    not equal the season assigned to this source file."""
     p = Path(rel_path) if Path(rel_path).is_absolute() else (common.REPO / rel_path)
     text_rows = list(csv.reader(open(p, encoding="utf-8-sig", newline="")))
     if len(text_rows) < 3:
@@ -112,6 +115,9 @@ def parse_fp_file(rel_path: str, expected_metric: str):
             continue  # blank separator
         season_cell = (r[5] if len(r) > 5 else "").strip()
         if _YEAR.match(season_cell):
+            if expected_season is not None and int(season_cell) != int(expected_season):
+                raise RuntimeError(f"SCHEMA_ERROR {rel_path}: football row {phys_idx} Season "
+                                   f"{season_cell} != file-assigned season {expected_season}")
             football.append({"row_number": phys_idx, "cells": r})
         elif len(r) >= 2 and (r[0] or "").strip() != "" and all((c or "").strip() == "" for c in r[2:]):
             glossary += 1
@@ -127,6 +133,21 @@ def parse_fp_file(rel_path: str, expected_metric: str):
 def _cell(cells, i):
     v = cells[i] if i < len(cells) else ""
     return (v or "").strip()
+
+
+def _parse_share_value(raw: str):
+    """Classify a weekly share cell. Returns (kind, value_pct, value_share).
+    kind is 'blank' (empty), 'numeric' (finite number within 0-100), or 'invalid'
+    (non-numeric, non-finite NaN/inf, negative, or > 100)."""
+    if raw == "":
+        return "blank", None, None
+    try:
+        fv = float(raw)
+    except ValueError:
+        return "invalid", None, None
+    if not math.isfinite(fv) or fv < 0.0 or fv > 100.0:
+        return "invalid", None, None
+    return "numeric", fv, fv / 100.0
 
 
 def _obs_id(source_snapshot_id, source_sha256, row_number, week, metric, token, value_raw):
@@ -167,22 +188,27 @@ def _fp_team_norm(fp_team_token: str):
 
 
 def resolve_identity(norm_name, season, fp_team_token, name_index, part_team):
-    """Return (player_id | None, reason | None, candidates:list). EXACT_NORMALIZED_NAME_TEAM
-    only, via authoritative participation team-season evidence."""
+    """Return (player_id | None, reason | None, candidates:list).
+
+    EXACT_NORMALIZED_NAME_TEAM only: acceptance requires exact normalized name AND
+    authoritative `canonical_participation` **team-season agreement** — the
+    FantasyPoints team token(s) must intersect the candidate's participation teams
+    for that season. This applies to unique-name candidates too (a unique name is
+    never accepted on the season alone). A candidate that survives on name but whose
+    team-season does not agree is quarantined, never accepted.
+    """
     cands = sorted(name_index.get(norm_name, set()))
     if not cands:
         return None, "UNRESOLVED_IDENTITY", []
-    if len(cands) == 1:
-        pid = cands[0]
-        if (season, pid) in part_team:      # authoritative participation confirms the season
-            return pid, None, cands
-        # unique name but no authoritative participation that season -> not confirmed
-        return None, "UNRESOLVED_IDENTITY", cands
     fpt = _fp_team_norm(fp_team_token)
     matched = [p for p in cands if part_team.get((season, p), set()) & fpt]
     if len(matched) == 1:
         return matched[0], None, cands
-    return None, "AMBIGUOUS_IDENTITY", cands
+    if len(matched) > 1:
+        return None, "AMBIGUOUS_IDENTITY", cands
+    # no candidate has authoritative participation on the FantasyPoints team that season
+    reason = "AMBIGUOUS_IDENTITY" if len(cands) > 1 else "UNRESOLVED_IDENTITY"
+    return None, reason, cands
 
 
 # --------------------------------------------------------------------------
@@ -205,7 +231,7 @@ def build(build_snapshot_id: str):
         timing = git_source_timing(rel)
         snap_time = timing["committer_time"]
         grade = _grade_for(season, timing["committer_time_ts"])
-        football, meta = parse_fp_file(rel, exp_metric)
+        football, meta = parse_fp_file(rel, exp_metric, expected_season=season)
         metric = meta["metric"]
         acc = {"file": fname, "source_snapshot_id": ssid, "metric": metric, "season": season,
                "variant": variant, "football_rows": len(football), "glossary_rows": meta["glossary_rows"],
@@ -230,15 +256,9 @@ def build(build_snapshot_id: str):
             for i, wk in meta["wcols"]:
                 raw = _cell(cells, i)
                 acc["w_cells_total"] += 1
-                if raw == "":
-                    value_pct = None; value_share = None; value_available = False; kind = "blank"; acc["blank"] += 1
-                else:
-                    try:
-                        value_pct = float(raw); value_share = value_pct / 100.0
-                        value_available = True; kind = "numeric"; acc["numeric"] += 1
-                    except ValueError:
-                        value_pct = None; value_share = None; value_available = False
-                        kind = "invalid"; acc["invalid"] += 1
+                kind, value_pct, value_share = _parse_share_value(raw)
+                value_available = (kind == "numeric")
+                acc[kind] += 1
                 oid = _obs_id(ssid, sha, rn, wk, metric, token, raw)
                 obs_rows.append({
                     "fp_share_observation_id": oid, "source_snapshot_id": ssid, "source_file": rel,
@@ -260,7 +280,8 @@ def build(build_snapshot_id: str):
                 if kind == "invalid":
                     acc["quar_invalid_value"] += 1
                     quar_rows.append(_quar(oid, ssid, rel, season, wk, metric, name, team_tok, raw,
-                                           "INVALID_VALUE", cands, "non-numeric weekly cell", grade, snap_time))
+                                           "INVALID_VALUE", cands,
+                                           "weekly share not a finite number within 0-100", grade, snap_time))
                     continue
                 if kind == "blank":
                     continue  # blanks are represented in observations, not resolved, not quarantined
@@ -268,8 +289,11 @@ def build(build_snapshot_id: str):
                 if pid is None:
                     acc["quar_unresolved_identity" if id_reason == "UNRESOLVED_IDENTITY"
                         else "quar_ambiguous_identity"] += 1
+                    note = ("no canonical player with this normalized name"
+                            if not cands else
+                            "no unique player with authoritative participation team-season agreement")
                     quar_rows.append(_quar(oid, ssid, rel, season, wk, metric, name, team_tok, raw,
-                                           id_reason, cands, "no accepted crosswalk identity", grade, snap_time))
+                                           id_reason, cands, note, grade, snap_time))
                     continue
                 pg = part_game.get((season, pid, wk), [])
                 if len(pg) == 0:
@@ -359,9 +383,12 @@ def _build_crosswalk_rows(cw_tokens, canon_players, build_snapshot_id):
             "source_season_last": int(rec["season"]), "player_id": str(pid),
             "match_method": "EXACT_NORMALIZED_NAME_TEAM", "match_confidence": 1.0,
             "review_status": "AUTO_ACCEPTED", "reviewed_by": pd.NA, "reviewed_at": pd.NA,
-            "evidence": ("exact normalized name + authoritative canonical_participation "
-                         "team-season identifies exactly one player"),
-            "notes": (None if len(rec["cands"]) == 1 else "disambiguated among %d name candidates by participation team-season" % len(rec["cands"])),
+            "evidence": ("exact normalized name AND authoritative canonical_participation "
+                         "team-season agreement (FantasyPoints team token intersects the "
+                         "player's participation teams that season) identify exactly one player"),
+            "notes": ("unique normalized-name candidate confirmed by participation team-season"
+                      if len(rec["cands"]) == 1 else
+                      "disambiguated among %d name candidates by participation team-season" % len(rec["cands"])),
             "source_file": "data/RAW_fantasypoints/*", "source_snapshot_id": FP_FAMILY + "_" + FP_SCHEMA_VERSION,
             "source_snapshot_time": pd.NA, "canonical_version": common.CANONICAL_VERSION,
             "build_snapshot_id": build_snapshot_id,
