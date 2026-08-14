@@ -75,22 +75,70 @@ def test_value_validation_classifier():
         assert fp._parse_share_value(bad)[0] == "invalid", bad          # negative/over-100/NaN/inf
 
 
-def test_invalid_values_quarantined_as_invalid_value(tmp_path):
-    p = tmp_path / "iv.csv"
-    weeks = ["-5.0", "150.0", "NaN", "inf", "50.0", "0.0"] + [""] * 12   # 4 invalid, 2 numeric, 12 blank
-    dr = _football_row("Justin Jefferson", "MIN", "WR", "11", "2025", weeks)
-    _write_synth(p, data_rows=[dr])
-    football, meta = fp.parse_fp_file(str(p), "snap_share", expected_season=2025)
-    kinds = [fp._parse_share_value((football[0]["cells"][i] if i < len(football[0]["cells"]) else "").strip())[0]
-             for i, _wk in meta["wcols"]]
-    assert kinds.count("invalid") == 4 and kinds.count("numeric") == 2 and kinds.count("blank") == 12
+def _pick_resolvable_2024_week1_player():
+    """A real player who played 2024 week 1 and whose normalized name is unique in
+    canonical_players — so the synthetic FantasyPoints row resolves cleanly."""
+    from ball_knower_v3.canonical.player_crosswalk import _norm_name
+    pl = pd.read_parquet(common.OUT_DIR / "players.parquet", columns=["player_id", "display_name"])
+    idx = {}
+    for r in pl.itertuples(index=False):
+        idx.setdefault(_norm_name(r.display_name), set()).add(str(r.player_id))
+    disp = dict(zip(pl["player_id"].astype(str), pl["display_name"]))
+    part = pd.read_parquet(common.OUT_DIR / "participation_2024.parquet",
+                           columns=["player_id", "team", "week"])
+    for r in part[part["week"] == 1].itertuples(index=False):
+        pid = str(r.player_id); name = disp.get(pid)
+        if name and len(idx.get(_norm_name(name), set())) == 1:
+            return pid, name, str(r.team)
+    raise AssertionError("no resolvable week-1 2024 player found")
 
 
-def test_invalid_reason_present_in_quarantine_vocab():
-    # INVALID_VALUE is a real quarantine reason category in the contract
-    assert "INVALID_VALUE" in {"UNRESOLVED_IDENTITY", "AMBIGUOUS_IDENTITY", "REJECTED_IDENTITY",
-                               "NO_PLAYER_GAME_MATCH", "AMBIGUOUS_PLAYER_GAME_MATCH", "INVALID_TEAM",
-                               "INVALID_WEEK", "INVALID_VALUE", "SCHEMA_ERROR"}
+def test_invalid_weekly_value_full_pipeline(monkeypatch):
+    """End-to-end: a negative / over-100 / NaN / infinite weekly value is preserved as
+    an observation (raw kept, normalized null, value_available=false), enters quarantine
+    as INVALID_VALUE, never appears in the resolved table, and increments accounting —
+    while a valid week for the same real player still resolves."""
+    pid, name, team = _pick_resolvable_2024_week1_player()
+    # W1 valid (player played wk1 -> resolves); W2..W5 the four invalid kinds; rest blank
+    weeks = ["55.5", "-5.0", "150.0", "NaN", "inf"] + [""] * 13
+    row = _football_row(name, team, "WR", "17", "2024", weeks)
+    synth = common.REPO / "data" / "RAW_fantasypoints" / "_synth_invalid_pipeline_test.csv"
+    _write_synth(synth, data_rows=[row])
+    monkeypatch.setattr(fp, "SOURCE_FILES", [("_synth_invalid_pipeline_test.csv", "snap_share", 2024, "season")])
+    monkeypatch.setattr(fp, "git_source_timing", lambda rel: {
+        "introducing_commit": "0" * 40, "author_time": "2025-12-23T14:44:28+00:00",
+        "committer_time": "2025-12-23T14:44:28+00:00",
+        "committer_time_ts": pd.Timestamp("2025-12-23T14:44:28Z"), "blob_sha": "0" * 40})
+    try:
+        res = fp.build("TEST_INVALID")
+    finally:
+        synth.unlink(missing_ok=True)
+
+    obs, resolved, quar = res["observations"], res["resolved"], res["quarantine"]
+    acc = res["accounting"]["_synth_invalid_pipeline_test.csv"]
+
+    # accounting: 1 numeric (W1), 4 invalid (W2-5), 13 blank; W-cells reconcile
+    assert acc["numeric"] == 1 and acc["invalid"] == 4 and acc["blank"] == 13
+    assert acc["numeric"] + acc["blank"] + acc["invalid"] == acc["w_cells_total"] == 18
+    assert acc["quar_invalid_value"] == 4 and acc["resolved"] == 1
+
+    inv_obs = obs[obs["week"].isin([2, 3, 4, 5])]
+    assert len(inv_obs) == 4
+    # raw value preserved; normalized values null; value_available false
+    assert set(inv_obs["source_value_raw"]) == {"-5.0", "150.0", "NaN", "inf"}
+    assert inv_obs["value_pct"].isna().all() and inv_obs["value_share"].isna().all()
+    assert (~inv_obs["value_available"]).all()
+
+    inv_ids = set(inv_obs["fp_share_observation_id"])
+    q_inv = quar[quar["reason"] == "INVALID_VALUE"]
+    assert len(q_inv) == 4 and set(q_inv["fp_share_observation_id"]) == inv_ids
+    assert set(q_inv["source_value_raw"]) == {"-5.0", "150.0", "NaN", "inf"}
+
+    # never resolved; the valid W1 cell for the same player IS resolved
+    assert inv_ids.isdisjoint(set(resolved["fp_share_observation_id"]))
+    w1 = obs[obs["week"] == 1].iloc[0]
+    assert bool(w1["value_available"]) is True and float(w1["value_pct"]) == 55.5
+    assert w1["fp_share_observation_id"] in set(resolved["fp_share_observation_id"])
 
 
 # ---- blocker 2: Season value must equal the file-assigned season -------
