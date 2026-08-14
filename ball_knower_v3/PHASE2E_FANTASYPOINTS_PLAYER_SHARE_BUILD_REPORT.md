@@ -9,12 +9,33 @@ semantics unchanged except the approved append-only crosswalk extension; v2 unto
 
 ## 1. Branch & commits
 - **Branch:** `claude/bk-v3-dataset-validation-ctb5z2`; Phase 2E start `edcfdde`.
-- **Builders + tests (clean tree):** `4921055`.
-- **Closure commit (this):** registry + report + a brittle-test robustness fix.
-- **Authoritative build:** `build_snapshot_id = cbuild_20260813T204158Z_4921055131`,
-  `working_tree_dirty = false`, `builder_git_commit = 4921055…`. Appended as the
-  **11th** append-only canonical build record (prior ten byte-identical). **Not** a
-  `state_snapshot_id`; no production decision snapshot created.
+- **Original builders + tests:** `4921055`; original closure `dd41078` (build superseded).
+- **Review-fix builders + tests (clean tree):** `212d8ee` (value validation, per-row
+  Season match, team-season identity — see §1a).
+- **Authoritative (corrected) build:** `build_snapshot_id = cbuild_20260814T180630Z_212d8eecfd`,
+  `working_tree_dirty = false`, `builder_git_commit = 212d8ee…`. The unapproved prior
+  Phase 2E record was dropped and rebuilt; the **first ten approved records are
+  byte-for-byte preserved**. Registry is **11 records**. **Not** a `state_snapshot_id`;
+  no production decision snapshot created.
+
+## 1a. Independent-review corrections (this pass)
+Three approval blockers, fixed without changing real-data outcomes (counts unchanged):
+1. **Weekly-value validation.** A numeric share must be a **finite** number **within
+   0–100**. Non-numeric, non-finite (`NaN`/`inf`), negative, or `> 100` cells are
+   `INVALID_VALUE` (observation preserved with null value; the numeric-derived resolved
+   row is quarantined, never coerced). Real files contain **0** such cells; synthetic
+   tests cover negative / over-100 / NaN / infinity.
+2. **Per-row Season match (fail loud).** Any football row whose `Season` value ≠ the
+   file-assigned season fails the build (`SCHEMA_ERROR`); synthetic mismatch tested. All
+   real rows agree with their file season.
+3. **Identity reconciled with `EXACT_NORMALIZED_NAME_TEAM`.** A **unique** normalized-name
+   candidate now also requires authoritative `canonical_participation` **team-season
+   agreement** (the FantasyPoints team token must intersect the player's participation
+   teams that season); a season-only or team-mismatched unique name is quarantined
+   (`UNRESOLVED_IDENTITY`), never accepted. All 2,630 real unique-name candidates already
+   agree on team-season, so resolved/quarantine/crosswalk counts are unchanged; the
+   tightened logic + evidence strings make violations detectable (synthetic tests cover
+   agreement, unique-name mismatch, and multi-name team-season).
 
 ## 2. Files created / changed
 ```
@@ -92,10 +113,10 @@ observations, never dropped, never reinterpreted as zero.
 ## 6. Output row counts & hashes
 | output | rows | sha256 (12) |
 |---|---:|---|
-| fantasypoints_player_share_observations.parquet | 79,272 | 2443f4d2ffc3 |
-| fantasypoints_player_game_shares.parquet | 45,245 | 5ddff28e9522 |
-| fantasypoints_player_share_quarantine.parquet | 460 | b1c016eaeb70 |
-| player_source_crosswalk.parquet (extended) | 87,865 | c810d8c4674f |
+| fantasypoints_player_share_observations.parquet | 79,272 | b92cfa070adf |
+| fantasypoints_player_game_shares.parquet | 45,245 | dc0d6130206c |
+| fantasypoints_player_share_quarantine.parquet | 460 | cbac14b6cb6f |
+| player_source_crosswalk.parquet (extended) | 87,865 | 56cff00eb62b |
 
 ## 7. Metric & season coverage
 snap_share: 2021, 2022, 2023, 2024, 2025 (partial + full). route_share, target_share:
@@ -103,10 +124,11 @@ snap_share: 2021, 2022, 2023, 2024, 2025 (partial + full). route_share, target_s
 
 ## 8. Identity coverage & crosswalk counts
 Identity is `EXACT_NORMALIZED_NAME_TEAM` only, via the shared normalizer + authoritative
-`canonical_participation` team-season evidence; **no fuzzy, no name-only**. Of 2,824
-distinct (name, season, team) tuples: **2,630** unique-name + participation-confirmed,
-**158** disambiguated among multiple candidates by participation team-season → **2,788
-accepted** crosswalk tokens (source_family `fantasypoints_player_share`, id_type
+`canonical_participation` **team-season agreement** for **every** candidate (unique names
+included); **no fuzzy, no name-only, no season-only**. Of 2,824 distinct (name, season,
+team) tuples: **2,630** unique-name candidates whose FantasyPoints team-season agrees
+with participation, **158** disambiguated among multiple candidates by participation
+team-season → **2,788 accepted** crosswalk tokens (source_family `fantasypoints_player_share`, id_type
 `fp_name_team_season`, token `name|season|team`). Crosswalk extended **85,077 →
 87,865 (+2,788)**, append-only (Phase 2B base preserved byte-for-byte and in order;
 FantasyPoints rows regenerate deterministically — idempotent, no double-append). Every
@@ -163,17 +185,18 @@ is deterministic (identical frames on repeat). The crosswalk append is idempoten
 
 ## 15. Registry record appended
 One Phase 2E record (`2E_fantasypoints_player_share`, build
-`cbuild_20260813T204158Z_4921055131`, builder `4921055`, dirty=false) with the source
+`cbuild_20260814T180630Z_212d8eecfd`, builder `212d8ee`, dirty=false) with the source
 manifest (paths, hashes, snapshot ids, Git commits/times, grades), output paths/rows/
 hashes, crosswalk before/after/appended counts, quarantine-by-reason, and per-file
-accounting. Append-only; the prior ten records are byte-identical. Phase 2D lineage now
-resolves `player_source_crosswalk` to this build (extended hash) with no ambiguity;
-`canonical_players` still resolves to the Phase 2B build.
+accounting. Append-only; the **first ten records are byte-identical** to the approved
+set (the unapproved prior Phase 2E record was dropped and rebuilt, not edited in place).
+Phase 2D lineage resolves `player_source_crosswalk` to this build (extended hash) with no
+ambiguity; `canonical_players` still resolves to the Phase 2B build.
 
 ## 16. Test commands, exit codes, pass totals
-- `python3 -m pytest ball_knower_v3/tests/` → **exit 0** (371: 348 prior + 23 Phase 2E).
+- `python3 -m pytest ball_knower_v3/tests/` → **exit 0** (377: 348 prior + 29 Phase 2E).
 - `python3 -m pytest audit_v3_player_sources/tests/` → **exit 0** (13).
-- Combined: **384 passed**.
+- Combined: **390 passed**.
 - `python3 -m ball_knower_v3.canonical.build_phase2e` → **exit 0**.
 - `python3 -m ball_knower_v3.tools.clean_verify <phase1-baseline>` → **exit 0**
   (Phase-1 byte-identical PASS, registry PASS, determinism PASS).
