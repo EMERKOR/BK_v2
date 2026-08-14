@@ -1,0 +1,1082 @@
+{
+  "non_gsis_identity_summary": {
+    "count": 6087,
+    "with_pfr_id": 5706,
+    "with_espn_id": 171,
+    "full_list_path": "data/v3/canonical/player_nongsis_identity.parquet",
+    "reason": "non-authoritative identities excluded from canonical_players (contract 3.1)",
+    "examples": [
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ABB498348",
+        "source_name": "Vince Abbott",
+        "pfr_id": "abbotvin01",
+        "espn_id": null,
+        "latest_team": "LAC",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ABE498348",
+        "source_name": "Walter Abercrombie",
+        "pfr_id": "AberWa00",
+        "espn_id": null,
+        "latest_team": "PHI",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ABR083058",
+        "source_name": "Robert Abraham",
+        "pfr_id": "AbraRo20",
+        "espn_id": null,
+        "latest_team": "HOU",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ABR166116",
+        "source_name": "Danny Abramowicz",
+        "pfr_id": "AbraDa00",
+        "espn_id": null,
+        "latest_team": "BUF",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ABR249174",
+        "source_name": "Sid Abramowitz",
+        "pfr_id": "AbraSi20",
+        "espn_id": null,
+        "latest_team": "IND",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ABR390978",
+        "source_name": "Josh Abrams",
+        "pfr_id": null,
+        "espn_id": null,
+        "latest_team": "GB",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ABR426540",
+        "source_name": "Bobby Abrams",
+        "pfr_id": "AbraBo20",
+        "espn_id": "7177",
+        "latest_team": "NE",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ACH207645",
+        "source_name": "Steve Ache",
+        "pfr_id": "AcheSt20",
+        "espn_id": null,
+        "latest_team": "MIN",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ACH415290",
+        "source_name": "George Achica",
+        "pfr_id": "AchiGe20",
+        "espn_id": null,
+        "latest_team": "IND",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ACK207645",
+        "source_name": "Bill Acker",
+        "pfr_id": "AckeBi20",
+        "espn_id": null,
+        "latest_team": "KC",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ACK415290",
+        "source_name": "Rick Ackerman",
+        "pfr_id": "AckeRi20",
+        "espn_id": null,
+        "latest_team": "LV",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ACK622935",
+        "source_name": "Ron Acks",
+        "pfr_id": "AcksRo20",
+        "espn_id": null,
+        "latest_team": "GB",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ACO415291",
+        "source_name": "Fred Acorn",
+        "pfr_id": "AcorFr20",
+        "espn_id": null,
+        "latest_team": "TB",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA083058",
+        "source_name": "Mike Adamle",
+        "pfr_id": "AdamMi01",
+        "espn_id": null,
+        "latest_team": "CHI",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA102090",
+        "source_name": "Theo Adams",
+        "pfr_id": "AdamTh20",
+        "espn_id": null,
+        "latest_team": "PHI",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA110744",
+        "source_name": "Tony Adams",
+        "pfr_id": "AdamTo00",
+        "espn_id": null,
+        "latest_team": "MIN",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA166116",
+        "source_name": "Curtis Adams",
+        "pfr_id": "AdamCu00",
+        "espn_id": null,
+        "latest_team": "LAC",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA222240",
+        "source_name": "Brent Adams",
+        "pfr_id": "AdamBr20",
+        "espn_id": null,
+        "latest_team": "LA",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA229740",
+        "source_name": "David Adams",
+        "pfr_id": "AdamDa20",
+        "espn_id": null,
+        "latest_team": "DAL",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA249174",
+        "source_name": "Doug Adams",
+        "pfr_id": "AdamDo20",
+        "espn_id": null,
+        "latest_team": "CIN",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA276860",
+        "source_name": "Earnest Adams",
+        "pfr_id": "AdamEa20",
+        "espn_id": null,
+        "latest_team": "DET",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA324014",
+        "source_name": "Harry Adams",
+        "pfr_id": null,
+        "espn_id": "16677",
+        "latest_team": "LA",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA470662",
+        "source_name": "Julius Adams",
+        "pfr_id": "AdamJu00",
+        "espn_id": null,
+        "latest_team": "NE",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA504348",
+        "source_name": "Mike Adams",
+        "pfr_id": "AdamMi00",
+        "espn_id": null,
+        "latest_team": "PIT",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      },
+      {
+        "source_family": "nflverse_players",
+        "source_id_type": "gsis_id_esb_fallback",
+        "source_token": "ADA510348",
+        "source_name": "Michael Adams",
+        "pfr_id": "AdamMi20",
+        "espn_id": null,
+        "latest_team": "ARI",
+        "reason": "gsis_id is not a valid GSIS format (00-#######); esb fallback",
+        "resolution_status": "UNRESOLVED"
+      }
+    ]
+  },
+  "conflicting_alternate_ids": [
+    {
+      "source_family": "nflverse_players",
+      "source_id_type": "esb_id",
+      "source_token": "EKE080143",
+      "source_name": [
+        "Paschal Ekeji"
+      ],
+      "source_team_season_evidence": [
+        "NYJ"
+      ],
+      "candidate_player_ids": [
+        "00-0040793",
+        "EKE080143"
+      ],
+      "reason": "esb_id token maps to multiple gsis_id",
+      "resolution_status": "UNRESOLVED",
+      "notes": "excluded from accepted crosswalk; raw preserved+flagged in canonical_players"
+    },
+    {
+      "source_family": "nflverse_players",
+      "source_id_type": "esb_id",
+      "source_token": "PRY456541",
+      "source_name": [
+        "Layne Pryor"
+      ],
+      "source_team_season_evidence": [
+        "HOU"
+      ],
+      "candidate_player_ids": [
+        "00-0040792",
+        "PRY456541"
+      ],
+      "reason": "esb_id token maps to multiple gsis_id",
+      "resolution_status": "UNRESOLVED",
+      "notes": "excluded from accepted crosswalk; raw preserved+flagged in canonical_players"
+    },
+    {
+      "source_family": "nflverse_players",
+      "source_id_type": "smart_id",
+      "source_token": "3200454b-4508-0143-f843-6dec13481f10",
+      "source_name": [
+        "Paschal Ekeji"
+      ],
+      "source_team_season_evidence": [
+        "NYJ"
+      ],
+      "candidate_player_ids": [
+        "00-0040793",
+        "EKE080143"
+      ],
+      "reason": "smart_id token maps to multiple gsis_id",
+      "resolution_status": "UNRESOLVED",
+      "notes": "excluded from accepted crosswalk; raw preserved+flagged in canonical_players"
+    },
+    {
+      "source_family": "nflverse_players",
+      "source_id_type": "smart_id",
+      "source_token": "32005052-5945-6541-b8ff-63047ad93bc7",
+      "source_name": [
+        "Layne Pryor"
+      ],
+      "source_team_season_evidence": [
+        "HOU"
+      ],
+      "candidate_player_ids": [
+        "00-0040792",
+        "PRY456541"
+      ],
+      "reason": "smart_id token maps to multiple gsis_id",
+      "resolution_status": "UNRESOLVED",
+      "notes": "excluded from accepted crosswalk; raw preserved+flagged in canonical_players"
+    }
+  ],
+  "unmatched_pfr_ids": [
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "AndeAl01",
+      "source_name": [
+        "Alec Anderson"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "BUF"
+        ],
+        "seasons": [
+          2024,
+          2025
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0037428"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "BatePh00",
+      "source_name": [
+        "Phil Bates"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "SEA"
+        ],
+        "seasons": [
+          2014
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr matches only a non-GSIS (esb-fallback) players row; no valid GSIS",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "BrowFr01",
+      "source_name": [
+        "Fred Brown"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "DEN"
+        ],
+        "seasons": [
+          2019,
+          2020
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0033994"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "BrowJo03",
+      "source_name": [
+        "Jonathan Brown"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "JAX"
+        ],
+        "seasons": [
+          2020
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0001967",
+        "00-0030888"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "CartNa00",
+      "source_name": [
+        "Nathan Carter"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "ATL"
+        ],
+        "seasons": [
+          2025
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "CartTJ00",
+      "source_name": [
+        "T.J. Carter"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "LA"
+        ],
+        "seasons": [
+          2022
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0035916",
+        "00-0037052"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "CartTJ01",
+      "source_name": [
+        "T.J. Carter"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "LA"
+        ],
+        "seasons": [
+          2022
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0035916",
+        "00-0037052"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "CoopBu00",
+      "source_name": [
+        "Bump Cooper"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "BAL"
+        ],
+        "seasons": [
+          2024
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "CudjYa00",
+      "source_name": [
+        "Yannick Cudjoe-Virgil"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "TEN"
+        ],
+        "seasons": [
+          2015
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "FarmGe02",
+      "source_name": [
+        "George Farmer"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "SEA"
+        ],
+        "seasons": [
+          2016
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0031746"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "HallGa01",
+      "source_name": [
+        "Gabe Hall"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "PHI"
+        ],
+        "seasons": [
+          2025
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0024578",
+        "00-0039265"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "HammJe01",
+      "source_name": [
+        "Je'Ron Hamm"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "SF",
+          "WAS"
+        ],
+        "seasons": [
+          2015,
+          2016
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0030805"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "HenrMa02",
+      "source_name": [
+        "Marcus Henry"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "ARI",
+          "DAL"
+        ],
+        "seasons": [
+          2020,
+          2021
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0026311",
+        "00-0032877"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "JameRo99",
+      "source_name": [
+        "Robert James"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "BAL",
+          "KC"
+        ],
+        "seasons": [
+          2013
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0026278"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "JohnIs03",
+      "source_name": [
+        "Isaiah Johnson"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "MIA"
+        ],
+        "seasons": [
+          2025
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0031657",
+        "00-0032749",
+        "00-0034980",
+        "00-0039483"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "JoneJa16",
+      "source_name": [
+        "Jacoby Jones"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "WAS"
+        ],
+        "seasons": [
+          2025
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0025460",
+        "00-0040317"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "LoveJo02",
+      "source_name": [
+        "John Lovett"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "GB"
+        ],
+        "seasons": [
+          2020
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0035161",
+        "00-0037234"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "MartAd00",
+      "source_name": [
+        "Adrian Martinez"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "SF"
+        ],
+        "seasons": [
+          2025
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0027487",
+        "00-0038658"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "McCrRo00",
+      "source_name": [
+        "Rob McCray"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "CLE"
+        ],
+        "seasons": [
+          2019
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "MeadNa00",
+      "source_name": [
+        "Nate Meadors"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "MIN"
+        ],
+        "seasons": [
+          2019,
+          2020
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "MillJo01",
+      "source_name": [
+        "Jordan Miller"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "JAX"
+        ],
+        "seasons": [
+          2013
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0028349",
+        "00-0035285",
+        "00-0039570"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "MurrBi00",
+      "source_name": [
+        "Bill Murray"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "CHI",
+          "NE"
+        ],
+        "seasons": [
+          2022,
+          2024
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0036093"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "OkoyCJ00",
+      "source_name": [
+        "CJ Okoye"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "BAL"
+        ],
+        "seasons": [
+          2025
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "ParkSt00",
+      "source_name": [
+        "Steven Parker"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "DAL",
+          "MIA",
+          "NYG"
+        ],
+        "seasons": [
+          2019,
+          2020,
+          2021
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0034736"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "ShenJo00",
+      "source_name": [
+        "John Samuel Shenker"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "LV"
+        ],
+        "seasons": [
+          2024
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "TaylAl02",
+      "source_name": [
+        "Alex Taylor-Prioleau"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "CLE",
+          "DAL"
+        ],
+        "seasons": [
+          2020,
+          2021,
+          2022
+        ]
+      },
+      "candidate_player_ids": [],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "no exact-name candidate; genuinely unresolved"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "WhitCo05",
+      "source_name": [
+        "Cody White"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "PIT",
+          "SEA"
+        ],
+        "seasons": [
+          2021,
+          2022,
+          2024,
+          2025
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0029522",
+        "00-0035891"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "WillCh06",
+      "source_name": [
+        "Chris Williams"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "CHI"
+        ],
+        "seasons": [
+          2014
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0026154",
+        "00-0026691",
+        "00-0035857"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "WillDa14",
+      "source_name": [
+        "Darryl Williams"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "JAX"
+        ],
+        "seasons": [
+          2022
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0017766",
+        "00-0035892"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "WillIs02",
+      "source_name": [
+        "Isaiah Williams"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "NYJ"
+        ],
+        "seasons": [
+          2021
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0026864",
+        "00-0033161",
+        "00-0039451"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    },
+    {
+      "source_family": "nflverse_snap_counts",
+      "source_id_type": "pfr_player_id",
+      "source_token": "WillRo08",
+      "source_name": [
+        "Rodney Williams"
+      ],
+      "source_team_season_evidence": {
+        "teams": [
+          "PIT"
+        ],
+        "seasons": [
+          2023,
+          2024
+        ]
+      },
+      "candidate_player_ids": [
+        "00-0017923"
+      ],
+      "reason": "pfr_player_id not present in players source",
+      "resolution_status": "UNRESOLVED",
+      "notes": "exact-normalized-name candidate(s) present for manual review; NOT auto-accepted"
+    }
+  ],
+  "null_gsis_measurements": [
+    {
+      "source_family": "nflverse_depth_charts",
+      "source_season": 2025,
+      "null_gsis_rows": 5577,
+      "null_gsis_rows_with_espn_id": 5577,
+      "espn_deterministically_resolvable": 999,
+      "distinct_espn_ids_null_gsis": 204,
+      "distinct_espn_ids_resolvable": 19,
+      "reason": "MEASUREMENT ONLY \u2014 no depth-chart/roster output built in Phase 2B",
+      "resolution_status": "MEASURED",
+      "notes": "conflict-free ESPN crosswalk coverage over 2025 depth null-gsis rows"
+    }
+  ],
+  "unexpected_collisions": []
+}

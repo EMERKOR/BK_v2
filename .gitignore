@@ -46,3 +46,11 @@ data/features/
 data/predictions/
 data/backtests/
 data/profiles/
+
+# v3 canonical generated outputs (reproducible via `python3 -m ball_knower_v3.canonical.build_all`)
+# The provenance registry (snapshots.json) and the frozen source snapshot (_sources/) stay tracked.
+data/v3/canonical/*.parquet
+
+# v3 Phase 2A frozen raw player sources (reproducible from the recorded URLs+hashes in
+# audit_v3_player_sources/manifests/). Manifests, reports, scripts, and tests stay tracked.
+data/v3/raw_player_sources/

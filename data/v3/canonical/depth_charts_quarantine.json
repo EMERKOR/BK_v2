@@ -1,0 +1,136 @@
+{
+  "unparseable_rank_count": 0,
+  "provisional_row_total": 5577,
+  "provisional_distinct_source_tokens": 204,
+  "measurements_by_season": {
+    "2010": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 38421,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 38421,
+      "provisional_rows": 0
+    },
+    "2011": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37941,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37941,
+      "provisional_rows": 0
+    },
+    "2012": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37312,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37312,
+      "provisional_rows": 0
+    },
+    "2013": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37066,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37066,
+      "provisional_rows": 0
+    },
+    "2014": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 32542,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 32542,
+      "provisional_rows": 0
+    },
+    "2015": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37058,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37058,
+      "provisional_rows": 0
+    },
+    "2016": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 36612,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 36612,
+      "provisional_rows": 0
+    },
+    "2017": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 36620,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 36620,
+      "provisional_rows": 0
+    },
+    "2018": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 36560,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 36560,
+      "provisional_rows": 0
+    },
+    "2019": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 36308,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 36308,
+      "provisional_rows": 0
+    },
+    "2020": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 36168,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 36168,
+      "provisional_rows": 0
+    },
+    "2021": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37487,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37487,
+      "provisional_rows": 0
+    },
+    "2022": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37780,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37780,
+      "provisional_rows": 0
+    },
+    "2023": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37327,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37327,
+      "provisional_rows": 0
+    },
+    "2024": {
+      "era": "weekly_2010_2024",
+      "raw_rows": 37312,
+      "null_gsis": 0,
+      "unparseable_rank": 0,
+      "canon_rows": 37312,
+      "provisional_rows": 0
+    },
+    "2025": {
+      "era": "timestamped_2025",
+      "raw_rows": 554215,
+      "null_gsis": 5577,
+      "unparseable_rank": 0,
+      "canon_rows": 548638,
+      "provisional_rows": 5577
+    }
+  },
+  "unparseable_rank_records": []
+}

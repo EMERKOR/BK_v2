@@ -1,0 +1,84 @@
+============================================================
+Ball Knower v2 Data Bootstrap
+============================================================
+Seasons: [2025]
+Weeks: all
+Data directory: /home/user/BK_v2/data
+Overwrite: True
+============================================================
+Fetching nflverse data for seasons: [2025]
+  Source: https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv
+  Retrieved 7548 total games from source
+  Filtered to 285 games for seasons [2025]
+
+Writing schedule files...
+  Wrote data/RAW_schedule/2025/schedule_week_01.csv
+  Wrote data/RAW_schedule/2025/schedule_week_02.csv
+  Wrote data/RAW_schedule/2025/schedule_week_03.csv
+  Wrote data/RAW_schedule/2025/schedule_week_04.csv
+  Wrote data/RAW_schedule/2025/schedule_week_05.csv
+  Wrote data/RAW_schedule/2025/schedule_week_06.csv
+  Wrote data/RAW_schedule/2025/schedule_week_07.csv
+  Wrote data/RAW_schedule/2025/schedule_week_08.csv
+  Wrote data/RAW_schedule/2025/schedule_week_09.csv
+  Wrote data/RAW_schedule/2025/schedule_week_10.csv
+  Wrote data/RAW_schedule/2025/schedule_week_11.csv
+  Wrote data/RAW_schedule/2025/schedule_week_12.csv
+  Wrote data/RAW_schedule/2025/schedule_week_13.csv
+  Wrote data/RAW_schedule/2025/schedule_week_14.csv
+  Wrote data/RAW_schedule/2025/schedule_week_15.csv
+  Wrote data/RAW_schedule/2025/schedule_week_16.csv
+  Wrote data/RAW_schedule/2025/schedule_week_17.csv
+  Wrote data/RAW_schedule/2025/schedule_week_18.csv
+  Wrote data/RAW_schedule/2025/schedule_week_19.csv
+  Wrote data/RAW_schedule/2025/schedule_week_20.csv
+  Wrote data/RAW_schedule/2025/schedule_week_21.csv
+  Wrote data/RAW_schedule/2025/schedule_week_22.csv
+  Schedule: 22 written, 0 skipped
+
+Writing scores files...
+  Wrote data/RAW_scores/2025/scores_week_01.csv
+  Wrote data/RAW_scores/2025/scores_week_02.csv
+  Wrote data/RAW_scores/2025/scores_week_03.csv
+  Wrote data/RAW_scores/2025/scores_week_04.csv
+  Wrote data/RAW_scores/2025/scores_week_05.csv
+  Wrote data/RAW_scores/2025/scores_week_06.csv
+  Wrote data/RAW_scores/2025/scores_week_07.csv
+  Wrote data/RAW_scores/2025/scores_week_08.csv
+  Wrote data/RAW_scores/2025/scores_week_09.csv
+  Wrote data/RAW_scores/2025/scores_week_10.csv
+  Wrote data/RAW_scores/2025/scores_week_11.csv
+  Wrote data/RAW_scores/2025/scores_week_12.csv
+  Wrote data/RAW_scores/2025/scores_week_13.csv
+  Wrote data/RAW_scores/2025/scores_week_14.csv
+  Wrote data/RAW_scores/2025/scores_week_15.csv
+  Wrote data/RAW_scores/2025/scores_week_16.csv
+  Wrote data/RAW_scores/2025/scores_week_17.csv
+  Wrote data/RAW_scores/2025/scores_week_18.csv
+  Wrote data/RAW_scores/2025/scores_week_19.csv
+  Wrote data/RAW_scores/2025/scores_week_20.csv
+  Wrote data/RAW_scores/2025/scores_week_21.csv
+  Wrote data/RAW_scores/2025/scores_week_22.csv
+  Scores: 22 written, 0 skipped
+
+Writing market files...
+  Wrote 22 spread files
+  Wrote 22 total files
+  Wrote 22 moneyline files
+  Market total: 66 written, 0 skipped
+
+Downloading play-by-play data...
+  Downloading PBP 2025 from nflverse...
+    Saved 48,771 plays to data/RAW_pbp/pbp_2025.parquet
+  PBP: 1 written, 0 skipped
+
+Downloading injury data...
+  Downloading injuries 2025 from nflverse...
+    Saved 6,068 injury records to data/RAW_injuries/injuries_2025.parquet
+  Injuries: 1 written, 0 skipped
+
+============================================================
+Bootstrap complete!
+============================================================
+
+---STDERR---
