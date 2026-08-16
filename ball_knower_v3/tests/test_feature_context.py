@@ -51,103 +51,199 @@ def repo_inputs():
             pass
 
 
+# eligibility-context builders (proof bounds come ONLY from a validated context)
+def strict_ctx(as_of=ASOF, kick=KICK):
+    return ctx.EligibilityContext(mode=ctx.HISTORICAL_STRICT, as_of=as_of, target_kickoff=kick)
+
+
+def research_ctx(as_of=ASOF, kick=KICK):
+    return ctx.EligibilityContext(mode=ctx.HISTORICAL_RESEARCH, as_of=as_of, target_kickoff=kick)
+
+
+def live_ctx(as_of=ASOF, kick=KICK, live_freeze_bound=None, frozen_input_keys=None):
+    return ctx.EligibilityContext(mode=ctx.LIVE_STATE, as_of=as_of, target_kickoff=kick,
+                                  live_freeze_bound=live_freeze_bound or as_of,
+                                  frozen_input_keys=frozen_input_keys)
+
+
+# ======================================================================
+# EligibilityContext construction guards
+# ======================================================================
+def test_live_state_context_requires_live_freeze_bound():
+    with pytest.raises(ValueError, match="live_freeze_bound"):
+        ctx.EligibilityContext(mode=ctx.LIVE_STATE, as_of=ASOF, target_kickoff=KICK)
+
+
+def test_historical_context_rejects_live_freeze_bound():
+    for mode in (ctx.HISTORICAL_STRICT, ctx.HISTORICAL_RESEARCH):
+        with pytest.raises(ValueError, match="must not carry a live_freeze_bound"):
+            ctx.EligibilityContext(mode=mode, as_of=ASOF, target_kickoff=KICK,
+                                   live_freeze_bound=ASOF)
+
+
+def test_live_freeze_bound_must_not_exceed_as_of():
+    with pytest.raises(ValueError, match="<= as_of"):
+        ctx.EligibilityContext(mode=ctx.LIVE_STATE, as_of=ASOF, target_kickoff=KICK,
+                               live_freeze_bound=T("2024-10-06T15:00:01Z"))
+
+
+def test_eligible_requires_eligibility_context():
+    with pytest.raises(TypeError):
+        ctx.eligible("EXACT", context=object(), source_known_time=ASOF)
+
+
 # ======================================================================
 # Eligibility gate — core rule and per-mode grade policy (§3)
 # ======================================================================
 def test_exact_within_bounds_eligible_all_modes():
-    for mode in ctx.VALID_CONTEXT_MODES:
-        ok, ug, ut, _ = ctx.eligible("EXACT", mode=mode, as_of=ASOF, target_kickoff=KICK,
-                                     known_time=T("2024-10-05T12:00:00Z"))
+    for c in (strict_ctx(), research_ctx(), live_ctx()):
+        ok, ug, ut, _ = ctx.eligible("EXACT", context=c, source_known_time=T("2024-10-05T12:00:00Z"))
         assert ok and ug == "EXACT" and ut == T("2024-10-05T12:00:00Z")
 
 
 def test_exact_after_as_of_rejected():
-    ok, *_ = ctx.eligible("EXACT", mode=ctx.HISTORICAL_STRICT, as_of=ASOF, target_kickoff=KICK,
-                          known_time=T("2024-10-06T16:00:00Z"))  # after as_of, before kickoff
+    ok, *_ = ctx.eligible("EXACT", context=strict_ctx(),
+                          source_known_time=T("2024-10-06T16:00:00Z"))  # after as_of, before kickoff
     assert not ok
 
 
 def test_exact_at_or_after_kickoff_rejected_same_game_guard():
     # known_time exactly at kickoff -> strict < kickoff fails (same-game boundary)
-    ok, *_ = ctx.eligible("EXACT", mode=ctx.LIVE_STATE, as_of=KICK, target_kickoff=KICK,
-                          known_time=KICK)
+    ok, *_ = ctx.eligible("EXACT", context=live_ctx(as_of=KICK, live_freeze_bound=KICK),
+                          source_known_time=KICK)
     assert not ok
 
 
-def test_snapshot_bound_enforced():
-    ok, ug, ut, _ = ctx.eligible("SNAPSHOT_BOUND", mode=ctx.HISTORICAL_STRICT, as_of=ASOF,
-                                 target_kickoff=KICK, snapshot_time=T("2024-10-01T00:00:00Z"))
+def test_snapshot_bound_uses_recorded_source_snapshot_time():
+    ok, ug, ut, _ = ctx.eligible("SNAPSHOT_BOUND", context=strict_ctx(),
+                                 source_snapshot_time=T("2024-10-01T00:00:00Z"))
     assert ok and ug == "SNAPSHOT_BOUND"
     # a snapshot AFTER as_of cannot be backdated into the earlier context
-    ok2, *_ = ctx.eligible("SNAPSHOT_BOUND", mode=ctx.HISTORICAL_STRICT, as_of=ASOF,
-                           target_kickoff=KICK, snapshot_time=T("2024-10-06T16:30:00Z"))
+    ok2, *_ = ctx.eligible("SNAPSHOT_BOUND", context=strict_ctx(),
+                           source_snapshot_time=T("2024-10-06T16:30:00Z"))
     assert not ok2
 
 
 def test_week_only_excluded_in_both_historical_modes():
-    for mode in (ctx.HISTORICAL_STRICT, ctx.HISTORICAL_RESEARCH):
-        ok, *_ = ctx.eligible("WEEK_ONLY", mode=mode, as_of=ASOF, target_kickoff=KICK,
-                              snapshot_time=T("2024-10-01T00:00:00Z"),
+    for c in (strict_ctx(), research_ctx()):
+        ok, *_ = ctx.eligible("WEEK_ONLY", context=c,
+                              source_snapshot_time=T("2024-10-01T00:00:00Z"),
                               event_time=T("2024-09-29T17:00:00Z"))
-        assert not ok, f"WEEK_ONLY must be excluded in {mode}"
+        assert not ok, f"WEEK_ONLY must be excluded in {c.mode}"
 
 
-def test_week_only_admitted_in_live_state_only_via_snapshot():
-    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", mode=ctx.LIVE_STATE, as_of=ASOF, target_kickoff=KICK,
-                                 snapshot_time=T("2024-10-01T00:00:00Z"))
-    assert ok and ug == "SNAPSHOT_BOUND"
-    # no snapshot -> not eligible even in LIVE_STATE
-    ok2, *_ = ctx.eligible("WEEK_ONLY", mode=ctx.LIVE_STATE, as_of=ASOF, target_kickoff=KICK)
-    assert not ok2
+def test_week_only_admitted_in_live_state_only_via_context_bound():
+    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=live_ctx())
+    assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF  # proof is the context bound, not a caller ts
 
 
 def test_retrospective_excluded_strict_admitted_research_prior_game():
     prior = T("2024-09-29T17:00:00Z")  # a strictly prior game
-    # strict: excluded
-    ok_s, *_ = ctx.eligible("RETROSPECTIVE_ONLY", mode=ctx.HISTORICAL_STRICT, as_of=ASOF,
-                            target_kickoff=KICK, event_time=prior)
+    ok_s, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=strict_ctx(), event_time=prior)
     assert not ok_s
-    # research: prior-game admitted, no availability proof required
-    ok_r, ug, ut, _ = ctx.eligible("RETROSPECTIVE_ONLY", mode=ctx.HISTORICAL_RESEARCH, as_of=ASOF,
-                                   target_kickoff=KICK, event_time=prior)
+    ok_r, ug, ut, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=research_ctx(), event_time=prior)
     assert ok_r and ug == "RETROSPECTIVE_ONLY" and ut == prior
 
 
 def test_retrospective_research_rejects_same_game_and_future():
-    # same-game (event at kickoff) and future (after kickoff) both rejected
     for et in (KICK, T("2024-10-13T17:00:00Z")):
-        ok, *_ = ctx.eligible("RETROSPECTIVE_ONLY", mode=ctx.HISTORICAL_RESEARCH, as_of=ASOF,
-                              target_kickoff=KICK, event_time=et)
+        ok, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=research_ctx(), event_time=et)
         assert not ok
 
 
-def test_retrospective_live_state_via_snapshot_bound():
-    ok, ug, _, _ = ctx.eligible("RETROSPECTIVE_ONLY", mode=ctx.LIVE_STATE, as_of=ASOF,
-                                target_kickoff=KICK, snapshot_time=T("2024-10-02T00:00:00Z"),
-                                event_time=T("2024-09-29T17:00:00Z"))
-    assert ok and ug == "SNAPSHOT_BOUND"
+def test_retrospective_live_state_via_context_bound():
+    ok, ug, ut, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=live_ctx(),
+                                 event_time=T("2024-09-29T17:00:00Z"))
+    assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF
 
 
 def test_same_game_event_guard_rejects_even_exact():
-    # a postgame observation mislabeled EXACT with event_time at kickoff is rejected
-    ok, *_ = ctx.eligible("EXACT", mode=ctx.LIVE_STATE, as_of=KICK, target_kickoff=KICK,
-                          known_time=T("2024-10-06T16:00:00Z"), event_time=KICK)
+    ok, *_ = ctx.eligible("EXACT", context=live_ctx(as_of=KICK, live_freeze_bound=KICK),
+                          source_known_time=T("2024-10-06T16:00:00Z"), event_time=KICK)
     assert not ok
 
 
-def test_unknown_mode_and_naive_time_raise():
-    with pytest.raises(ValueError):
-        ctx.eligible("EXACT", mode="WHENEVER", as_of=ASOF, target_kickoff=KICK,
-                     known_time=ASOF)
-    with pytest.raises(ValueError):
-        ctx.eligible("EXACT", mode=ctx.LIVE_STATE, as_of=pd.Timestamp("2024-10-06T15:00:00"),
-                     target_kickoff=KICK, known_time=ASOF)
-
-
 def test_unknown_grade_not_eligible():
-    ok, ug, ut, reason = ctx.eligible("MYSTERY", mode=ctx.LIVE_STATE, as_of=ASOF,
-                                      target_kickoff=KICK)
+    ok, ug, ut, reason = ctx.eligible("MYSTERY", context=live_ctx())
     assert not ok and ug is None and "unknown" in reason.lower()
+
+
+# ======================================================================
+# HARDENING (item 1): arbitrary timestamps cannot manufacture a PIT upgrade
+# ======================================================================
+def test_arbitrary_snapshot_time_cannot_upgrade_weekly_in_historical():
+    # a within-bounds source_snapshot_time is IGNORED for WEEK_ONLY/RETRO in
+    # historical modes — no upgrade path exists there at all.
+    for c in (strict_ctx(), research_ctx()):
+        for grade in ("WEEK_ONLY", "RETROSPECTIVE_ONLY"):
+            ok, *_ = ctx.eligible(grade, context=c,
+                                  source_snapshot_time=T("2024-10-01T00:00:00Z"))
+            assert not ok
+
+
+def test_arbitrary_snapshot_time_ignored_for_live_state_upgrade():
+    # In LIVE_STATE the upgrade uses the context's proven live_freeze_bound, NOT a
+    # caller timestamp. Supplying a bogus early source_snapshot_time changes nothing:
+    c = live_ctx(as_of=ASOF, live_freeze_bound=ASOF)
+    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=c,
+                                 source_snapshot_time=T("2000-01-01T00:00:00Z"))
+    assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF  # proof is the bound, not 2000-01-01
+
+
+def test_live_state_upgrade_requires_frozen_input_membership_when_declared():
+    c = live_ctx(frozen_input_keys={"data/v3/canonical/plays_2024.parquet"})
+    # an unknown source key is refused for the upgrade
+    ok, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=c,
+                          event_time=T("2024-09-29T17:00:00Z"),
+                          source_input_key="data/v3/canonical/NOT_A_FROZEN_INPUT.parquet")
+    assert not ok
+    # a declared frozen input is accepted
+    ok2, ug, _, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=c,
+                                 event_time=T("2024-09-29T17:00:00Z"),
+                                 source_input_key="data/v3/canonical/plays_2024.parquet")
+    assert ok2 and ug == "SNAPSHOT_BOUND"
+
+
+def test_genuine_snapshot_bound_source_still_usable_by_provenance():
+    # A genuine SNAPSHOT_BOUND source (e.g. a Phase 2E snapshot) is admitted by its
+    # recorded source_snapshot_time in every mode — this path is NOT an upgrade.
+    fp_snapshot = T("2025-01-13T17:32:06Z")
+    later_kick = T("2025-02-01T18:00:00Z")
+    later_asof = T("2025-01-20T00:00:00Z")
+    for mode_ctx in (
+        ctx.EligibilityContext(mode=ctx.HISTORICAL_STRICT, as_of=later_asof, target_kickoff=later_kick),
+        ctx.EligibilityContext(mode=ctx.LIVE_STATE, as_of=later_asof, target_kickoff=later_kick,
+                               live_freeze_bound=later_asof),
+    ):
+        ok, ug, ut, _ = ctx.eligible("SNAPSHOT_BOUND", context=mode_ctx,
+                                     source_snapshot_time=fp_snapshot)
+        assert ok and ug == "SNAPSHOT_BOUND" and ut == fp_snapshot
+
+
+# ======================================================================
+# build_eligibility_context — live_freeze_bound derives from the bound snapshot
+# ======================================================================
+def test_build_eligibility_context_live_state(repo_inputs, state_registry_file):
+    p = repo_inputs("g.stub", "x")
+    rec = ctx.create_feature_context(context_mode=ctx.LIVE_STATE, as_of_time=ASOF,
+                                     input_paths=[p], state_snapshot_id="state_live_1",
+                                     state_registry_path=state_registry_file)
+    ec = ctx.build_eligibility_context(rec, target_kickoff=KICK,
+                                       state_registry_path=state_registry_file)
+    assert ec.mode == "LIVE_STATE" and ec.live_freeze_bound == ASOF
+    # upgrade works through this genuinely-derived context
+    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=ec)
+    assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF
+
+
+def test_build_eligibility_context_historical_has_no_bound(repo_inputs):
+    p = repo_inputs("g.stub", "x")
+    rec = ctx.create_feature_context(context_mode=ctx.HISTORICAL_STRICT, as_of_time=ASOF,
+                                     input_paths=[p])
+    ec = ctx.build_eligibility_context(rec, target_kickoff=KICK)
+    assert ec.live_freeze_bound is None
+    ok, *_ = ctx.eligible("WEEK_ONLY", context=ec)
+    assert not ok
 
 
 # ======================================================================

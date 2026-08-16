@@ -75,75 +75,123 @@ def _to_utc(ts):
 
 
 # --------------------------------------------------------------------------
+# Eligibility context — the ONLY carrier of admissible proof bounds (§3, hardened)
+# --------------------------------------------------------------------------
+class EligibilityContext:
+    """A validated context that supplies the only admissible proof bounds.
+
+    The point-in-time gate reads proof exclusively from this object plus an
+    observation's OWN canonical provenance — never a free-floating caller
+    timestamp. Two proof bounds are kept deliberately distinct:
+
+      * a **source snapshot bound** — an observation's canonically recorded
+        ``source_snapshot_time`` (used only for a genuine ``SNAPSHOT_BOUND``-grade
+        observation, e.g. a Phase 2E source snapshot); and
+      * the **decision-state LIVE_FREEZE bound** — ``live_freeze_bound``, the
+        proven contemporaneous-freeze time of the bound ``LIVE_FREEZE`` snapshot.
+
+    ``live_freeze_bound`` is the ONLY thing that can upgrade a ``WEEK_ONLY`` /
+    ``RETROSPECTIVE_ONLY`` source to usable, it exists ONLY for ``LIVE_STATE``, and
+    it is set ONLY by validating a genuine bound snapshot (see
+    ``build_eligibility_context``). A caller cannot manufacture it.
+    """
+
+    def __init__(self, *, mode, as_of, target_kickoff, live_freeze_bound=None,
+                 frozen_input_keys=None, state_snapshot_id=None,
+                 feature_context_id=None):
+        if mode not in VALID_CONTEXT_MODES:
+            raise ValueError(f"unknown context_mode {mode!r}; must be one of {VALID_CONTEXT_MODES}")
+        self.mode = mode
+        self.as_of = require_aware_utc(as_of)
+        self.target_kickoff = require_aware_utc(target_kickoff)
+        lb = _to_utc(live_freeze_bound)
+        if mode == LIVE_STATE:
+            if lb is None:
+                raise ValueError("LIVE_STATE eligibility context requires a proven live_freeze_bound "
+                                 "(build it from the bound LIVE_FREEZE snapshot, never a free timestamp)")
+            if lb > self.as_of:
+                raise ValueError("live_freeze_bound must be <= as_of")
+        elif lb is not None:
+            raise ValueError(f"{mode} must not carry a live_freeze_bound (only LIVE_STATE binds one)")
+        self.live_freeze_bound = lb
+        self.frozen_input_keys = frozenset(frozen_input_keys or ())
+        self.state_snapshot_id = state_snapshot_id
+        self.feature_context_id = feature_context_id
+
+
+# --------------------------------------------------------------------------
 # Point-in-time eligibility gate (contract §3)
 # --------------------------------------------------------------------------
-def eligible(grade, *, mode, as_of, target_kickoff,
-             known_time=None, snapshot_time=None, event_time=None):
+def eligible(grade, *, context, source_known_time=None, source_snapshot_time=None,
+             event_time=None, source_input_key=None):
     """Decide whether one time-sensitive observation is admissible in a context.
 
-    Returns ``(is_eligible: bool, used_grade: str | None, used_time: Timestamp |
-    None, reason: str)``. ``used_time`` is the timestamp that proves availability.
-
-    Enforces the contract core rule (§3.2), strict on kickoff so a same-game or
-    future observation can never be eligible::
+    Returns ``(is_eligible, used_grade, used_time, reason)``. Enforces the core
+    rule (§3.2), strict on kickoff, using ONLY proven bounds::
 
         source_availability_time <= as_of_time < target_kickoff
 
-    and the per-mode grade policy (§3.3):
+    Per-mode grade policy (§3.3), with proof sources hardened:
 
-      * EXACT / SNAPSHOT_BOUND — admitted in every mode when their proving time is
-        within bounds.
-      * WEEK_ONLY — never admitted on week alone; only when a genuine
-        contemporaneous snapshot (LIVE_STATE) upgrades it to SNAPSHOT_BOUND.
-      * RETROSPECTIVE_ONLY — in LIVE_STATE only via a contemporaneous snapshot
-        bound; excluded in HISTORICAL_STRICT; in HISTORICAL_RESEARCH admitted ONLY
-        for a strictly prior game (its ``event_time < target_kickoff``), with no
-        availability proof required.
+      * EXACT — proven by the observation's canonical ``source_known_time``.
+      * SNAPSHOT_BOUND — proven by the observation's canonical
+        ``source_snapshot_time`` (recorded provenance; genuine source snapshots,
+        e.g. Phase 2E, remain usable exactly as recorded).
+      * WEEK_ONLY / RETROSPECTIVE_ONLY — NEVER proven by a caller-supplied
+        timestamp:
+          - HISTORICAL_STRICT: excluded;
+          - HISTORICAL_RESEARCH: only RETROSPECTIVE_ONLY, only for a strictly
+            prior game (``event_time < kickoff``); WEEK_ONLY excluded;
+          - LIVE_STATE: upgraded to SNAPSHOT_BOUND ONLY by the context's proven
+            ``live_freeze_bound``. ``source_snapshot_time`` is ignored for this
+            upgrade, so an arbitrary timestamp cannot manufacture one. When the
+            context records frozen inputs and ``source_input_key`` is given, the
+            source must be one of those frozen inputs.
 
-    ``event_time`` is the football event time of the observation's own game. When
-    supplied it also acts as a universal same-game/future guard for every grade.
+    ``event_time`` is the observation's own game time and acts as a universal
+    same-game/future guard for every grade.
     """
-    if mode not in VALID_CONTEXT_MODES:
-        raise ValueError(f"unknown context_mode {mode!r}; must be one of {VALID_CONTEXT_MODES}")
-    as_of = require_aware_utc(as_of)
-    kickoff = require_aware_utc(target_kickoff)
-    kt, st, et = _to_utc(known_time), _to_utc(snapshot_time), _to_utc(event_time)
+    if not isinstance(context, EligibilityContext):
+        raise TypeError("context must be an EligibilityContext (proof bounds come from it, "
+                        "not from free caller timestamps)")
+    as_of, kickoff = context.as_of, context.target_kickoff
+    kt, st, et = _to_utc(source_known_time), _to_utc(source_snapshot_time), _to_utc(event_time)
 
-    # Universal same-game / future guard: an observation whose own game kicks off
-    # at or after the target kickoff can never feed the target game's features.
+    # Universal same-game / future guard.
     if et is not None and et >= kickoff:
         return False, None, None, "event_time at/after target kickoff (same-game or future) — never eligible"
 
     def _bounded(t):
-        # availability proof must be <= as_of AND strictly before kickoff
         return t is not None and t <= as_of and t < kickoff
 
     if grade == "EXACT":
         if _bounded(kt):
-            return True, "EXACT", kt, "EXACT known_time within [<= as_of, < kickoff]"
-        return False, None, None, "EXACT known_time missing or outside [<= as_of, < kickoff]"
+            return True, "EXACT", kt, "EXACT source_known_time within [<= as_of, < kickoff]"
+        return False, None, None, "EXACT source_known_time missing or outside [<= as_of, < kickoff]"
 
     if grade == "SNAPSHOT_BOUND":
         if _bounded(st):
-            return True, "SNAPSHOT_BOUND", st, "SNAPSHOT_BOUND snapshot_time within [<= as_of, < kickoff]"
-        return False, None, None, "SNAPSHOT_BOUND snapshot_time missing or outside [<= as_of, < kickoff]"
+            return True, "SNAPSHOT_BOUND", st, "SNAPSHOT_BOUND source_snapshot_time within [<= as_of, < kickoff]"
+        return False, None, None, "SNAPSHOT_BOUND source_snapshot_time missing or outside [<= as_of, < kickoff]"
 
-    if grade == "WEEK_ONLY":
-        if mode == LIVE_STATE and _bounded(st):
-            return True, "SNAPSHOT_BOUND", st, "WEEK_ONLY upgraded by contemporaneous snapshot (LIVE_STATE)"
-        return False, None, None, "WEEK_ONLY excluded (no contemporaneous snapshot bound)"
-
-    if grade == "RETROSPECTIVE_ONLY":
-        if mode == LIVE_STATE:
-            if _bounded(st):
-                return True, "SNAPSHOT_BOUND", st, "RETROSPECTIVE_ONLY upgraded by contemporaneous snapshot (LIVE_STATE)"
-            return False, None, None, "RETROSPECTIVE_ONLY needs a contemporaneous snapshot bound in LIVE_STATE"
-        if mode == HISTORICAL_STRICT:
-            return False, None, None, "RETROSPECTIVE_ONLY excluded in HISTORICAL_STRICT"
-        # HISTORICAL_RESEARCH: strictly prior game only; no availability proof required.
-        if et is not None and et < kickoff:
-            return True, "RETROSPECTIVE_ONLY", et, "RETROSPECTIVE_ONLY prior-game admitted (HISTORICAL_RESEARCH)"
-        return False, None, None, "RETROSPECTIVE_ONLY not a strictly prior game (event_time missing or >= kickoff)"
+    if grade in ("WEEK_ONLY", "RETROSPECTIVE_ONLY"):
+        if context.mode == HISTORICAL_STRICT:
+            return False, None, None, f"{grade} excluded in HISTORICAL_STRICT"
+        if context.mode == HISTORICAL_RESEARCH:
+            if grade == "RETROSPECTIVE_ONLY" and et is not None and et < kickoff:
+                return True, "RETROSPECTIVE_ONLY", et, "RETROSPECTIVE_ONLY prior-game admitted (HISTORICAL_RESEARCH)"
+            return False, None, None, (f"{grade} not admissible in HISTORICAL_RESEARCH "
+                                       f"(only strictly prior-game RETROSPECTIVE_ONLY)")
+        # LIVE_STATE: the ONLY proof is the validated context's live_freeze_bound.
+        lb = context.live_freeze_bound
+        if lb is None:
+            return False, None, None, "LIVE_STATE context has no proven live_freeze_bound"
+        if source_input_key is not None and context.frozen_input_keys and \
+                source_input_key not in context.frozen_input_keys:
+            return False, None, None, f"source {source_input_key!r} is not a frozen input of this context"
+        if _bounded(lb):
+            return True, "SNAPSHOT_BOUND", lb, "WEEK_ONLY/RETROSPECTIVE_ONLY upgraded by the bound LIVE_FREEZE (LIVE_STATE)"
+        return False, None, None, "live_freeze_bound outside [<= as_of, < kickoff]"
 
     return False, None, None, f"unknown point_in_time_grade {grade!r}"
 
@@ -330,3 +378,34 @@ def create_feature_context(*, context_mode, as_of_time, input_paths,
         "inputs": {"frozen_inputs": frozen_inputs},
         "identity": identity,
     }
+
+
+# --------------------------------------------------------------------------
+# Build the eligibility context (proof bounds) from a validated record
+# --------------------------------------------------------------------------
+def build_eligibility_context(context_record, *, target_kickoff,
+                              state_registry_path=None) -> EligibilityContext:
+    """Derive the `EligibilityContext` for a target game from a feature-context
+    record.
+
+    For ``LIVE_STATE`` this RE-VALIDATES the bound ``LIVE_FREEZE`` decision-state
+    snapshot and takes ``live_freeze_bound`` from the snapshot's proven
+    ``as_of_time`` — never from the caller. Historical contexts carry no
+    ``live_freeze_bound``. This is the only supported way to obtain a context
+    capable of upgrading a WEEK_ONLY / RETROSPECTIVE_ONLY source.
+    """
+    mode = context_record.get("context_mode")
+    as_of = context_record.get("as_of_time")
+    frozen = (context_record.get("inputs", {}) or {}).get("frozen_inputs", {}) or {}
+    sid = context_record.get("state_snapshot_id")
+    live_freeze_bound = None
+    if mode == LIVE_STATE:
+        snap = validate_live_state_snapshot(sid, as_of, registry_path=state_registry_path)
+        # The proven contemporaneous-freeze bound is the bound snapshot's own
+        # as_of_time (LIVE_FREEZE froze BK's inputs at that instant). This is the
+        # decision-state LIVE_FREEZE bound, distinct from any source snapshot time.
+        live_freeze_bound = snap.get("as_of_time")
+    return EligibilityContext(
+        mode=mode, as_of=as_of, target_kickoff=target_kickoff,
+        live_freeze_bound=live_freeze_bound, frozen_input_keys=frozen.keys(),
+        state_snapshot_id=sid, feature_context_id=context_record.get("feature_context_id"))
