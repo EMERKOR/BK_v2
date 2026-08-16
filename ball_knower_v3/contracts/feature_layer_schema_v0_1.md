@@ -29,8 +29,16 @@ reference only and do not control any decision here.
 The feature layer converts **trusted canonical facts** into **reproducible
 pregame objective measurements**. It answers exactly one question:
 
-> Given only what was knowable before a specific game's kickoff, what objective,
-> reproducible quantities can we measure from the canonical tables?
+> Under a selected feature context, using only canonical evidence that is
+> *eligible for that context* before a specific game's kickoff, what objective,
+> reproducible quantities can we measure?
+
+"Eligible" is defined by the context mode and the point-in-time policy
+(Section 3), not by a blanket claim that every input's historical publication
+state was provable. A `HISTORICAL_RESEARCH` build may use strictly prior-game
+observations whose exact historical availability cannot be proven; those inputs
+are eligible under that context precisely because the context declares that
+weaker standard, and the leakage boundaries (Section 9) still hold.
 
 The v3 data flow is:
 
@@ -102,20 +110,21 @@ Rules:
    `state_snapshot_id`. They carry `state_snapshot_id = null` and use their own
    `feature_context_id`. Do not create fake historical decision-state snapshots.
 3. `HISTORICAL_RESEARCH` **never** permits future-game or same-game leakage. It
-   is more permissive than `HISTORICAL_STRICT` only in that it may admit an
-   eligible **prior-game** observation whose historical publication timestamp
-   cannot be proven (e.g. mutable nflverse PBP latest-state assets, retrospective
-   FTN files). It is never a licence to relax the kickoff or same-game boundary.
+   is more permissive than `HISTORICAL_STRICT` only in that it may admit a
+   **strictly prior-game `RETROSPECTIVE_ONLY`** observation whose historical
+   publication timestamp cannot be proven (e.g. mutable nflverse PBP latest-state
+   assets, retrospective FTN files, eligible retrospective FantasyPoints shares).
+   It does **not** admit generic `WEEK_ONLY` data (Section 3.3), and it is never a
+   licence to relax the kickoff or same-game boundary.
 4. A single feature build has exactly one `context_mode`. Mixing eligibility
    policies inside one build is forbidden.
 
-> **Naming note (flagged for approval, Section 16):** Phase 2D's decision-state
-> registry uses `context_mode ∈ {HISTORICAL_STRICT, LIVE_FREEZE}`. This contract
-> introduces the feature-layer name `LIVE_STATE` for the context that *binds to*
-> a `LIVE_FREEZE` state snapshot, and adds a third feature-only mode
-> `HISTORICAL_RESEARCH` that has no state-snapshot analogue. The mapping
-> `LIVE_STATE feature context → LIVE_FREEZE state snapshot` must be confirmed, or
-> the feature layer renamed to reuse `LIVE_FREEZE`, before implementation.
+> **Naming note (APPROVED):** Phase 2D's decision-state registry uses
+> `context_mode ∈ {HISTORICAL_STRICT, LIVE_FREEZE}`. This contract introduces the
+> feature-layer name `LIVE_STATE` for the context that *binds to* a `LIVE_FREEZE`
+> state snapshot, and adds a third feature-only mode `HISTORICAL_RESEARCH` that
+> has no state-snapshot analogue. The mapping `LIVE_STATE feature context →
+> LIVE_FREEZE state snapshot` is approved (human decision, this revision).
 
 ---
 
@@ -167,9 +176,17 @@ source_availability_time  <=  as_of_time  <  target_kickoff
 | `RETROSPECTIVE_ONLY` | eligible only via a genuine contemporaneous snapshot time ≤ `as_of_time` | **excluded** | eligible **only for a strictly prior game** whose `event_time < target_kickoff`; never same-game |
 
 `HISTORICAL_STRICT` therefore admits only `EXACT` and `SNAPSHOT_BOUND`, exactly as
-Phase 2D's `eligible(...)` gate does. `HISTORICAL_RESEARCH` additionally admits
-prior-game `RETROSPECTIVE_ONLY`/`WEEK_ONLY` observations, and only those, and
-never for the target game itself.
+Phase 2D's `eligible(...)` gate does.
+
+`HISTORICAL_RESEARCH` admits `EXACT` and `SNAPSHOT_BOUND` on the same terms, and
+**additionally** admits **strictly prior-game `RETROSPECTIVE_ONLY`**
+observations — historical PBP/FTN and eligible retrospective FantasyPoints shares
+whose exact historical publication state cannot be proven — and only those. It
+does **not** admit generic `WEEK_ONLY` observations: a `WEEK_ONLY` source stays
+excluded unless a genuine contemporaneous snapshot upgrades it to
+`SNAPSHOT_BOUND` (at which point it is admitted as `SNAPSHOT_BOUND`, not as
+`WEEK_ONLY`). No `RETROSPECTIVE_ONLY` observation is ever admitted for the target
+game itself, in any mode.
 
 ## 3.4 No fabricated timestamps
 
@@ -325,6 +342,142 @@ injury severity, player quality, or replacement value. These are later layers.
 edge. This table is a factual restatement of schedule/environment truth scoped to
 a feature context; it introduces no judgment.
 
+## 5.4 Feature definitions v0.1 (pinned)
+
+Every calculated feature below has an **explicit numerator and denominator**
+defined only over canonical fields that actually exist. No feature may be
+implemented until its definition here is approved.
+
+### 5.4.1 Available canonical fields and their limits
+
+`canonical_plays` retains only: `play_type`, `yards_gained`, `epa`, `success`,
+`touchdown`, `sack`, `interception`, `fumble_lost`, `first_down_rush`,
+`first_down_pass`, `air_yards`, `down`, `ydstogo`, `qtr`, `yardline_100`,
+`goal_to_go`, score/clock state, `posteam`/`defteam` (BK-normalized), and the
+passer/rusher/receiver/sack/interception player IDs. It **does not** retain
+nflverse's `pass`, `rush`, `qb_dropback`, or `qb_scramble` indicator columns.
+
+nflverse `play_type` semantics used below (documented, not re-derived):
+
+- `play_type == 'pass'` counts pass attempts **and sacks** (a sack is charged as
+  a pass play); designed **scrambles are `play_type == 'run'`**;
+- `play_type == 'run'` counts designed runs **and QB scrambles** (kneels are
+  `'qb_kneel'`, spikes `'qb_spike'`);
+- `success` is the source indicator (1 when `epa > 0`);
+- `sack == 1` marks the sack play (which is also `play_type == 'pass'`).
+
+**Consequence (open decision D1, Section 16):** because the dropback/scramble
+indicators are absent, a strict "dropback" (attempts + sacks + scrambles) and a
+strict "carry" (rush attempts excluding scrambles) cannot be reconstructed
+exactly. v0.1 therefore uses documented `play_type` proxies:
+
+- **dropback proxy** = `play_type == 'pass'` (includes sacks, **excludes**
+  scrambles);
+- **carry proxy** = `play_type == 'run'` (includes scrambles, **excludes**
+  kneels/spikes).
+
+The alternative — adding `pass`/`rush`/`qb_dropback`/`qb_scramble` to
+`canonical_plays` in a separate canonical revision before the feature build — is
+recorded as decision D1. It is **out of scope for this feature contract** and
+must not be done as a side effect.
+
+### 5.4.2 Shared play universes
+
+For a team `T` and a completed prior game `G` (`is_final == true`), over
+`canonical_plays` rows with `game_id == G`:
+
+- **offensive scrimmage plays** — `posteam == T` and `play_type ∈ {'pass','run'}`;
+- **defensive scrimmage plays faced** — `defteam == T` and
+  `play_type ∈ {'pass','run'}`;
+- **offensive dropback-proxy plays** — `posteam == T` and `play_type == 'pass'`;
+- **offensive carry-proxy plays** — `posteam == T` and `play_type == 'run'`;
+- **defensive dropback-proxy plays faced** — `defteam == T` and
+  `play_type == 'pass'`.
+
+Special teams, `qb_kneel`, `qb_spike`, `no_play`, and null `play_type` are
+excluded from every scrimmage universe. Rows with a null value in the metric
+(`epa`, `success`, `yards_gained`, `down`) are excluded from that metric's
+denominator (never counted as zero).
+
+### 5.4.3 Team-feature definitions (`pregame_team_features`)
+
+Each is aggregated over the rolling window (Section 6); "mean/rate over the
+window" means pooled over all eligible prior plays in the window, not a mean of
+per-game rates, unless stated. Points features aggregate per game.
+
+| Feature | Numerator | Denominator |
+|---|---|---|
+| `points_scored` | team's own final score in each prior game (`canonical_games`) | number of prior completed games in window (per-game mean) |
+| `points_allowed` | opponent's final score in each prior game | number of prior completed games in window (per-game mean) |
+| `off_epa_per_play` | Σ `epa` over offensive scrimmage plays | count of those plays |
+| `def_epa_per_play` | Σ `epa` over defensive scrimmage plays faced | count of those plays |
+| `pass_epa_per_dropback` | Σ `epa` over offensive dropback-proxy plays | count of dropback-proxy plays |
+| `rush_epa_per_carry` | Σ `epa` over offensive carry-proxy plays | count of carry-proxy plays |
+| `off_success_rate` | Σ `success` over offensive scrimmage plays | count of those plays |
+| `def_success_rate` | Σ `success` over defensive scrimmage plays faced | count of those plays |
+| `pass_success_rate` | Σ `success` over offensive dropback-proxy plays | count of dropback-proxy plays |
+| `rush_success_rate` | Σ `success` over offensive carry-proxy plays | count of carry-proxy plays |
+| `explosive_pass_rate` | count(dropback-proxy plays with `yards_gained >= 20`) | count of dropback-proxy plays |
+| `explosive_rush_rate` | count(carry-proxy plays with `yards_gained >= 10`) | count of carry-proxy plays |
+| `pass_rate` | count of offensive dropback-proxy plays | count of offensive scrimmage plays |
+| `early_down_pass_rate` | count(dropback-proxy plays with `down ∈ {1,2}`) | count(offensive scrimmage plays with `down ∈ {1,2}`) |
+| `sacks_allowed_rate` | Σ `sack` over offensive dropback-proxy plays | count of offensive dropback-proxy plays |
+| `sack_rate` (defense) | Σ `sack` over defensive dropback-proxy plays faced | count of defensive dropback-proxy plays faced |
+
+Explosive thresholds are **pinned and approved**: explosive pass = gain
+`>= 20` yards; explosive rush = gain `>= 10` yards (inclusive). Sacks carry
+negative `yards_gained`, so they never count as explosive. `def_epa_per_play`
+and `def_success_rate` are stored as factual "allowed" means with **no sign flip
+and no opponent adjustment** — lower is better for a defense, but the layer makes
+no such judgment.
+
+### 5.4.4 FTN tendency definitions (`pregame_team_features`, 2022+ only)
+
+From `canonical_ftn` (which retains every raw FTN field) joined to
+`canonical_plays` on `game_id + play_id`. FTN coverage is **2022–2025 only**; for
+any window game without an FTN row these features are **null**, and FTN coverage
+counts are reported separately in the coverage metadata (they are not the same as
+PBP `games_available`).
+
+| Feature | Numerator | Denominator |
+|---|---|---|
+| `motion_rate` | count(FTN offensive plays with `is_motion == true`) | count of FTN-charted offensive scrimmage plays with non-null `is_motion` |
+| `play_action_rate` | count(FTN offensive dropback-proxy plays with `is_play_action == true`) | count of FTN-charted offensive dropback-proxy plays with non-null `is_play_action` |
+| `rpo_rate` | count(FTN offensive scrimmage plays with `is_rpo == true`) | count of FTN-charted offensive scrimmage plays with non-null `is_rpo` |
+| `def_mean_pass_rushers` | Σ `n_pass_rushers` over FTN defensive dropback-proxy plays faced | count of those plays with non-null `n_pass_rushers` |
+| `def_mean_blitzers` | Σ `n_blitzers` over FTN defensive dropback-proxy plays faced | count of those plays with non-null `n_blitzers` |
+
+`n_blitzers` / `n_pass_rushers` are **defensive** charting fields and are exposed
+as factual means, not thresholded "blitz rates" (a threshold would be a
+definition choice deferred out of v0.1). Additional FTN factual fields may be
+added later under the same numerator/denominator discipline; none is implemented
+until pinned here.
+
+### 5.4.5 Player-feature definitions (`pregame_player_features`)
+
+Factual current-state fields (position, position group, roster status, depth
+slot/rank, raw injury/report/practice status, canonical PIT/availability grades)
+are carried through from the approved player layer subject to eligibility at
+`as_of_time`; they are copies of canonical facts, not calculations.
+
+Calculated prior-use features, over completed prior games whose postgame source
+was eligible by `as_of_time`:
+
+| Feature | Numerator | Denominator |
+|---|---|---|
+| `games_played_prior` | count of prior games with an eligible `canonical_participation` row for the player | — (a count) |
+| `games_started_prior` | count of prior games with `was_starter == true` | — (a count); **null** where `was_starter` is null (unknown ≠ zero, per Phase 2C) |
+| `off_snap_share_mean` | Σ `offense_snap_share` over eligible prior games | count of eligible prior games with non-null `offense_snap_share` |
+| `def_snap_share_mean` | Σ `defense_snap_share` over eligible prior games | count of eligible prior games with non-null `defense_snap_share` |
+| `st_snap_share_mean` | Σ `special_teams_snap_share` over eligible prior games | count with non-null value |
+| `route_share_mean` (2025 only) | Σ eligible FantasyPoints route share over eligible prior games | count with an eligible non-null value |
+| `target_share_mean` (2025 only) | Σ eligible FantasyPoints target share over eligible prior games | count with an eligible non-null value |
+
+Route/target features exist **2025 only** (Phase 2E coverage) and only via the
+approved crosswalk + participation attribution. No expected workload,
+expected-to-play, injury severity, player quality, or replacement value is
+computed (Section 14).
+
 ---
 
 # 6. Rolling-window policy
@@ -369,11 +522,14 @@ zero to fill a short or empty window.
 - Do **not** silently blend prior-season games into current-season rolling
   values. Current-season rolling features are **current-season only** (matching
   the Phase 2D prior-participation season-boundary rule).
-- If prior-season history is exposed at all, keep it in **explicitly separate
-  fields** (e.g. a distinct `prior_season_*` family with its own coverage), so a
-  later rating/model layer can decide whether and how to combine, carry, or
-  regress it. The feature layer never makes that decision.
-- Season-to-date (`std`) does not cross a season boundary in v0.1.
+- **v0.1 exposes no prior-season feature fields at all** (human decision,
+  Section 16.1). All cross-season history — including any future `prior_season_*`
+  family — is deferred. When it is eventually introduced, it must live in
+  explicitly separate fields with their own coverage so a later rating/model layer
+  decides whether and how to combine, carry, or regress it; the feature layer
+  never makes that decision.
+- Every window (`last3`, `last5`, `std`) is bounded to the target game's season;
+  `std` does not cross a season boundary in v0.1.
 
 ---
 
@@ -559,7 +715,8 @@ The feature implementation is not complete until at least these pass. These are
 2. future-game PBP rejected;
 3. same-game FTN rejected;
 4. `HISTORICAL_STRICT` rejects retrospective PBP/FTN (`RETROSPECTIVE_ONLY`/`WEEK_ONLY` excluded);
-5. `HISTORICAL_RESEARCH` allows eligible **prior** retrospective observations (and only prior);
+5. `HISTORICAL_RESEARCH` allows eligible **strictly prior-game `RETROSPECTIVE_ONLY`** observations (historical PBP/FTN, eligible retrospective FantasyPoints shares) and only those, and only for a prior game;
+5a. `HISTORICAL_RESEARCH` **rejects generic `WEEK_ONLY`** observations unless a genuine contemporaneous snapshot upgrades them to `SNAPSHOT_BOUND`;
 6. source-known / snapshot bounds enforced (`source_availability_time <= as_of_time < kickoff`);
 7. a later source snapshot cannot be backdated into an earlier context;
 8. same-game FantasyPoints share rejected;
@@ -573,6 +730,8 @@ The feature implementation is not complete until at least these pass. These are
 **Correctness / semantics**
 
 15. last-3 and last-5 math verified against synthetic examples;
+15a. explosive thresholds verified against synthetic plays (gain 19/20/21 for pass; 9/10/11 for rush);
+15b. dropback-proxy (`play_type=='pass'`, sacks included, scrambles excluded) and carry-proxy (`play_type=='run'`) denominators verified on synthetic plays; every pinned rate's numerator/denominator matches §5.4;
 16. insufficient history remains explicit (coverage metadata, not a substituted value);
 17. null is not converted to zero (and zero not converted to null);
 18. duplicate primary keys fail;
@@ -590,36 +749,55 @@ The feature implementation is not complete until at least these pass. These are
 
 ---
 
-# 16. Decisions requiring human approval before Stage B
+# 16. Decisions
 
-1. **Context-mode naming.** Confirm the feature-layer mode name `LIVE_STATE` and
-   its mapping to a Phase 2D `LIVE_FREEZE` decision-state snapshot (Section 2.2),
-   versus reusing `LIVE_FREEZE` verbatim in the feature layer.
-2. **Feature-build registry mechanism.** Approve a **new** append-only
-   `data/v3/features/feature_registry.json` versus reusing the existing
-   state-registry machinery under a new namespace (Section 10.1). Either way it
-   stays separate from the canonical build registry.
-3. **`feature_definition_version` scope.** Confirm that thresholds and
-   denominators below are pinned by a single feature-definition version, and
-   approve their v0.1 values:
-   - **explosive pass / rush thresholds** (e.g. yardage cutoffs) — exact values
-     to be fixed and versioned;
-   - **rate denominators** — e.g. pass rate over all plays vs. non-penalty
-     offensive plays; early-down = downs 1–2; dropback / carry definitions for
-     EPA-per-dropback and EPA-per-carry; sack-rate and sacks-allowed denominators
-     — each must map to a canonical field whose semantics support it.
-4. **Rolling-window set.** Confirm v0.1 windows are exactly `last3`, `last5`,
-   `std`, with no EWMA/regression/decay (Section 6.1).
-5. **Prior-season exposure.** Confirm whether v0.1 exposes any `prior_season_*`
-   fields at all, or defers cross-season history entirely (Section 7).
-6. **Player-feature source admission.** Confirm which approved player/state/share
-   tables `pregame_player_features` may read in v0.1 (e.g. participation shares,
-   depth/roster/injury state, and the eligibility-gated FantasyPoints shares),
-   and confirm route/target features remain 2025-only per Phase 2E.
-7. **`HISTORICAL_RESEARCH` scope of admission.** Confirm that research mode admits
-   prior-game `RETROSPECTIVE_ONLY`/`WEEK_ONLY` PBP and FTN (and 2021–2024 snap
-   shares) as intended, and that this is acceptable given those sources' mutable /
-   unprovable historical publication state.
+## 16.1 Resolved in this revision (human decisions)
+
+These are approved and now fixed by this contract; they are not re-litigated in
+Stage B:
+
+- **Context-mode naming — APPROVED.** `LIVE_STATE` feature context binds to a
+  Phase 2D `LIVE_FREEZE` decision-state snapshot (Sections 2.2, 3.3).
+- **Separate feature-build registry — APPROVED.** Feature builds use a new
+  append-only mechanism separate from the canonical build registry and the
+  decision-state registry (Section 10.1). Whether it is a new
+  `feature_registry.json` file or the state-registry machinery under a new
+  namespace remains an implementation detail of Stage B step 1; the separation
+  itself is fixed.
+- **Rolling windows — APPROVED.** Exactly `last3`, `last5`, `std`; no
+  EWMA/regression/decay/weighting (Section 6.1).
+- **Prior-season fields — DEFERRED.** v0.1 exposes **no** `prior_season_*`
+  feature fields; all cross-season history is deferred (Section 7 updated
+  accordingly).
+- **Player-feature source admission — APPROVED (narrow).**
+  `pregame_player_features` reads **only** the existing canonical/player-layer and
+  Phase 2E tables (participation shares, roster/depth/injury state, and the
+  eligibility-gated FantasyPoints shares). Route/target features remain 2025-only
+  per Phase 2E. No new sources.
+- **`HISTORICAL_RESEARCH` admission — APPROVED (narrowed).** Research mode admits
+  strictly prior-game `RETROSPECTIVE_ONLY` observations only (historical PBP/FTN,
+  eligible retrospective FantasyPoints shares); it does **not** admit generic
+  `WEEK_ONLY` data (Section 3.3).
+- **Explosive thresholds — APPROVED.** Explosive pass = gain `>= 20`; explosive
+  rush = gain `>= 10` (Section 5.4.3).
+- **Non-explosive feature definitions — PROPOSED, PINNED for approval.** All
+  numerator/denominator definitions for pass rate, early-down pass rate,
+  EPA/dropback, EPA/carry, sack rate, sacks-allowed rate, success rates, and FTN
+  tendency rates are now explicit in Section 5.4. Confirm these before Stage B.
+
+## 16.2 Remaining open decision
+
+- **D1 — dropback/carry denominator source.** Because `canonical_plays` does not
+  retain nflverse `pass`/`rush`/`qb_dropback`/`qb_scramble`, v0.1's EPA/dropback,
+  EPA/carry, pass rate, sack rate, and sacks-allowed rate use documented
+  `play_type` proxies (dropback = `play_type=='pass'`, includes sacks / excludes
+  scrambles; carry = `play_type=='run'`, includes scrambles). **Decision needed:**
+  accept the `play_type` proxies for v0.1 (recommended — keeps the feature layer
+  purely downstream of the frozen canonical tables), **or** first add the missing
+  indicator columns to `canonical_plays` in a separate, separately-approved
+  canonical revision. This contract does not authorize any canonical change.
+
+Everything else required for Stage B is fixed by Sections 2–15.
 
 ---
 
