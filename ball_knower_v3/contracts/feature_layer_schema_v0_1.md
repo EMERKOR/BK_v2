@@ -264,15 +264,19 @@ metadata (Section 6.3).
 
 - points scored / points allowed
 - offensive EPA/play / defensive EPA/play
-- pass EPA per dropback
-- rush EPA per carry
+- pass-play EPA (`pass_play_epa`) / run-play EPA (`run_play_epa`)
 - offensive success rate / defensive success rate
-- pass success rate / rush success rate
-- explosive pass rate / explosive rush rate (thresholds versioned; Section 16)
+- pass success rate / run success rate (`run_success_rate`)
+- explosive pass rate / explosive rush rate (thresholds pinned; Section 5.4.3)
 - sack rate / sacks-allowed rate, **only** where canonical source semantics
   support the denominator
-- pass rate (overall)
+- pass-play rate (`pass_play_rate`, overall)
 - early-down pass rate
+
+Feature names deliberately avoid claiming semantics the canonical data cannot
+exactly provide: a **pass play** is `play_type == 'pass'` (includes sacks,
+**excludes** scrambles) and a **run play** is `play_type == 'run'` (includes
+scrambles); these are not exact "dropback" / "carry" counts (Section 5.4.1).
 - FTN motion rate (`is_motion`)
 - play-action rate (`is_play_action`)
 - RPO rate (`is_rpo`)
@@ -366,20 +370,21 @@ nflverse `play_type` semantics used below (documented, not re-derived):
 - `success` is the source indicator (1 when `epa > 0`);
 - `sack == 1` marks the sack play (which is also `play_type == 'pass'`).
 
-**Consequence (open decision D1, Section 16):** because the dropback/scramble
+**Consequence (decision D1 — RESOLVED):** because the dropback/scramble
 indicators are absent, a strict "dropback" (attempts + sacks + scrambles) and a
 strict "carry" (rush attempts excluding scrambles) cannot be reconstructed
-exactly. v0.1 therefore uses documented `play_type` proxies:
+exactly. v0.1 **accepts the `play_type` proxies** (human decision) and **does not
+reopen or rebuild `canonical_plays`** to add `qb_dropback`/`qb_scramble`:
 
-- **dropback proxy** = `play_type == 'pass'` (includes sacks, **excludes**
-  scrambles);
-- **carry proxy** = `play_type == 'run'` (includes scrambles, **excludes**
+- **pass play** = `play_type == 'pass'` (includes sacks, **excludes** scrambles);
+- **run play** = `play_type == 'run'` (includes scrambles, **excludes**
   kneels/spikes).
 
-The alternative — adding `pass`/`rush`/`qb_dropback`/`qb_scramble` to
-`canonical_plays` in a separate canonical revision before the feature build — is
-recorded as decision D1. It is **out of scope for this feature contract** and
-must not be done as a side effect.
+Proxy-dependent features are named for what the data exactly supports
+(`pass_play_epa`, `run_play_epa`, `run_success_rate`, `pass_play_rate`), never for
+"dropback" or "carry" semantics the canonical layer cannot provide. The canonical
+layer is unchanged; the feature layer stays strictly downstream of the frozen
+canonical tables.
 
 ### 5.4.2 Shared play universes
 
@@ -389,10 +394,11 @@ For a team `T` and a completed prior game `G` (`is_final == true`), over
 - **offensive scrimmage plays** — `posteam == T` and `play_type ∈ {'pass','run'}`;
 - **defensive scrimmage plays faced** — `defteam == T` and
   `play_type ∈ {'pass','run'}`;
-- **offensive dropback-proxy plays** — `posteam == T` and `play_type == 'pass'`;
-- **offensive carry-proxy plays** — `posteam == T` and `play_type == 'run'`;
-- **defensive dropback-proxy plays faced** — `defteam == T` and
-  `play_type == 'pass'`.
+- **offensive pass plays** — `posteam == T` and `play_type == 'pass'`
+  (includes sacks, excludes scrambles);
+- **offensive run plays** — `posteam == T` and `play_type == 'run'`
+  (includes scrambles, excludes kneels/spikes);
+- **defensive pass plays faced** — `defteam == T` and `play_type == 'pass'`.
 
 Special teams, `qb_kneel`, `qb_spike`, `no_play`, and null `play_type` are
 excluded from every scrimmage universe. Rows with a null value in the metric
@@ -411,18 +417,23 @@ per-game rates, unless stated. Points features aggregate per game.
 | `points_allowed` | opponent's final score in each prior game | number of prior completed games in window (per-game mean) |
 | `off_epa_per_play` | Σ `epa` over offensive scrimmage plays | count of those plays |
 | `def_epa_per_play` | Σ `epa` over defensive scrimmage plays faced | count of those plays |
-| `pass_epa_per_dropback` | Σ `epa` over offensive dropback-proxy plays | count of dropback-proxy plays |
-| `rush_epa_per_carry` | Σ `epa` over offensive carry-proxy plays | count of carry-proxy plays |
+| `pass_play_epa` | Σ `epa` over offensive pass plays | count of offensive pass plays |
+| `run_play_epa` | Σ `epa` over offensive run plays | count of offensive run plays |
 | `off_success_rate` | Σ `success` over offensive scrimmage plays | count of those plays |
 | `def_success_rate` | Σ `success` over defensive scrimmage plays faced | count of those plays |
-| `pass_success_rate` | Σ `success` over offensive dropback-proxy plays | count of dropback-proxy plays |
-| `rush_success_rate` | Σ `success` over offensive carry-proxy plays | count of carry-proxy plays |
-| `explosive_pass_rate` | count(dropback-proxy plays with `yards_gained >= 20`) | count of dropback-proxy plays |
-| `explosive_rush_rate` | count(carry-proxy plays with `yards_gained >= 10`) | count of carry-proxy plays |
-| `pass_rate` | count of offensive dropback-proxy plays | count of offensive scrimmage plays |
-| `early_down_pass_rate` | count(dropback-proxy plays with `down ∈ {1,2}`) | count(offensive scrimmage plays with `down ∈ {1,2}`) |
-| `sacks_allowed_rate` | Σ `sack` over offensive dropback-proxy plays | count of offensive dropback-proxy plays |
-| `sack_rate` (defense) | Σ `sack` over defensive dropback-proxy plays faced | count of defensive dropback-proxy plays faced |
+| `pass_success_rate` | Σ `success` over offensive pass plays | count of offensive pass plays |
+| `run_success_rate` | Σ `success` over offensive run plays | count of offensive run plays |
+| `explosive_pass_rate` | count(offensive pass plays with `yards_gained >= 20`) | count of offensive pass plays |
+| `explosive_rush_rate` | count(offensive run plays with `yards_gained >= 10`) | count of offensive run plays |
+| `pass_play_rate` | count of offensive pass plays | count of offensive scrimmage plays |
+| `early_down_pass_rate` | count(offensive pass plays with `down ∈ {1,2}`) | count(offensive scrimmage plays with `down ∈ {1,2}`) |
+| `sacks_allowed_rate` | Σ `sack` over offensive pass plays | count of offensive pass plays |
+| `sack_rate` (defense) | Σ `sack` over defensive pass plays faced | count of defensive pass plays faced |
+
+`pass_play_epa`, `run_play_epa`, `run_success_rate`, and `pass_play_rate` are
+named for the exact `play_type` universe they measure (pass plays include sacks
+and exclude scrambles; run plays include scrambles) and make **no** "per
+dropback" / "per carry" claim.
 
 Explosive thresholds are **pinned and approved**: explosive pass = gain
 `>= 20` yards; explosive rush = gain `>= 10` yards (inclusive). Sacks carry
@@ -434,18 +445,23 @@ no such judgment.
 ### 5.4.4 FTN tendency definitions (`pregame_team_features`, 2022+ only)
 
 From `canonical_ftn` (which retains every raw FTN field) joined to
-`canonical_plays` on `game_id + play_id`. FTN coverage is **2022–2025 only**; for
-any window game without an FTN row these features are **null**, and FTN coverage
-counts are reported separately in the coverage metadata (they are not the same as
-PBP `games_available`).
+`canonical_plays` on `game_id + play_id`. FTN coverage is **2022–2025 only**.
 
 | Feature | Numerator | Denominator |
 |---|---|---|
 | `motion_rate` | count(FTN offensive plays with `is_motion == true`) | count of FTN-charted offensive scrimmage plays with non-null `is_motion` |
-| `play_action_rate` | count(FTN offensive dropback-proxy plays with `is_play_action == true`) | count of FTN-charted offensive dropback-proxy plays with non-null `is_play_action` |
+| `play_action_rate` | count(FTN offensive pass plays with `is_play_action == true`) | count of FTN-charted offensive pass plays with non-null `is_play_action` |
 | `rpo_rate` | count(FTN offensive scrimmage plays with `is_rpo == true`) | count of FTN-charted offensive scrimmage plays with non-null `is_rpo` |
-| `def_mean_pass_rushers` | Σ `n_pass_rushers` over FTN defensive dropback-proxy plays faced | count of those plays with non-null `n_pass_rushers` |
-| `def_mean_blitzers` | Σ `n_blitzers` over FTN defensive dropback-proxy plays faced | count of those plays with non-null `n_blitzers` |
+| `def_mean_pass_rushers` | Σ `n_pass_rushers` over FTN defensive pass plays faced | count of those plays with non-null `n_pass_rushers` |
+| `def_mean_blitzers` | Σ `n_blitzers` over FTN defensive pass plays faced | count of those plays with non-null `n_blitzers` |
+
+**FTN window behavior (clarified).** An FTN feature is a **pooled aggregate over
+the window's eligible FTN observations**. A window game that lacks FTN coverage
+simply contributes nothing to the numerator/denominator: it **reduces
+`*_games_used`** (and the FTN-specific coverage counts) but does **not** null an
+otherwise valid multi-game aggregate. The feature is **null only when the window
+has zero eligible FTN observations** (e.g. a wholly pre-2022 window). FTN coverage
+counts are reported separately from PBP `games_available` (they are not the same).
 
 `n_blitzers` / `n_pass_rushers` are **defensive** charting fields and are exposed
 as factual means, not thresholded "blitz rates" (a threshold would be a
@@ -466,12 +482,23 @@ was eligible by `as_of_time`:
 | Feature | Numerator | Denominator |
 |---|---|---|
 | `games_played_prior` | count of prior games with an eligible `canonical_participation` row for the player | — (a count) |
-| `games_started_prior` | count of prior games with `was_starter == true` | — (a count); **null** where `was_starter` is null (unknown ≠ zero, per Phase 2C) |
+| `games_started_prior` | count of eligible prior games with **known** `was_starter == true` | — (a count); see rule below |
+| `games_started_status_known` | count of eligible prior games with a **non-null** `was_starter` | — (a count; the starter-status coverage denominator) |
 | `off_snap_share_mean` | Σ `offense_snap_share` over eligible prior games | count of eligible prior games with non-null `offense_snap_share` |
 | `def_snap_share_mean` | Σ `defense_snap_share` over eligible prior games | count of eligible prior games with non-null `defense_snap_share` |
 | `st_snap_share_mean` | Σ `special_teams_snap_share` over eligible prior games | count with non-null value |
 | `route_share_mean` (2025 only) | Σ eligible FantasyPoints route share over eligible prior games | count with an eligible non-null value |
 | `target_share_mean` (2025 only) | Σ eligible FantasyPoints target share over eligible prior games | count with an eligible non-null value |
+
+**`games_started_prior` rule (clarified).** Count only observations with a
+**known** `was_starter == true`. An **unknown** (null) `was_starter` never counts
+as a start (unknown ≠ false, per Phase 2C, where `was_starter` is currently null
+in `canonical_participation`). Starter-status coverage is exposed **separately**
+as `games_started_status_known` (the count of eligible prior games with a non-null
+`was_starter`). If there are **zero** known starter-status observations in the
+window, the calculated `games_started_prior` value is **null** (not `0`), and
+`games_started_status_known == 0` records why. This keeps "no player started zero
+games" distinct from "starter status was never recorded."
 
 Route/target features exist **2025 only** (Phase 2E coverage) and only via the
 approved crosswalk + participation attribution. No expected workload,
@@ -731,7 +758,9 @@ The feature implementation is not complete until at least these pass. These are
 
 15. last-3 and last-5 math verified against synthetic examples;
 15a. explosive thresholds verified against synthetic plays (gain 19/20/21 for pass; 9/10/11 for rush);
-15b. dropback-proxy (`play_type=='pass'`, sacks included, scrambles excluded) and carry-proxy (`play_type=='run'`) denominators verified on synthetic plays; every pinned rate's numerator/denominator matches §5.4;
+15b. pass-play (`play_type=='pass'`, sacks included, scrambles excluded) and run-play (`play_type=='run'`, scrambles included) denominators verified on synthetic plays; every pinned rate's numerator/denominator matches §5.4;
+15c. `games_started_prior` counts only known `was_starter==true`, unknown never counts as false, and zero known starter-status observations yields null (not 0) with `games_started_status_known==0`;
+15d. an FTN feature stays a valid pooled aggregate when one window game lacks FTN coverage (coverage/`games_used` drops), and is null only when the window has zero eligible FTN observations;
 16. insufficient history remains explicit (coverage metadata, not a substituted value);
 17. null is not converted to zero (and zero not converted to null);
 18. duplicate primary keys fail;
@@ -780,24 +809,30 @@ Stage B:
   `WEEK_ONLY` data (Section 3.3).
 - **Explosive thresholds — APPROVED.** Explosive pass = gain `>= 20`; explosive
   rush = gain `>= 10` (Section 5.4.3).
-- **Non-explosive feature definitions — PROPOSED, PINNED for approval.** All
-  numerator/denominator definitions for pass rate, early-down pass rate,
-  EPA/dropback, EPA/carry, sack rate, sacks-allowed rate, success rates, and FTN
-  tendency rates are now explicit in Section 5.4. Confirm these before Stage B.
+- **Non-explosive feature definitions — APPROVED.** All numerator/denominator
+  definitions for `pass_play_rate`, early-down pass rate, `pass_play_epa`,
+  `run_play_epa`, sack rate, sacks-allowed rate, success rates, and FTN tendency
+  rates are explicit in Section 5.4 and confirmed.
+- **`play_type` proxies (former decision D1) — RESOLVED, APPROVED.** v0.1 accepts
+  the `play_type` proxies and **does not** reopen or rebuild `canonical_plays` to
+  add `qb_dropback`/`qb_scramble`. Proxy-dependent features are renamed to avoid
+  claiming unsupported semantics: `pass_epa_per_dropback → pass_play_epa`,
+  `rush_epa_per_carry → run_play_epa`, `rush_success_rate → run_success_rate`,
+  `pass_rate → pass_play_rate` (Section 5.4).
+- **`games_started_prior` — CLARIFIED.** Counts only known `was_starter == true`;
+  unknown never counts as false; starter-status coverage is exposed separately as
+  `games_started_status_known`; zero known observations ⇒ null (Section 5.4.5).
+- **FTN window behavior — CLARIFIED.** A window game missing FTN coverage reduces
+  `*_games_used`/coverage but does not null an otherwise valid multi-game
+  aggregate; the feature is null only when the window has zero eligible FTN
+  observations (Section 5.4.4).
 
-## 16.2 Remaining open decision
+## 16.2 Remaining open decisions
 
-- **D1 — dropback/carry denominator source.** Because `canonical_plays` does not
-  retain nflverse `pass`/`rush`/`qb_dropback`/`qb_scramble`, v0.1's EPA/dropback,
-  EPA/carry, pass rate, sack rate, and sacks-allowed rate use documented
-  `play_type` proxies (dropback = `play_type=='pass'`, includes sacks / excludes
-  scrambles; carry = `play_type=='run'`, includes scrambles). **Decision needed:**
-  accept the `play_type` proxies for v0.1 (recommended — keeps the feature layer
-  purely downstream of the frozen canonical tables), **or** first add the missing
-  indicator columns to `canonical_plays` in a separate, separately-approved
-  canonical revision. This contract does not authorize any canonical change.
-
-Everything else required for Stage B is fixed by Sections 2–15.
+None affecting Stage B. All feature-definition and context decisions are resolved
+above; every calculation is pinned in Section 5.4. Stage B implements
+feature-context and lineage infrastructure only, and does not depend on any
+open item.
 
 ---
 
