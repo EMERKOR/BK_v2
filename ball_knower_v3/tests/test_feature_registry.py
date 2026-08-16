@@ -224,3 +224,38 @@ def test_commit_precommit_hook_aborts_before_promotion(repo_input, reg_path, tmp
         freg.commit_feature_build(rec, tmp_out, dest, precommit=_reject, registry_path=reg_path)
     assert not dest.exists() and tmp_out.exists()
     assert freg.load_registry(reg_path) == []
+
+
+# ======================================================================
+# Stage C: registered feature OUTPUTS are verified (path/sha256/rows/columns)
+# ======================================================================
+def test_commit_records_output_metadata_and_verifies(repo_input, reg_path, tmp_path):
+    rec = _context(repo_input)
+    tmp_out = tmp_path / "t.parquet"; tmp_out.write_text("FEATURE-BYTES")
+    dest = tmp_path / "pregame_team_features.parquet"
+    saved = freg.commit_feature_build(
+        rec, tmp_out, dest, registry_path=reg_path,
+        output_tables=[{"table": "pregame_team_features", "rows": 12,
+                        "columns": ["feature_context_id", "target_game_id", "team"]}])
+    outs = saved["outputs"]
+    assert len(outs) == 1
+    o = outs[0]
+    assert o["table"] == "pregame_team_features" and o["rows"] == 12
+    assert o["columns"][:3] == ["feature_context_id", "target_game_id", "team"]
+    assert o["sha256"] and o["path"].endswith("pregame_team_features.parquet")
+    # verify_registry passes right after commit
+    ok = freg.verify_registry(reg_path)
+    assert not ok["mismatches"] and not ok["missing"] and ok["checked"] >= 2  # >=1 input + 1 output
+
+
+def test_output_byte_mutation_detected_by_verify(repo_input, reg_path, tmp_path):
+    rec = _context(repo_input)
+    tmp_out = tmp_path / "t.parquet"; tmp_out.write_text("ORIGINAL")
+    dest = tmp_path / "out.parquet"
+    freg.commit_feature_build(rec, tmp_out, dest, registry_path=reg_path,
+                              output_tables=[{"table": "pregame_team_features",
+                                              "rows": 1, "columns": ["x"]}])
+    # mutate the promoted output's bytes after registration
+    dest.write_text("TAMPERED-DIFFERENT-LENGTH")
+    bad = freg.verify_registry(reg_path)
+    assert any(str(dest) == m or m.endswith(dest.name) for m in bad["mismatches"])

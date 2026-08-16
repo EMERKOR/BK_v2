@@ -240,20 +240,52 @@ def _remove_path(p: Path) -> None:
             pass
 
 
+def _store_key(path: Path) -> str:
+    """Repo-relative key when the path is under REPO, else the absolute string
+    (feature outputs live under REPO; tests may write elsewhere)."""
+    p = path.resolve()
+    try:
+        return str(p.relative_to(common.REPO))
+    except ValueError:
+        return str(p)
+
+
+def _resolve_stored(key: str) -> Path:
+    p = Path(key)
+    return p if p.is_absolute() else common.REPO / key
+
+
+def _output_metadata(tmp_path: Path, dest_path: Path, table=None, rows=None,
+                     columns=None) -> dict:
+    """Metadata for one registered feature output, computed from the completed
+    TEMP file BEFORE promotion (a rename preserves bytes, so the sha256 is the
+    dest's). Records the DEST path (post-promotion location)."""
+    return {
+        "path": _store_key(dest_path),
+        "sha256": common.sha256_file(tmp_path),
+        "rows": (int(rows) if rows is not None else None),
+        "columns": (list(columns) if columns is not None else None),
+        "table": table,
+    }
+
+
 def commit_feature_build(context_record: dict, tmp_outputs, destinations,
-                         precommit=None, registry_path=None) -> dict:
+                         precommit=None, registry_path=None, output_tables=None) -> dict:
     """Promote completed temp feature output(s) AND append the registry as ONE
     recoverable transaction under a SINGLE exclusive lock (Stage-C-ready).
 
     Sequence: validate record -> acquire lock -> re-read + validate registry ->
     re-check duplicate `feature_context_id` -> refuse to overwrite any existing
-    destination -> reverify frozen inputs at the commit boundary -> run optional
-    `precommit()` -> promote each temp output to its destination -> atomic
-    registry append -> roll back all promoted outputs if persistence fails.
+    destination -> reverify frozen inputs at the commit boundary -> compute output
+    metadata (path/sha256/rows/columns) from the temp files BEFORE promotion ->
+    run optional `precommit()` -> promote each temp output to its destination ->
+    atomic registry append -> roll back all promoted outputs if persistence fails.
 
-    `tmp_outputs` / `destinations` are path or list-of-paths, positionally paired.
-    Returns the persisted record. Stage B creates no production output; this
-    mechanism simply exists before Stage C needs it.
+    `tmp_outputs` / `destinations` are a path or list-of-paths, positionally
+    paired. `output_tables` (optional) is a parallel list of dicts with
+    ``table`` / ``rows`` / ``columns`` for schema-level verification; sha256 is
+    always recorded so a post-registration output-byte mutation fails
+    `verify_registry`. Returns the persisted record.
     """
     record = _as_record(context_record)
     validate_record(record)
@@ -263,6 +295,9 @@ def commit_feature_build(context_record: dict, tmp_outputs, destinations,
     dest_list = [Path(p) for p in ([destinations] if isinstance(destinations, (str, Path)) else list(destinations))]
     if len(tmp_list) != len(dest_list):
         raise ValueError(f"tmp_outputs ({len(tmp_list)}) and destinations ({len(dest_list)}) count mismatch")
+    meta_list = list(output_tables) if output_tables is not None else [None] * len(dest_list)
+    if len(meta_list) != len(dest_list):
+        raise ValueError(f"output_tables ({len(meta_list)}) and destinations ({len(dest_list)}) count mismatch")
 
     path = _resolve(registry_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -277,6 +312,13 @@ def commit_feature_build(context_record: dict, tmp_outputs, destinations,
             if not tmp.exists():
                 raise ValueError(f"temp output {tmp} does not exist")
         _reverify_inputs(record)
+        # output metadata computed from the completed temp files BEFORE promotion
+        outputs = []
+        for tmp, dest, meta in zip(tmp_list, dest_list, meta_list):
+            meta = meta or {}
+            outputs.append(_output_metadata(tmp, dest, table=meta.get("table"),
+                                             rows=meta.get("rows"), columns=meta.get("columns")))
+        record = {**record, "outputs": outputs}
         if precommit is not None:
             precommit()   # commit-boundary assertion; raises to abort BEFORE promotion
         promoted = []
@@ -300,11 +342,13 @@ def commit_feature_build(context_record: dict, tmp_outputs, destinations,
 
 
 def verify_registry(registry_path=None) -> dict:
-    """Re-hash every registered frozen input; report mismatches/missing.
+    """Re-hash every registered frozen input AND every registered feature output;
+    report mismatches/missing.
 
     Returns {"checked": n, "mismatches": [...], "missing": [...]}. A registered
-    input whose bytes changed since the build (a lineage mutation) appears in
-    `mismatches`, so verification fails.
+    input or output whose bytes changed since the build (a lineage or output-byte
+    mutation) appears in `mismatches`, so verification fails — analogous to the
+    Phase 2D state registry's `verify_registry()`.
     """
     out = {"checked": 0, "mismatches": [], "missing": []}
     for rec in load_registry(registry_path):
@@ -317,4 +361,15 @@ def verify_registry(registry_path=None) -> dict:
                 continue
             if common.sha256_file(p) != expected:
                 out["mismatches"].append(rel)
+        for output in rec.get("outputs", []) or []:
+            key, expected = output.get("path"), output.get("sha256")
+            if not key or expected is None:
+                continue
+            p = _resolve_stored(key)
+            out["checked"] += 1
+            if not p.exists():
+                out["missing"].append(key)
+                continue
+            if common.sha256_file(p) != expected:
+                out["mismatches"].append(key)
     return out
