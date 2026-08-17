@@ -173,7 +173,10 @@ source_availability_time  <=  as_of_time  <  target_kickoff
 | `EXACT` | eligible if `source_known_time <= as_of_time < kickoff` | same | same |
 | `SNAPSHOT_BOUND` | eligible if `source_snapshot_time <= as_of_time < kickoff` | same | same |
 | `WEEK_ONLY` | eligible only via a contemporaneous snapshot bound ≤ `as_of_time` | **excluded** | **excluded** |
-| `RETROSPECTIVE_ONLY` | eligible only via a genuine contemporaneous snapshot time ≤ `as_of_time` | **excluded** | eligible **only for a strictly prior game** whose `event_time < target_kickoff`; never same-game |
+| `RETROSPECTIVE_ONLY` | eligible only via a genuine contemporaneous snapshot time ≤ `as_of_time` (and the event before `as_of_time`) | **excluded** | eligible **only for a strictly prior game** whose `event_time < as_of_time` (`< target_kickoff` by construction); never same-game |
+
+Every context requires `as_of_time < target_kickoff` (§6.2 as-of boundary), so
+`event_time < as_of_time` implies `event_time < target_kickoff`.
 
 `HISTORICAL_STRICT` therefore admits only `EXACT` and `SNAPSHOT_BOUND`, exactly as
 Phase 2D's `eligible(...)` gate does.
@@ -181,7 +184,8 @@ Phase 2D's `eligible(...)` gate does.
 `HISTORICAL_RESEARCH` admits `EXACT` and `SNAPSHOT_BOUND` on the same terms, and
 **additionally** admits **strictly prior-game `RETROSPECTIVE_ONLY`**
 observations — historical PBP/FTN and eligible retrospective FantasyPoints shares
-whose exact historical publication state cannot be proven — and only those. It
+whose exact historical publication state cannot be proven — and only those, and
+only when the football event precedes `as_of_time`. It
 does **not** admit generic `WEEK_ONLY` observations: a `WEEK_ONLY` source stays
 excluded unless a genuine contemporaneous snapshot upgrades it to
 `SNAPSHOT_BOUND` (at which point it is admitted as `SNAPSHOT_BOUND`, not as
@@ -524,23 +528,60 @@ Any richer window is a later, separately approved decision.
 
 Rolling windows are built over **actual kickoff / event chronology**, not naive
 week numbering. Byes, rescheduled games, and playoff weeks are handled by
-chronological order, and only games strictly before the target kickoff are
-eligible. "Last N games" means the N most recent eligible completed games by
-kickoff, not weeks `W-1..W-N`.
+chronological order. "Last N games" means the N most recent eligible completed
+games by kickoff, not weeks `W-1..W-N`.
+
+### As-of boundary (leakage)
+
+Prior evidence is bounded by the decision time, not merely the target kickoff.
+For a feature context with decision time `as_of_time` and a target game with
+`target_kickoff`:
+
+```
+prior_event_time < as_of_time < target_kickoff
+```
+
+- A feature context is invalid (rejected at construction) unless
+  `as_of_time < target_kickoff` — a decision made at or after kickoff is
+  same-game/future.
+- A prior game is eligible only if its event precedes `as_of_time` (not just
+  `target_kickoff`); a game that kicks off after the decision time is not yet
+  completed evidence. With current canonical fields there is **no** proven
+  game-completion timestamp, so the layer uses the game's **kickoff** as a
+  conservative event boundary (a game is not usable as completed prior evidence
+  until strictly after the decision time) and manufactures no completion time.
+  This is a documented conservative approximation, not an invented timestamp.
 
 ## 6.3 Coverage metadata (mandatory)
 
 Every rolling feature must expose enough coverage information to distinguish a
-**true zero** from **missing / insufficient** data. At minimum, each rolling
-feature (or each window) carries:
+**true zero** from **missing / insufficient** data. Coverage is exposed per
+window (`last3` / `last5` / `std`) at three tiers:
 
-- `*_games_available` — eligible completed prior games in the window;
-- `*_games_used` — games that actually contributed a non-null observation;
-- `*_window` — the window label (`last3` / `last5` / `std`).
+- **Game-level coverage:**
+  - `{w}_games_available` — eligible completed prior games in the window;
+  - `{w}_pbp_games_used` — **coarse** PBP-game coverage: games with at least one
+    eligible offensive/defensive scrimmage PBP row. It is deliberately named
+    "pbp_games_used" because it does **not** imply that every feature used that
+    many games (a game with only run plays still counts here);
+  - `{w}_points_games` — completed eligible games contributing a non-null score
+    (from `canonical_games`), the denominator for `points_scored`/`points_allowed`
+    — kept **separate** from PBP metric coverage.
+- **Universe play counts:** `{w}_off_play_count`, `{w}_off_pass_count`,
+  `{w}_off_run_count`, `{w}_def_play_count`, `{w}_def_pass_count`,
+  `{w}_early_down_play_count` — the pass/run/scrimmage play populations.
+- **Per-metric non-null denominators** (`*_n`): the exact denominator each
+  rate/mean divided by, so every feature is auditable and partial metric coverage
+  (null EPA/success rows) is visible: `{w}_off_epa_n`, `{w}_def_epa_n`,
+  `{w}_pass_epa_n`, `{w}_run_epa_n`, `{w}_off_success_n`, `{w}_def_success_n`,
+  `{w}_pass_success_n`, `{w}_run_success_n`, `{w}_explosive_pass_n`,
+  `{w}_explosive_run_n`, `{w}_sacks_allowed_n`, `{w}_sack_rate_n`.
 
-A window with fewer than its nominal games remains **explicitly insufficient**;
-it is never silently padded. Do **not** impute league average, a prior value, or
-zero to fill a short or empty window.
+Each rate/mean is null exactly when its own `*_n` denominator is zero (distinct
+from a real `0.0`); a null-metric row is excluded from **only** its corresponding
+denominator. A window with fewer than its nominal games remains **explicitly
+insufficient**; it is never silently padded. Do **not** impute league average, a
+prior value, or zero to fill a short or empty window.
 
 ---
 

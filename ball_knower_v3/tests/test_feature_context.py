@@ -87,6 +87,18 @@ def test_live_freeze_bound_must_not_exceed_as_of():
                                live_freeze_bound=T("2024-10-06T15:00:01Z"))
 
 
+def test_context_rejects_as_of_at_or_after_kickoff():
+    # as_of must be strictly before the target kickoff, in every mode
+    for mode in (ctx.HISTORICAL_STRICT, ctx.HISTORICAL_RESEARCH):
+        with pytest.raises(ValueError, match="strictly before"):
+            ctx.EligibilityContext(mode=mode, as_of=KICK, target_kickoff=KICK)
+        with pytest.raises(ValueError, match="strictly before"):
+            ctx.EligibilityContext(mode=mode, as_of=T("2024-10-06T18:00:00Z"), target_kickoff=KICK)
+    with pytest.raises(ValueError, match="strictly before"):
+        ctx.EligibilityContext(mode=ctx.LIVE_STATE, as_of=KICK, target_kickoff=KICK,
+                               live_freeze_bound=KICK)
+
+
 def test_eligible_requires_eligibility_context():
     with pytest.raises(TypeError):
         ctx.eligible("EXACT", context=object(), source_known_time=ASOF)
@@ -108,9 +120,8 @@ def test_exact_after_as_of_rejected():
 
 
 def test_exact_at_or_after_kickoff_rejected_same_game_guard():
-    # known_time exactly at kickoff -> strict < kickoff fails (same-game boundary)
-    ok, *_ = ctx.eligible("EXACT", context=live_ctx(as_of=KICK, live_freeze_bound=KICK),
-                          source_known_time=KICK)
+    # known_time at/after kickoff (> as_of) fails the availability bound
+    ok, *_ = ctx.eligible("EXACT", context=strict_ctx(), source_known_time=KICK)
     assert not ok
 
 
@@ -158,9 +169,23 @@ def test_retrospective_live_state_via_context_bound():
 
 
 def test_same_game_event_guard_rejects_even_exact():
-    ok, *_ = ctx.eligible("EXACT", context=live_ctx(as_of=KICK, live_freeze_bound=KICK),
-                          source_known_time=T("2024-10-06T16:00:00Z"), event_time=KICK)
+    # valid known_time, but the observation's own game kicks at target kickoff
+    ok, *_ = ctx.eligible("EXACT", context=strict_ctx(),
+                          source_known_time=T("2024-10-05T12:00:00Z"), event_time=KICK)
     assert not ok
+
+
+def test_research_rejects_event_between_as_of_and_kickoff():
+    # noon as_of, a 1 PM candidate, an 8 PM target -> the 1 PM game is excluded
+    noon = T("2024-10-06T12:00:00Z")
+    one_pm = T("2024-10-06T13:00:00Z")
+    eight_pm = T("2024-10-06T20:00:00Z")
+    c = ctx.EligibilityContext(mode=ctx.HISTORICAL_RESEARCH, as_of=noon, target_kickoff=eight_pm)
+    ok, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=c, event_time=one_pm)
+    assert not ok  # event after as_of
+    ok2, ug, ut, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=c,
+                                  event_time=T("2024-10-06T11:00:00Z"))
+    assert ok2 and ug == "RETROSPECTIVE_ONLY"  # genuinely prior (before as_of)
 
 
 def test_unknown_grade_not_eligible():

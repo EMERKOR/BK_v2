@@ -2,8 +2,11 @@
 Stage C tests — pregame_team_features (team PBP features).
 
 Synthetic-data tests of the pinned v0.1 definitions: last-3/5/std math, pooled
-(not per-game-mean) rates, chronology/eligibility, null-vs-zero, explosive
-thresholds, pass/run proxy semantics, primary-key uniqueness, and determinism.
+(not per-game-mean) rates, chronology/eligibility, the as-of leakage boundary
+(prior_event < as_of < target_kickoff), coverage semantics (coarse
+`pbp_games_used`, separate `points_games`, per-metric `*_n` denominators),
+null-vs-zero, explosive thresholds, pass/run proxy semantics, primary-key
+uniqueness, and determinism.
 """
 from __future__ import annotations
 
@@ -15,22 +18,27 @@ from ball_knower_v3.canonical import common
 from ball_knower_v3.features import context as ctx
 from ball_knower_v3.features import team_features as tf
 
-FAR_ASOF = pd.Timestamp("2100-01-01T00:00:00Z")  # research mode ignores as_of for prior RETRO
-
 
 @pytest.fixture
-def research_context():
+def mk_ctx():
+    """Factory: create a feature context with an explicit as_of (must be before
+    each target's kickoff). Cleans up the stub inputs afterward."""
     d = common.REPO / "data" / "v3" / "features" / "_test_inputs"
     d.mkdir(parents=True, exist_ok=True)
-    p = d / "tf_stub.txt"
-    p.write_text("stub")
-    rec = ctx.create_feature_context(context_mode=ctx.HISTORICAL_RESEARCH,
-                                     as_of_time=FAR_ASOF, input_paths=[p])
-    yield rec
-    try:
-        p.unlink()
-    except FileNotFoundError:
-        pass
+    created = []
+
+    def _make(as_of, mode=ctx.HISTORICAL_RESEARCH):
+        p = d / f"tf_stub_{len(created)}.txt"
+        p.write_text("stub")
+        created.append(p)
+        return ctx.create_feature_context(context_mode=mode, as_of_time=as_of, input_paths=[p])
+
+    yield _make
+    for p in created:
+        try:
+            p.unlink()
+        except FileNotFoundError:
+            pass
 
 
 # --------------------------------------------------------------------------
@@ -77,8 +85,7 @@ def one(df, team):
 # ======================================================================
 # exact last-3 / last-5 / std math (pass_play_epa pooled)
 # ======================================================================
-def test_last3_last5_std_pass_epa_math(research_context):
-    # AAA offense pass EPA per game: G1=100(1 play), G2=1,3, G3=5, G4=6; target G5
+def test_last3_last5_std_pass_epa_math(mk_ctx):
     g = games_df([
         game_row("G1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("G2", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 21, 14),
@@ -92,133 +99,143 @@ def test_last3_last5_std_pass_epa_math(research_context):
         play("G3", "AAA", "DDD", "pass", epa=5.0),
         play("G4", "AAA", "EEE", "pass", epa=6.0),
     ])
-    df = build(research_context, g, p, ["G5"])
-    a = one(df, "AAA")
-    # last3 = G2,G3,G4 -> (4+5+6)/(2+1+1)=3.75 ; std/last5 all 4 -> 115/5=23
-    assert a["pass_play_epa_last3"] == pytest.approx(3.75)
-    assert a["pass_play_epa_last5"] == pytest.approx(23.0)
+    rec = mk_ctx(as_of="2024-10-06T12:00:00Z")
+    a = one(build(rec, g, p, ["G5"]), "AAA")
+    assert a["pass_play_epa_last3"] == pytest.approx(3.75)   # (4+5+6)/(2+1+1)
+    assert a["pass_play_epa_last5"] == pytest.approx(23.0)   # 115/5
     assert a["pass_play_epa_std"] == pytest.approx(23.0)
-    assert a["last3_games_available"] == 3
-    assert a["std_games_available"] == 4
+    assert a["games_available_last3"] == 3 and a["games_available_std"] == 4
+    assert a["pass_epa_n_last3"] == 4 and a["pass_epa_n_std"] == 5
 
 
-def test_points_scored_allowed_per_game_mean(research_context):
+def test_points_scored_allowed_per_game_mean(mk_ctx):
     g = games_df([
-        game_row("P1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 24, 10),  # AAA home: scored24 allowed10
-        game_row("P2", 2024, 2, "2024-09-15T17:00:00Z", "CCC", "AAA", 30, 20),  # AAA away: scored20 allowed30
+        game_row("P1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 24, 10),
+        game_row("P2", 2024, 2, "2024-09-15T17:00:00Z", "CCC", "AAA", 30, 20),
         game_row("P3", 2024, 3, "2024-09-22T17:00:00Z", "AAA", "DDD", 0, 0, final=False),
     ])
-    df = build(research_context, g, plays_df([]), ["P3"])
-    a = one(df, "AAA")
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build(rec, g, plays_df([]), ["P3"]), "AAA")
     assert a["points_scored_std"] == pytest.approx((24 + 20) / 2)
     assert a["points_allowed_std"] == pytest.approx((10 + 30) / 2)
+    assert a["points_games_std"] == 2
 
 
 # ======================================================================
 # pooled-play rate math, not mean of per-game rates
 # ======================================================================
-def test_pooled_rate_not_mean_of_per_game_rates(research_context):
-    # Game A: 10 pass plays, 1 explosive; Game B: 2 pass plays, 2 explosive
+def test_pooled_rate_not_mean_of_per_game_rates(mk_ctx):
     g = games_df([
         game_row("A", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("B", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 20, 10),
         game_row("T", 2024, 3, "2024-09-22T17:00:00Z", "AAA", "DDD", 0, 0, final=False),
     ])
-    rows = [play("A", "AAA", "BBB", "pass", yards=25.0)]  # 1 explosive
-    rows += [play("A", "AAA", "BBB", "pass", yards=5.0) for _ in range(9)]  # 9 non-explosive
+    rows = [play("A", "AAA", "BBB", "pass", yards=25.0)]
+    rows += [play("A", "AAA", "BBB", "pass", yards=5.0) for _ in range(9)]
     rows += [play("B", "AAA", "CCC", "pass", yards=30.0), play("B", "AAA", "CCC", "pass", yards=40.0)]
-    df = build(research_context, g, plays_df(rows), ["T"])
-    a = one(df, "AAA")
-    # pooled = 3/12 = 0.25 (NOT (0.1 + 1.0)/2 = 0.55)
-    assert a["explosive_pass_rate_std"] == pytest.approx(3 / 12)
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build(rec, g, plays_df(rows), ["T"]), "AAA")
+    assert a["explosive_pass_rate_std"] == pytest.approx(3 / 12)   # pooled, not (0.1+1.0)/2
     assert a["explosive_pass_rate_std"] != pytest.approx(0.55)
 
 
 # ======================================================================
 # zero-history / fewer-than-3/5 / no padding
 # ======================================================================
-def test_week1_zero_history_null_features(research_context):
-    g = games_df([
-        game_row("W1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 0, 0, final=False),
-    ])
-    df = build(research_context, g, plays_df([]), ["W1"])
-    a = one(df, "AAA")
-    assert a["std_games_available"] == 0 and a["last3_games_available"] == 0
+def test_week1_zero_history_null_features(mk_ctx):
+    g = games_df([game_row("W1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 0, 0, final=False)])
+    rec = mk_ctx(as_of="2024-09-08T12:00:00Z")
+    a = one(build(rec, g, plays_df([]), ["W1"]), "AAA")
+    assert a["games_available_std"] == 0 and a["games_available_last3"] == 0
     for w in ("last3", "last5", "std"):
-        assert pd.isna(a[f"off_epa_per_play_{w}"])
-        assert pd.isna(a[f"points_scored_{w}"])
+        assert pd.isna(a[f"off_epa_per_play_{w}"]) and pd.isna(a[f"points_scored_{w}"])
 
 
-def test_fewer_than_3_no_padding(research_context):
+def test_fewer_than_3_no_padding(mk_ctx):
     g = games_df([
         game_row("Q1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("Q2", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 21, 14),
         game_row("Q3", 2024, 3, "2024-09-22T17:00:00Z", "AAA", "DDD", 0, 0, final=False),
     ])
     p = plays_df([play("Q1", "AAA", "BBB", "run", epa=2.0), play("Q2", "AAA", "CCC", "run", epa=4.0)])
-    df = build(research_context, g, p, ["Q3"])
-    a = one(df, "AAA")
-    assert a["last3_games_available"] == 2  # not padded to 3
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build(rec, g, p, ["Q3"]), "AAA")
+    assert a["games_available_last3"] == 2  # not padded to 3
     assert a["run_play_epa_last3"] == pytest.approx(3.0)
 
 
 # ======================================================================
 # chronology: bye, playoffs, reschedule/out-of-week-order
 # ======================================================================
-def test_chronology_uses_kickoff_not_week_number(research_context):
-    # weeks are deliberately out of order vs kickoff; last3 must follow kickoff.
+def test_chronology_uses_kickoff_not_week_number(mk_ctx):
     g = games_df([
-        game_row("R_old", 2024, 9, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),   # week9 but earliest kick
+        game_row("R_old", 2024, 9, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("R_b", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 20, 10),
         game_row("R_c", 2024, 3, "2024-09-22T17:00:00Z", "AAA", "DDD", 20, 10),
         game_row("R_d", 2024, 4, "2024-09-29T17:00:00Z", "AAA", "EEE", 20, 10),
         game_row("R_t", 2024, 5, "2024-10-06T17:00:00Z", "AAA", "FFF", 0, 0, final=False),
     ])
-    # tag each prior with a distinctive run epa; last3 by kickoff = R_b,R_c,R_d
     p = plays_df([
         play("R_old", "AAA", "BBB", "run", epa=99.0),
         play("R_b", "AAA", "CCC", "run", epa=1.0),
         play("R_c", "AAA", "DDD", "run", epa=2.0),
         play("R_d", "AAA", "EEE", "run", epa=3.0),
     ])
-    df = build(research_context, g, p, ["R_t"])
-    a = one(df, "AAA")
-    assert a["run_play_epa_last3"] == pytest.approx((1 + 2 + 3) / 3)  # R_old (99) excluded
+    rec = mk_ctx(as_of="2024-10-06T12:00:00Z")
+    a = one(build(rec, g, p, ["R_t"]), "AAA")
+    assert a["run_play_epa_last3"] == pytest.approx((1 + 2 + 3) / 3)  # by kickoff, R_old excluded
     assert a["run_play_epa_std"] == pytest.approx((99 + 1 + 2 + 3) / 4)
 
 
-def test_bye_week_gap_handled_by_chronology(research_context):
-    # a bye between G2 and the target simply means fewer games; nothing special.
+def test_bye_week_gap_handled_by_chronology(mk_ctx):
     g = games_df([
         game_row("BY1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("BY2", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 20, 10),
-        # week 3 bye (no AAA game)
         game_row("BYT", 2024, 4, "2024-09-29T17:00:00Z", "AAA", "DDD", 0, 0, final=False),
     ])
     p = plays_df([play("BY1", "AAA", "BBB", "run", epa=2.0), play("BY2", "AAA", "CCC", "run", epa=4.0)])
-    df = build(research_context, g, p, ["BYT"])
-    a = one(df, "AAA")
-    assert a["std_games_available"] == 2
+    rec = mk_ctx(as_of="2024-09-29T12:00:00Z")
+    a = one(build(rec, g, p, ["BYT"]), "AAA")
+    assert a["games_available_std"] == 2
 
 
-def test_playoff_chronology_includes_regular_season_priors(research_context):
+def test_playoff_chronology_includes_regular_season_priors(mk_ctx):
     g = games_df([
         game_row("RG", 2024, 18, "2025-01-05T17:00:00Z", "AAA", "BBB", 20, 10, gtype="REG"),
         game_row("WC", 2024, 19, "2025-01-12T17:00:00Z", "AAA", "CCC", 20, 10, gtype="WC"),
         game_row("DIV", 2024, 20, "2025-01-19T17:00:00Z", "AAA", "DDD", 0, 0, gtype="DIV", final=False),
     ])
     p = plays_df([play("RG", "AAA", "BBB", "pass", epa=1.0), play("WC", "AAA", "CCC", "pass", epa=3.0)])
-    df = build(research_context, g, p, ["DIV"])
-    a = one(df, "AAA")
-    assert a["game_type"] == "DIV"
-    assert a["std_games_available"] == 2
+    rec = mk_ctx(as_of="2025-01-19T12:00:00Z")
+    a = one(build(rec, g, p, ["DIV"]), "AAA")
+    assert a["game_type"] == "DIV" and a["games_available_std"] == 2
     assert a["pass_play_epa_std"] == pytest.approx((1 + 3) / 2)
 
 
 # ======================================================================
-# leakage: same-game, future-game, no prior-season bleed
+# leakage: as-of boundary, same-game, future-game, no prior-season bleed
 # ======================================================================
-def test_same_game_and_future_game_excluded(research_context):
+def test_as_of_leakage_prior_after_as_of_excluded(mk_ctx):
+    # noon as_of, a 1 PM prior game, an 8 PM target -> 1 PM game excluded
+    g = games_df([
+        game_row("L1", 2024, 1, "2024-10-06T13:00:00Z", "AAA", "BBB", 20, 10),   # 1 PM
+        game_row("LT", 2024, 1, "2024-10-06T20:00:00Z", "AAA", "CCC", 0, 0, final=False),  # 8 PM
+    ])
+    p = plays_df([play("L1", "AAA", "BBB", "pass", epa=5.0)])
+    rec = mk_ctx(as_of="2024-10-06T12:00:00Z")  # noon
+    a = one(build(rec, g, p, ["LT"]), "AAA")
+    assert a["games_available_std"] == 0
+    assert pd.isna(a["pass_play_epa_std"])
+
+
+def test_target_before_as_of_raises(mk_ctx):
+    g = games_df([game_row("TB", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 0, 0, final=False)])
+    rec = mk_ctx(as_of="2024-09-09T00:00:00Z")  # after the target kickoff
+    with pytest.raises(ValueError, match="strictly after as_of"):
+        build(rec, g, plays_df([]), ["TB"])
+
+
+def test_same_game_and_future_game_excluded(mk_ctx):
     g = games_df([
         game_row("S_prior", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("S_target", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
@@ -226,61 +243,116 @@ def test_same_game_and_future_game_excluded(research_context):
     ])
     p = plays_df([
         play("S_prior", "AAA", "BBB", "pass", epa=1.0),
-        play("S_target", "AAA", "CCC", "pass", epa=50.0),  # same-game: must NOT appear
-        play("S_future", "AAA", "DDD", "pass", epa=90.0),  # future: must NOT appear
+        play("S_target", "AAA", "CCC", "pass", epa=50.0),
+        play("S_future", "AAA", "DDD", "pass", epa=90.0),
     ])
-    df = build(research_context, g, p, ["S_target"])
-    a = one(df, "AAA")
-    assert a["std_games_available"] == 1
-    assert a["pass_play_epa_std"] == pytest.approx(1.0)
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["S_target"]), "AAA")
+    assert a["games_available_std"] == 1 and a["pass_play_epa_std"] == pytest.approx(1.0)
 
 
-def test_no_prior_season_bleed(research_context):
+def test_no_prior_season_bleed(mk_ctx):
     g = games_df([
-        game_row("PY", 2023, 17, "2024-01-01T17:00:00Z", "AAA", "BBB", 20, 10),  # prior SEASON
-        game_row("CY", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "CCC", 20, 10),   # current season prior
+        game_row("PY", 2023, 17, "2024-01-01T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("CY", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "CCC", 20, 10),
         game_row("CT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "DDD", 0, 0, final=False),
     ])
-    p = plays_df([
-        play("PY", "AAA", "BBB", "pass", epa=99.0),
-        play("CY", "AAA", "CCC", "pass", epa=2.0),
+    p = plays_df([play("PY", "AAA", "BBB", "pass", epa=99.0), play("CY", "AAA", "CCC", "pass", epa=2.0)])
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["CT"]), "AAA")
+    assert a["games_available_std"] == 1 and a["pass_play_epa_std"] == pytest.approx(2.0)
+
+
+def test_historical_strict_excludes_retrospective_pbp(mk_ctx):
+    g = games_df([
+        game_row("H1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("HT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
     ])
-    df = build(research_context, g, p, ["CT"])
-    a = one(df, "AAA")
-    assert a["std_games_available"] == 1  # 2023 excluded
-    assert a["pass_play_epa_std"] == pytest.approx(2.0)
+    p = plays_df([play("H1", "AAA", "BBB", "pass", epa=5.0)])
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
+    a = one(build(rec, g, p, ["HT"]), "AAA")
+    assert a["games_available_std"] == 0 and pd.isna(a["pass_play_epa_std"])
+
+
+# ======================================================================
+# coverage semantics: points-without-PBP, per-metric denominators, coarse used
+# ======================================================================
+def test_points_without_pbp_metrics(mk_ctx):
+    # a prior game with a final score but NO plays: contributes points, not PBP
+    g = games_df([
+        game_row("PB1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 24, 10),
+        game_row("PBT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
+    ])
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, plays_df([]), ["PBT"]), "AAA")
+    assert a["points_games_std"] == 1 and a["points_scored_std"] == pytest.approx(24.0)
+    assert a["pbp_games_used_std"] == 0            # no PBP rows -> not PBP-used
+    assert a["off_play_count_std"] == 0
+    assert pd.isna(a["off_epa_per_play_std"])       # no PBP metric
+
+
+def test_null_epa_reduces_only_its_denominator(mk_ctx):
+    g = games_df([
+        game_row("N1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("NT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
+    ])
+    p = plays_df([
+        play("N1", "AAA", "BBB", "pass", epa=np.nan, success=1.0),  # null epa, real success
+        play("N1", "AAA", "BBB", "pass", epa=2.0, success=1.0),
+    ])
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["NT"]), "AAA")
+    assert a["pass_epa_n_std"] == 1        # epa denominator reduced by the null row
+    assert a["pass_success_n_std"] == 2    # success denominator unaffected
+    assert a["off_pass_count_std"] == 2    # universe unchanged
+    assert a["pass_play_epa_std"] == pytest.approx(2.0)      # 2.0/1
+    assert a["pass_success_rate_std"] == pytest.approx(1.0)  # 2/2
+
+
+def test_pbp_games_used_does_not_overstate_feature_coverage(mk_ctx):
+    # a prior game with ONLY run plays: PBP-used=1 but pass metrics have 0 coverage
+    g = games_df([
+        game_row("U1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("UT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
+    ])
+    p = plays_df([play("U1", "AAA", "BBB", "run", epa=1.0)])
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["UT"]), "AAA")
+    assert a["pbp_games_used_std"] == 1     # coarse: the game had a scrimmage play
+    assert a["off_run_count_std"] == 1
+    assert a["pass_epa_n_std"] == 0 and a["off_pass_count_std"] == 0
+    assert pd.isna(a["pass_play_epa_std"])  # no pass plays -> feature null, not overstated
 
 
 # ======================================================================
 # null vs zero, explosive thresholds, pass/run proxy semantics
 # ======================================================================
-def test_null_metric_excluded_not_zero(research_context):
+def test_null_metric_excluded_not_zero(mk_ctx):
     g = games_df([
         game_row("N1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("NT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
     ])
     p = plays_df([
         play("N1", "AAA", "BBB", "pass", epa=2.0),
-        play("N1", "AAA", "BBB", "pass", epa=np.nan),  # null epa: excluded from denominator
+        play("N1", "AAA", "BBB", "pass", epa=np.nan),
     ])
-    df = build(research_context, g, p, ["NT"])
-    a = one(df, "AAA")
-    assert a["pass_play_epa_std"] == pytest.approx(2.0)  # 2.0/1, NOT 2.0/2
-    assert a["off_pass_count_std"] == 2  # universe still counts both plays
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["NT"]), "AAA")
+    assert a["pass_play_epa_std"] == pytest.approx(2.0) and a["off_pass_count_std"] == 2
 
 
-def test_zero_stays_zero(research_context):
+def test_zero_stays_zero(mk_ctx):
     g = games_df([
         game_row("Z1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("ZT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
     ])
-    p = plays_df([play("Z1", "AAA", "BBB", "pass", yards=5.0)])  # no explosive
-    df = build(research_context, g, p, ["ZT"])
-    a = one(df, "AAA")
+    p = plays_df([play("Z1", "AAA", "BBB", "pass", yards=5.0)])
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["ZT"]), "AAA")
     assert a["explosive_pass_rate_std"] == 0.0 and not pd.isna(a["explosive_pass_rate_std"])
 
 
-def test_explosive_thresholds_exactly_20_and_10(research_context):
+def test_explosive_thresholds_exactly_20_and_10(mk_ctx):
     g = games_df([
         game_row("E1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("ET", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
@@ -291,86 +363,58 @@ def test_explosive_thresholds_exactly_20_and_10(research_context):
         play("E1", "AAA", "BBB", "run", yards=9.0), play("E1", "AAA", "BBB", "run", yards=10.0),
         play("E1", "AAA", "BBB", "run", yards=11.0),
     ])
-    df = build(research_context, g, p, ["ET"])
-    a = one(df, "AAA")
-    assert a["explosive_pass_rate_std"] == pytest.approx(2 / 3)  # 20 & 21 count; 19 does not
-    assert a["explosive_rush_rate_std"] == pytest.approx(2 / 3)  # 10 & 11 count; 9 does not
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["ET"]), "AAA")
+    assert a["explosive_pass_rate_std"] == pytest.approx(2 / 3)  # 20 & 21; not 19
+    assert a["explosive_rush_rate_std"] == pytest.approx(2 / 3)  # 10 & 11; not 9
 
 
-def test_pass_run_proxy_semantics_sack_is_pass_scramble_is_run(research_context):
+def test_pass_run_proxy_semantics_sack_is_pass_scramble_is_run(mk_ctx):
     g = games_df([
         game_row("X1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("XT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
     ])
     p = plays_df([
-        play("X1", "AAA", "BBB", "pass", yards=-7.0, sack=1.0),  # sack: pass-play, sacks_allowed
+        play("X1", "AAA", "BBB", "pass", yards=-7.0, sack=1.0),
         play("X1", "AAA", "BBB", "pass", yards=8.0, sack=0.0),
-        play("X1", "AAA", "BBB", "run", yards=12.0, sack=0.0),   # scramble modeled as run
+        play("X1", "AAA", "BBB", "run", yards=12.0, sack=0.0),
     ])
-    df = build(research_context, g, p, ["XT"])
-    a = one(df, "AAA")
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["XT"]), "AAA")
     assert a["off_pass_count_std"] == 2 and a["off_run_count_std"] == 1
-    assert a["sacks_allowed_rate_std"] == pytest.approx(1 / 2)   # 1 sack / 2 pass plays
-    assert a["pass_play_rate_std"] == pytest.approx(2 / 3)       # 2 pass / 3 scrimmage
+    assert a["sacks_allowed_rate_std"] == pytest.approx(1 / 2) and a["sacks_allowed_n_std"] == 2
+    assert a["pass_play_rate_std"] == pytest.approx(2 / 3)
 
 
-# ======================================================================
-# defensive universes
-# ======================================================================
-def test_defensive_faced_universes(research_context):
+def test_defensive_faced_universes(mk_ctx):
     g = games_df([
         game_row("D1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("DT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
     ])
-    # opponent BBB on offense (AAA on defense) faces these:
     p = plays_df([
         play("D1", "BBB", "AAA", "pass", epa=1.0, sack=1.0),
         play("D1", "BBB", "AAA", "pass", epa=3.0, sack=0.0),
         play("D1", "BBB", "AAA", "run", epa=-1.0),
     ])
-    df = build(research_context, g, p, ["DT"])
-    a = one(df, "AAA")
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    a = one(build(rec, g, p, ["DT"]), "AAA")
     assert a["def_pass_count_std"] == 2 and a["def_play_count_std"] == 3
     assert a["def_epa_per_play_std"] == pytest.approx((1 + 3 - 1) / 3)
-    assert a["sack_rate_std"] == pytest.approx(1 / 2)
-
-
-# ======================================================================
-# HISTORICAL_STRICT: retrospective PBP excluded (no manufactured timestamps)
-# ======================================================================
-def test_historical_strict_excludes_retrospective_pbp():
-    d = common.REPO / "data" / "v3" / "features" / "_test_inputs"
-    d.mkdir(parents=True, exist_ok=True)
-    stub = d / "strict_stub.txt"; stub.write_text("x")
-    try:
-        rec = ctx.create_feature_context(context_mode=ctx.HISTORICAL_STRICT,
-                                         as_of_time=pd.Timestamp("2024-10-06T00:00:00Z"),
-                                         input_paths=[stub])
-        g = games_df([
-            game_row("H1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
-            game_row("HT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 0, 0, final=False),
-        ])
-        p = plays_df([play("H1", "AAA", "BBB", "pass", epa=5.0)])
-        df = build(rec, g, p, ["HT"])
-        a = one(df, "AAA")
-        # RETROSPECTIVE_ONLY PBP is excluded in strict mode -> no eligible priors
-        assert a["std_games_available"] == 0
-        assert pd.isna(a["pass_play_epa_std"])
-    finally:
-        stub.unlink()
+    assert a["sack_rate_std"] == pytest.approx(1 / 2) and a["sack_rate_n_std"] == 2
 
 
 # ======================================================================
 # primary key + determinism
 # ======================================================================
-def test_primary_key_unique_and_two_rows_per_game(research_context):
+def test_primary_key_unique_and_two_rows_per_game(mk_ctx):
     g = games_df([
         game_row("K1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("KT", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "BBB", 0, 0, final=False),
     ])
-    df = build(research_context, g, plays_df([play("K1", "AAA", "BBB", "pass", epa=1.0)]), ["KT"])
+    rec = mk_ctx(as_of="2024-09-15T12:00:00Z")
+    df = build(rec, g, plays_df([play("K1", "AAA", "BBB", "pass", epa=1.0)]), ["KT"])
     assert set(df["team"]) == {"AAA", "BBB"} and len(df) == 2
-    tf.assert_unique_primary_key(df)  # does not raise
+    tf.assert_unique_primary_key(df)
 
 
 def test_assert_unique_primary_key_raises_on_dup():
@@ -380,7 +424,7 @@ def test_assert_unique_primary_key_raises_on_dup():
         tf.assert_unique_primary_key(df)
 
 
-def test_deterministic_rebuild(research_context):
+def test_deterministic_rebuild(mk_ctx):
     g = games_df([
         game_row("M1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
         game_row("M2", 2024, 2, "2024-09-15T17:00:00Z", "CCC", "AAA", 14, 21),
@@ -391,6 +435,5 @@ def test_deterministic_rebuild(research_context):
         play("M1", "AAA", "BBB", "run", epa=-1.0, success=0.0, yards=3.0, down=2),
         play("M2", "AAA", "CCC", "pass", epa=2.0, success=1.0, yards=8.0, sack=1.0),
     ])
-    df1 = build(research_context, g, p, ["MT"])
-    df2 = build(research_context, g, p, ["MT"])
-    pd.testing.assert_frame_equal(df1, df2)
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    pd.testing.assert_frame_equal(build(rec, g, p, ["MT"]), build(rec, g, p, ["MT"]))

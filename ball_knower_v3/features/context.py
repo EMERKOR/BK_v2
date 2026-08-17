@@ -104,6 +104,13 @@ class EligibilityContext:
         self.mode = mode
         self.as_of = require_aware_utc(as_of)
         self.target_kickoff = require_aware_utc(target_kickoff)
+        # Pregame invariant (§3.2): the decision time must be strictly before the
+        # target kickoff. A context at/after kickoff is same-game/future and is
+        # refused outright, in every mode.
+        if self.as_of >= self.target_kickoff:
+            raise ValueError(
+                f"as_of_time ({self.as_of.isoformat()}) must be strictly before "
+                f"target_kickoff ({self.target_kickoff.isoformat()})")
         lb = _to_utc(live_freeze_bound)
         if mode == LIVE_STATE:
             if lb is None:
@@ -178,10 +185,12 @@ def eligible(grade, *, context, source_known_time=None, source_snapshot_time=Non
         if context.mode == HISTORICAL_STRICT:
             return False, None, None, f"{grade} excluded in HISTORICAL_STRICT"
         if context.mode == HISTORICAL_RESEARCH:
-            if grade == "RETROSPECTIVE_ONLY" and et is not None and et < kickoff:
-                return True, "RETROSPECTIVE_ONLY", et, "RETROSPECTIVE_ONLY prior-game admitted (HISTORICAL_RESEARCH)"
+            # Retrospective prior-game evidence requires the football event to
+            # precede BOTH as_of and kickoff (§3.2): prior_event < as_of < kickoff.
+            if grade == "RETROSPECTIVE_ONLY" and et is not None and et < as_of:
+                return True, "RETROSPECTIVE_ONLY", et, "RETROSPECTIVE_ONLY prior-game admitted (event < as_of < kickoff)"
             return False, None, None, (f"{grade} not admissible in HISTORICAL_RESEARCH "
-                                       f"(only strictly prior-game RETROSPECTIVE_ONLY)")
+                                       f"(needs strictly prior-game RETROSPECTIVE_ONLY with event_time < as_of)")
         # LIVE_STATE: the ONLY proof is the validated context's live_freeze_bound.
         lb = context.live_freeze_bound
         if lb is None:
@@ -189,6 +198,10 @@ def eligible(grade, *, context, source_known_time=None, source_snapshot_time=Non
         if source_input_key is not None and context.frozen_input_keys and \
                 source_input_key not in context.frozen_input_keys:
             return False, None, None, f"source {source_input_key!r} is not a frozen input of this context"
+        # A game occurring at/after as_of was not in the contemporaneous freeze
+        # (the mutable latest-state PBP file is pinned by hash, not by cutoff).
+        if et is not None and et >= as_of:
+            return False, None, None, "event_time at/after as_of — not in the contemporaneous freeze"
         if _bounded(lb):
             return True, "SNAPSHOT_BOUND", lb, "WEEK_ONLY/RETROSPECTIVE_ONLY upgraded by the bound LIVE_FREEZE (LIVE_STATE)"
         return False, None, None, "live_freeze_bound outside [<= as_of, < kickoff]"

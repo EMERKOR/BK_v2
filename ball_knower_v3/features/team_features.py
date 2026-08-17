@@ -66,10 +66,39 @@ FEATURE_NAMES = (
     "sacks_allowed_rate", "sack_rate",
 )
 
-_COVERAGE_COUNTS = (
+# Coverage columns per window (deterministic order). Three tiers:
+#   * game-level coverage — `games_available` (eligible prior games in window),
+#     `pbp_games_used` (COARSE: games with >=1 eligible scrimmage PBP row; it does
+#     NOT imply every feature used that many games), and `points_games`
+#     (completed eligible games contributing a non-null score, from
+#     `canonical_games` — separate from PBP metric coverage);
+#   * universe play counts — the pass/run/scrimmage play populations;
+#   * per-metric non-null denominators (`*_n`) — the EXACT denominator each
+#     rate/mean divided by, so every feature is auditable and partial metric
+#     coverage (null EPA/success rows) is visible.
+_GAME_COVERAGE = ("games_available", "pbp_games_used", "points_games")
+_UNIVERSE_COUNTS = (
     "off_play_count", "off_pass_count", "off_run_count",
     "def_play_count", "def_pass_count", "early_down_play_count",
 )
+_METRIC_DENOMS = (
+    "off_epa_n", "def_epa_n", "pass_epa_n", "run_epa_n",
+    "off_success_n", "def_success_n", "pass_success_n", "run_success_n",
+    "explosive_pass_n", "explosive_run_n", "sacks_allowed_n", "sack_rate_n",
+)
+_COVERAGE_COLS = _GAME_COVERAGE + _UNIVERSE_COUNTS + _METRIC_DENOMS
+
+# maps each rate/mean feature to the coverage column that IS its denominator
+FEATURE_DENOMINATOR = {
+    "points_scored": "points_games", "points_allowed": "points_games",
+    "off_epa_per_play": "off_epa_n", "def_epa_per_play": "def_epa_n",
+    "pass_play_epa": "pass_epa_n", "run_play_epa": "run_epa_n",
+    "off_success_rate": "off_success_n", "def_success_rate": "def_success_n",
+    "pass_success_rate": "pass_success_n", "run_success_rate": "run_success_n",
+    "explosive_pass_rate": "explosive_pass_n", "explosive_rush_rate": "explosive_run_n",
+    "pass_play_rate": "off_play_count", "early_down_pass_rate": "early_down_play_count",
+    "sacks_allowed_rate": "sacks_allowed_n", "sack_rate": "sack_rate_n",
+}
 
 
 # --------------------------------------------------------------------------
@@ -140,16 +169,22 @@ def _rate(num, den):
 
 
 def _pool(accs: list, points: list) -> tuple:
-    """Pool per-game accumulators + per-game points into features + coverage."""
+    """Pool per-game accumulators + per-game points into features + coverage.
+
+    `points` is the list of (own, opp) score pairs for the window's eligible
+    games; only pairs with both scores non-null contribute (and are counted in
+    `points_games`). Every rate/mean divides by its true non-null denominator, so
+    a zero denominator yields null (distinct from a real 0.0)."""
     tot = {k: 0 for k in _ACC_KEYS}
     for a in accs:
         for k in _ACC_KEYS:
             tot[k] += a[k]
 
-    npts = len(points)
+    valid_pts = [(o, p) for (o, p) in points if not (pd.isna(o) or pd.isna(p))]
+    npts = len(valid_pts)
     feats = {
-        "points_scored": (sum(o for o, _ in points) / npts) if npts else None,
-        "points_allowed": (sum(p for _, p in points) / npts) if npts else None,
+        "points_scored": (sum(o for o, _ in valid_pts) / npts) if npts else None,
+        "points_allowed": (sum(p for _, p in valid_pts) / npts) if npts else None,
         "off_epa_per_play": _rate(tot["off_epa_sum"], tot["off_epa_n"]),
         "def_epa_per_play": _rate(tot["def_epa_sum"], tot["def_epa_n"]),
         "pass_play_epa": _rate(tot["pass_epa_sum"], tot["pass_epa_n"]),
@@ -166,9 +201,16 @@ def _pool(accs: list, points: list) -> tuple:
         "sack_rate": _rate(tot["sack_def_num"], tot["sack_def_den"]),
     }
     cov = {
+        "points_games": npts,
         "off_play_count": tot["off_play"], "off_pass_count": tot["off_pass"],
         "off_run_count": tot["off_run"], "def_play_count": tot["def_play"],
         "def_pass_count": tot["def_pass"], "early_down_play_count": tot["early_play"],
+        "off_epa_n": tot["off_epa_n"], "def_epa_n": tot["def_epa_n"],
+        "pass_epa_n": tot["pass_epa_n"], "run_epa_n": tot["run_epa_n"],
+        "off_success_n": tot["off_succ_n"], "def_success_n": tot["def_succ_n"],
+        "pass_success_n": tot["pass_succ_n"], "run_success_n": tot["run_succ_n"],
+        "explosive_pass_n": tot["expl_pass_den"], "explosive_run_n": tot["expl_run_den"],
+        "sacks_allowed_n": tot["sack_allowed_den"], "sack_rate_n": tot["sack_def_den"],
     }
     return feats, cov
 
@@ -180,15 +222,22 @@ def _kickoff_utc(series: pd.Series) -> pd.Series:
     return pd.to_datetime(series, utc=True)
 
 
-def _eligible_prior_games(games: pd.DataFrame, *, team, season, target_kickoff,
+def _eligible_prior_games(games: pd.DataFrame, *, team, season, as_of,
                           elig_ctx, pbp_grade, plays_input_key) -> list:
     """Return eligible strictly-prior completed same-season games for `team`,
-    most-recent-first by ACTUAL KICKOFF. Eligibility is decided by the Stage B
-    gate — the feature layer manufactures no timing."""
+    most-recent-first by ACTUAL KICKOFF.
+
+    Selection is conservative on the as-of boundary: a candidate's kickoff must be
+    strictly before `as_of` (a game not yet started at the decision time cannot be
+    prior evidence). The Stage B gate then independently confirms eligibility
+    (`prior_event < as_of < target_kickoff` for retrospective PBP). The feature
+    layer manufactures no timing — no game-completion timestamps are invented; the
+    kickoff is used conservatively as the event boundary (a game is not usable as
+    completed prior evidence until strictly after the decision time)."""
     mask = (
         (games["season"] == season)
         & games["is_final"].fillna(False)
-        & (games["kickoff_utc"] < target_kickoff)
+        & (games["kickoff_utc"] < as_of)
         & ((games["home_team"] == team) | (games["away_team"] == team))
     )
     cand = games[mask].sort_values(["kickoff_utc", "game_id"], ascending=[False, False])
@@ -230,12 +279,20 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
     fctx_id = context_record["feature_context_id"]
     mode = context_record["context_mode"]
     as_of = context_record["as_of_time"]
+    as_of_utc = ctx.require_aware_utc(as_of)
 
     rows = []
     for tgid in sorted(set(target_game_ids)):
         tg = g_by_id[tgid]
         target_kickoff = pd.Timestamp(tg["kickoff_utc"])
         season = tg["season"]
+        # Pregame invariant: a target must kick off strictly after the decision
+        # time. build_eligibility_context enforces the same rule; fail loudly here
+        # with the offending target so a caller cannot "predict" a started game.
+        if not (as_of_utc < target_kickoff):
+            raise ValueError(
+                f"target {tgid} kicks at {target_kickoff.isoformat()} which is not "
+                f"strictly after as_of {as_of_utc.isoformat()}")
         # one eligibility context per target game (target_kickoff-specific)
         elig_ctx = ctx.build_eligibility_context(
             context_record, target_kickoff=target_kickoff,
@@ -245,7 +302,7 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
             opponent = tg["away_team"] if team == tg["home_team"] else tg["home_team"]
             is_home = bool(team == tg["home_team"])
             priors = _eligible_prior_games(
-                g, team=team, season=season, target_kickoff=target_kickoff,
+                g, team=team, season=season, as_of=as_of_utc,
                 elig_ctx=elig_ctx, pbp_grade=pbp_grade, plays_input_key=plays_input_key)
 
             # per-prior-game accumulators + points, most-recent-first
@@ -277,12 +334,13 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
                 accs = [a for a, _ in sub]
                 pts = [p for _, p in sub]
                 feats, cov = _pool(accs, pts)
-                row[f"{wname}_games_available"] = len(sub)
-                row[f"{wname}_games_used"] = sum(
+                # game-level coverage (pbp_games_used is COARSE — see _COVERAGE_COLS)
+                cov["games_available"] = len(sub)
+                cov["pbp_games_used"] = sum(
                     1 for a in accs if (a["off_play"] + a["def_play"]) > 0)
                 for fn in FEATURE_NAMES:
                     row[f"{fn}_{wname}"] = feats[fn]
-                for cn in _COVERAGE_COUNTS:
+                for cn in _COVERAGE_COLS:
                     row[f"{cn}_{wname}"] = int(cov[cn])
             rows.append(row)
 
@@ -292,8 +350,7 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
     # (NaN == null, distinct from a real 0.0).
     count_cols = []
     for wname in WINDOWS:
-        count_cols += [f"{wname}_games_available", f"{wname}_games_used"]
-        count_cols += [f"{cn}_{wname}" for cn in _COVERAGE_COUNTS]
+        count_cols += [f"{cn}_{wname}" for cn in _COVERAGE_COLS]
     for c in count_cols:
         df[c] = df[c].astype("int64")
     feat_cols = [f"{fn}_{wname}" for wname in WINDOWS for fn in FEATURE_NAMES]
@@ -320,9 +377,8 @@ def _schema_columns() -> list:
             "feature_set_version", "context_mode", "as_of_time", "target_game_id",
             "season", "week", "game_type", "target_kickoff", "team", "opponent", "is_home"]
     for wname in WINDOWS:
-        base += [f"{wname}_games_available", f"{wname}_games_used"]
         base += [f"{fn}_{wname}" for fn in FEATURE_NAMES]
-        base += [f"{cn}_{wname}" for cn in _COVERAGE_COUNTS]
+        base += [f"{cn}_{wname}" for cn in _COVERAGE_COLS]
     return base
 
 
