@@ -173,19 +173,21 @@ source_availability_time  <=  as_of_time  <  target_kickoff
 | `EXACT` | eligible if `source_known_time <= as_of_time < kickoff` | same | same |
 | `SNAPSHOT_BOUND` | eligible if `source_snapshot_time <= as_of_time < kickoff` | same | same |
 | `WEEK_ONLY` | eligible only via a contemporaneous snapshot bound ≤ `as_of_time` | **excluded** | **excluded** |
-| `RETROSPECTIVE_ONLY` | eligible only via a genuine contemporaneous snapshot time ≤ `as_of_time` (and the event before `as_of_time`) | **excluded** | eligible **only for a strictly prior game** whose `event_time < as_of_time` (`< target_kickoff` by construction); never same-game |
+| `RETROSPECTIVE_ONLY` | eligible only via a genuine contemporaneous snapshot time ≤ `as_of_time` **and** the game present in the frozen inputs | **excluded** | eligible **only** for a game whose Eastern-time calendar date is **strictly earlier** than the `as_of_time` ET date (date-level convention, §6.2); never same-ET-day |
 
-Every context requires `as_of_time < target_kickoff` (§6.2 as-of boundary), so
-`event_time < as_of_time` implies `event_time < target_kickoff`.
+Every context requires `as_of_time < target_kickoff` (§6.2 as-of boundary). The
+`HISTORICAL_RESEARCH` admission is a **date-level convention**, not a proof of
+exact availability: it compares Eastern-time calendar dates because canonical has
+no historical completion timestamp (see §6.2).
 
 `HISTORICAL_STRICT` therefore admits only `EXACT` and `SNAPSHOT_BOUND`, exactly as
 Phase 2D's `eligible(...)` gate does.
 
 `HISTORICAL_RESEARCH` admits `EXACT` and `SNAPSHOT_BOUND` on the same terms, and
-**additionally** admits **strictly prior-game `RETROSPECTIVE_ONLY`**
-observations — historical PBP/FTN and eligible retrospective FantasyPoints shares
-whose exact historical publication state cannot be proven — and only those, and
-only when the football event precedes `as_of_time`. It
+**additionally** admits prior-day `RETROSPECTIVE_ONLY` observations — historical
+PBP/FTN and eligible retrospective FantasyPoints shares whose exact historical
+publication state cannot be proven — and only those, and only when the football
+event's Eastern-time date precedes the `as_of_time` Eastern-time date. It
 does **not** admit generic `WEEK_ONLY` observations: a `WEEK_ONLY` source stays
 excluded unless a genuine contemporaneous snapshot upgrades it to
 `SNAPSHOT_BOUND` (at which point it is admitted as `SNAPSHOT_BOUND`, not as
@@ -533,24 +535,35 @@ games by kickoff, not weeks `W-1..W-N`.
 
 ### As-of boundary (leakage)
 
-Prior evidence is bounded by the decision time, not merely the target kickoff.
-For a feature context with decision time `as_of_time` and a target game with
-`target_kickoff`:
+Prior evidence is bounded by the decision time, not merely the target kickoff. A
+feature context is invalid (rejected at construction) unless
+`as_of_time < target_kickoff` — a decision made at or after kickoff is
+same-game/future.
 
-```
-prior_event_time < as_of_time < target_kickoff
-```
+**Completion cannot be inferred from kickoff.** `canonical_games.is_final` is
+retrospective **current-source** truth, and `canonical_games` carries **no**
+historical game-completion timestamp. Therefore `kickoff < as_of_time` does
+**not** prove a game was completed (or its data available) by `as_of_time`. The
+prior-game admissibility rule is per context mode, and no game-completion time is
+ever invented:
 
-- A feature context is invalid (rejected at construction) unless
-  `as_of_time < target_kickoff` — a decision made at or after kickoff is
-  same-game/future.
-- A prior game is eligible only if its event precedes `as_of_time` (not just
-  `target_kickoff`); a game that kicks off after the decision time is not yet
-  completed evidence. With current canonical fields there is **no** proven
-  game-completion timestamp, so the layer uses the game's **kickoff** as a
-  conservative event boundary (a game is not usable as completed prior evidence
-  until strictly after the decision time) and manufactures no completion time.
-  This is a documented conservative approximation, not an invented timestamp.
+- **`LIVE_STATE`** — governed by the genuine freeze: a completed prior-game
+  observation may be used only when it is actually present in the frozen
+  `LIVE_STATE` inputs (frozen-input membership) and passes the point-in-time gate
+  (`live_freeze_bound <= as_of < kickoff`). No calendar-date proxy is used.
+- **`HISTORICAL_STRICT`** — unchanged: retrospective PBP is excluded; nothing is
+  inferred from kickoff.
+- **`HISTORICAL_RESEARCH`** — because exact completion timestamps are
+  unavailable, an explicitly weaker **date-level** safeguard applies: the
+  candidate game's Eastern-time (`America/New_York`) `gameday` / kickoff calendar
+  date must be **strictly earlier** than the `as_of_time` calendar date in
+  `America/New_York`, and the game must be `final` in the retrospective canonical
+  source. Same-calendar-day final-looking games are excluded regardless of
+  kickoff clock time. This is a documented `HISTORICAL_RESEARCH` **convention**,
+  not proof of exact availability or completion time. (So a Sunday game can feed a
+  Monday/Tuesday research context, while a 1 PM Sunday game can never feed an 8 PM
+  Sunday research prediction merely because the present-day file now contains its
+  final result.)
 
 ## 6.3 Coverage metadata (mandatory)
 

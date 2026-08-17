@@ -11,12 +11,15 @@ Design invariants:
   * current-season history only (no prior-season bleed);
   * windows last3 / last5 / season-to-date, ordered by ACTUAL KICKOFF chronology
     (never week arithmetic);
-  * strictly prior games only — same-game and future games are excluded both by
-    chronology and by the Stage B `EligibilityContext` gate;
+  * prior games only — same-game/future games and the target itself are excluded;
+    the layer makes NO completion inference from kickoff (canonical has no
+    historical completion timestamp);
   * point-in-time eligibility comes ENTIRELY from Stage B (`context.eligible`):
     nflverse PBP is RETROSPECTIVE_ONLY (mutable latest-state, contract §4.1), so
-    HISTORICAL_RESEARCH admits strictly prior games while HISTORICAL_STRICT admits
-    none unless a stronger provenance is supplied — no timestamps are manufactured;
+    HISTORICAL_STRICT admits none unless a stronger provenance is supplied, while
+    HISTORICAL_RESEARCH uses the explicitly weaker Eastern-time calendar-date
+    safeguard (candidate ET date strictly before the as_of ET date; §6.2) — no
+    timestamps are manufactured; LIVE_STATE is governed by frozen-input membership;
   * pooled-play rates (numerators/denominators pooled across the window's plays),
     never a mean of per-game rates; points are per-game means;
   * null vs zero preserved: a rate/mean with a zero denominator is null; a real
@@ -222,22 +225,29 @@ def _kickoff_utc(series: pd.Series) -> pd.Series:
     return pd.to_datetime(series, utc=True)
 
 
-def _eligible_prior_games(games: pd.DataFrame, *, team, season, as_of,
+def _eligible_prior_games(games: pd.DataFrame, *, team, season, target_game_id,
                           elig_ctx, pbp_grade, plays_input_key) -> list:
-    """Return eligible strictly-prior completed same-season games for `team`,
-    most-recent-first by ACTUAL KICKOFF.
+    """Return the same-season, final, other-than-target candidate games for
+    `team`, most-recent-first by ACTUAL KICKOFF, that the Stage B gate admits.
 
-    Selection is conservative on the as-of boundary: a candidate's kickoff must be
-    strictly before `as_of` (a game not yet started at the decision time cannot be
-    prior evidence). The Stage B gate then independently confirms eligibility
-    (`prior_event < as_of < target_kickoff` for retrospective PBP). The feature
-    layer manufactures no timing — no game-completion timestamps are invented; the
-    kickoff is used conservatively as the event boundary (a game is not usable as
-    completed prior evidence until strictly after the decision time)."""
+    The feature layer manufactures NO timing and makes NO completion inference
+    from kickoff. Candidate set = same season, `is_final` in the retrospective
+    canonical source, the row's team, and not the target game itself. The Stage B
+    `eligible()` gate then applies the per-mode point-in-time policy:
+
+      * HISTORICAL_STRICT — RETROSPECTIVE_ONLY PBP excluded (no inference from
+        kickoff);
+      * HISTORICAL_RESEARCH — admitted only when the candidate's Eastern-time
+        calendar date is strictly before the as_of Eastern-time date (a weaker,
+        explicitly-documented research convention — see §6.2);
+      * LIVE_STATE — governed by frozen-input membership + the live-freeze bound.
+
+    Kickoff is used ONLY for chronological ordering of the window, never as a
+    completion/availability proof."""
     mask = (
         (games["season"] == season)
         & games["is_final"].fillna(False)
-        & (games["kickoff_utc"] < as_of)
+        & (games["game_id"] != target_game_id)
         & ((games["home_team"] == team) | (games["away_team"] == team))
     )
     cand = games[mask].sort_values(["kickoff_utc", "game_id"], ascending=[False, False])
@@ -302,7 +312,7 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
             opponent = tg["away_team"] if team == tg["home_team"] else tg["home_team"]
             is_home = bool(team == tg["home_team"])
             priors = _eligible_prior_games(
-                g, team=team, season=season, as_of=as_of_utc,
+                g, team=team, season=season, target_game_id=tgid,
                 elig_ctx=elig_ctx, pbp_grade=pbp_grade, plays_input_key=plays_input_key)
 
             # per-prior-game accumulators + points, most-recent-first

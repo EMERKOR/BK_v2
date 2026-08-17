@@ -74,6 +74,19 @@ def _to_utc(ts):
     return t.tz_localize("UTC") if t.tzinfo is None else t.tz_convert("UTC")
 
 
+# The HISTORICAL_RESEARCH date safeguard is evaluated on the NFL Eastern-time
+# calendar date (the sense in which nflverse `gameday` is defined).
+NY_TZ = "America/New_York"
+
+
+def _ny_date(ts):
+    """Eastern-time calendar date of a timestamp (None/NaT -> None)."""
+    t = _to_utc(ts)
+    if t is None:
+        return None
+    return t.tz_convert(NY_TZ).date()
+
+
 # --------------------------------------------------------------------------
 # Eligibility context — the ONLY carrier of admissible proof bounds (§3, hardened)
 # --------------------------------------------------------------------------
@@ -185,25 +198,37 @@ def eligible(grade, *, context, source_known_time=None, source_snapshot_time=Non
         if context.mode == HISTORICAL_STRICT:
             return False, None, None, f"{grade} excluded in HISTORICAL_STRICT"
         if context.mode == HISTORICAL_RESEARCH:
-            # Retrospective prior-game evidence requires the football event to
-            # precede BOTH as_of and kickoff (§3.2): prior_event < as_of < kickoff.
-            if grade == "RETROSPECTIVE_ONLY" and et is not None and et < as_of:
-                return True, "RETROSPECTIVE_ONLY", et, "RETROSPECTIVE_ONLY prior-game admitted (event < as_of < kickoff)"
+            # Date-level research safeguard (§6.2). Canonical has NO historical
+            # game-completion timestamp and `is_final` is retrospective current-
+            # source truth, so kickoff/clock time cannot prove availability. A
+            # retrospective prior game is admitted only when its Eastern-time
+            # calendar date is STRICTLY EARLIER than the as_of Eastern-time
+            # calendar date; same-ET-day final-looking games are excluded
+            # regardless of clock time. This is a HISTORICAL_RESEARCH CONVENTION,
+            # not proof of exact availability/completion (so a Sunday game can feed
+            # a Monday research context, but a 1 PM Sunday game can never feed an
+            # 8 PM Sunday research prediction).
+            if grade == "RETROSPECTIVE_ONLY":
+                ed, ad = _ny_date(et), _ny_date(as_of)
+                if ed is not None and ad is not None and ed < ad:
+                    return True, "RETROSPECTIVE_ONLY", et, "RETROSPECTIVE_ONLY prior-day admitted (ET date < as_of ET date)"
             return False, None, None, (f"{grade} not admissible in HISTORICAL_RESEARCH "
-                                       f"(needs strictly prior-game RETROSPECTIVE_ONLY with event_time < as_of)")
-        # LIVE_STATE: the ONLY proof is the validated context's live_freeze_bound.
+                                       f"(needs RETROSPECTIVE_ONLY with ET calendar date strictly before the as_of ET date)")
+        # LIVE_STATE: governed by the contemporaneous freeze — the proof is the
+        # validated live_freeze_bound AND the observation actually being present in
+        # the frozen inputs (membership), never a calendar-date proxy.
         lb = context.live_freeze_bound
         if lb is None:
             return False, None, None, "LIVE_STATE context has no proven live_freeze_bound"
         if source_input_key is not None and context.frozen_input_keys and \
                 source_input_key not in context.frozen_input_keys:
             return False, None, None, f"source {source_input_key!r} is not a frozen input of this context"
-        # A game occurring at/after as_of was not in the contemporaneous freeze
-        # (the mutable latest-state PBP file is pinned by hash, not by cutoff).
+        # A game occurring at/after the freeze instant was not in the freeze
+        # (provenance consistency, not a date proxy).
         if et is not None and et >= as_of:
             return False, None, None, "event_time at/after as_of — not in the contemporaneous freeze"
         if _bounded(lb):
-            return True, "SNAPSHOT_BOUND", lb, "WEEK_ONLY/RETROSPECTIVE_ONLY upgraded by the bound LIVE_FREEZE (LIVE_STATE)"
+            return True, "SNAPSHOT_BOUND", lb, "WEEK_ONLY/RETROSPECTIVE_ONLY admitted by the bound LIVE_FREEZE + frozen-input membership (LIVE_STATE)"
         return False, None, None, "live_freeze_bound outside [<= as_of, < kickoff]"
 
     return False, None, None, f"unknown point_in_time_grade {grade!r}"

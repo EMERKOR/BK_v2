@@ -175,17 +175,42 @@ def test_same_game_event_guard_rejects_even_exact():
     assert not ok
 
 
-def test_research_rejects_event_between_as_of_and_kickoff():
-    # noon as_of, a 1 PM candidate, an 8 PM target -> the 1 PM game is excluded
-    noon = T("2024-10-06T12:00:00Z")
-    one_pm = T("2024-10-06T13:00:00Z")
-    eight_pm = T("2024-10-06T20:00:00Z")
-    c = ctx.EligibilityContext(mode=ctx.HISTORICAL_RESEARCH, as_of=noon, target_kickoff=eight_pm)
-    ok, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=c, event_time=one_pm)
-    assert not ok  # event after as_of
+def test_research_uses_et_calendar_date_not_clock_time():
+    # same-ET-day games are excluded regardless of clock time; a prior ET day is
+    # admitted. as_of 2 PM ET Sunday, target 8 PM ET Sunday.
+    as_of = T("2024-10-06T18:00:00Z")     # 2 PM ET Sun 10-06
+    target = T("2024-10-07T00:00:00Z")    # 8 PM ET Sun 10-06
+    c = ctx.EligibilityContext(mode=ctx.HISTORICAL_RESEARCH, as_of=as_of, target_kickoff=target)
+    # a 1 PM ET Sunday game (same ET day, before the as_of CLOCK) -> excluded
+    ok, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=c, event_time=T("2024-10-06T17:00:00Z"))
+    assert not ok
+    # a Saturday game (prior ET day) -> admitted
     ok2, ug, ut, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=c,
-                                  event_time=T("2024-10-06T11:00:00Z"))
-    assert ok2 and ug == "RETROSPECTIVE_ONLY"  # genuinely prior (before as_of)
+                                  event_time=T("2024-10-05T23:00:00Z"))
+    assert ok2 and ug == "RETROSPECTIVE_ONLY"
+
+
+def test_live_state_admits_same_et_day_via_freeze_not_date_proxy():
+    # LIVE_STATE is governed by the freeze + frozen-input membership, not the
+    # research date proxy: a same-ET-day completed game IS admissible if it is in
+    # the frozen inputs, whereas HISTORICAL_RESEARCH excludes it.
+    one_pm = T("2024-10-06T17:00:00Z")     # 1 PM ET Sun
+    five_pm = T("2024-10-06T21:00:00Z")    # 5 PM ET Sun (freeze / as_of)
+    eight_pm = T("2024-10-07T00:00:00Z")   # 8 PM ET Sun
+    key = "data/v3/canonical/plays_2024.parquet"
+    live = ctx.EligibilityContext(mode=ctx.LIVE_STATE, as_of=five_pm, target_kickoff=eight_pm,
+                                  live_freeze_bound=five_pm, frozen_input_keys={key})
+    ok, ug, _, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=live, event_time=one_pm,
+                                source_input_key=key)
+    assert ok and ug == "SNAPSHOT_BOUND"   # admitted via the freeze despite same ET day
+    research = ctx.EligibilityContext(mode=ctx.HISTORICAL_RESEARCH, as_of=five_pm,
+                                      target_kickoff=eight_pm)
+    ok2, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=research, event_time=one_pm)
+    assert not ok2                          # research excludes the same-ET-day game
+    # LIVE_STATE still excludes a source NOT present in the frozen inputs
+    ok3, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=live, event_time=one_pm,
+                           source_input_key="data/v3/canonical/NOT_FROZEN.parquet")
+    assert not ok3
 
 
 def test_unknown_grade_not_eligible():

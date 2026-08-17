@@ -215,17 +215,31 @@ def test_playoff_chronology_includes_regular_season_priors(mk_ctx):
 # ======================================================================
 # leakage: as-of boundary, same-game, future-game, no prior-season bleed
 # ======================================================================
-def test_as_of_leakage_prior_after_as_of_excluded(mk_ctx):
-    # noon as_of, a 1 PM prior game, an 8 PM target -> 1 PM game excluded
+def test_same_et_day_game_excluded_in_research(mk_ctx):
+    # 1 PM ET Sunday game, 2 PM ET as_of, 8 PM ET Sunday target -> the 1 PM game
+    # is excluded (same ET calendar date) even though it kicked before as_of.
     g = games_df([
-        game_row("L1", 2024, 1, "2024-10-06T13:00:00Z", "AAA", "BBB", 20, 10),   # 1 PM
-        game_row("LT", 2024, 1, "2024-10-06T20:00:00Z", "AAA", "CCC", 0, 0, final=False),  # 8 PM
+        game_row("L1", 2024, 1, "2024-10-06T17:00:00Z", "AAA", "BBB", 20, 10),   # 1 PM ET Sun
+        game_row("LT", 2024, 1, "2024-10-07T00:00:00Z", "AAA", "CCC", 0, 0, final=False),  # 8 PM ET Sun
     ])
     p = plays_df([play("L1", "AAA", "BBB", "pass", epa=5.0)])
-    rec = mk_ctx(as_of="2024-10-06T12:00:00Z")  # noon
+    rec = mk_ctx(as_of="2024-10-06T18:00:00Z")  # 2 PM ET Sun
     a = one(build(rec, g, p, ["LT"]), "AAA")
     assert a["games_available_std"] == 0
     assert pd.isna(a["pass_play_epa_std"])
+
+
+def test_sunday_prior_feeds_monday_research_context(mk_ctx):
+    # a Sunday prior game feeds a Monday-as_of research context (prior ET day).
+    g = games_df([
+        game_row("SUN", 2024, 1, "2024-10-06T17:00:00Z", "AAA", "BBB", 20, 10),   # Sun 1 PM ET
+        game_row("MON", 2024, 2, "2024-10-15T00:00:00Z", "AAA", "CCC", 0, 0, final=False),  # later target
+    ])
+    p = plays_df([play("SUN", "AAA", "BBB", "pass", epa=4.0)])
+    rec = mk_ctx(as_of="2024-10-07T16:00:00Z")  # Mon noon ET
+    a = one(build(rec, g, p, ["MON"]), "AAA")
+    assert a["games_available_std"] == 1
+    assert a["pass_play_epa_std"] == pytest.approx(4.0)
 
 
 def test_target_before_as_of_raises(mk_ctx):
