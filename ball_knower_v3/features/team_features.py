@@ -280,7 +280,15 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
     `games` is `canonical_games`; `plays` is `canonical_plays` covering (at least)
     every eligible prior game; `target_game_ids` is the set of target games. Two
     rows per target game (home and away team). Pure: no file IO, deterministic.
+
+    In `LIVE_STATE`, frozen-input membership is mandatory, so `plays_input_key`
+    must be supplied (the exact frozen `canonical_plays` key); its default `None`
+    is refused fail-closed rather than silently bypassing the membership proof.
     """
+    if context_record.get("context_mode") == ctx.LIVE_STATE and plays_input_key is None:
+        raise ValueError(
+            "LIVE_STATE build requires plays_input_key (frozen-input membership is "
+            "mandatory; None would bypass the LIVE_STATE membership proof)")
     g = games.copy()
     g["kickoff_utc"] = _kickoff_utc(g["kickoff"])
     g_by_id = {gid: row for gid, row in zip(g["game_id"], g.to_dict("records"))}

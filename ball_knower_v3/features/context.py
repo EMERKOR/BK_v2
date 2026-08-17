@@ -216,12 +216,17 @@ def eligible(grade, *, context, source_known_time=None, source_snapshot_time=Non
                                        f"(needs RETROSPECTIVE_ONLY with ET calendar date strictly before the as_of ET date)")
         # LIVE_STATE: governed by the contemporaneous freeze — the proof is the
         # validated live_freeze_bound AND the observation actually being present in
-        # the frozen inputs (membership), never a calendar-date proxy.
+        # the frozen inputs (membership), never a calendar-date proxy. Membership
+        # is MANDATORY and fails closed: a caller cannot omit the key to bypass it.
         lb = context.live_freeze_bound
         if lb is None:
             return False, None, None, "LIVE_STATE context has no proven live_freeze_bound"
-        if source_input_key is not None and context.frozen_input_keys and \
-                source_input_key not in context.frozen_input_keys:
+        if source_input_key is None:
+            return False, None, None, ("LIVE_STATE upgrade requires a source_input_key "
+                                       "(frozen-input membership is mandatory)")
+        if not context.frozen_input_keys:
+            return False, None, None, "LIVE_STATE context has no frozen inputs to prove membership"
+        if source_input_key not in context.frozen_input_keys:
             return False, None, None, f"source {source_input_key!r} is not a frozen input of this context"
         # A game occurring at/after the freeze instant was not in the freeze
         # (provenance consistency, not a date proxy).

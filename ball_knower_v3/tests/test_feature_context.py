@@ -60,7 +60,10 @@ def research_ctx(as_of=ASOF, kick=KICK):
     return ctx.EligibilityContext(mode=ctx.HISTORICAL_RESEARCH, as_of=as_of, target_kickoff=kick)
 
 
-def live_ctx(as_of=ASOF, kick=KICK, live_freeze_bound=None, frozen_input_keys=None):
+FROZEN_KEY = "data/v3/canonical/plays_2024.parquet"
+
+
+def live_ctx(as_of=ASOF, kick=KICK, live_freeze_bound=None, frozen_input_keys=(FROZEN_KEY,)):
     return ctx.EligibilityContext(mode=ctx.LIVE_STATE, as_of=as_of, target_kickoff=kick,
                                   live_freeze_bound=live_freeze_bound or as_of,
                                   frozen_input_keys=frozen_input_keys)
@@ -144,7 +147,7 @@ def test_week_only_excluded_in_both_historical_modes():
 
 
 def test_week_only_admitted_in_live_state_only_via_context_bound():
-    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=live_ctx())
+    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=live_ctx(), source_input_key=FROZEN_KEY)
     assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF  # proof is the context bound, not a caller ts
 
 
@@ -164,7 +167,7 @@ def test_retrospective_research_rejects_same_game_and_future():
 
 def test_retrospective_live_state_via_context_bound():
     ok, ug, ut, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=live_ctx(),
-                                 event_time=T("2024-09-29T17:00:00Z"))
+                                 event_time=T("2024-09-29T17:00:00Z"), source_input_key=FROZEN_KEY)
     assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF
 
 
@@ -236,8 +239,43 @@ def test_arbitrary_snapshot_time_ignored_for_live_state_upgrade():
     # caller timestamp. Supplying a bogus early source_snapshot_time changes nothing:
     c = live_ctx(as_of=ASOF, live_freeze_bound=ASOF)
     ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=c,
-                                 source_snapshot_time=T("2000-01-01T00:00:00Z"))
+                                 source_snapshot_time=T("2000-01-01T00:00:00Z"),
+                                 source_input_key=FROZEN_KEY)
     assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF  # proof is the bound, not 2000-01-01
+
+
+def test_live_state_membership_is_mandatory_fail_closed():
+    # (1) missing source_input_key -> rejected (cannot bypass membership)
+    ok, _, _, r = ctx.eligible("RETROSPECTIVE_ONLY", context=live_ctx(),
+                               event_time=T("2024-09-29T17:00:00Z"))
+    assert not ok and "source_input_key" in r
+    ok_w, *_ = ctx.eligible("WEEK_ONLY", context=live_ctx())  # WEEK_ONLY too
+    assert not ok_w
+    # (2) key not in frozen inputs -> rejected
+    c = live_ctx(frozen_input_keys={"data/v3/canonical/plays_2024.parquet"})
+    ok2, *_ = ctx.eligible("RETROSPECTIVE_ONLY", context=c,
+                           event_time=T("2024-09-29T17:00:00Z"),
+                           source_input_key="data/v3/canonical/OTHER.parquet")
+    assert not ok2
+    # (2b) empty frozen-input set -> rejected even with a key
+    c_empty = live_ctx(frozen_input_keys=())
+    ok3, _, _, r3 = ctx.eligible("RETROSPECTIVE_ONLY", context=c_empty,
+                                 event_time=T("2024-09-29T17:00:00Z"), source_input_key=FROZEN_KEY)
+    assert not ok3 and "no frozen inputs" in r3
+    # (3) valid frozen key + PIT rules pass -> eligible
+    ok4, ug4, _, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=live_ctx(),
+                                  event_time=T("2024-09-29T17:00:00Z"), source_input_key=FROZEN_KEY)
+    assert ok4 and ug4 == "SNAPSHOT_BOUND"
+
+
+def test_historical_research_unaffected_by_absence_of_source_input_key():
+    # (4) HISTORICAL_RESEARCH needs no source_input_key — uses the ET-date policy
+    prior_day = T("2024-10-05T23:00:00Z")  # Saturday, prior ET day to the as_of
+    c = ctx.EligibilityContext(mode=ctx.HISTORICAL_RESEARCH,
+                               as_of=T("2024-10-06T18:00:00Z"),
+                               target_kickoff=T("2024-10-07T00:00:00Z"))
+    ok, ug, _, _ = ctx.eligible("RETROSPECTIVE_ONLY", context=c, event_time=prior_day)
+    assert ok and ug == "RETROSPECTIVE_ONLY"  # no source_input_key supplied, still eligible
 
 
 def test_live_state_upgrade_requires_frozen_input_membership_when_declared():
@@ -281,9 +319,15 @@ def test_build_eligibility_context_live_state(repo_inputs, state_registry_file):
     ec = ctx.build_eligibility_context(rec, target_kickoff=KICK,
                                        state_registry_path=state_registry_file)
     assert ec.mode == "LIVE_STATE" and ec.live_freeze_bound == ASOF
-    # upgrade works through this genuinely-derived context
-    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=ec)
+    # frozen-input membership derives from the context's own frozen inputs
+    frozen_key = next(iter(rec["inputs"]["frozen_inputs"]))
+    assert frozen_key in ec.frozen_input_keys
+    # upgrade works through this genuinely-derived context with the frozen key
+    ok, ug, ut, _ = ctx.eligible("WEEK_ONLY", context=ec, source_input_key=frozen_key)
     assert ok and ug == "SNAPSHOT_BOUND" and ut == ASOF
+    # ...but not without the mandatory membership key
+    ok_bypass, *_ = ctx.eligible("WEEK_ONLY", context=ec)
+    assert not ok_bypass
 
 
 def test_build_eligibility_context_historical_has_no_bound(repo_inputs):

@@ -229,6 +229,15 @@ def test_same_et_day_game_excluded_in_research(mk_ctx):
     assert pd.isna(a["pass_play_epa_std"])
 
 
+def test_live_state_build_requires_plays_input_key(mk_ctx):
+    # fail-closed: a LIVE_STATE build must supply plays_input_key (the guard runs
+    # before any snapshot validation, so a bare LIVE_STATE record suffices)
+    live_record = {"context_mode": ctx.LIVE_STATE}
+    with pytest.raises(ValueError, match="LIVE_STATE build requires plays_input_key"):
+        tf.build_team_features_frame(live_record, games=games_df([]), plays=plays_df([]),
+                                     target_game_ids=[], plays_input_key=None)
+
+
 def test_sunday_prior_feeds_monday_research_context(mk_ctx):
     # a Sunday prior game feeds a Monday-as_of research context (prior ET day).
     g = games_df([
