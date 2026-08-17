@@ -34,11 +34,14 @@ import pandas as pd
 from ..canonical import common
 from . import context as ctx
 
-FEATURE_SET_VERSION = "team_features_v0.1"
+FEATURE_SET_VERSION = "team_features_v0.2"  # v0.2 adds the additive FTN block (Stage D)
 TABLE = "pregame_team_features"
 
 # nflverse PBP release assets are mutable latest-state files (contract §4.1).
 PBP_DEFAULT_GRADE = "RETROSPECTIVE_ONLY"
+# Existing historical FTN files are RETROSPECTIVE_ONLY too (contract §4.2).
+FTN_DEFAULT_GRADE = "RETROSPECTIVE_ONLY"
+FTN_KEY = ["game_id", "play_id"]
 
 # pinned explosive thresholds (approved)
 EXPLOSIVE_PASS_YARDS = 20
@@ -102,6 +105,31 @@ FEATURE_DENOMINATOR = {
     "pass_play_rate": "off_play_count", "early_down_pass_rate": "early_down_play_count",
     "sacks_allowed_rate": "sacks_allowed_n", "sack_rate": "sack_rate_n",
 }
+
+# ---- Stage D: FTN tendency features (from canonical_ftn joined to plays) -------
+# The FIVE approved FTN features (contract §5.4.4) — no others are added.
+FTN_FEATURE_NAMES = (
+    "motion_rate", "play_action_rate", "rpo_rate",
+    "def_mean_pass_rushers", "def_mean_blitzers",
+)
+# FTN coverage is SEPARATE from PBP coverage — the generic pbp_* fields never
+# imply FTN coverage. `ftn_games_available` = window games with FTN charting
+# eligible for this context; `ftn_games_used` = window games where the team had
+# >=1 eligible FTN scrimmage play; the `*_n` are each FTN metric's exact non-null
+# denominator.
+_FTN_COVERAGE_COLS = (
+    "ftn_games_available", "ftn_games_used",
+    "motion_n", "play_action_n", "rpo_n", "pass_rushers_n", "blitzers_n",
+)
+FTN_FEATURE_DENOMINATOR = {
+    "motion_rate": "motion_n", "play_action_rate": "play_action_n",
+    "rpo_rate": "rpo_n", "def_mean_pass_rushers": "pass_rushers_n",
+    "def_mean_blitzers": "blitzers_n",
+}
+_FTN_ACC_KEYS = (
+    "motion_num", "motion_n", "pa_num", "pa_n", "rpo_num", "rpo_n",
+    "pr_sum", "pr_n", "bl_sum", "bl_n",
+)
 
 
 # --------------------------------------------------------------------------
@@ -219,6 +247,102 @@ def _pool(accs: list, points: list) -> tuple:
 
 
 # --------------------------------------------------------------------------
+# Stage D — FTN attribution (canonical join) + per-game accumulation + pooling
+# --------------------------------------------------------------------------
+def ftn_join_report(plays: pd.DataFrame, ftn) -> dict:
+    """Build-level FTN join coverage: rows, matched, unmatched, duplicate keys.
+    Reported explicitly (not per row). Raises on duplicate FTN join keys."""
+    if ftn is None or len(ftn) == 0:
+        return {"ftn_rows": 0, "matched": 0, "unmatched": 0, "duplicate_ftn_keys": 0}
+    dup = int(ftn.duplicated(FTN_KEY).sum())
+    if dup:
+        raise ValueError(f"canonical_ftn has {dup} duplicate {FTN_KEY} join keys (one-to-many risk)")
+    keyset = set(map(tuple, plays[FTN_KEY].itertuples(index=False, name=None)))
+    matched = int(sum(1 for r in ftn[FTN_KEY].itertuples(index=False, name=None) if tuple(r) in keyset))
+    return {"ftn_rows": int(len(ftn)), "matched": matched,
+            "unmatched": int(len(ftn) - matched), "duplicate_ftn_keys": 0}
+
+
+def _attribute_ftn(plays: pd.DataFrame, ftn) -> tuple:
+    """Attribute each FTN row to offense/defense via the canonical play join
+    (`game_id + play_id`), NEVER via an ambiguous FTN field. Fail loudly on
+    duplicate join keys or one-to-many expansion; unmatched FTN rows are dropped
+    (inner join) and never silently contribute. Returns (by_game, report)."""
+    report = ftn_join_report(plays, ftn)   # raises on duplicate FTN keys
+    if ftn is None or len(ftn) == 0:
+        return {}, report
+    if plays.duplicated(FTN_KEY).any():
+        raise ValueError(f"canonical_plays has duplicate {FTN_KEY} join keys")
+    attr = plays[["game_id", "play_id", "posteam", "defteam", "play_type"]]
+    cols = FTN_KEY + ["is_motion", "is_play_action", "is_rpo", "n_pass_rushers", "n_blitzers"]
+    merged = ftn[cols].merge(attr, on=FTN_KEY, how="inner", validate="one_to_one")
+    by_game = {gid: d for gid, d in merged.groupby("game_id", sort=True)}
+    return by_game, report
+
+
+def _bool_num_n(frame: pd.DataFrame, col: str):
+    """(count of True, count of non-null) over a boolean FTN column."""
+    s = frame[col]
+    nn = s.notna()
+    return int((s[nn] == True).sum()), int(nn.sum())  # noqa: E712
+
+
+def _per_game_ftn_accumulator(ftn_game, team) -> tuple:
+    """FTN numerators/denominators for one team in one FTN-charted game, plus
+    whether the team actually had an eligible FTN scrimmage play here.
+
+    Universes use the canonical `play_type` proxy exactly as Stage C: pass play =
+    'pass' (sacks in, scrambles out), run play = 'run'. Offensive scrimmage =
+    {pass, run} with posteam == team; defensive pass plays faced = 'pass' with
+    defteam == team."""
+    a = {k: 0 for k in _FTN_ACC_KEYS}
+    if ftn_game is None or len(ftn_game) == 0:
+        return a, False
+    pos = ftn_game["posteam"] == team
+    dff = ftn_game["defteam"] == team
+    pt = ftn_game["play_type"]
+    is_scrim = pt.isin(_SCRIMMAGE)
+    off_scrim = ftn_game[pos & is_scrim]
+    off_pass = ftn_game[pos & (pt == "pass")]
+    def_pass = ftn_game[dff & (pt == "pass")]
+    def_scrim = ftn_game[dff & is_scrim]
+
+    a["motion_num"], a["motion_n"] = _bool_num_n(off_scrim, "is_motion")
+    a["pa_num"], a["pa_n"] = _bool_num_n(off_pass, "is_play_action")
+    a["rpo_num"], a["rpo_n"] = _bool_num_n(off_scrim, "is_rpo")
+    pr = def_pass["n_pass_rushers"]; prnn = pr.notna()
+    a["pr_sum"], a["pr_n"] = float(pr[prnn].sum()), int(prnn.sum())
+    bl = def_pass["n_blitzers"]; blnn = bl.notna()
+    a["bl_sum"], a["bl_n"] = float(bl[blnn].sum()), int(blnn.sum())
+
+    team_used = (len(off_scrim) + len(def_scrim)) > 0
+    return a, team_used
+
+
+def _pool_ftn(entries: list) -> tuple:
+    """Pool FTN per-game accumulators (entries: list of (acc, charted_eligible,
+    team_used)) into FTN features + coverage."""
+    tot = {k: 0 for k in _FTN_ACC_KEYS}
+    for acc, _, _ in entries:
+        for k in _FTN_ACC_KEYS:
+            tot[k] += acc[k]
+    feats = {
+        "motion_rate": _rate(tot["motion_num"], tot["motion_n"]),
+        "play_action_rate": _rate(tot["pa_num"], tot["pa_n"]),
+        "rpo_rate": _rate(tot["rpo_num"], tot["rpo_n"]),
+        "def_mean_pass_rushers": _rate(tot["pr_sum"], tot["pr_n"]),
+        "def_mean_blitzers": _rate(tot["bl_sum"], tot["bl_n"]),
+    }
+    cov = {
+        "ftn_games_available": sum(1 for _, charted, _ in entries if charted),
+        "ftn_games_used": sum(1 for _, _, used in entries if used),
+        "motion_n": tot["motion_n"], "play_action_n": tot["pa_n"], "rpo_n": tot["rpo_n"],
+        "pass_rushers_n": tot["pr_n"], "blitzers_n": tot["bl_n"],
+    }
+    return feats, cov
+
+
+# --------------------------------------------------------------------------
 # Prior-game selection (chronology + Stage B eligibility)
 # --------------------------------------------------------------------------
 def _kickoff_utc(series: pd.Series) -> pd.Series:
@@ -273,26 +397,38 @@ def _team_points(g, team) -> tuple:
 # --------------------------------------------------------------------------
 def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
                               plays: pd.DataFrame, target_game_ids,
-                              pbp_grade=PBP_DEFAULT_GRADE, plays_input_key=None,
+                              ftn=None, pbp_grade=PBP_DEFAULT_GRADE,
+                              plays_input_key=None, ftn_input_key=None,
+                              ftn_grade=FTN_DEFAULT_GRADE,
                               state_registry_path=None) -> pd.DataFrame:
     """Build `pregame_team_features` rows for the given target games.
 
     `games` is `canonical_games`; `plays` is `canonical_plays` covering (at least)
-    every eligible prior game; `target_game_ids` is the set of target games. Two
-    rows per target game (home and away team). Pure: no file IO, deterministic.
+    every eligible prior game; `ftn` (optional) is `canonical_ftn`; `target_game_ids`
+    is the set of target games. Two rows per target game (home and away team).
+    Pure: no file IO, deterministic. The FTN block is additive — Stage C feature
+    values are never altered; with no `ftn` (or no eligible FTN) every FTN column
+    is null. The build-level FTN join report is stored in `df.attrs['ftn_join_report']`.
 
-    In `LIVE_STATE`, frozen-input membership is mandatory, so `plays_input_key`
-    must be supplied (the exact frozen `canonical_plays` key); its default `None`
-    is refused fail-closed rather than silently bypassing the membership proof.
+    In `LIVE_STATE`, frozen-input membership is mandatory: `plays_input_key` (the
+    exact frozen `canonical_plays` key) AND, whenever FTN is used, `ftn_input_key`
+    (the exact frozen `canonical_ftn` key) must be supplied; a `None` is refused
+    fail-closed rather than bypassing the membership proof.
     """
-    if context_record.get("context_mode") == ctx.LIVE_STATE and plays_input_key is None:
-        raise ValueError(
-            "LIVE_STATE build requires plays_input_key (frozen-input membership is "
-            "mandatory; None would bypass the LIVE_STATE membership proof)")
+    if context_record.get("context_mode") == ctx.LIVE_STATE:
+        if plays_input_key is None:
+            raise ValueError(
+                "LIVE_STATE build requires plays_input_key (frozen-input membership is "
+                "mandatory; None would bypass the LIVE_STATE membership proof)")
+        if ftn is not None and len(ftn) and ftn_input_key is None:
+            raise ValueError(
+                "LIVE_STATE build with FTN requires ftn_input_key (frozen-input "
+                "membership is mandatory; None would bypass the FTN membership proof)")
     g = games.copy()
     g["kickoff_utc"] = _kickoff_utc(g["kickoff"])
     g_by_id = {gid: row for gid, row in zip(g["game_id"], g.to_dict("records"))}
     plays_by_game = {gid: df for gid, df in plays.groupby("game_id", sort=True)}
+    ftn_by_game, ftn_report = _attribute_ftn(plays, ftn)
 
     fctx_id = context_record["feature_context_id"]
     mode = context_record["context_mode"]
@@ -325,11 +461,27 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
 
             # per-prior-game accumulators + points, most-recent-first
             per_game = []
+            ftn_per_game = []
             for pg in priors:
-                pdf = plays_by_game.get(pg["game_id"])
+                gid = pg["game_id"]
+                pdf = plays_by_game.get(gid)
                 acc = (_per_game_accumulator(pdf, team) if pdf is not None
                        else {k: 0 for k in _ACC_KEYS})
                 per_game.append((acc, _team_points(pg, team)))
+
+                # FTN overlay: FTN is RETROSPECTIVE_ONLY, gated per game (in
+                # LIVE_STATE this requires ftn_input_key frozen-input membership).
+                ftn_game = ftn_by_game.get(gid)
+                ftn_ok = False
+                if ftn_game is not None:
+                    ftn_ok, _, _, _ = ctx.eligible(
+                        ftn_grade, context=elig_ctx, event_time=pg["kickoff_utc"],
+                        source_input_key=ftn_input_key)
+                if ftn_ok:
+                    facc, team_used = _per_game_ftn_accumulator(ftn_game, team)
+                    ftn_per_game.append((facc, True, team_used))
+                else:
+                    ftn_per_game.append(({k: 0 for k in _FTN_ACC_KEYS}, False, False))
 
             row = {
                 "feature_context_id": fctx_id,
@@ -360,23 +512,34 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
                     row[f"{fn}_{wname}"] = feats[fn]
                 for cn in _COVERAGE_COLS:
                     row[f"{cn}_{wname}"] = int(cov[cn])
+                # Stage D additive FTN block (same window; own coverage)
+                fsub = ftn_per_game if wsize is None else ftn_per_game[:wsize]
+                ffeats, fcov = _pool_ftn(fsub)
+                for fn in FTN_FEATURE_NAMES:
+                    row[f"{fn}_{wname}"] = ffeats[fn]
+                for cn in _FTN_COVERAGE_COLS:
+                    row[f"{cn}_{wname}"] = int(fcov[cn])
             rows.append(row)
 
     cols = _schema_columns()
     df = pd.DataFrame(rows, columns=cols)
     # deterministic dtypes: counts are int (always present), features are float
-    # (NaN == null, distinct from a real 0.0).
+    # (NaN == null, distinct from a real 0.0). Applies to PBP and FTN alike.
     count_cols = []
+    feat_cols = []
     for wname in WINDOWS:
         count_cols += [f"{cn}_{wname}" for cn in _COVERAGE_COLS]
+        count_cols += [f"{cn}_{wname}" for cn in _FTN_COVERAGE_COLS]
+        feat_cols += [f"{fn}_{wname}" for fn in FEATURE_NAMES]
+        feat_cols += [f"{fn}_{wname}" for fn in FTN_FEATURE_NAMES]
     for c in count_cols:
         df[c] = df[c].astype("int64")
-    feat_cols = [f"{fn}_{wname}" for wname in WINDOWS for fn in FEATURE_NAMES]
     for c in feat_cols:
         df[c] = pd.to_numeric(df[c], errors="coerce").astype("float64")
 
     df = df.sort_values(PRIMARY_KEY).reset_index(drop=True)
     assert_unique_primary_key(df)
+    df.attrs["ftn_join_report"] = ftn_report
     return df
 
 
@@ -394,9 +557,14 @@ def _schema_columns() -> list:
     base = ["feature_context_id", "feature_schema_version", "feature_definition_version",
             "feature_set_version", "context_mode", "as_of_time", "target_game_id",
             "season", "week", "game_type", "target_kickoff", "team", "opponent", "is_home"]
+    # Stage C columns first (positions unchanged from v0.1) ...
     for wname in WINDOWS:
         base += [f"{fn}_{wname}" for fn in FEATURE_NAMES]
         base += [f"{cn}_{wname}" for cn in _COVERAGE_COLS]
+    # ... then the ADDITIVE Stage D FTN block (features + FTN coverage per window)
+    for wname in WINDOWS:
+        base += [f"{fn}_{wname}" for fn in FTN_FEATURE_NAMES]
+        base += [f"{cn}_{wname}" for cn in _FTN_COVERAGE_COLS]
     return base
 
 

@@ -464,10 +464,27 @@ From `canonical_ftn` (which retains every raw FTN field) joined to
 **FTN window behavior (clarified).** An FTN feature is a **pooled aggregate over
 the window's eligible FTN observations**. A window game that lacks FTN coverage
 simply contributes nothing to the numerator/denominator: it **reduces
-`*_games_used`** (and the FTN-specific coverage counts) but does **not** null an
+`ftn_games_used`** (and the FTN-specific coverage counts) but does **not** null an
 otherwise valid multi-game aggregate. The feature is **null only when the window
 has zero eligible FTN observations** (e.g. a wholly pre-2022 window). FTN coverage
 counts are reported separately from PBP `games_available` (they are not the same).
+
+**FTN join discipline (v0.1).** FTN is attributed to offense/defense **only**
+through the canonical join `canonical_ftn.game_id + play_id →
+canonical_plays.game_id + play_id`; team is taken from the canonical play's
+`posteam`/`defteam`, never from an ambiguous FTN field. A duplicate FTN join key
+or any one-to-many expansion **fails the build loudly**; an FTN row that cannot be
+matched to a canonical play is dropped and never silently contributes. Unmatched /
+duplicate counts are reported at build level (not per row). Point-in-time is the
+same `EligibilityContext` gate as PBP (FTN is `RETROSPECTIVE_ONLY`): under
+`HISTORICAL_RESEARCH` the ET prior-date convention applies; `HISTORICAL_STRICT`
+excludes it; `LIVE_STATE` requires a non-null `ftn_input_key` proven to belong to
+the context's frozen inputs (fail-closed). Same-game FTN is always excluded.
+
+FTN coverage columns per window (separate from PBP coverage):
+`{w}_ftn_games_available`, `{w}_ftn_games_used`, and the per-metric non-null
+denominators `{w}_motion_n`, `{w}_play_action_n`, `{w}_rpo_n`,
+`{w}_pass_rushers_n`, `{w}_blitzers_n`.
 
 `n_blitzers` / `n_pass_rushers` are **defensive** charting fields and are exposed
 as factual means, not thresholded "blitz rates" (a threshold would be a

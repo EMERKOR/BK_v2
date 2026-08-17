@@ -10,12 +10,15 @@ uniqueness, and determinism.
 """
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from ball_knower_v3.canonical import common
 from ball_knower_v3.features import context as ctx
+from ball_knower_v3.features import feature_registry as freg
 from ball_knower_v3.features import team_features as tf
 
 
@@ -60,20 +63,37 @@ def game_row(gid, season, week, kickoff, home, away, hs, ays, gtype="REG", final
             "home_score": hs, "away_score": ays, "is_final": final}
 
 
-def play(gid, off, dfn, play_type, epa=0.0, success=0.0, yards=0.0, down=1, sack=0.0):
-    return {"game_id": gid, "posteam": off, "defteam": dfn, "play_type": play_type,
-            "epa": epa, "success": success, "yards_gained": yards, "down": down, "sack": sack}
+def play(gid, off, dfn, play_type, epa=0.0, success=0.0, yards=0.0, down=1, sack=0.0, pid=1):
+    return {"game_id": gid, "play_id": pid, "posteam": off, "defteam": dfn,
+            "play_type": play_type, "epa": epa, "success": success,
+            "yards_gained": yards, "down": down, "sack": sack}
 
 
 def plays_df(rows):
-    cols = ["game_id", "posteam", "defteam", "play_type", "epa", "success",
+    cols = ["game_id", "play_id", "posteam", "defteam", "play_type", "epa", "success",
             "yards_gained", "down", "sack"]
+    return pd.DataFrame(rows, columns=cols)
+
+
+def ftnrow(gid, pid, motion=False, pa=False, rpo=False, rushers=4, blitzers=0):
+    return {"game_id": gid, "play_id": pid, "is_motion": motion, "is_play_action": pa,
+            "is_rpo": rpo, "n_pass_rushers": rushers, "n_blitzers": blitzers}
+
+
+def ftn_df(rows):
+    cols = ["game_id", "play_id", "is_motion", "is_play_action", "is_rpo",
+            "n_pass_rushers", "n_blitzers"]
     return pd.DataFrame(rows, columns=cols)
 
 
 def build(rec, games, plays, targets):
     return tf.build_team_features_frame(rec, games=games, plays=plays,
                                         target_game_ids=targets)
+
+
+def build_ftn(rec, games, plays, ftn, targets, **kw):
+    return tf.build_team_features_frame(rec, games=games, plays=plays, ftn=ftn,
+                                        target_game_ids=targets, **kw)
 
 
 def one(df, team):
@@ -460,3 +480,339 @@ def test_deterministic_rebuild(mk_ctx):
     ])
     rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
     pd.testing.assert_frame_equal(build(rec, g, p, ["MT"]), build(rec, g, p, ["MT"]))
+
+
+# ======================================================================
+# Stage D — FTN team features
+# ======================================================================
+# Two prior FTN-charted games (2024) + a later target; AAA on offense in both.
+def _ftn_two_game_setup():
+    g = games_df([
+        game_row("F1", 2024, 1, "2024-09-08T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("F2", 2024, 2, "2024-09-15T17:00:00Z", "AAA", "CCC", 20, 10),
+        game_row("FT", 2024, 3, "2024-09-22T20:00:00Z", "AAA", "DDD", 0, 0, final=False),
+    ])
+    return g
+
+
+def test_ftn_motion_numerator_denominator(mk_ctx):
+    g = _ftn_two_game_setup()
+    # F1: AAA offense scrimmage plays; 1 motion of 2 non-null
+    p = plays_df([
+        play("F1", "AAA", "BBB", "pass", pid=1),
+        play("F1", "AAA", "BBB", "run", pid=2),
+    ])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True), ftnrow("F1", 2, motion=False)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["motion_rate_std"] == pytest.approx(1 / 2)
+    assert a["motion_n_std"] == 2 and a["ftn_games_used_std"] == 1
+
+
+def test_ftn_play_action_uses_pass_play_proxy_denominator(mk_ctx):
+    g = _ftn_two_game_setup()
+    # PA is over PASS plays only; the run play must not be in the denominator
+    p = plays_df([
+        play("F1", "AAA", "BBB", "pass", pid=1),
+        play("F1", "AAA", "BBB", "pass", pid=2),
+        play("F1", "AAA", "BBB", "run", pid=3),   # run -> excluded from PA denom
+    ])
+    ftn = ftn_df([ftnrow("F1", 1, pa=True), ftnrow("F1", 2, pa=False), ftnrow("F1", 3, pa=True)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["play_action_n_std"] == 2                       # 2 pass plays, not 3
+    assert a["play_action_rate_std"] == pytest.approx(1 / 2)  # 1 PA of 2 pass plays
+
+
+def test_ftn_rpo_numerator_denominator(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1), play("F1", "AAA", "BBB", "run", pid=2)])
+    ftn = ftn_df([ftnrow("F1", 1, rpo=True), ftnrow("F1", 2, rpo=False)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["rpo_rate_std"] == pytest.approx(1 / 2) and a["rpo_n_std"] == 2
+
+
+def test_ftn_mean_pass_rushers_and_blitzers_defensive(mk_ctx):
+    g = _ftn_two_game_setup()
+    # AAA on defense: BBB offense pass plays faced by AAA
+    p = plays_df([
+        play("F1", "BBB", "AAA", "pass", pid=1),
+        play("F1", "BBB", "AAA", "pass", pid=2),
+        play("F1", "BBB", "AAA", "run", pid=3),   # run -> excluded from def pass universe
+    ])
+    ftn = ftn_df([
+        ftnrow("F1", 1, rushers=4, blitzers=1),
+        ftnrow("F1", 2, rushers=6, blitzers=3),
+        ftnrow("F1", 3, rushers=7, blitzers=5),   # run play, excluded
+    ])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["pass_rushers_n_std"] == 2 and a["blitzers_n_std"] == 2
+    assert a["def_mean_pass_rushers_std"] == pytest.approx((4 + 6) / 2)
+    assert a["def_mean_blitzers_std"] == pytest.approx((1 + 3) / 2)
+
+
+def test_ftn_pooled_multi_game_and_windows(mk_ctx):
+    g = games_df([
+        game_row("W1", 2024, 1, "2024-09-01T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("W2", 2024, 2, "2024-09-08T17:00:00Z", "AAA", "CCC", 20, 10),
+        game_row("W3", 2024, 3, "2024-09-15T17:00:00Z", "AAA", "DDD", 20, 10),
+        game_row("W4", 2024, 4, "2024-09-22T17:00:00Z", "AAA", "EEE", 20, 10),
+        game_row("WT", 2024, 5, "2024-09-29T20:00:00Z", "AAA", "FFF", 0, 0, final=False),
+    ])
+    # each prior: 1 motion of N plays; motion counts differ so pooled != mean-of-rates
+    p, ftn = [], []
+    plan = {"W1": (1, 4), "W2": (1, 1), "W3": (1, 2), "W4": (0, 2)}  # (motions, plays)
+    for gid, (m, n) in plan.items():
+        for i in range(n):
+            p.append(play(gid, "AAA", "BBB", "pass", pid=i + 1))
+            ftn.append(ftnrow(gid, i + 1, motion=(i < m)))
+    rec = mk_ctx(as_of="2024-09-29T12:00:00Z")
+    a = one(build_ftn(rec, g, plays_df(p), ftn_df(ftn), ["WT"]), "AAA")
+    # last3 = W2,W3,W4 (by kickoff): motions (1+1+0)=2 over plays (1+2+2)=5
+    assert a["motion_rate_last3"] == pytest.approx(2 / 5) and a["motion_n_last3"] == 5
+    # std (all 4): motions 3 over plays 9
+    assert a["motion_rate_std"] == pytest.approx(3 / 9) and a["motion_n_std"] == 9
+    assert a["ftn_games_available_std"] == 4
+
+
+def test_ftn_missing_in_one_game_does_not_null_window(mk_ctx):
+    g = _ftn_two_game_setup()
+    # F1 has FTN, F2 has none -> window still valid from F1, coverage reduced
+    p = plays_df([
+        play("F1", "AAA", "BBB", "pass", pid=1),
+        play("F2", "AAA", "CCC", "pass", pid=1),
+    ])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True)])  # nothing for F2
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["ftn_games_available_std"] == 1 and a["games_available_std"] == 2
+    assert a["motion_rate_std"] == pytest.approx(1.0) and a["motion_n_std"] == 1
+
+
+def test_ftn_zero_observations_null_feature(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn_df([]), ["FT"]), "AAA")  # empty FTN
+    assert pd.isna(a["motion_rate_std"]) and a["motion_n_std"] == 0
+    assert a["ftn_games_available_std"] == 0
+
+
+def test_ftn_no_ftn_arg_yields_null_ftn_columns(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build(rec, g, p, ["FT"]), "AAA")  # Stage-C-style call, no ftn
+    for w in ("last3", "last5", "std"):
+        assert pd.isna(a[f"motion_rate_{w}"]) and a[f"ftn_games_available_{w}"] == 0
+
+
+def test_ftn_null_field_excluded_from_its_own_denominator_only(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1), play("F1", "AAA", "BBB", "pass", pid=2)])
+    # play 1 has null is_motion but real is_rpo; play 2 both present
+    ftn = ftn_df([
+        {"game_id": "F1", "play_id": 1, "is_motion": None, "is_play_action": False,
+         "is_rpo": True, "n_pass_rushers": 4, "n_blitzers": 0},
+        ftnrow("F1", 2, motion=True, rpo=False),
+    ])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["motion_n_std"] == 1                         # null is_motion excluded
+    assert a["rpo_n_std"] == 2                            # is_rpo unaffected
+    assert a["motion_rate_std"] == pytest.approx(1.0)     # 1 True / 1 non-null
+    assert a["rpo_rate_std"] == pytest.approx(1 / 2)
+
+
+def test_ftn_pre_coverage_season_is_null(mk_ctx):
+    # a 2021 prior (no FTN season coverage) -> FTN null even though PBP present
+    g = games_df([
+        game_row("Y1", 2021, 1, "2021-09-12T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("YT", 2021, 2, "2021-09-19T20:00:00Z", "AAA", "CCC", 0, 0, final=False),
+    ])
+    p = plays_df([play("Y1", "AAA", "BBB", "pass", pid=1, epa=1.0)])
+    rec = mk_ctx(as_of="2021-09-19T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn_df([]), ["YT"]), "AAA")
+    assert not pd.isna(a["pass_play_epa_std"])   # PBP present
+    assert pd.isna(a["motion_rate_std"]) and a["ftn_games_available_std"] == 0
+
+
+def test_ftn_same_game_rejected(mk_ctx):
+    # FTN rows for the TARGET game must never contribute
+    g = _ftn_two_game_setup()
+    p = plays_df([
+        play("F1", "AAA", "BBB", "pass", pid=1),
+        play("FT", "AAA", "DDD", "pass", pid=1),   # same-game (target) play
+    ])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True), ftnrow("FT", 1, motion=True)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["ftn_games_used_std"] == 1 and a["motion_n_std"] == 1  # only F1
+
+
+def test_ftn_same_et_day_rejected_prior_day_admitted_research(mk_ctx):
+    # same-ET-day retrospective FTN excluded; prior-ET-day admitted
+    g = games_df([
+        game_row("SAME", 2024, 1, "2024-10-06T17:00:00Z", "AAA", "BBB", 20, 10),  # Sun 1 PM ET
+        game_row("PRIORD", 2024, 1, "2024-10-05T23:00:00Z", "AAA", "EEE", 20, 10),  # Sat ET
+        game_row("TGT", 2024, 2, "2024-10-07T00:00:00Z", "AAA", "CCC", 0, 0, final=False),  # Sun 8 PM ET
+    ])
+    p = plays_df([play("SAME", "AAA", "BBB", "pass", pid=1), play("PRIORD", "AAA", "EEE", "pass", pid=1)])
+    ftn = ftn_df([ftnrow("SAME", 1, motion=True), ftnrow("PRIORD", 1, motion=True)])
+    rec = mk_ctx(as_of="2024-10-06T18:00:00Z")  # 2 PM ET Sun
+    a = one(build_ftn(rec, g, p, ftn, ["TGT"]), "AAA")
+    assert a["ftn_games_used_std"] == 1 and a["motion_n_std"] == 1  # only the Saturday game
+
+
+def test_ftn_historical_strict_rejected(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1)])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["ftn_games_available_std"] == 0 and pd.isna(a["motion_rate_std"])
+    assert a["games_available_std"] == 0  # strict also excludes PBP priors
+
+
+def test_ftn_duplicate_join_keys_fail(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1)])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True), ftnrow("F1", 1, motion=False)])  # dup key
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    with pytest.raises(ValueError, match="duplicate"):
+        build_ftn(rec, g, p, ftn, ["FT"])
+
+
+def test_ftn_unmatched_rows_do_not_contaminate(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1)])
+    ftn_clean = ftn_df([ftnrow("F1", 1, motion=True)])
+    ftn_stray = ftn_df([ftnrow("F1", 1, motion=True), ftnrow("F1", 999, motion=True)])  # 999 not a play
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a1 = one(build_ftn(rec, g, p, ftn_clean, ["FT"]), "AAA")
+    df2 = build_ftn(rec, g, p, ftn_stray, ["FT"])
+    a2 = one(df2, "AAA")
+    assert a1["motion_n_std"] == a2["motion_n_std"] == 1   # stray row dropped, no expansion
+    assert df2.attrs["ftn_join_report"]["unmatched"] == 1
+
+
+def test_ftn_stage_c_values_unchanged_after_adding_ftn(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([
+        play("F1", "AAA", "BBB", "pass", pid=1, epa=1.0, success=1.0, yards=22.0),
+        play("F1", "AAA", "BBB", "run", pid=2, epa=-1.0, success=0.0, yards=3.0, down=2),
+    ])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True), ftnrow("F1", 2, motion=False)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    no_ftn = one(build(rec, g, p, ["FT"]), "AAA")
+    with_ftn = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    stage_c_cols = ([f"{fn}_{w}" for w in tf.WINDOWS for fn in tf.FEATURE_NAMES]
+                    + [f"{cn}_{w}" for w in tf.WINDOWS for cn in tf._COVERAGE_COLS])
+    for c in stage_c_cols:
+        v1, v2 = no_ftn[c], with_ftn[c]
+        assert (v1 == v2) or (pd.isna(v1) and pd.isna(v2)), f"Stage C column {c} changed"
+
+
+def test_ftn_deterministic_rebuild(mk_ctx):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1), play("F1", "AAA", "BBB", "run", pid=2)])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True, pa=True), ftnrow("F1", 2, rpo=True)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    d1 = build_ftn(rec, g, p, ftn, ["FT"])
+    d2 = build_ftn(rec, g, p, ftn, ["FT"])
+    pd.testing.assert_frame_equal(d1, d2)
+
+
+def test_ftn_output_lineage_verifies_and_detects_mutation(mk_ctx, tmp_path):
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1)])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True)])
+    d = common.REPO / "data" / "v3" / "features" / "_test_inputs"
+    d.mkdir(parents=True, exist_ok=True)
+    stub = d / "ftn_lineage_stub.txt"; stub.write_text("x")
+    try:
+        rec = ctx.create_feature_context(context_mode=ctx.HISTORICAL_RESEARCH,
+                                         as_of_time="2024-09-22T12:00:00Z", input_paths=[stub])
+        df = build_ftn(rec, g, p, ftn, ["FT"])
+        reg = tmp_path / "feature_registry.json"
+        tmp_out = tmp_path / "t.parquet"; df.to_parquet(tmp_out, index=False)
+        dest = tmp_path / "pregame_team_features.parquet"
+        freg.commit_feature_build(rec, tmp_out, dest, registry_path=reg,
+                                  output_tables=[{"table": tf.TABLE, "rows": len(df),
+                                                  "columns": list(df.columns)}])
+        assert not freg.verify_registry(reg)["mismatches"]
+        dest.write_text("TAMPERED")
+        assert freg.verify_registry(reg)["mismatches"]
+    finally:
+        stub.unlink()
+
+
+# ---- LIVE_STATE FTN membership (fail-closed) --------------------------------
+@pytest.fixture
+def live_ftn_ctx(tmp_path):
+    """Build a genuine LIVE_STATE context bound to a LIVE_FREEZE snapshot, with a
+    frozen plays key and a frozen ftn key. Returns everything the builder needs."""
+    d = common.REPO / "data" / "v3" / "features" / "_test_inputs"
+    d.mkdir(parents=True, exist_ok=True)
+    plays_stub = d / "live_plays.txt"; plays_stub.write_text("plays")
+    ftn_stub = d / "live_ftn.txt"; ftn_stub.write_text("ftn")
+    as_of = "2024-10-06T21:00:00Z"  # 5 PM ET Sun
+    reg = tmp_path / "state_snapshot_registry.json"
+    reg.write_text(json.dumps([{"state_snapshot_id": "s_live", "snapshot_mode": "LIVE_FREEZE",
+                                "as_of_time": as_of, "canonical_lineage_set_id": None}]))
+    rec = ctx.create_feature_context(context_mode=ctx.LIVE_STATE, as_of_time=as_of,
+                                     input_paths=[plays_stub, ftn_stub],
+                                     state_snapshot_id="s_live", state_registry_path=reg)
+    plays_key = str(plays_stub.resolve().relative_to(common.REPO))
+    ftn_key = str(ftn_stub.resolve().relative_to(common.REPO))
+    yield rec, plays_key, ftn_key, reg
+    for s in (plays_stub, ftn_stub):
+        try:
+            s.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def _live_ftn_scenario():
+    # 1 PM ET Sun prior (in the freeze), 8 PM ET Sun target
+    g = games_df([
+        game_row("LP", 2024, 1, "2024-10-06T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("LTG", 2024, 2, "2024-10-07T00:00:00Z", "AAA", "CCC", 0, 0, final=False),
+    ])
+    p = plays_df([play("LP", "AAA", "BBB", "pass", pid=1)])
+    ftn = ftn_df([ftnrow("LP", 1, motion=True)])
+    return g, p, ftn
+
+
+def test_live_state_missing_ftn_input_key_rejected(live_ftn_ctx):
+    rec, plays_key, ftn_key, reg = live_ftn_ctx
+    g, p, ftn = _live_ftn_scenario()
+    with pytest.raises(ValueError, match="ftn_input_key"):
+        tf.build_team_features_frame(rec, games=g, plays=p, ftn=ftn, target_game_ids=["LTG"],
+                                     plays_input_key=plays_key, ftn_input_key=None,
+                                     state_registry_path=reg)
+
+
+def test_live_state_non_member_ftn_key_rejected(live_ftn_ctx):
+    rec, plays_key, ftn_key, reg = live_ftn_ctx
+    g, p, ftn = _live_ftn_scenario()
+    df = tf.build_team_features_frame(rec, games=g, plays=p, ftn=ftn, target_game_ids=["LTG"],
+                                      plays_input_key=plays_key,
+                                      ftn_input_key="data/v3/canonical/NOT_FROZEN.parquet",
+                                      state_registry_path=reg)
+    a = one(df, "AAA")
+    # PBP prior still eligible (plays key frozen), but FTN excluded (key not frozen)
+    assert a["games_available_std"] == 1
+    assert a["ftn_games_available_std"] == 0 and pd.isna(a["motion_rate_std"])
+
+
+def test_live_state_valid_frozen_ftn_key_admitted(live_ftn_ctx):
+    rec, plays_key, ftn_key, reg = live_ftn_ctx
+    g, p, ftn = _live_ftn_scenario()
+    df = tf.build_team_features_frame(rec, games=g, plays=p, ftn=ftn, target_game_ids=["LTG"],
+                                      plays_input_key=plays_key, ftn_input_key=ftn_key,
+                                      state_registry_path=reg)
+    a = one(df, "AAA")
+    assert a["ftn_games_available_std"] == 1 and a["motion_rate_std"] == pytest.approx(1.0)
