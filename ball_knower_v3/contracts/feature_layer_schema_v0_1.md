@@ -565,6 +565,31 @@ approved crosswalk + participation attribution. No expected workload,
 expected-to-play, injury severity, player quality, or replacement value is
 computed (Section 14).
 
+**Stage E implemented schema.** For each snap metric (`off`/`def`/`st` from
+`canonical_participation`) and each FantasyPoints metric (`route`/`target`), the
+table exposes a **last eligible** value (`last_{metric}`, the most-recent-eligible
+non-null observation) and **rolling** values over `last3`/`last5`/`std`
+(`{metric}_{w}`), each with its own non-null denominator (`{metric}_n_{w}`) and
+per-window coverage (`part_games_available/used_{w}` for participation;
+`{metric}_games_available/used_{w}` for FantasyPoints). A missing observation in
+one prior game reduces coverage but does not null a valid multi-game aggregate; a
+metric with zero eligible observations is null; a factual zero stays zero; no
+league-average imputation or carry-forward is applied; route/target stay null
+before Phase 2E has them.
+
+**Membership and source independence.** The row spine (membership + current-state
+facts) comes only from eligible `canonical_player_team_week` state (never a
+present-day/latest team); a state whose PIT grade cannot be proven pregame
+(`WEEK_ONLY`/untimed `RETROSPECTIVE_ONLY` in historical modes) leaves the player
+unavailable rather than guessed, and `LIVE_STATE` requires a proven frozen-input
+state key. Participation, FantasyPoints route, and FantasyPoints target are each
+gated **independently** by their own recorded grade/provenance (per Phase 2E:
+2021–24 snap `RETROSPECTIVE_ONLY`; 2025 `SNAPSHOT_BOUND` by recorded snapshot) and
+build their own `last3`/`last5`/`std` windows — one source never uses another
+source's eligible-game list, and an unavailable source never suppresses an
+independently eligible one. Unresolved/quarantined Phase 2E identities never
+contribute. Primary key `feature_context_id + target_game_id + team + player_id`.
+
 ---
 
 # 6. Rolling-window policy
