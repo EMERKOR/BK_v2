@@ -486,6 +486,22 @@ FTN coverage columns per window (separate from PBP coverage):
 denominators `{w}_motion_n`, `{w}_play_action_n`, `{w}_rpo_n`,
 `{w}_pass_rushers_n`, `{w}_blitzers_n`.
 
+**Source eligibility and rolling coverage are independent.** Prior-game
+candidacy is a single, neutral, source-independent set (same season, the team,
+not the target, `is_final` where completed-game features require it, ordered by
+kickoff). Each source is then gated separately by the Stage B `EligibilityContext`
+with its **own** grade, provenance timestamps, and frozen-input key — PBP with
+`pbp_grade` / plays provenance / `plays_input_key`, FTN with `ftn_grade` / FTN
+provenance / `ftn_input_key`. A game rejected for PBP may still contribute FTN
+(and vice versa) when that source has qualifying stronger provenance; PBP
+eligibility never determines FTN candidacy and FTN eligibility never determines
+PBP candidacy. The `last3` / `last5` / `std` windows are built **per source** from
+that source's own eligible games — the most recent eligible games *for that
+source*, never those admitted by another source. (FTN still requires the canonical
+play for offense/defense attribution, so a source with no matching canonical play
+simply has nothing to attribute — that is data availability, not PBP feature
+eligibility.)
+
 `n_blitzers` / `n_pass_rushers` are **defensive** charting fields and are exposed
 as factual means, not thresholded "blitz rates" (a threshold would be a
 definition choice deferred out of v0.1). Additional FTN factual fields may be

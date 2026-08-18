@@ -349,37 +349,40 @@ def _kickoff_utc(series: pd.Series) -> pd.Series:
     return pd.to_datetime(series, utc=True)
 
 
-def _eligible_prior_games(games: pd.DataFrame, *, team, season, target_game_id,
-                          elig_ctx, pbp_grade, plays_input_key) -> list:
-    """Return the same-season, final, other-than-target candidate games for
-    `team`, most-recent-first by ACTUAL KICKOFF, that the Stage B gate admits.
+def _candidate_prior_games(games: pd.DataFrame, *, team, season, target_game_id,
+                           require_final=True) -> list:
+    """Neutral, SOURCE-INDEPENDENT candidate prior games for `team`.
 
-    The feature layer manufactures NO timing and makes NO completion inference
-    from kickoff. Candidate set = same season, `is_final` in the retrospective
-    canonical source, the row's team, and not the target game itself. The Stage B
-    `eligible()` gate then applies the per-mode point-in-time policy:
-
-      * HISTORICAL_STRICT — RETROSPECTIVE_ONLY PBP excluded (no inference from
-        kickoff);
-      * HISTORICAL_RESEARCH — admitted only when the candidate's Eastern-time
-        calendar date is strictly before the as_of Eastern-time date (a weaker,
-        explicitly-documented research convention — see §6.2);
-      * LIVE_STATE — governed by frozen-input membership + the live-freeze bound.
-
-    Kickoff is used ONLY for chronological ordering of the window, never as a
-    completion/availability proof."""
+    Based only on factual game membership — same season, the row's team, not the
+    target game, and (for completed-game features) `is_final` in the retrospective
+    canonical source — ordered most-recent-first by ACTUAL KICKOFF. NO
+    point-in-time gate is applied here and NO source (PBP/FTN) influences the set;
+    kickoff is used only for chronological ordering, never as a completion proof.
+    Per-source eligibility is decided separately by `_eligible_by_source`."""
     mask = (
         (games["season"] == season)
-        & games["is_final"].fillna(False)
         & (games["game_id"] != target_game_id)
         & ((games["home_team"] == team) | (games["away_team"] == team))
     )
+    if require_final:
+        mask &= games["is_final"].fillna(False)
     cand = games[mask].sort_values(["kickoff_utc", "game_id"], ascending=[False, False])
+    return cand.to_dict("records")
+
+
+def _eligible_by_source(candidates: list, *, elig_ctx, grade, source_input_key,
+                        snapshot_time=None, known_time=None) -> list:
+    """Filter neutral `candidates` by the Stage B gate for ONE source.
+
+    Each source (PBP, FTN) is gated independently with its own grade, provenance
+    timestamps, and frozen-input key — so PBP eligibility never constrains FTN
+    candidacy and vice versa. Order (most-recent-first) is preserved."""
     out = []
-    for _, g in cand.iterrows():
+    for g in candidates:
         ok, _, _, _ = ctx.eligible(
-            pbp_grade, context=elig_ctx, event_time=g["kickoff_utc"],
-            source_input_key=plays_input_key)
+            grade, context=elig_ctx, event_time=g["kickoff_utc"],
+            source_snapshot_time=snapshot_time, source_known_time=known_time,
+            source_input_key=source_input_key)
         if ok:
             out.append(g)
     return out
@@ -400,6 +403,8 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
                               ftn=None, pbp_grade=PBP_DEFAULT_GRADE,
                               plays_input_key=None, ftn_input_key=None,
                               ftn_grade=FTN_DEFAULT_GRADE,
+                              pbp_snapshot_time=None, ftn_snapshot_time=None,
+                              pbp_known_time=None, ftn_known_time=None,
                               state_registry_path=None) -> pd.DataFrame:
     """Build `pregame_team_features` rows for the given target games.
 
@@ -455,29 +460,34 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
         for team in (tg["home_team"], tg["away_team"]):
             opponent = tg["away_team"] if team == tg["home_team"] else tg["home_team"]
             is_home = bool(team == tg["home_team"])
-            priors = _eligible_prior_games(
-                g, team=team, season=season, target_game_id=tgid,
-                elig_ctx=elig_ctx, pbp_grade=pbp_grade, plays_input_key=plays_input_key)
 
-            # per-prior-game accumulators + points, most-recent-first
+            # ONE neutral, source-independent candidate list ...
+            candidates = _candidate_prior_games(
+                g, team=team, season=season, target_game_id=tgid)
+            # ... gated SEPARATELY per source (PBP and FTN never constrain each
+            # other's candidacy; each builds its own most-recent-first window).
+            pbp_priors = _eligible_by_source(
+                candidates, elig_ctx=elig_ctx, grade=pbp_grade,
+                source_input_key=plays_input_key,
+                snapshot_time=pbp_snapshot_time, known_time=pbp_known_time)
+            ftn_priors = _eligible_by_source(
+                candidates, elig_ctx=elig_ctx, grade=ftn_grade,
+                source_input_key=ftn_input_key,
+                snapshot_time=ftn_snapshot_time, known_time=ftn_known_time)
+
+            # PBP per-prior-game accumulators + points, most-recent-first
             per_game = []
-            ftn_per_game = []
-            for pg in priors:
-                gid = pg["game_id"]
-                pdf = plays_by_game.get(gid)
+            for pg in pbp_priors:
+                pdf = plays_by_game.get(pg["game_id"])
                 acc = (_per_game_accumulator(pdf, team) if pdf is not None
                        else {k: 0 for k in _ACC_KEYS})
                 per_game.append((acc, _team_points(pg, team)))
 
-                # FTN overlay: FTN is RETROSPECTIVE_ONLY, gated per game (in
-                # LIVE_STATE this requires ftn_input_key frozen-input membership).
-                ftn_game = ftn_by_game.get(gid)
-                ftn_ok = False
+            # FTN per-prior-game accumulators over the FTN-eligible priors
+            ftn_per_game = []
+            for pg in ftn_priors:
+                ftn_game = ftn_by_game.get(pg["game_id"])
                 if ftn_game is not None:
-                    ftn_ok, _, _, _ = ctx.eligible(
-                        ftn_grade, context=elig_ctx, event_time=pg["kickoff_utc"],
-                        source_input_key=ftn_input_key)
-                if ftn_ok:
                     facc, team_used = _per_game_ftn_accumulator(ftn_game, team)
                     ftn_per_game.append((facc, True, team_used))
                 else:

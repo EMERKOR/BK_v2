@@ -816,3 +816,87 @@ def test_live_state_valid_frozen_ftn_key_admitted(live_ftn_ctx):
                                       state_registry_path=reg)
     a = one(df, "AAA")
     assert a["ftn_games_available_std"] == 1 and a["motion_rate_std"] == pytest.approx(1.0)
+
+
+# ======================================================================
+# Stage D refactor — PBP/FTN source-independent eligibility & windows
+# ======================================================================
+def _four_prior_setup():
+    return games_df([
+        game_row("N1", 2024, 1, "2024-09-01T17:00:00Z", "AAA", "BBB", 20, 10),
+        game_row("N2", 2024, 2, "2024-09-08T17:00:00Z", "AAA", "CCC", 20, 10),
+        game_row("N3", 2024, 3, "2024-09-15T17:00:00Z", "AAA", "DDD", 20, 10),
+        game_row("N4", 2024, 4, "2024-09-22T17:00:00Z", "AAA", "EEE", 20, 10),
+        game_row("NT", 2024, 5, "2024-09-29T20:00:00Z", "AAA", "FFF", 0, 0, final=False),
+    ])
+
+
+def test_source_independence_strict_pbp_retro_ftn_snapshot(mk_ctx):
+    # HISTORICAL_STRICT: PBP RETROSPECTIVE_ONLY (excluded) but FTN SNAPSHOT_BOUND
+    # (admitted) -> FTN features present while PBP features stay empty.
+    g = _four_prior_setup()
+    p = plays_df([play("N4", "AAA", "EEE", "pass", pid=1, epa=5.0)])
+    ftn = ftn_df([ftnrow("N4", 1, motion=True)])
+    rec = mk_ctx(as_of="2024-09-29T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
+    a = one(tf.build_team_features_frame(
+        rec, games=g, plays=p, ftn=ftn, target_game_ids=["NT"],
+        ftn_grade="SNAPSHOT_BOUND", ftn_snapshot_time="2024-09-29T00:00:00Z"), "AAA")
+    # PBP empty (retrospective excluded in strict)
+    assert a["games_available_std"] == 0 and pd.isna(a["pass_play_epa_std"])
+    # FTN present (snapshot-bound admitted)
+    assert a["ftn_games_available_std"] == 1 and a["motion_rate_std"] == pytest.approx(1.0)
+
+
+def test_source_independence_reverse_pbp_snapshot_ftn_retro(mk_ctx):
+    # Reverse: PBP SNAPSHOT_BOUND (admitted) while FTN RETROSPECTIVE_ONLY (excluded)
+    g = _four_prior_setup()
+    p = plays_df([play("N4", "AAA", "EEE", "pass", pid=1, epa=5.0)])
+    ftn = ftn_df([ftnrow("N4", 1, motion=True)])
+    rec = mk_ctx(as_of="2024-09-29T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
+    a = one(tf.build_team_features_frame(
+        rec, games=g, plays=p, ftn=ftn, target_game_ids=["NT"],
+        pbp_grade="SNAPSHOT_BOUND", pbp_snapshot_time="2024-09-29T00:00:00Z"), "AAA")
+    # PBP present (snapshot-bound admitted)
+    assert a["games_available_std"] >= 1 and a["pass_play_epa_std"] == pytest.approx(5.0)
+    # FTN empty (retrospective excluded in strict)
+    assert a["ftn_games_available_std"] == 0 and pd.isna(a["motion_rate_std"])
+
+
+def test_source_specific_windows_independent(mk_ctx):
+    # FTN admitted for all 4 priors (SNAPSHOT_BOUND); PBP excluded (RETROSPECTIVE
+    # in strict). FTN last3 selects its OWN most-recent-eligible games (N2,N3,N4),
+    # independent of PBP (which admitted none).
+    g = _four_prior_setup()
+    # plays exist (needed for FTN team/play attribution); PBP features are still
+    # excluded because PBP grade is RETROSPECTIVE_ONLY in strict mode.
+    p = plays_df([play(gid, "AAA", "BBB", "pass", pid=1) for gid in ("N1", "N2", "N3", "N4")])
+    ftn = ftn_df([
+        ftnrow("N1", 1, motion=True), ftnrow("N2", 1, motion=True),
+        ftnrow("N3", 1, motion=True), ftnrow("N4", 1, motion=False),
+    ])
+    rec = mk_ctx(as_of="2024-09-29T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
+    a = one(tf.build_team_features_frame(
+        rec, games=g, plays=p, ftn=ftn, target_game_ids=["NT"],
+        ftn_grade="SNAPSHOT_BOUND", ftn_snapshot_time="2024-09-29T00:00:00Z"), "AAA")
+    # PBP window empty
+    assert a["games_available_std"] == 0 and a["games_available_last3"] == 0
+    # FTN windows from FTN-eligible set: last3 = N2,N3,N4 -> 2 motions of 3
+    assert a["ftn_games_available_last3"] == 3
+    assert a["motion_rate_last3"] == pytest.approx(2 / 3)
+    assert a["motion_rate_std"] == pytest.approx(3 / 4)   # all 4
+
+
+def test_historical_research_both_retrospective_parity(mk_ctx):
+    # both sources RETROSPECTIVE under HISTORICAL_RESEARCH -> identical eligible
+    # sets; FTN and PBP both populate over the same prior games.
+    g = _ftn_two_game_setup()
+    p = plays_df([
+        play("F1", "AAA", "BBB", "pass", pid=1, epa=2.0),
+        play("F2", "AAA", "CCC", "pass", pid=1, epa=4.0),
+    ])
+    ftn = ftn_df([ftnrow("F1", 1, motion=True), ftnrow("F2", 1, motion=False)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    a = one(build_ftn(rec, g, p, ftn, ["FT"]), "AAA")
+    assert a["games_available_std"] == 2 and a["ftn_games_available_std"] == 2
+    assert a["pass_play_epa_std"] == pytest.approx(3.0)     # (2+4)/2
+    assert a["motion_rate_std"] == pytest.approx(1 / 2)     # 1 motion of 2
