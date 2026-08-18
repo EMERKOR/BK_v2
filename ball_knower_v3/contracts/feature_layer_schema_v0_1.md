@@ -373,6 +373,33 @@ injury severity, player quality, or replacement value. These are later layers.
 edge. This table is a factual restatement of schedule/environment truth scoped to
 a feature context; it introduces no judgment.
 
+### Implemented schema v0.1 (`game_context_v0.1`, RESOLVED)
+
+`ball_knower_v3/features/game_context.py` (`build_game_context_frame`) emits **21
+columns** — one row per `feature_context_id + target_game_id`:
+
+- **Inherited lineage (9):** `feature_context_id`, `feature_schema_version`,
+  `feature_definition_version`, `feature_set_version`, `context_mode`,
+  `as_of_time`, `state_snapshot_id`, `target_game_id`, `target_kickoff`.
+- **Restated canonical facts (12):** `season`, `week`, `game_type`, `home_team`,
+  `away_team`, `neutral_site`, `stadium`, `roof`, `surface`, `home_rest`,
+  `away_rest`, `div_game` — copied from `canonical_games` verbatim. **Source null
+  stays null; no imputation, no guessed stadium/roof/surface, no inferred rest.**
+
+**Weather excluded (PIT).** `canonical_games.temp` / `wind` are the recorded
+game-time weather (a present-day final field), **not** a proven pregame-known
+forecast, and canonical provenance does not establish they were available before
+kickoff. They are therefore **left out of v0.1** rather than weakening PIT. If a
+provenance-backed pregame forecast source is added later, weather can be admitted
+under its own recorded provenance.
+
+**PIT reuse.** No second point-in-time system: every row inherits the feature
+context, and `as_of_time < target_kickoff` is enforced per target (equality and
+later as_of are rejected). Unknown target game ids fail loudly; duplicate target
+ids never duplicate output rows (deduplicated on the primary key). Registered in
+the feature-build registry with frozen-input verification, output SHA-256, row
+count, and schema metadata (mutation-detected via `verify_registry`).
+
 ## 5.4 Feature definitions v0.1 (pinned)
 
 Every calculated feature below has an **explicit numerator and denominator**
