@@ -150,19 +150,40 @@ A grade is never upgraded by inference.
 ## 3.2 The core eligibility rule
 
 For every time-sensitive input observation that requires availability proof, and
-for every target game with kickoff `target_kickoff`:
+for every target game with kickoff `target_kickoff`, the proof timestamp must be
+**causally ordered** — at or after the observation's own football event and at or
+before the decision time, which is strictly before kickoff:
 
 ```
-source_availability_time  <=  as_of_time  <  target_kickoff
+event_time  <=  source_availability_time  <=  as_of_time  <  target_kickoff
+```
+
+Concretely, for the strong grades (when an `event_time` is supplied):
+
+```
+EXACT:          event_time <= source_known_time    <= as_of_time < target_kickoff
+SNAPSHOT_BOUND: event_time <= source_snapshot_time  <= as_of_time < target_kickoff
 ```
 
 - The right inequality is **strict**: an observation available only at or after
-  kickoff can never contribute to that game's pregame features. This forbids
-  same-game leakage by construction.
+  kickoff can never contribute to that game's pregame features (same-game leakage
+  forbidden by construction).
+- The **left inequality is causal**: a proof timestamp *earlier* than the
+  observation's football event cannot prove that a post-event observation
+  existed, so such a bound is rejected. (When no `event_time` is supplied — e.g. a
+  pregame report about the target game itself — only the right side applies.)
 - `source_availability_time` is the strongest proven bound the grade supports:
   `source_known_time` for `EXACT`; the contemporaneous `source_snapshot_time`
   for `SNAPSHOT_BOUND`. `WEEK_ONLY` and `RETROSPECTIVE_ONLY` provide no proof of
   availability before kickoff.
+- **Proof timestamps come from validated provenance, never a bare clock value.**
+  A builder supplies per-source point-in-time via a validated `SourceProvenance`
+  (source key, recorded grade, recorded `source_known_time`/`source_snapshot_time`,
+  and a `provenance_id` tracing the bound to recorded lineage). A strong
+  (`EXACT`/`SNAPSHOT_BOUND`) grade requires both its recorded timestamp and a
+  `provenance_id`; a retrospective grade must carry no proof timestamp. Current
+  historical PBP/FTN default to their honest recorded status, `RETROSPECTIVE_ONLY`
+  — no stronger bound is invented.
 - This composes with the Phase 2E leakage invariant that a later feature must
   satisfy for share observations: `event_time < source_snapshot_time <= as_of_time`.
 

@@ -49,6 +49,9 @@ HISTORICAL_MODES = (HISTORICAL_STRICT, HISTORICAL_RESEARCH)
 # names the context that binds to it LIVE_STATE — approved, contract §2.2.)
 BOUND_STATE_MODE = "LIVE_FREEZE"
 
+PIT_GRADES = ("EXACT", "SNAPSHOT_BOUND", "WEEK_ONLY", "RETROSPECTIVE_ONLY")
+STRONG_GRADES = ("EXACT", "SNAPSHOT_BOUND")
+
 
 # --------------------------------------------------------------------------
 # Time helpers (mirror the canonical helpers; kept local so the gate is
@@ -85,6 +88,61 @@ def _ny_date(ts):
     if t is None:
         return None
     return t.tz_convert(NY_TZ).date()
+
+
+# --------------------------------------------------------------------------
+# Validated per-source point-in-time provenance
+# --------------------------------------------------------------------------
+class SourceProvenance:
+    """Validated PIT provenance for ONE feature source (e.g. PBP or FTN).
+
+    Carries the source's frozen-input key, its RECORDED PIT grade, the recorded
+    proof timestamp (``source_known_time`` for ``EXACT``, ``source_snapshot_time``
+    for ``SNAPSHOT_BOUND``), and a ``provenance_id`` tracing where the bound came
+    from (a lineage / snapshot identifier). A caller cannot manufacture a stronger
+    ``EXACT`` / ``SNAPSHOT_BOUND`` bound from a bare clock value: a strong grade
+    requires BOTH its recorded timestamp AND a ``provenance_id``. A weak grade
+    (``RETROSPECTIVE_ONLY`` / ``WEEK_ONLY``) must NOT carry a proof timestamp — you
+    cannot smuggle a stronger bound onto a retrospective source.
+
+    Production builders construct this from recorded canonical lineage; tests may
+    construct synthetic instances explicitly.
+    """
+    __slots__ = ("source_input_key", "grade", "source_known_time",
+                 "source_snapshot_time", "provenance_id")
+
+    def __init__(self, *, grade, source_input_key=None, source_known_time=None,
+                 source_snapshot_time=None, provenance_id=None):
+        if grade not in PIT_GRADES:
+            raise ValueError(f"unknown PIT grade {grade!r}; must be one of {PIT_GRADES}")
+        kt, st = _to_utc(source_known_time), _to_utc(source_snapshot_time)
+        if grade == "EXACT":
+            if kt is None:
+                raise ValueError("EXACT provenance requires a recorded source_known_time")
+            if not provenance_id:
+                raise ValueError("EXACT provenance requires a provenance_id (lineage/snapshot id)")
+        elif grade == "SNAPSHOT_BOUND":
+            if st is None:
+                raise ValueError("SNAPSHOT_BOUND provenance requires a recorded source_snapshot_time")
+            if not provenance_id:
+                raise ValueError("SNAPSHOT_BOUND provenance requires a provenance_id (lineage/snapshot id)")
+        else:  # RETROSPECTIVE_ONLY / WEEK_ONLY
+            if kt is not None or st is not None:
+                raise ValueError(f"{grade} provenance must not carry a proof timestamp "
+                                 f"(a retrospective source has no proven availability bound)")
+        self.source_input_key = source_input_key
+        self.grade = grade
+        self.source_known_time = kt
+        self.source_snapshot_time = st
+        self.provenance_id = provenance_id
+
+    @classmethod
+    def retrospective(cls, source_input_key=None,
+                      provenance_id="retrospective_current_source"):
+        """The default for current historical PBP/FTN — mutable latest-state
+        files whose only honest grade is RETROSPECTIVE_ONLY (no stronger bound)."""
+        return cls(grade="RETROSPECTIVE_ONLY", source_input_key=source_input_key,
+                   provenance_id=provenance_id)
 
 
 # --------------------------------------------------------------------------
@@ -184,15 +242,22 @@ def eligible(grade, *, context, source_known_time=None, source_snapshot_time=Non
     def _bounded(t):
         return t is not None and t <= as_of and t < kickoff
 
+    def _after_event(t):
+        # a proof timestamp earlier than the observation's football event cannot
+        # prove that post-event observation existed (causal ordering, §3.2).
+        return et is None or t >= et
+
     if grade == "EXACT":
-        if _bounded(kt):
-            return True, "EXACT", kt, "EXACT source_known_time within [<= as_of, < kickoff]"
-        return False, None, None, "EXACT source_known_time missing or outside [<= as_of, < kickoff]"
+        if _bounded(kt) and _after_event(kt):
+            return True, "EXACT", kt, "EXACT: event_time <= source_known_time <= as_of < kickoff"
+        return False, None, None, ("EXACT source_known_time missing, out of "
+                                   "[<= as_of, < kickoff], or before its event_time")
 
     if grade == "SNAPSHOT_BOUND":
-        if _bounded(st):
-            return True, "SNAPSHOT_BOUND", st, "SNAPSHOT_BOUND source_snapshot_time within [<= as_of, < kickoff]"
-        return False, None, None, "SNAPSHOT_BOUND source_snapshot_time missing or outside [<= as_of, < kickoff]"
+        if _bounded(st) and _after_event(st):
+            return True, "SNAPSHOT_BOUND", st, "SNAPSHOT_BOUND: event_time <= source_snapshot_time <= as_of < kickoff"
+        return False, None, None, ("SNAPSHOT_BOUND source_snapshot_time missing, out of "
+                                   "[<= as_of, < kickoff], or before its event_time")
 
     if grade in ("WEEK_ONLY", "RETROSPECTIVE_ONLY"):
         if context.mode == HISTORICAL_STRICT:

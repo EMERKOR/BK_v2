@@ -370,19 +370,21 @@ def _candidate_prior_games(games: pd.DataFrame, *, team, season, target_game_id,
     return cand.to_dict("records")
 
 
-def _eligible_by_source(candidates: list, *, elig_ctx, grade, source_input_key,
-                        snapshot_time=None, known_time=None) -> list:
+def _eligible_by_source(candidates: list, *, elig_ctx, provenance) -> list:
     """Filter neutral `candidates` by the Stage B gate for ONE source.
 
-    Each source (PBP, FTN) is gated independently with its own grade, provenance
-    timestamps, and frozen-input key — so PBP eligibility never constrains FTN
-    candidacy and vice versa. Order (most-recent-first) is preserved."""
+    All proof (grade, recorded timestamps, frozen-input key) comes from a
+    validated `SourceProvenance` — never a raw caller timestamp — so a caller
+    cannot manufacture stronger EXACT/SNAPSHOT_BOUND eligibility. Each source
+    (PBP, FTN) is gated independently, so one never constrains the other's
+    candidacy. Order (most-recent-first) is preserved."""
     out = []
     for g in candidates:
         ok, _, _, _ = ctx.eligible(
-            grade, context=elig_ctx, event_time=g["kickoff_utc"],
-            source_snapshot_time=snapshot_time, source_known_time=known_time,
-            source_input_key=source_input_key)
+            provenance.grade, context=elig_ctx, event_time=g["kickoff_utc"],
+            source_known_time=provenance.source_known_time,
+            source_snapshot_time=provenance.source_snapshot_time,
+            source_input_key=provenance.source_input_key)
         if ok:
             out.append(g)
     return out
@@ -400,11 +402,8 @@ def _team_points(g, team) -> tuple:
 # --------------------------------------------------------------------------
 def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
                               plays: pd.DataFrame, target_game_ids,
-                              ftn=None, pbp_grade=PBP_DEFAULT_GRADE,
-                              plays_input_key=None, ftn_input_key=None,
-                              ftn_grade=FTN_DEFAULT_GRADE,
-                              pbp_snapshot_time=None, ftn_snapshot_time=None,
-                              pbp_known_time=None, ftn_known_time=None,
+                              ftn=None, plays_input_key=None, ftn_input_key=None,
+                              pbp_provenance=None, ftn_provenance=None,
                               state_registry_path=None) -> pd.DataFrame:
     """Build `pregame_team_features` rows for the given target games.
 
@@ -415,20 +414,33 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
     values are never altered; with no `ftn` (or no eligible FTN) every FTN column
     is null. The build-level FTN join report is stored in `df.attrs['ftn_join_report']`.
 
-    In `LIVE_STATE`, frozen-input membership is mandatory: `plays_input_key` (the
-    exact frozen `canonical_plays` key) AND, whenever FTN is used, `ftn_input_key`
-    (the exact frozen `canonical_ftn` key) must be supplied; a `None` is refused
-    fail-closed rather than bypassing the membership proof.
+    Per-source point-in-time provenance comes from validated `SourceProvenance`
+    objects (`pbp_provenance`, `ftn_provenance`), NOT raw caller timestamps — so a
+    caller cannot manufacture stronger EXACT/SNAPSHOT_BOUND eligibility. When a
+    provenance is omitted the source defaults to its honest recorded status,
+    `RETROSPECTIVE_ONLY`, keyed by `plays_input_key` / `ftn_input_key`.
+
+    In `LIVE_STATE`, frozen-input membership is mandatory: the resolved PBP
+    provenance key AND (whenever FTN is used) the resolved FTN provenance key must
+    be non-null; a `None` is refused fail-closed rather than bypassing the proof.
     """
+    # Resolve validated per-source provenance (default = honest RETROSPECTIVE_ONLY).
+    pbp_prov = pbp_provenance if pbp_provenance is not None \
+        else ctx.SourceProvenance.retrospective(plays_input_key)
+    ftn_prov = ftn_provenance if ftn_provenance is not None \
+        else ctx.SourceProvenance.retrospective(ftn_input_key)
+    if not isinstance(pbp_prov, ctx.SourceProvenance) or not isinstance(ftn_prov, ctx.SourceProvenance):
+        raise TypeError("pbp_provenance/ftn_provenance must be SourceProvenance objects")
+
     if context_record.get("context_mode") == ctx.LIVE_STATE:
-        if plays_input_key is None:
+        if pbp_prov.source_input_key is None:
             raise ValueError(
-                "LIVE_STATE build requires plays_input_key (frozen-input membership is "
-                "mandatory; None would bypass the LIVE_STATE membership proof)")
-        if ftn is not None and len(ftn) and ftn_input_key is None:
+                "LIVE_STATE build requires a PBP frozen-input key (via plays_input_key or "
+                "pbp_provenance); None would bypass the LIVE_STATE membership proof)")
+        if ftn is not None and len(ftn) and ftn_prov.source_input_key is None:
             raise ValueError(
-                "LIVE_STATE build with FTN requires ftn_input_key (frozen-input "
-                "membership is mandatory; None would bypass the FTN membership proof)")
+                "LIVE_STATE build with FTN requires an FTN frozen-input key (via "
+                "ftn_input_key or ftn_provenance); None would bypass the FTN membership proof)")
     g = games.copy()
     g["kickoff_utc"] = _kickoff_utc(g["kickoff"])
     g_by_id = {gid: row for gid, row in zip(g["game_id"], g.to_dict("records"))}
@@ -466,14 +478,8 @@ def build_team_features_frame(context_record: dict, *, games: pd.DataFrame,
                 g, team=team, season=season, target_game_id=tgid)
             # ... gated SEPARATELY per source (PBP and FTN never constrain each
             # other's candidacy; each builds its own most-recent-first window).
-            pbp_priors = _eligible_by_source(
-                candidates, elig_ctx=elig_ctx, grade=pbp_grade,
-                source_input_key=plays_input_key,
-                snapshot_time=pbp_snapshot_time, known_time=pbp_known_time)
-            ftn_priors = _eligible_by_source(
-                candidates, elig_ctx=elig_ctx, grade=ftn_grade,
-                source_input_key=ftn_input_key,
-                snapshot_time=ftn_snapshot_time, known_time=ftn_known_time)
+            pbp_priors = _eligible_by_source(candidates, elig_ctx=elig_ctx, provenance=pbp_prov)
+            ftn_priors = _eligible_by_source(candidates, elig_ctx=elig_ctx, provenance=ftn_prov)
 
             # PBP per-prior-game accumulators + points, most-recent-first
             per_game = []

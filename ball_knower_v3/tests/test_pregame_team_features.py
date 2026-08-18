@@ -253,7 +253,7 @@ def test_live_state_build_requires_plays_input_key(mk_ctx):
     # fail-closed: a LIVE_STATE build must supply plays_input_key (the guard runs
     # before any snapshot validation, so a bare LIVE_STATE record suffices)
     live_record = {"context_mode": ctx.LIVE_STATE}
-    with pytest.raises(ValueError, match="LIVE_STATE build requires plays_input_key"):
+    with pytest.raises(ValueError, match="requires a PBP frozen-input key"):
         tf.build_team_features_frame(live_record, games=games_df([]), plays=plays_df([]),
                                      target_game_ids=[], plays_input_key=None)
 
@@ -831,16 +831,22 @@ def _four_prior_setup():
     ])
 
 
+# validated synthetic SNAPSHOT_BOUND provenance (snapshot after all Sep events)
+def _snap_prov(snapshot="2024-09-29T00:00:00Z", key=None):
+    return ctx.SourceProvenance(grade="SNAPSHOT_BOUND", source_snapshot_time=snapshot,
+                                provenance_id="test_snap", source_input_key=key)
+
+
 def test_source_independence_strict_pbp_retro_ftn_snapshot(mk_ctx):
     # HISTORICAL_STRICT: PBP RETROSPECTIVE_ONLY (excluded) but FTN SNAPSHOT_BOUND
-    # (admitted) -> FTN features present while PBP features stay empty.
+    # (admitted via validated provenance) -> FTN present while PBP stays empty.
     g = _four_prior_setup()
     p = plays_df([play("N4", "AAA", "EEE", "pass", pid=1, epa=5.0)])
     ftn = ftn_df([ftnrow("N4", 1, motion=True)])
     rec = mk_ctx(as_of="2024-09-29T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
     a = one(tf.build_team_features_frame(
         rec, games=g, plays=p, ftn=ftn, target_game_ids=["NT"],
-        ftn_grade="SNAPSHOT_BOUND", ftn_snapshot_time="2024-09-29T00:00:00Z"), "AAA")
+        ftn_provenance=_snap_prov()), "AAA")
     # PBP empty (retrospective excluded in strict)
     assert a["games_available_std"] == 0 and pd.isna(a["pass_play_epa_std"])
     # FTN present (snapshot-bound admitted)
@@ -855,7 +861,7 @@ def test_source_independence_reverse_pbp_snapshot_ftn_retro(mk_ctx):
     rec = mk_ctx(as_of="2024-09-29T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
     a = one(tf.build_team_features_frame(
         rec, games=g, plays=p, ftn=ftn, target_game_ids=["NT"],
-        pbp_grade="SNAPSHOT_BOUND", pbp_snapshot_time="2024-09-29T00:00:00Z"), "AAA")
+        pbp_provenance=_snap_prov()), "AAA")
     # PBP present (snapshot-bound admitted)
     assert a["games_available_std"] >= 1 and a["pass_play_epa_std"] == pytest.approx(5.0)
     # FTN empty (retrospective excluded in strict)
@@ -877,7 +883,7 @@ def test_source_specific_windows_independent(mk_ctx):
     rec = mk_ctx(as_of="2024-09-29T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
     a = one(tf.build_team_features_frame(
         rec, games=g, plays=p, ftn=ftn, target_game_ids=["NT"],
-        ftn_grade="SNAPSHOT_BOUND", ftn_snapshot_time="2024-09-29T00:00:00Z"), "AAA")
+        ftn_provenance=_snap_prov()), "AAA")
     # PBP window empty
     assert a["games_available_std"] == 0 and a["games_available_last3"] == 0
     # FTN windows from FTN-eligible set: last3 = N2,N3,N4 -> 2 motions of 3
@@ -900,3 +906,33 @@ def test_historical_research_both_retrospective_parity(mk_ctx):
     assert a["games_available_std"] == 2 and a["ftn_games_available_std"] == 2
     assert a["pass_play_epa_std"] == pytest.approx(3.0)     # (2+4)/2
     assert a["motion_rate_std"] == pytest.approx(1 / 2)     # 1 motion of 2
+
+
+# ======================================================================
+# Stage D PIT hardening — validated provenance + causal ordering (builder)
+# ======================================================================
+def test_raw_timestamp_args_rejected_by_builder(mk_ctx):
+    # the old free-floating timestamp/grade args no longer exist on the builder
+    g = _ftn_two_game_setup()
+    p = plays_df([play("F1", "AAA", "BBB", "pass", pid=1)])
+    rec = mk_ctx(as_of="2024-09-22T12:00:00Z")
+    for kw in ("pbp_snapshot_time", "ftn_snapshot_time", "pbp_known_time",
+               "ftn_known_time", "pbp_grade", "ftn_grade"):
+        with pytest.raises(TypeError):
+            tf.build_team_features_frame(rec, games=g, plays=p, target_game_ids=["FT"],
+                                         **{kw: "2024-09-01T00:00:00Z"})
+
+
+def test_builder_snapshot_bound_requires_causal_order(mk_ctx):
+    # an FTN SNAPSHOT_BOUND whose snapshot precedes the prior game's event is
+    # rejected (no eligibility), so FTN stays empty.
+    g = _four_prior_setup()   # priors kick off Sep 1..22
+    p = plays_df([play(gid, "AAA", "BBB", "pass", pid=1) for gid in ("N1", "N2", "N3", "N4")])
+    ftn = ftn_df([ftnrow(gid, 1, motion=True) for gid in ("N1", "N2", "N3", "N4")])
+    rec = mk_ctx(as_of="2024-09-29T12:00:00Z", mode=ctx.HISTORICAL_STRICT)
+    # snapshot BEFORE the Sep games -> proof precedes the events -> rejected
+    early = ctx.SourceProvenance(grade="SNAPSHOT_BOUND", source_snapshot_time="2024-08-01T00:00:00Z",
+                                 provenance_id="early_snap")
+    a = one(tf.build_team_features_frame(rec, games=g, plays=p, ftn=ftn,
+                                         target_game_ids=["NT"], ftn_provenance=early), "AAA")
+    assert a["ftn_games_available_std"] == 0 and pd.isna(a["motion_rate_std"])

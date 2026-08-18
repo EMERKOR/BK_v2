@@ -292,6 +292,64 @@ def test_live_state_upgrade_requires_frozen_input_membership_when_declared():
     assert ok2 and ug == "SNAPSHOT_BOUND"
 
 
+# ======================================================================
+# Causal ordering: event_time <= proof_time <= as_of < kickoff
+# ======================================================================
+def test_snapshot_bound_before_event_rejected():
+    # Sunday event, Saturday snapshot (before the event) -> rejected
+    kick = T("2024-10-14T00:00:00Z")     # target next week
+    as_of = T("2024-10-08T00:00:00Z")
+    c = ctx.EligibilityContext(mode=ctx.HISTORICAL_STRICT, as_of=as_of, target_kickoff=kick)
+    ok, *_ = ctx.eligible("SNAPSHOT_BOUND", context=c,
+                          source_snapshot_time=T("2024-10-05T12:00:00Z"),  # Saturday
+                          event_time=T("2024-10-06T17:00:00Z"))            # Sunday event
+    assert not ok
+
+
+def test_snapshot_bound_after_event_before_asof_eligible():
+    # Sunday event, Monday snapshot, Tuesday as_of -> eligible
+    kick = T("2024-10-14T00:00:00Z")
+    as_of = T("2024-10-08T12:00:00Z")     # Tuesday
+    c = ctx.EligibilityContext(mode=ctx.HISTORICAL_STRICT, as_of=as_of, target_kickoff=kick)
+    ok, ug, ut, _ = ctx.eligible("SNAPSHOT_BOUND", context=c,
+                                 source_snapshot_time=T("2024-10-07T12:00:00Z"),  # Monday
+                                 event_time=T("2024-10-06T17:00:00Z"))            # Sunday
+    assert ok and ug == "SNAPSHOT_BOUND"
+
+
+def test_exact_known_time_before_event_rejected():
+    kick = T("2024-10-14T00:00:00Z")
+    as_of = T("2024-10-08T00:00:00Z")
+    c = ctx.EligibilityContext(mode=ctx.HISTORICAL_STRICT, as_of=as_of, target_kickoff=kick)
+    ok, *_ = ctx.eligible("EXACT", context=c,
+                          source_known_time=T("2024-10-05T12:00:00Z"),  # before event
+                          event_time=T("2024-10-06T17:00:00Z"))
+    assert not ok
+
+
+# ======================================================================
+# SourceProvenance validation
+# ======================================================================
+def test_source_provenance_strong_requires_timestamp_and_id():
+    with pytest.raises(ValueError, match="source_known_time"):
+        ctx.SourceProvenance(grade="EXACT", provenance_id="x")
+    with pytest.raises(ValueError, match="provenance_id"):
+        ctx.SourceProvenance(grade="EXACT", source_known_time=ASOF)
+    with pytest.raises(ValueError, match="source_snapshot_time"):
+        ctx.SourceProvenance(grade="SNAPSHOT_BOUND", provenance_id="x")
+    with pytest.raises(ValueError, match="provenance_id"):
+        ctx.SourceProvenance(grade="SNAPSHOT_BOUND", source_snapshot_time=ASOF)
+
+
+def test_source_provenance_retrospective_forbids_timestamp():
+    with pytest.raises(ValueError, match="must not carry a proof timestamp"):
+        ctx.SourceProvenance(grade="RETROSPECTIVE_ONLY", source_snapshot_time=ASOF)
+    # the honest default carries no bound
+    prov = ctx.SourceProvenance.retrospective("data/v3/canonical/plays_2024.parquet")
+    assert prov.grade == "RETROSPECTIVE_ONLY" and prov.source_snapshot_time is None
+    assert prov.source_input_key == "data/v3/canonical/plays_2024.parquet"
+
+
 def test_genuine_snapshot_bound_source_still_usable_by_provenance():
     # A genuine SNAPSHOT_BOUND source (e.g. a Phase 2E snapshot) is admitted by its
     # recorded source_snapshot_time in every mode — this path is NOT an upgrade.
