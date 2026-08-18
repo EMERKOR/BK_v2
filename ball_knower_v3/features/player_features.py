@@ -155,6 +155,7 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
             raise ValueError("LIVE_STATE build with participation requires participation_input_key")
         if fp_shares is not None and len(fp_shares) and fp_input_key is None:
             raise ValueError("LIVE_STATE build with FP shares requires fp_input_key")
+        selected_snapshot_as_of = context_record["as_of_time"]  # LIVE_FREEZE == feature as_of
     else:
         if state_snapshot_id is not None:
             selected_snapshot = state_snapshot_id
@@ -167,6 +168,14 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
             selected_snapshot = next(iter(ptw_snaps))
         else:
             selected_snapshot = None  # no PTW / no state
+        # A historical context carries no decision snapshot, so the selected one
+        # must be validated against the decision-state registry: it must be a
+        # registered HISTORICAL_STRICT snapshot whose as_of does not postdate the
+        # feature context (a later state snapshot cannot be backdated). Never infer
+        # safety from the id string; never fall back.
+        selected_snapshot_as_of = (
+            _validate_historical_state_snapshot(selected_snapshot, context_record, state_registry_path)
+            if selected_snapshot is not None else None)
 
     # bind PTW to exactly the selected snapshot (mismatched snapshots ignored)
     ptw_bound = (ptw_all[ptw_all["state_snapshot_id"] == selected_snapshot]
@@ -264,7 +273,41 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
     df = df.sort_values(PRIMARY_KEY).reset_index(drop=True)
     assert_unique_primary_key(df)
     df.attrs["state_snapshot_id"] = selected_snapshot
+    df.attrs["state_snapshot_as_of_time"] = selected_snapshot_as_of
     return df
+
+
+def _validate_historical_state_snapshot(snapshot_id, context_record, registry_path):
+    """Validate a historical feature build's selected state snapshot against the
+    decision-state registry, and return its registered `as_of_time` (ISO).
+
+    Requires: the id is registered; its `snapshot_mode` is `HISTORICAL_STRICT`; and
+    its registered `as_of_time <= feature_context.as_of_time` (the per-target guard
+    already enforces `feature.as_of < target_kickoff`). A later state snapshot
+    cannot be backdated into an earlier feature context; safety is never inferred
+    from the id string, and there is never a fallback to another snapshot.
+    """
+    recs = ctx._load_state_registry(registry_path)
+    match = [r for r in recs if r.get("state_snapshot_id") == snapshot_id]
+    if not match:
+        raise ValueError(
+            f"historical state_snapshot_id {snapshot_id!r} is not registered in the decision-state "
+            f"registry (safety is never inferred from the id string; no fallback)")
+    if len(match) > 1:
+        raise ValueError(f"decision-state registry corrupt: duplicate id {snapshot_id!r}")
+    rec = match[0]
+    smode = rec.get("snapshot_mode")
+    if smode != "HISTORICAL_STRICT":
+        raise ValueError(f"historical player state must bind a HISTORICAL_STRICT snapshot; "
+                         f"{snapshot_id!r} has snapshot_mode={smode!r}")
+    snap_as_of = ctx.require_aware_utc(rec.get("as_of_time"))
+    feat_as_of = ctx.require_aware_utc(context_record["as_of_time"])
+    if snap_as_of > feat_as_of:
+        raise ValueError(
+            f"state snapshot as_of {snap_as_of.isoformat()} postdates the feature context as_of "
+            f"{feat_as_of.isoformat()} — a later state snapshot cannot be backdated into an earlier "
+            f"feature context")
+    return snap_as_of.isoformat()
 
 
 def _emit_participation(row, elig):

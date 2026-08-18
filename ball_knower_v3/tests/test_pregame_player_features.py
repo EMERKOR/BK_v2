@@ -23,10 +23,24 @@ def _kick(s):
     return pd.Timestamp(s, tz="UTC")
 
 
+# module-global default decision-state registry path, set by the mk_ctx fixture so
+# the plain build() helper can thread it through for historical state validation.
+_REG_PATH = None
+
+
 @pytest.fixture
-def mk_ctx():
+def mk_ctx(tmp_path):
+    global _REG_PATH
     d = common.REPO / "data" / "v3" / "features" / "_test_inputs"
     d.mkdir(parents=True, exist_ok=True)
+    # a decision-state registry pre-registering the common test snapshots as
+    # HISTORICAL_STRICT with an as_of well before every test's feature as_of.
+    reg = tmp_path / "state_snapshot_registry.json"
+    reg.write_text(json.dumps([
+        {"state_snapshot_id": sid, "snapshot_mode": "HISTORICAL_STRICT",
+         "as_of_time": "2025-09-01T00:00:00Z"}
+        for sid in ("snap1", "snapX", "s1", "s2")]))
+    _REG_PATH = reg
     created = []
 
     def _make(as_of, mode=ctx.HISTORICAL_RESEARCH):
@@ -36,11 +50,17 @@ def mk_ctx():
         return ctx.create_feature_context(context_mode=mode, as_of_time=as_of, input_paths=[p])
 
     yield _make
+    _REG_PATH = None
     for p in created:
         try:
             p.unlink()
         except FileNotFoundError:
             pass
+
+
+def _write_reg(path, records):
+    path.write_text(json.dumps(records))
+    return path
 
 
 # --------------------------------------------------------------------------
@@ -111,6 +131,7 @@ ASOF = "2025-09-25T12:00:00Z"   # Thu before the Sunday target; ET date 09-25
 
 
 def build(rec, games, ptwk, targets, participation=None, fp_shares=None, **kw):
+    kw.setdefault("state_registry_path", _REG_PATH)
     return pf.build_player_features_frame(rec, games=games, player_team_week=ptwk,
                                           target_game_ids=targets, participation=participation,
                                           fp_shares=fp_shares, **kw)
@@ -452,3 +473,93 @@ def test_duplicate_primary_key_fails():
                        "team": ["HOU", "HOU"], "player_id": ["AAA", "AAA"]})
     with pytest.raises(ValueError, match="duplicate primary key"):
         pf.assert_unique_primary_key(df)
+
+
+# ======================================================================
+# historical state-snapshot registry validation (final PIT check)
+# ======================================================================
+def _oct_slate():
+    return games_df([
+        game("OP1", 2025, 5, "2025-10-05T17:00:00Z", "HOU", "IND"),
+        game("OT", 2025, 8, "2025-10-20T20:00:00Z", "HOU", "KC"),
+    ])
+
+
+def test_state_snapshot_later_than_feature_asof_rejected(mk_ctx, tmp_path):
+    g = _oct_slate()
+    ptwk = ptw_df([ptw(2025, 8, "HOU", "AAA", snap_id="sB")])
+    reg = _write_reg(tmp_path / "reg.json", [
+        {"state_snapshot_id": "sB", "snapshot_mode": "HISTORICAL_STRICT",
+         "as_of_time": "2025-10-15T00:00:00Z"}])
+    with pytest.raises(ValueError, match="postdates the feature context"):
+        build(mk_ctx("2025-10-01T12:00:00Z"), g, ptwk, ["OT"],
+              state_snapshot_id="sB", state_registry_path=reg)
+
+
+def test_state_snapshot_earlier_than_feature_asof_accepted(mk_ctx, tmp_path):
+    g = _oct_slate()
+    ptwk = ptw_df([ptw(2025, 8, "HOU", "AAA", snap_id="sA")])
+    reg = _write_reg(tmp_path / "reg.json", [
+        {"state_snapshot_id": "sA", "snapshot_mode": "HISTORICAL_STRICT",
+         "as_of_time": "2025-10-01T00:00:00Z"}])
+    df = build(mk_ctx("2025-10-15T12:00:00Z"), g, ptwk, ["OT"],
+               state_snapshot_id="sA", state_registry_path=reg)
+    assert len(df) == 1
+    assert df.attrs["state_snapshot_as_of_time"].startswith("2025-10-01")
+
+
+def test_unregistered_historical_snapshot_rejected(mk_ctx, tmp_path):
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="ghost")])
+    reg = _write_reg(tmp_path / "reg.json", [
+        {"state_snapshot_id": "other", "snapshot_mode": "HISTORICAL_STRICT",
+         "as_of_time": "2025-09-01T00:00:00Z"}])
+    with pytest.raises(ValueError, match="not registered"):
+        build(mk_ctx(ASOF), g, ptwk, ["T"], state_snapshot_id="ghost", state_registry_path=reg)
+
+
+def test_historical_snapshot_live_freeze_mode_rejected(mk_ctx, tmp_path):
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="sL")])
+    reg = _write_reg(tmp_path / "reg.json", [
+        {"state_snapshot_id": "sL", "snapshot_mode": "LIVE_FREEZE",
+         "as_of_time": "2025-09-01T00:00:00Z"}])
+    with pytest.raises(ValueError, match="HISTORICAL_STRICT"):
+        build(mk_ctx(ASOF), g, ptwk, ["T"], state_snapshot_id="sL", state_registry_path=reg)
+
+
+def test_research_can_use_earlier_historical_strict_snapshot(mk_ctx, tmp_path):
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="sStrict")])
+    reg = _write_reg(tmp_path / "reg.json", [
+        {"state_snapshot_id": "sStrict", "snapshot_mode": "HISTORICAL_STRICT",
+         "as_of_time": "2025-09-20T00:00:00Z"}])
+    # HISTORICAL_RESEARCH feature context consuming an earlier HISTORICAL_STRICT state
+    df = build(mk_ctx(ASOF), g, ptwk, ["T"], state_snapshot_id="sStrict", state_registry_path=reg)
+    assert len(df) == 1 and (df["state_snapshot_id"] == "sStrict").all()
+
+
+def test_no_fallback_after_validation_failure(mk_ctx, tmp_path):
+    # even though a valid snapshot exists in PTW, an explicitly selected bad one
+    # must fail rather than fall back to the good snapshot.
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="good"),
+                   ptw(2025, 4, "HOU", "BBB", snap_id="bad")])
+    reg = _write_reg(tmp_path / "reg.json", [
+        {"state_snapshot_id": "good", "snapshot_mode": "HISTORICAL_STRICT",
+         "as_of_time": "2025-09-01T00:00:00Z"},
+        {"state_snapshot_id": "bad", "snapshot_mode": "LIVE_FREEZE",
+         "as_of_time": "2025-09-01T00:00:00Z"}])
+    with pytest.raises(ValueError, match="HISTORICAL_STRICT"):
+        build(mk_ctx(ASOF), g, ptwk, ["T"], state_snapshot_id="bad", state_registry_path=reg)
+
+
+def test_live_state_skips_historical_registry_validation(live_ctx):
+    # LIVE_STATE authority is the already-validated bound LIVE_FREEZE snapshot;
+    # historical registry validation does not apply.
+    rec, reg = live_ctx
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="s_live")])
+    df = pf.build_player_features_frame(rec, games=g, player_team_week=ptwk,
+                                        target_game_ids=["T"], state_registry_path=reg)
+    assert len(df) == 1 and df.attrs["state_snapshot_id"] == "s_live"

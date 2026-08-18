@@ -591,7 +591,22 @@ has already been PIT-materialized by Phase 2D, so the selected immutable snapsho
 is the authority for membership/current-state (no second generic provenance is
 invented around it); the selected `state_snapshot_id` is recorded on every row and
 in the build metadata for audit. Membership never comes from a present-day/latest
-team. Participation, FantasyPoints route, and FantasyPoints target are each
+team.
+
+For a **historical** feature context the selected `state_snapshot_id` is validated
+against the decision-state registry (registry-path override supported for tests):
+it must be a **registered** snapshot, its `snapshot_mode` must be
+`HISTORICAL_STRICT`, and its registered `as_of_time` must satisfy
+`state_snapshot.as_of_time <= feature_context.as_of_time < target_kickoff` — a
+state snapshot whose `as_of_time` postdates the feature context is **rejected**
+(no backdating a later state into an earlier context). Safety is never inferred
+from the id string and there is never a fallback. `HISTORICAL_RESEARCH` may consume
+an earlier `HISTORICAL_STRICT` state snapshot — this only means the factual player
+state was reconstructed under strict PIT rules; it does not elevate the weaker
+research prior-use sources. The registered state `as_of_time` is recorded in the
+build metadata (`df.attrs['state_snapshot_as_of_time']`). For `LIVE_STATE` the
+context's already-validated bound `LIVE_FREEZE` snapshot remains the sole
+authority (no historical registry check applies). Participation, FantasyPoints route, and FantasyPoints target are each
 gated **independently** by their own recorded grade/provenance (per Phase 2E:
 2021–24 snap `RETROSPECTIVE_ONLY`; 2025 `SNAPSHOT_BOUND` by recorded snapshot) and
 build their own `last3`/`last5`/`std` windows — one source never uses another
