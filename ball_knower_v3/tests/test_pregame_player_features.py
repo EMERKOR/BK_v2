@@ -8,6 +8,8 @@ guards. No real player data is needed.
 """
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -54,10 +56,9 @@ def game(gid, season, week, kickoff, home, away, gtype="REG"):
             "kickoff": _kick(kickoff), "home_team": home, "away_team": away}
 
 
-def ptw(season, week, team, pid, grade="SNAPSHOT_BOUND", snapshot="2025-09-01T00:00:00Z",
-        known=None, **facts):
-    d = {"season": season, "week": week, "team": team, "player_id": pid,
-         "state_pit_grade": grade, "state_snapshot_time": snapshot, "state_known_time": known}
+def ptw(season, week, team, pid, snap_id="snap1", grade="SNAPSHOT_BOUND", **facts):
+    d = {"state_snapshot_id": snap_id, "season": season, "week": week, "team": team,
+         "player_id": pid, "state_pit_grade": grade}
     for c in pf.STATE_FACT_COLS:
         d.setdefault(c, None)
     d.update(facts)
@@ -273,36 +274,122 @@ def test_no_prior_season_blending(mk_ctx):
 # ======================================================================
 def test_historical_strict_rejects_retrospective_shares(mk_ctx):
     g = _slate()
-    # state must be SNAPSHOT_BOUND to survive strict; participation RETROSPECTIVE excluded
-    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", grade="SNAPSHOT_BOUND",
-                       snapshot="2025-09-24T00:00:00Z")])
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA")])
+    # participation RETROSPECTIVE_ONLY is excluded in strict -> no prior-use
     p = part_df([part("AAA", 2025, "P1", off=0.5, grade="RETROSPECTIVE_ONLY")])
     a = one(build(mk_ctx(ASOF, mode=ctx.HISTORICAL_STRICT), g, ptwk, ["T"], participation=p), "AAA")
     assert a["games_played_prior"] == 0 and pd.isna(a["last_off_snap_share"])
 
 
-def test_week_only_state_rejected_from_research(mk_ctx):
+# ======================================================================
+# state-snapshot binding — exactly one authoritative snapshot (fail-closed)
+# ======================================================================
+@pytest.fixture
+def live_ctx(tmp_path):
+    d = common.REPO / "data" / "v3" / "features" / "_test_inputs"
+    d.mkdir(parents=True, exist_ok=True)
+    stub = d / "pf_live.txt"; stub.write_text("x")
+    reg = tmp_path / "state_snapshot_registry.json"
+    reg.write_text(json.dumps([{"state_snapshot_id": "s_live", "snapshot_mode": "LIVE_FREEZE",
+                                "as_of_time": ASOF, "canonical_lineage_set_id": None}]))
+    rec = ctx.create_feature_context(context_mode=ctx.LIVE_STATE, as_of_time=ASOF,
+                                     input_paths=[stub], state_snapshot_id="s_live",
+                                     state_registry_path=reg)
+    yield rec, reg
+    try:
+        stub.unlink()
+    except FileNotFoundError:
+        pass
+
+
+def test_historical_multiple_snapshots_no_selection_raises(mk_ctx):
     g = _slate()
-    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", grade="WEEK_ONLY", snapshot=None)])
-    df = build(mk_ctx(ASOF), g, ptwk, ["T"])
-    assert len(df) == 0   # WEEK_ONLY membership state not provable -> no row
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="s1"),
+                   ptw(2025, 4, "HOU", "BBB", snap_id="s2")])
+    with pytest.raises(ValueError, match="state_snapshot_id"):
+        build(mk_ctx(ASOF), g, ptwk, ["T"])
 
 
-def test_snapshot_bound_state_admitted_in_research(mk_ctx):
+def test_two_snapshots_same_player_cannot_silently_combine(mk_ctx):
     g = _slate()
-    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", grade="SNAPSHOT_BOUND",
-                       snapshot="2025-09-24T00:00:00Z")])
-    df = build(mk_ctx(ASOF), g, ptwk, ["T"])
-    assert len(df) == 1
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="s1", depth_rank=1),
+                   ptw(2025, 4, "HOU", "AAA", snap_id="s2", depth_rank=2)])
+    with pytest.raises(ValueError):            # two snapshots, no explicit selection
+        build(mk_ctx(ASOF), g, ptwk, ["T"])
+    df = build(mk_ctx(ASOF), g, ptwk, ["T"], state_snapshot_id="s1")  # explicit
+    assert len(df) == 1 and one(df, "AAA")["depth_rank"] == 1          # s1 only, no hybrid
 
 
-def test_live_state_membership_fail_closed(mk_ctx):
+def test_two_snapshots_different_membership_no_hybrid(mk_ctx):
     g = _slate()
-    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA")])
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="s1"),
+                   ptw(2025, 4, "HOU", "BBB", snap_id="s2")])
+    df = build(mk_ctx(ASOF), g, ptwk, ["T"], state_snapshot_id="s1")
+    assert set(df["player_id"]) == {"AAA"}     # BBB (s2) never joins the s1 roster
+
+
+def test_historical_one_explicit_snapshot_deterministic(mk_ctx):
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="s1")])
+    rec = mk_ctx(ASOF)
+    d1 = build(rec, g, ptwk, ["T"], state_snapshot_id="s1")
+    d2 = build(rec, g, ptwk, ["T"], state_snapshot_id="s1")
+    pd.testing.assert_frame_equal(d1, d2)
+
+
+def test_selected_snapshot_in_lineage_metadata(mk_ctx):
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="snapX")])
+    df = build(mk_ctx(ASOF), g, ptwk, ["T"])   # single snapshot -> auto-selected
+    assert (df["state_snapshot_id"] == "snapX").all()
+    assert df.attrs["state_snapshot_id"] == "snapX"
+
+
+def test_ptw_missing_snapshot_id_column_raises(mk_ctx):
+    g = _slate()
+    bad = pd.DataFrame([{"season": 2025, "week": 4, "team": "HOU", "player_id": "AAA"}])
+    for c in pf.STATE_FACT_COLS:
+        bad[c] = None
+    with pytest.raises(ValueError, match="state_snapshot_id"):
+        build(mk_ctx(ASOF), g, bad, ["T"])
+
+
+def test_live_state_uses_only_bound_snapshot(live_ctx):
+    rec, reg = live_ctx
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="s_live"),
+                   ptw(2025, 4, "HOU", "BBB", snap_id="OTHER")])
+    df = pf.build_player_features_frame(rec, games=g, player_team_week=ptwk,
+                                        target_game_ids=["T"], state_registry_path=reg)
+    assert set(df["player_id"]) == {"AAA"}     # BBB (OTHER snapshot) ignored, no fallback
+    assert (df["state_snapshot_id"] == "s_live").all()
+
+
+def test_live_state_missing_bound_snapshot_no_fallback(live_ctx):
+    rec, reg = live_ctx
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="OTHER")])  # bound snapshot absent
+    df = pf.build_player_features_frame(rec, games=g, player_team_week=ptwk,
+                                        target_game_ids=["T"], state_registry_path=reg)
+    assert len(df) == 0                        # never falls back to OTHER
+
+
+def test_live_state_requires_bound_snapshot_id():
     live_record = {"context_mode": ctx.LIVE_STATE}
-    with pytest.raises(ValueError, match="state_input_key"):
-        pf.build_player_features_frame(live_record, games=g, player_team_week=ptwk,
-                                       target_game_ids=["T"], state_input_key=None)
+    with pytest.raises(ValueError, match="bound state_snapshot_id"):
+        pf.build_player_features_frame(live_record, games=_slate(),
+                                       player_team_week=ptw_df([ptw(2025, 4, "HOU", "AAA")]),
+                                       target_game_ids=["T"])
+
+
+def test_live_state_prioruse_key_fail_closed(live_ctx):
+    rec, reg = live_ctx
+    g = _slate()
+    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", snap_id="s_live")])
+    p = part_df([part("AAA", 2025, "P1", off=0.5)])
+    with pytest.raises(ValueError, match="participation_input_key"):
+        pf.build_player_features_frame(rec, games=g, player_team_week=ptwk, target_game_ids=["T"],
+                                       participation=p, state_registry_path=reg)
 
 
 # ======================================================================

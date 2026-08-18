@@ -578,11 +578,20 @@ league-average imputation or carry-forward is applied; route/target stay null
 before Phase 2E has them.
 
 **Membership and source independence.** The row spine (membership + current-state
-facts) comes only from eligible `canonical_player_team_week` state (never a
-present-day/latest team); a state whose PIT grade cannot be proven pregame
-(`WEEK_ONLY`/untimed `RETROSPECTIVE_ONLY` in historical modes) leaves the player
-unavailable rather than guessed, and `LIVE_STATE` requires a proven frozen-input
-state key. Participation, FantasyPoints route, and FantasyPoints target are each
+facts) comes from **exactly one authoritative `canonical_player_team_week`
+decision-state snapshot** — that table is keyed by `state_snapshot_id + season +
+week + team + player_id`, so the builder must never combine multiple
+`state_snapshot_id` values into one feature context. `LIVE_STATE` uses **only** the
+feature context's bound `state_snapshot_id` (a mismatched or absent snapshot in the
+supplied PTW is ignored, never a fallback); a historical context carries no
+decision snapshot, so the caller supplies an explicit `state_snapshot_id` or an
+already-scoped PTW frame containing exactly one snapshot (multiple + no explicit
+selection **raises** — no latest/nearest/max fallback). `canonical_player_team_week`
+has already been PIT-materialized by Phase 2D, so the selected immutable snapshot
+is the authority for membership/current-state (no second generic provenance is
+invented around it); the selected `state_snapshot_id` is recorded on every row and
+in the build metadata for audit. Membership never comes from a present-day/latest
+team. Participation, FantasyPoints route, and FantasyPoints target are each
 gated **independently** by their own recorded grade/provenance (per Phase 2E:
 2021–24 snap `RETROSPECTIVE_ONLY`; 2025 `SNAPSHOT_BOUND` by recorded snapshot) and
 build their own `last3`/`last5`/`std` windows — one source never uses another

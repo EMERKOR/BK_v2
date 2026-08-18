@@ -110,34 +110,72 @@ def _eligible_obs(rows, *, kickoff_of, elig_ctx, source_input_key):
 def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
                                 player_team_week: pd.DataFrame, target_game_ids,
                                 participation=None, fp_shares=None,
-                                state_input_key=None, participation_input_key=None,
-                                fp_input_key=None, state_provenance=None,
-                                state_registry_path=None) -> pd.DataFrame:
+                                state_snapshot_id=None, participation_input_key=None,
+                                fp_input_key=None, state_registry_path=None) -> pd.DataFrame:
     """Build `pregame_player_features` rows.
 
-    Row spine = eligible `player_team_week` rows for each target game's
-    (season, week, team). Prior-use is computed independently per source
-    (participation, FP route, FP target) over that source's own eligible prior
-    games. Pure/deterministic; no file IO.
+    Membership + current-state facts come from EXACTLY ONE authoritative
+    `canonical_player_team_week` decision-state snapshot (already PIT-materialized
+    by Phase 2D), never a mix of snapshots:
 
-    In `LIVE_STATE`, frozen-input membership is mandatory: the state key AND, for
-    each prior-use source actually supplied, that source's key must be non-null
-    (fail-closed).
+      * `LIVE_STATE` — the feature context's bound `state_snapshot_id` is the sole
+        authority; PTW rows carrying a different snapshot are ignored, never used
+        as a fallback (a missing bound snapshot simply yields no state).
+      * historical contexts — carry no decision snapshot, so the caller supplies an
+        explicit `state_snapshot_id`, or an already-scoped PTW frame containing
+        exactly one `state_snapshot_id` (multiple + no explicit selection raises).
+        No "latest"/nearest/max fallback is ever applied.
+
+    The selected `state_snapshot_id` is recorded on every row and in
+    `df.attrs['state_snapshot_id']` for audit. Prior-use is computed independently
+    per RAW per-observation source (participation, FP route, FP target) over that
+    source's own eligible prior games, gated by the Stage B `EligibilityContext`
+    with each observation's recorded provenance. Pure/deterministic; no file IO.
+
+    In `LIVE_STATE`, frozen-input membership is mandatory for the prior-use
+    sources: each supplied source's key must be non-null (fail-closed).
     """
     mode = context_record["context_mode"]
+    ptw_all = player_team_week
+
+    # --- resolve the ONE authoritative state snapshot (fail-closed) ---
+    if len(ptw_all) and "state_snapshot_id" not in ptw_all.columns:
+        raise ValueError("player_team_week must carry state_snapshot_id (part of its primary key)")
+    ptw_snaps = set(ptw_all["state_snapshot_id"].dropna().unique()) if len(ptw_all) else set()
+
     if mode == ctx.LIVE_STATE:
-        if state_input_key is None:
-            raise ValueError("LIVE_STATE player build requires state_input_key (frozen-input "
-                             "membership is mandatory)")
+        bound = context_record.get("state_snapshot_id")
+        if not bound:
+            raise ValueError("LIVE_STATE player build requires the context's bound state_snapshot_id")
+        if state_snapshot_id is not None and state_snapshot_id != bound:
+            raise ValueError(f"explicit state_snapshot_id {state_snapshot_id!r} conflicts with the "
+                             f"bound LIVE_STATE snapshot {bound!r}")
+        selected_snapshot = bound
         if participation is not None and len(participation) and participation_input_key is None:
             raise ValueError("LIVE_STATE build with participation requires participation_input_key")
         if fp_shares is not None and len(fp_shares) and fp_input_key is None:
             raise ValueError("LIVE_STATE build with FP shares requires fp_input_key")
+    else:
+        if state_snapshot_id is not None:
+            selected_snapshot = state_snapshot_id
+        elif len(ptw_snaps) > 1:
+            raise ValueError(
+                f"historical player_team_week contains {len(ptw_snaps)} state_snapshot_id values "
+                f"({sorted(ptw_snaps)}); supply an explicit state_snapshot_id — no implicit "
+                f"latest/nearest/max fallback is allowed")
+        elif len(ptw_snaps) == 1:
+            selected_snapshot = next(iter(ptw_snaps))
+        else:
+            selected_snapshot = None  # no PTW / no state
+
+    # bind PTW to exactly the selected snapshot (mismatched snapshots ignored)
+    ptw_bound = (ptw_all[ptw_all["state_snapshot_id"] == selected_snapshot]
+                 if (len(ptw_all) and selected_snapshot is not None) else ptw_all.iloc[0:0])
 
     kickoff_of = _kickoff_map(games)
     g_by_id = {gid: row for gid, row in zip(games["game_id"].astype(str), games.to_dict("records"))}
 
-    ptw = player_team_week
+    ptw = ptw_bound
     part = participation if participation is not None else pd.DataFrame()
     fp = fp_shares if fp_shares is not None else pd.DataFrame()
 
@@ -157,21 +195,12 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
             context_record, target_kickoff=target_kickoff, state_registry_path=state_registry_path)
 
         for team in (tg["home_team"], tg["away_team"]):
-            # ----- membership + current-state (from player_team_week only) -----
+            # ----- membership + current-state: the ONE bound snapshot only -----
+            # (Phase 2D already PIT-materialized this state; the immutable
+            # selected state_snapshot_id is the authority — no re-gating here.)
             spine = ptw[(ptw["season"] == season) & (ptw["week"] == tg["week"])
                         & (ptw["team"] == team)] if len(ptw) else ptw
             for prow in (spine.to_dict("records") if len(spine) else []):
-                # gate the STATE source (target-week state; NO event_time — it is
-                # not a completed-game observation). WEEK_ONLY/RETROSPECTIVE without
-                # a proven bound is rejected in historical modes; LIVE_STATE needs
-                # freeze + membership.
-                s_ok, _, _, _ = ctx.eligible(
-                    prow.get("state_pit_grade") or "RETROSPECTIVE_ONLY", context=elig_ctx,
-                    source_known_time=prow.get("state_known_time"),
-                    source_snapshot_time=prow.get("state_snapshot_time"),
-                    source_input_key=state_input_key)
-                if not s_ok:
-                    continue  # membership/state not provable -> leave player unavailable
                 player_id = prow["player_id"]
 
                 row = {
@@ -181,6 +210,7 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
                     "feature_set_version": FEATURE_SET_VERSION,
                     "context_mode": mode,
                     "as_of_time": as_of,
+                    "state_snapshot_id": selected_snapshot,
                     "target_game_id": tgid,
                     "season": season,
                     "week": int(tg["week"]),
@@ -233,6 +263,7 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
     df = _cast_dtypes(df)
     df = df.sort_values(PRIMARY_KEY).reset_index(drop=True)
     assert_unique_primary_key(df)
+    df.attrs["state_snapshot_id"] = selected_snapshot
     return df
 
 
@@ -285,8 +316,9 @@ def assert_unique_primary_key(df: pd.DataFrame) -> None:
 
 def _schema_columns() -> list:
     base = ["feature_context_id", "feature_schema_version", "feature_definition_version",
-            "feature_set_version", "context_mode", "as_of_time", "target_game_id",
-            "season", "week", "game_type", "target_kickoff", "team", "player_id"]
+            "feature_set_version", "context_mode", "as_of_time", "state_snapshot_id",
+            "target_game_id", "season", "week", "game_type", "target_kickoff",
+            "team", "player_id"]
     base += list(STATE_FACT_COLS)
     base += ["games_played_prior", "games_started_prior", "games_started_status_known"]
     for feat in SNAP_METRICS:
