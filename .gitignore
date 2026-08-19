@@ -54,3 +54,7 @@ data/v3/canonical/*.parquet
 # v3 Phase 2A frozen raw player sources (reproducible from the recorded URLs+hashes in
 # audit_v3_player_sources/manifests/). Manifests, reports, scripts, and tests stay tracked.
 data/v3/raw_player_sources/
+
+# Local preservation archive of the Phase 2A frozen raw sources (large binary; the
+# contents are already covered by data/v3/raw_player_sources/ + the manifests above).
+raw_player_sources_frozen_*.tar.gz
