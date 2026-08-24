@@ -54,3 +54,8 @@ data/v3/canonical/*.parquet
 # v3 Phase 2A frozen raw player sources (reproducible from the recorded URLs+hashes in
 # audit_v3_player_sources/manifests/). Manifests, reports, scripts, and tests stay tracked.
 data/v3/raw_player_sources/
+
+# v3 feature-layer generated outputs (reproducible). The feature-build registry
+# (feature_registry.json) stays tracked; parquet outputs and test artifacts do not.
+data/v3/features/*.parquet
+data/v3/features/_test_inputs/
