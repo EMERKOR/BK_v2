@@ -559,9 +559,42 @@ until pinned here.
 ### 5.4.5 Player-feature definitions (`pregame_player_features`)
 
 Factual current-state fields (position, position group, roster status, depth
-slot/rank, raw injury/report/practice status, canonical PIT/availability grades)
-are carried through from the approved player layer subject to eligibility at
-`as_of_time`; they are copies of canonical facts, not calculations.
+slot/rank, raw injury/report/practice status, canonical source-specific PIT
+grades) are carried through from the approved player layer subject to eligibility
+at `as_of_time`; they are copies of canonical facts, not calculations.
+
+**Current-state projection (`v0.2`, RESOLVED).** The feature-facing current-state
+columns are an **explicit, documented projection** of the *actual*
+`canonical_player_team_week` schema — not synthetic aliases. Each mapped canonical
+source column is **required**: if it is absent from a non-empty
+`canonical_player_team_week` frame the build **raises** (no silent all-null field).
+Source null stays null.
+
+| feature column | canonical source column |
+|---|---|
+| `position_week` | `position_week` |
+| `position_group_week` | `position_group_week` |
+| `roster_status` | `roster_status_normalized` |
+| `depth_slot` | `depth_slot` |
+| `depth_rank` | `depth_rank` |
+| `report_status` | `report_status_raw_latest` |
+| `practice_status` | `practice_status_raw_latest` |
+| `roster_point_in_time_grade` | `roster_point_in_time_grade` |
+| `depth_point_in_time_grade` | `depth_point_in_time_grade` |
+| `injury_point_in_time_grade` | `injury_point_in_time_grade` |
+
+**Removed / replaced v0.1 aliases (schema change → `player_features_v0.2`).**
+- `game_status` is **removed**: `canonical_player_team_week` emits no factual
+  game-status field, and game status is **not** inferred from roster/injury/practice
+  status. (It may be reintroduced only if the player layer later emits a factual
+  game-status fact.)
+- `state_pit_grade` (a single collapsed grade) is **removed and replaced** by the
+  three factual **source-specific** canonical grades above (`roster_` / `depth_` /
+  `injury_point_in_time_grade`), carried verbatim. No "strongest"/"weakest"/other
+  aggregate grade is invented.
+
+This changes the table's column set, so the feature-set version is
+`player_features_v0.2` (was `v0.1`).
 
 Calculated prior-use features, over completed prior games whose postgame source
 was eligible by `as_of_time`:

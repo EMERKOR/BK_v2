@@ -76,12 +76,17 @@ def game(gid, season, week, kickoff, home, away, gtype="REG"):
             "kickoff": _kick(kickoff), "home_team": home, "away_team": away}
 
 
-def ptw(season, week, team, pid, snap_id="snap1", grade="SNAPSHOT_BOUND", **facts):
+def ptw(season, week, team, pid, snap_id="snap1", **facts):
+    # Build a CANONICAL player_team_week row using the REAL canonical source-column
+    # names (never feature-facing aliases): the builder must read the approved
+    # canonical schema. Convenience kwargs use feature-facing names and are
+    # translated to the canonical source column via STATE_FACT_MAP.
     d = {"state_snapshot_id": snap_id, "season": season, "week": week, "team": team,
-         "player_id": pid, "state_pit_grade": grade}
-    for c in pf.STATE_FACT_COLS:
-        d.setdefault(c, None)
-    d.update(facts)
+         "player_id": pid}
+    for src in pf.STATE_FACT_MAP.values():
+        d.setdefault(src, None)
+    for key, val in facts.items():
+        d[pf.STATE_FACT_MAP.get(key, key)] = val
     return d
 
 
@@ -158,13 +163,62 @@ def test_primary_key_and_two_players(mk_ctx):
 
 
 def test_current_state_fields_carried(mk_ctx):
+    # The synthetic PTW row carries CANONICAL source columns
+    # (roster_status_normalized / report_status_raw_latest / practice_status_raw_latest
+    # + the three source-specific grades); the feature output must expose the
+    # feature-facing names populated from them.
     g = _slate()
-    ptwk = ptw_df([ptw(2025, 4, "HOU", "AAA", position_week="WR", position_group_week="WR",
-                       roster_status="ACTIVE", depth_slot="WR1", depth_rank=1,
-                       report_status="Questionable", practice_status="LP", game_status=None)])
-    a = one(build(mk_ctx(ASOF), g, ptwk, ["T"]), "AAA")
-    assert a["position_week"] == "WR" and a["roster_status"] == "ACTIVE"
-    assert a["depth_rank"] == 1 and a["report_status"] == "Questionable"
+    row = ptw(2025, 4, "HOU", "AAA", position_week="WR", position_group_week="WR",
+              roster_status="ACTIVE", depth_slot="WR1", depth_rank=1,
+              report_status="Questionable", practice_status="LP",
+              roster_point_in_time_grade="EXACT", depth_point_in_time_grade="SNAPSHOT_BOUND",
+              injury_point_in_time_grade="EXACT")
+    # prove the synthetic frame really uses canonical column names, not aliases
+    assert "roster_status_normalized" in row and "roster_status" not in row
+    assert "report_status_raw_latest" in row and "practice_status_raw_latest" in row
+    a = one(build(mk_ctx(ASOF), g, ptw_df([row]), ["T"]), "AAA")
+    assert a["position_week"] == "WR" and a["roster_status"] == "ACTIVE"          # <- normalized
+    assert a["depth_rank"] == 1 and a["report_status"] == "Questionable"          # <- raw_latest
+    assert a["practice_status"] == "LP"                                           # <- raw_latest
+    assert a["roster_point_in_time_grade"] == "EXACT"
+    assert a["depth_point_in_time_grade"] == "SNAPSHOT_BOUND"
+    assert a["injury_point_in_time_grade"] == "EXACT"
+    # removed v0.1 aliases are gone from the v0.2 schema
+    assert "game_status" not in a and "state_pit_grade" not in a
+
+
+def test_canonical_null_state_stays_null(mk_ctx):
+    # a canonical null (e.g. strict-excluded roster) stays null in the feature output
+    g = _slate()
+    row = ptw(2025, 4, "HOU", "AAA", position_week="WR")   # roster/report/practice unset -> None
+    a = one(build(mk_ctx(ASOF), g, ptw_df([row]), ["T"]), "AAA")
+    assert pd.isna(a["roster_status"]) and pd.isna(a["report_status"])
+    assert pd.isna(a["practice_status"]) and pd.isna(a["injury_point_in_time_grade"])
+
+
+def test_missing_required_canonical_state_column_raises(mk_ctx):
+    # schema drift: a non-empty PTW frame missing a required canonical source column
+    # must fail loudly (never silently emit an all-null current-state field).
+    g = _slate()
+    row = ptw(2025, 4, "HOU", "AAA", position_week="WR")
+    del row["report_status_raw_latest"]                    # drop a required canonical column
+    with pytest.raises(ValueError, match="report_status_raw_latest"):
+        build(mk_ctx(ASOF), g, ptw_df([row]), ["T"])
+
+
+def test_feature_facing_alias_input_cannot_mask_canonical_schema(mk_ctx):
+    # feeding a frame that carries only the feature-facing ALIAS (roster_status) but
+    # not the canonical column (roster_status_normalized) must raise, not silently
+    # accept the alias.
+    g = _slate()
+    row = {"state_snapshot_id": "snap1", "season": 2025, "week": 4, "team": "HOU",
+           "player_id": "AAA"}
+    for src in pf.STATE_FACT_MAP.values():
+        row[src] = None
+    del row["roster_status_normalized"]
+    row["roster_status"] = "ACTIVE"                         # alias only, no canonical column
+    with pytest.raises(ValueError, match="roster_status_normalized"):
+        build(mk_ctx(ASOF), g, ptw_df([row]), ["T"])
 
 
 # ======================================================================

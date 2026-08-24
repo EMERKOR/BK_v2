@@ -33,12 +33,12 @@ as observed coverage.
 | Property | Value |
 |---|---|
 | Primary key | `feature_context_id + target_game_id + team + player_id` |
-| Feature-set version | `player_features_v0.1` |
-| Column count | **79** |
-| Feature families | Factual current-state fields (position, roster/depth, report/practice/game status) from `canonical_player_team_week`; prior-use snap shares (offense/defense/ST) & games played/started from `canonical_participation`; prior-use route-share & target-share (2025 only) from Phase 2E FantasyPoints shares; per-window coverage. |
+| Feature-set version | `player_features_v0.2` |
+| Column count | **80** |
+| Feature families | Factual current-state fields (position, position group, roster status, depth slot/rank, report/practice status, source-specific PIT grades) projected explicitly from `canonical_player_team_week`; prior-use snap shares (offense/defense/ST) & games played/started from `canonical_participation`; prior-use route-share & target-share (2025 only) from Phase 2E FantasyPoints shares; per-window coverage. |
 | Source tables | `canonical_player_team_week`, `canonical_participation`, Phase 2E FantasyPoints player-game shares, `canonical_games` |
 | PIT modes | LIVE_STATE (state bound to one registered decision-state snapshot), HISTORICAL_STRICT, HISTORICAL_RESEARCH; each source gated **independently** by its own recorded grade/provenance |
-| Coverage fields | per-metric `_n_{w}` denominators (e.g. `off_snap_share_n_std`), games-available/used, `state_pit_grade` passthrough |
+| Coverage fields | per-metric `_n_{w}` denominators (e.g. `off_snap_share_n_std`), games-available/used; current-state carried via the documented canonical projection (§5.4.5), source null preserved, missing required canonical column fails loudly |
 | Source-era limitations | Participation snap data era-bound; FantasyPoints snap shares **2021–2024 RETROSPECTIVE_ONLY**, 2025 partial/full **SNAPSHOT_BOUND** (2025-12-23 / 2026-01-13); **route/target share 2025 only**. Player state binds to exactly one `state_snapshot_id` (fail-closed). |
 
 ### 1.3 `pregame_game_context`

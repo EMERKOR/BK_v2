@@ -32,7 +32,7 @@ import pandas as pd
 from ..canonical import common
 from . import context as ctx
 
-FEATURE_SET_VERSION = "player_features_v0.1"
+FEATURE_SET_VERSION = "player_features_v0.2"  # v0.2: real canonical PTW state projection
 TABLE = "pregame_player_features"
 
 WINDOWS = {"last3": 3, "last5": 5, "std": None}
@@ -49,11 +49,50 @@ FP_METRICS = {"route_share": "route_share", "target_share": "target_share"}
 # accepted Phase 2E crosswalk review statuses (unresolved/quarantined never contribute)
 FP_ACCEPTED_REVIEW = ("AUTO_ACCEPTED", "MANUALLY_ACCEPTED")
 
-# current-state fact columns copied through from canonical_player_team_week
-STATE_FACT_COLS = (
-    "position_week", "position_group_week", "roster_status", "depth_slot",
-    "depth_rank", "report_status", "practice_status", "game_status", "state_pit_grade",
-)
+# Current-state fact projection: feature-facing column -> ACTUAL
+# `canonical_player_team_week` source column (contract §5.4.5). These are factual
+# copies, never calculations. The left-hand names are the stable public feature
+# schema; the right-hand names are the real canonical columns, so a schema drift
+# (renamed/absent canonical column) is caught loudly rather than silently emitting
+# an all-null field. v0.1 aliases that had no canonical source were removed:
+#   * `game_status`   — `canonical_player_team_week` emits no factual game-status
+#     field; it is NOT inferred from roster/injury/practice status (removed in v0.2).
+#   * `state_pit_grade` — no approved single aggregate grade exists; the three
+#     factual source-specific canonical grades are carried explicitly instead
+#     (no "strongest"/"weakest"/other new aggregation).
+STATE_FACT_MAP = {
+    "position_week": "position_week",
+    "position_group_week": "position_group_week",
+    "roster_status": "roster_status_normalized",
+    "depth_slot": "depth_slot",
+    "depth_rank": "depth_rank",
+    "report_status": "report_status_raw_latest",
+    "practice_status": "practice_status_raw_latest",
+    "roster_point_in_time_grade": "roster_point_in_time_grade",
+    "depth_point_in_time_grade": "depth_point_in_time_grade",
+    "injury_point_in_time_grade": "injury_point_in_time_grade",
+}
+# feature-facing current-state output columns (order preserved for the schema)
+STATE_FACT_COLS = tuple(STATE_FACT_MAP)
+
+
+def _require_state_columns(ptw: pd.DataFrame) -> None:
+    """Fail loudly on canonical schema drift.
+
+    Every mapped canonical source column MUST be present on a non-empty
+    `player_team_week` frame. A missing/renamed canonical column raises rather than
+    silently producing an all-null current-state feature. (An empty frame carries
+    no state to project, so there is nothing to require.)
+    """
+    if not len(ptw):
+        return
+    missing = [src for src in STATE_FACT_MAP.values() if src not in ptw.columns]
+    if missing:
+        raise ValueError(
+            f"canonical_player_team_week is missing required current-state source "
+            f"column(s) {missing}: pregame_player_features carries factual state from the "
+            f"approved canonical schema, so a renamed/absent column fails the build (no "
+            f"silent all-null aliasing). Present columns: {sorted(ptw.columns)}")
 
 
 # --------------------------------------------------------------------------
@@ -141,6 +180,8 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
     # --- resolve the ONE authoritative state snapshot (fail-closed) ---
     if len(ptw_all) and "state_snapshot_id" not in ptw_all.columns:
         raise ValueError("player_team_week must carry state_snapshot_id (part of its primary key)")
+    # fail loudly on canonical current-state schema drift (never silent all-null)
+    _require_state_columns(ptw_all)
     ptw_snaps = set(ptw_all["state_snapshot_id"].dropna().unique()) if len(ptw_all) else set()
 
     if mode == ctx.LIVE_STATE:
@@ -228,8 +269,8 @@ def build_player_features_frame(context_record: dict, *, games: pd.DataFrame,
                     "team": team,
                     "player_id": player_id,
                 }
-                for c in STATE_FACT_COLS:
-                    row[c] = prow.get(c)
+                for feat_col, src_col in STATE_FACT_MAP.items():
+                    row[feat_col] = prow.get(src_col)   # factual copy; null stays null
 
                 # ----- participation prior-use (own eligible games) -----
                 part_rows = []
