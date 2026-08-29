@@ -84,13 +84,25 @@ class SelectionRule:
         return True
 
 
+# Freshness assessment vocabulary. Build A defines NO approved staleness policy,
+# so a selected quote's freshness is `UNASSESSED` — never an affirmative "fresh".
+FRESHNESS_UNASSESSED = "UNASSESSED"
+
+
 @dataclass(frozen=True)
 class QuoteSelection:
-    """Result of a temporal-role selection — provenance-preserving.
+    """Result of a temporal-role selection — provenance- and freshness-preserving.
 
     Records the chosen quote (or None), the role, the rule label, the boundary
     time used (`as_of` or kickoff), and the number of candidates considered, so a
     selection is fully reproducible and auditable.
+
+    Freshness (§8): being the LATEST qualifying observation does NOT make a quote
+    "current/fresh". The selection exposes the raw freshness inputs —
+    `boundary_age_seconds` (boundary_time minus the chosen quote's knowable
+    observation time) and `bookmaker_staleness_seconds` (when known) — but the
+    interpretation is `freshness_status = UNASSESSED` until an approved staleness
+    policy exists. No universal cutoff is invented here.
     """
     role: str                       # "opening" | "decision" | "closing"
     rule_label: str
@@ -98,10 +110,31 @@ class QuoteSelection:
     quote: Optional[MarketQuote]
     n_candidates: int
     n_qualifying: int
+    boundary_age_seconds: Optional[float] = None
+    bookmaker_staleness_seconds: Optional[float] = None
+    freshness_status: str = FRESHNESS_UNASSESSED
 
     @property
     def found(self) -> bool:
         return self.quote is not None
+
+
+def _finalize(role, rule_label, boundary_time, chosen, n_candidates, n_qualifying) -> "QuoteSelection":
+    """Build a QuoteSelection, computing freshness inputs for the chosen quote.
+
+    Freshness is only ever reported as UNASSESSED (no approved policy). The age and
+    staleness numbers are surfaced so a later policy can assess them; their
+    presence must not be read as an affirmative freshness judgement.
+    """
+    age = None
+    staleness = None
+    if chosen is not None:
+        obs = chosen.observed_at()
+        if boundary_time is not None and obs is not None:
+            age = (boundary_time - obs).total_seconds()
+        staleness = chosen.bookmaker_staleness_seconds()
+    return QuoteSelection(role, rule_label, boundary_time, chosen, n_candidates,
+                          n_qualifying, age, staleness, FRESHNESS_UNASSESSED)
 
 
 def _iter(quotes: Iterable[MarketQuote]) -> list:
@@ -119,7 +152,7 @@ def select_opening_quote(quotes: Iterable[MarketQuote], rule: SelectionRule) -> 
     qs = _iter(quotes)
     qualifying = [q for q in qs if rule.matches(q) and q.observed_at() is not None]
     chosen = min(qualifying, key=lambda q: q.observed_at()) if qualifying else None
-    return QuoteSelection("opening", rule.label, None, chosen, len(qs), len(qualifying))
+    return _finalize("opening", rule.label, None, chosen, len(qs), len(qualifying))
 
 
 def select_decision_quote(
@@ -151,7 +184,7 @@ def select_decision_quote(
         max(qualifying, key=lambda q: (q.observed_at(), q.content_hash()))
         if qualifying else None
     )
-    return QuoteSelection("decision", rule.label, as_of, chosen, len(qs), len(qualifying))
+    return _finalize("decision", rule.label, as_of, chosen, len(qs), len(qualifying))
 
 
 def select_closing_quote(
@@ -182,7 +215,7 @@ def select_closing_quote(
         max(qualifying, key=lambda q: (q.observed_at(), q.content_hash()))
         if qualifying else None
     )
-    return QuoteSelection("closing", rule.label, kickoff, chosen, len(qs), len(qualifying))
+    return _finalize("closing", rule.label, kickoff, chosen, len(qs), len(qualifying))
 
 
 def assert_no_close_leak(decision: QuoteSelection, closing: QuoteSelection) -> None:

@@ -9,6 +9,19 @@ was built (see "Scope exclusions" below).
 as unvalidated reference only; no v2 modeling assumption, threshold, feature, or
 historical conclusion was ported.
 
+> **Correction pass (post-review).** This report reflects the targeted correction
+> pass on the reviewed commit. Changes: executability now fails closed on unknown
+> suspension; the legacy adapter handles `pandas.NA`/`NaN`/`NaT` and preserves
+> one-sided moneylines; NaN/inf inputs fail closed across metrics/settlement/PMF
+> support (integer support required, no `int()` truncation); forecast payloads are
+> deep-frozen and `created_at` may not precede `as_of_time`; temporal partitions
+> reject duplicate/overlapping item ids; the betting contract drops the
+> `units_risked` default and requires an identified executable offer (LOSS/PUSH
+> included) with placement-ordered drawdown; the unauthorized CLV formula was
+> removed (CLV deferred, RDL-020); freshness is surfaced as `UNASSESSED`;
+> `content_hash` covers provenance; and adapter capability contradictions are
+> enforced. Two questions were escalated, not guessed (see §11).
+
 ---
 
 ## 1. What was built
@@ -32,20 +45,20 @@ historical conclusion was ported.
 | `temporal_folds.py` | `walk_forward_folds` (self-verifying chronology), `NestedSelectionFold`, `PromotionGate`. All fail closed on future leakage. |
 | `forecast_record.py` | Immutable `ForecastRecord`, post-kickoff `EvaluatedForecast`, append-only `ForecastRegistry`, `prospective_evidence_status` (version-aware). |
 | `experiment_registry.py` | Append-only `ExperimentRecord`/`ExperimentRegistry` with full provenance; failed experiments retained; promotion decision requires a reason. |
-| `betting_metrics.py` | `BetRecord`/`summarize`/`summarize_by`: bets/wins/losses/pushes, profit, ROI, drawdown, raw CLV, breakdowns. Strict null discipline. No threshold/staking/optimizer. |
+| `betting_metrics.py` | `BetRecord`/`summarize`/`summarize_by`: bets/wins/losses/pushes, profit, ROI, placement-ordered drawdown, breakdowns. Actual-wager contract (no `units_risked` default; executable offer required to enter P&L). Strict null discipline. CLV deferred (not computed). No threshold/staking/optimizer. |
 
 ### Documentation / registries
 
-- `ball_knower_v3/docs/RESEARCH_DECISION_LEDGER.md` — 19 seeded decisions
-  (RDL-001…RDL-019) covering every Build A claim, each with evidence class and
-  what it does/does not establish.
+- `ball_knower_v3/docs/RESEARCH_DECISION_LEDGER.md` — 20 seeded decisions
+  (RDL-001…RDL-020) plus two DESIGN ESCALATIONS (ESC-A, ESC-B), each with evidence
+  class and what it does/does not establish.
 - `ball_knower_v3/contracts/market_foundation_contract_v0_1.md`
 - `ball_knower_v3/contracts/evaluation_foundation_contract_v0_1.md`
 
-### Tests (86, all passing)
+### Tests (121, all passing)
 
 `market/tests/{test_quote_contract,test_timing,test_adapters}.py` and
-`evaluation/tests/{test_metrics,test_distribution_contract,test_temporal_folds,test_forecast_record,test_experiment_and_betting}.py`.
+`evaluation/tests/{test_metrics,test_distribution_contract,test_temporal_folds,test_forecast_record,test_experiment_and_betting,test_provenance_invariants}.py`.
 These are self-contained (synthetic in-memory fixtures) and do not depend on the
 heavy canonical build, so they run in a fresh clone.
 
@@ -78,9 +91,10 @@ heavy canonical build, so they run in a fresh clone.
   default is ever invented; `price_implied_prob` is null when there is no price.
 - **Status/suspension:** `UNKNOWN` ≠ active; `is_suspended` tri-state; unseen
   source status fails closed.
-- **Null behavior (A2):** missing result = unsettled (not loss); absent closing =
-  null CLV (not zero); missing push probability stays null; probabilities never
-  silently renormalized.
+- **Null behavior (A2):** missing result = unsettled (not loss); a settled bet
+  without its actual executable offer cannot enter P&L (fails closed); missing
+  push probability stays null; probabilities never silently renormalized. CLV is
+  not computed in Build A (deferred, RDL-020); closing references are preserved.
 
 ## 4. Causality rules
 
@@ -125,6 +139,14 @@ them. No existing canonical output or `snapshots.json` was modified by Build A.
   model to produce one yet.
 - CRPS-sample uses an O(n log n) empirical estimator; it approaches the closed
   form as sample size grows (validated in tests to <0.01 at n=40k).
+- **Freshness is unassessed.** A selection surfaces quote age at the boundary and
+  bookmaker staleness, but with no approved staleness policy it reports
+  `UNASSESSED`. The architecture surfaces staleness; it does not guarantee a
+  selected quote is current.
+- **CLV is not defined.** No CLV arithmetic exists (RDL-020); only the fields for a
+  later CLV definition are preserved.
+- Two behaviors are unresolved by design ruling — see §11 (ESC-A historical replay
+  availability; ESC-B durable prospective-freeze attestation).
 
 ## 8. Research-decision references
 
@@ -146,14 +168,18 @@ whose evaluation machinery is nonetheless in place.
 3. **Can future information enter a prediction?** No. Decision selection excludes
    post-`as_of` and untimestamped quotes; folds/gates fail closed on future leak;
    naive timestamps are rejected.
-4. **Can a stale bookmaker quote masquerade as current?** No. Snapshot vs
-   book-update times are distinct; staleness is exposed; a missing book-update
-   time stays null.
+4. **Can a stale bookmaker quote masquerade as current?** Not silently. Snapshot
+   vs book-update times are distinct; staleness is exposed on the quote and on the
+   selection result; a missing book-update time stays null. Build A defines no
+   staleness threshold (deferred), so a selection reports `freshness_status =
+   UNASSESSED` rather than affirming "fresh" — it surfaces staleness for a later
+   policy, it does not categorically prevent selecting a stale quote.
 5. **Can a line without a price become an executable bet?** No. `is_executable()`
    requires a real price; `ExecutableQuote` fails closed; no `-110` default.
 6. **Can a missing value silently become zero/default?** No. Nulls are preserved
-   (price, CLV, result, suspension, staleness, probabilities); no silent
-   renormalize; unseen categoricals fail closed.
+   (price, result, suspension, staleness, probabilities, closing quote); a missing
+   `units_risked` fails (no default); no silent renormalize; unseen categoricals
+   fail closed.
 7. **Can a closing line enter model inputs before kickoff?** No. Closing selection
    is pre-kickoff only and separate from decision selection; `assert_no_close_leak`.
 8. **Are pushes represented explicitly?** Yes. WIN/PUSH/LOSS settlement,
@@ -177,3 +203,21 @@ weather/pace model, no sides/totals/prop/matchup/defender model, no
 reference-market weighting formula, no betting edge threshold, no Kelly/staking/
 sizing, no correlation engine, and no recommendation/LLM rationale. Interfaces
 only anticipate these future consumers.
+
+## 11. Design escalations (unresolved — not guessed)
+
+These require an architecture ruling and were deliberately left unchanged; the
+code leaves a clean seam. Full detail is in
+`docs/RESEARCH_DECISION_LEDGER.md` (ESC-A, ESC-B).
+
+- **ESC-A — Historical replay vs prospective ingestion time.**
+  `observed_at = max(provider_snapshot_time, ingested_at)` is correct for live
+  prospective availability, but a genuine historical archive acquired later would
+  be unusable for historical PIT replay (its `ingested_at` is after the game).
+  Behavior is unchanged; historical ingestion timestamps are not fabricated.
+  Seam: `MarketQuote.observed_at()`.
+- **ESC-B — Durable prospective-evidence semantics.** The PROSPECTIVE/DEVELOPMENT
+  classification relies on a caller-supplied `examined_and_revised` flag and does
+  not itself prove a forecast existed before its outcome was known. No new
+  evidence-state architecture was invented. Seam: `ForecastRecord` /
+  `ForecastRegistry`.

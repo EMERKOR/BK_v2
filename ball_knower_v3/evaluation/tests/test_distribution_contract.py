@@ -83,6 +83,27 @@ def test_pmf_must_sum_to_one():
         DiscreteMarginDistribution({0: 0.4, 1: 0.4})
 
 
+def test_pmf_rejects_non_integer_support():
+    # 3.5 must be rejected, not silently truncated to 3 (§3)
+    with pytest.raises(DistributionContractError):
+        DiscreteMarginDistribution({0: 0.5, 3.5: 0.5})
+
+
+def test_pmf_rejects_non_numeric_support():
+    with pytest.raises(DistributionContractError):
+        DiscreteMarginDistribution({"0": 0.5, "1": 0.5})
+
+
+def test_pmf_rejects_nan_mass():
+    with pytest.raises(DistributionContractError):
+        DiscreteMarginDistribution({0: float("nan"), 1: 0.5})
+
+
+def test_pmf_accepts_integer_valued_float_support():
+    d = DiscreteMarginDistribution({0.0: 0.5, 2.0: 0.5})   # integer-valued floats OK
+    assert d.mean() == pytest.approx(1.0)
+
+
 def test_total_distribution_over_under_push():
     pmf = {44: 0.25, 45: 0.25, 46: 0.25, 47: 0.25}
     d = DiscreteTotalDistribution(pmf)

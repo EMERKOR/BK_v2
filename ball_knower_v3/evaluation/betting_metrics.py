@@ -6,19 +6,31 @@ This module RECORDS and AGGREGATES realized betting results. It does NOT:
     (spec §19 — no post-hoc threshold mining);
   * size wagers or apply Kelly/staking (spec §24).
 
-It only computes economic summaries from bet records the caller supplies, with
-strict null discipline (spec §22):
-  * a missing result is NOT a loss — it is excluded and counted as unsettled;
-  * an absent closing quote means CLV is null, not zero;
-  * pushes are recorded explicitly and refund the stake.
+A `BetRecord` represents an ACTUAL placed wager, so it cannot silently invent
+wager facts (spec §6 of the correction pass):
+  * `units_risked` has NO default — the real amount risked must be supplied.
+  * a wager cannot enter P&L/ROI unless its actual executable offer is identified
+    (actual price + an executable-quote provenance reference, plus the applicable
+    line for markets that have one). This holds for LOSS and PUSH too, not only
+    WIN.
+  * a missing result is unsettled, never a loss.
+  * drawdown ordering uses an explicit `placement_order`, not arbitrary caller
+    sequence order.
 
-The distinction between the three scorecards (forecast quality, market-relative
-quality, betting performance) is preserved: this file is ONLY betting performance.
-A profitable subset here does not, by itself, validate the forecast model.
+CLV: Build A does NOT compute CLV. A valid CLV requires that entry and close refer
+to the same line/side/comparator methodology, which is not yet established (a
+deferred, separately-approved decision — see RESEARCH_DECISION_LEDGER RDL-020).
+The fields needed for later CLV (the entry executable quote and the closing quote
+reference) are PRESERVED here, but no raw/value/probability-adjusted CLV
+arithmetic is implemented.
+
+The three scorecards stay distinct: this file is ONLY betting performance. A
+profitable subset here does not, by itself, validate the forecast model.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import math
+from dataclasses import dataclass
 from typing import Optional, Sequence
 
 from .metrics import WIN, PUSH, LOSS
@@ -29,74 +41,91 @@ class BettingMetricError(ValueError):
     pass
 
 
+# markets whose executable offer is only identifiable together with a line
+MARKETS_WITH_LINE = frozenset({"spread", "total"})
+
+
 @dataclass(frozen=True)
 class BetRecord:
-    """One placed bet and its realized outcome (recording contract).
+    """One ACTUAL placed wager and its realized outcome (recording contract).
 
-    `result` is one of WIN/PUSH/LOSS or None (unsettled). `price_american` is the
-    ACTUAL wager price (executable). `closing_american` is the closing quote if
-    known, else None (no closing != decision quote). Missing fields stay None and
-    are handled explicitly by the aggregator.
+    Required (no defaults — a placed wager has these facts): bet_id, game_id,
+    market, side, model_version, units_risked, placement_order.
+
+    To ENTER betting performance a settled bet must also identify its actual
+    executable offer: `price_american`, `executable_quote_ref`, and — for a market
+    that has a line — `line`. Missing wager facts stay missing and fail closed;
+    they never become a valid one-unit bet.
     """
     bet_id: str
     game_id: str
     market: str
+    side: str
     model_version: str
+    units_risked: float               # REQUIRED — the actual amount risked
+    placement_order: int              # REQUIRED — explicit ordering provenance
+    price_american: Optional[int] = None       # actual executable wager price
+    executable_quote_ref: Optional[str] = None  # provenance of the executable offer
+    line: Optional[float] = None               # applicable line (spread/total)
     season: Optional[int] = None
-    units_risked: float = 1.0
-    price_american: Optional[int] = None      # actual wager price
-    result: Optional[str] = None              # WIN / PUSH / LOSS / None(unsettled)
-    closing_american: Optional[int] = None    # closing quote if known
-    # win/push/loss probabilities the model assigned at bet time, if recorded —
-    # used for probability-adjusted CLV. None means not recorded (stays null).
-    p_win: Optional[float] = None
+    result: Optional[str] = None               # WIN / PUSH / LOSS / None(unsettled)
+    # PRESERVED for later, separately-approved CLV evaluation (no CLV computed):
+    closing_quote_ref: Optional[str] = None    # closing executable-quote reference
+    closing_american: Optional[int] = None     # raw closing price, preserved only
 
     def __post_init__(self):
+        for name in ("bet_id", "game_id", "market", "side", "model_version"):
+            v = getattr(self, name)
+            if not v or (isinstance(v, str) and not v.strip()):
+                raise BettingMetricError(f"required field {name!r} missing")
+        if self.units_risked is None:
+            raise BettingMetricError("units_risked is required for a placed wager (no default)")
+        u = float(self.units_risked)
+        if not math.isfinite(u) or u <= 0:
+            raise BettingMetricError(f"units_risked={self.units_risked!r} must be a finite positive amount")
+        if not isinstance(self.placement_order, int) or isinstance(self.placement_order, bool):
+            raise BettingMetricError("placement_order is required and must be an int")
         if self.result is not None and self.result not in (WIN, PUSH, LOSS):
             raise BettingMetricError(f"result {self.result!r} must be WIN/PUSH/LOSS or None")
-        if self.units_risked < 0:
-            raise BettingMetricError("units_risked must be >= 0")
+
+    def wager_facts_complete(self) -> bool:
+        """True iff the actual executable offer is fully identified.
+
+        Requires the actual price and an executable-quote provenance reference, and
+        — for a market that has a line — the applicable line. Without these the
+        wager cannot enter P&L/ROI (fail closed).
+        """
+        if self.price_american is None or not self.executable_quote_ref:
+            return False
+        if self.market in MARKETS_WITH_LINE and self.line is None:
+            return False
+        return True
 
 
 def bet_profit_units(bet: BetRecord) -> Optional[float]:
     """Realized profit in units for a settled bet, else None.
 
-    WIN  -> +units * profit_per_unit(price)     (requires a known price)
+    Unsettled (result None) -> None (NEVER zero, NEVER a loss). A settled bet whose
+    actual executable offer is not fully identified RAISES — a LOSS or PUSH with
+    missing wager facts must not enter P&L merely because it is not a WIN.
+
+    WIN  -> +units * profit_per_unit(price)
     LOSS -> -units
     PUSH -> 0 (stake refunded)
-    None/unsettled -> None (NOT zero, NOT a loss).
-    A WIN with no known price cannot be scored -> raises (a win must have a price).
     """
     if bet.result is None:
         return None
+    if not bet.wager_facts_complete():
+        raise BettingMetricError(
+            f"bet {bet.bet_id}: settled {bet.result} but its actual executable offer is "
+            f"not fully identified (need price_american, executable_quote_ref, and a line "
+            f"for {bet.market}); refusing to enter it into performance"
+        )
     if bet.result == PUSH:
         return 0.0
     if bet.result == LOSS:
         return -float(bet.units_risked)
-    # WIN
-    if bet.price_american is None:
-        raise BettingMetricError(
-            f"bet {bet.bet_id}: WIN with no price_american — cannot score profit "
-            f"without the actual wager price (no default)"
-        )
     return float(bet.units_risked) * american_profit_per_unit(bet.price_american)
-
-
-def raw_clv(bet: BetRecord) -> Optional[float]:
-    """Raw closing-line value: entry implied prob minus closing implied prob.
-
-    Null when either the entry price or the closing quote is absent (no closing !=
-    decision quote). Positive CLV means the entry price was better than close.
-    """
-    if bet.price_american is None or bet.closing_american is None:
-        return None
-    from ..market.quotes import american_to_implied_prob
-    entry = american_to_implied_prob(bet.price_american)
-    close = american_to_implied_prob(bet.closing_american)
-    if entry is None or close is None:
-        return None
-    # beating the close = securing a lower implied probability (better price)
-    return float(close - entry)
 
 
 @dataclass(frozen=True)
@@ -111,15 +140,19 @@ class BettingSummary:
     profit_units: Optional[float]
     roi: Optional[float]
     max_drawdown_units: Optional[float]
-    mean_raw_clv: Optional[float]
-    n_clv_available: int
+    n_closing_available: int          # count with a preserved closing reference/price
+    clv: None = None                  # CLV is deferred in Build A (always None)
 
 
 def summarize(bets: Sequence[BetRecord]) -> BettingSummary:
-    """Aggregate a set of bet records with strict null discipline.
+    """Aggregate bet records with strict null discipline.
 
-    profit/ROI/drawdown are computed over SETTLED bets only. If no bet is settled,
-    they are null (not zero). CLV is averaged only over bets where it is available.
+    Profit/ROI/drawdown are computed over SETTLED bets only, and any settled bet
+    with incomplete wager facts fails closed (via `bet_profit_units`). Drawdown is
+    computed over the settled bets ordered by their explicit `placement_order`
+    (tie-broken by bet_id) — never by arbitrary caller sequence order. CLV is not
+    computed (deferred); `n_closing_available` records how many bets preserved a
+    closing reference for later CLV work.
     """
     n = len(bets)
     settled = [b for b in bets if b.result is not None]
@@ -129,10 +162,10 @@ def summarize(bets: Sequence[BetRecord]) -> BettingSummary:
     units_risked = float(sum(b.units_risked for b in settled))
 
     if settled:
-        profits = [bet_profit_units(b) for b in settled]
-        total_profit = float(sum(p for p in profits))
+        ordered = sorted(settled, key=lambda b: (b.placement_order, b.bet_id))
+        profits = [bet_profit_units(b) for b in ordered]
+        total_profit = float(sum(profits))
         roi = total_profit / units_risked if units_risked > 0 else None
-        # max drawdown over the settled sequence (in placement order)
         cum, peak, dd = 0.0, 0.0, 0.0
         for p in profits:
             cum += p
@@ -142,15 +175,13 @@ def summarize(bets: Sequence[BetRecord]) -> BettingSummary:
     else:
         total_profit, roi, max_dd = None, None, None
 
-    clvs = [raw_clv(b) for b in bets]
-    clvs = [c for c in clvs if c is not None]
-    mean_clv = float(sum(clvs) / len(clvs)) if clvs else None
+    n_closing = sum(1 for b in bets if b.closing_quote_ref is not None or b.closing_american is not None)
 
     return BettingSummary(
         n_bets=n, n_settled=len(settled), n_unsettled=n - len(settled),
         wins=wins, losses=losses, pushes=pushes, units_risked=units_risked,
         profit_units=total_profit, roi=roi, max_drawdown_units=max_dd,
-        mean_raw_clv=mean_clv, n_clv_available=len(clvs),
+        n_closing_available=n_closing,
     )
 
 

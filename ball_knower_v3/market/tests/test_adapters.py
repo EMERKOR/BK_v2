@@ -64,6 +64,76 @@ def test_legacy_quote_cannot_be_wrapped_executable():
         ExecutableQuote(q)                    # reference-only -> refused
 
 
+def test_pandas_nullable_int64_and_NA_are_missing():
+    """pd.NA / NaN in nullable Int64 moneyline columns produce no quote (§2)."""
+    import pandas as pd
+    df = pd.DataFrame([
+        {"game_id": "2024_01_BAL_KC", "market_source": "nflverse", "snapshot_id": "s",
+         "spread_home": -3.0, "total": pd.NA, "moneyline_home": pd.NA, "moneyline_away": pd.NA},
+    ]).astype({"moneyline_home": "Int64", "moneyline_away": "Int64"})
+    adp = NflverseLegacyMarketAdapter.from_dataframe(df)
+    quotes = list(adp.iter_quotes())
+    # only the spread survives; NA total and NA moneylines produce nothing
+    assert {q.market for q in quotes} == {"spread"}
+
+
+def test_one_sided_moneyline_preserves_present_side():
+    """A genuinely present side is preserved; the missing side is not manufactured."""
+    import pandas as pd
+    df = pd.DataFrame([
+        {"game_id": "2024_01_BAL_KC", "market_source": "nflverse", "snapshot_id": "s",
+         "spread_home": pd.NA, "total": pd.NA, "moneyline_home": -150, "moneyline_away": pd.NA},
+    ]).astype({"moneyline_home": "Int64", "moneyline_away": "Int64"})
+    adp = NflverseLegacyMarketAdapter.from_dataframe(df)
+    mls = [q for q in adp.iter_quotes() if q.market == "moneyline"]
+    assert len(mls) == 1
+    assert mls[0].side == "home"
+    assert mls[0].source_odds == -150
+    assert mls[0].price_american is None
+
+
+def test_nan_float_moneyline_is_missing():
+    import numpy as np
+    rows = [{"game_id": "g", "market_source": "nflverse", "snapshot_id": "s",
+             "spread_home": None, "total": None,
+             "moneyline_home": np.nan, "moneyline_away": 120}]
+    adp = NflverseLegacyMarketAdapter(rows)
+    mls = [q for q in adp.iter_quotes() if q.market == "moneyline"]
+    assert len(mls) == 1 and mls[0].side == "away"
+
+
+def test_adapter_checked_rejects_fabricated_snapshot_time():
+    """A source declaring no snapshot time must not yield one (§10)."""
+    from datetime import datetime, timezone
+
+    class BadTsAdapter(MarketSourceAdapter):
+        source_name = "bad_ts"
+        def capabilities(self):
+            return SourceCapabilities(False, False, False, False, False, "bad")
+        def iter_quotes(self):
+            from ball_knower_v3.market.quotes import MarketQuote
+            yield MarketQuote(game_id="g", provider="p", bookmaker="b", market="spread",
+                              period="full_game", side="home", line=-3.5,
+                              provider_snapshot_time=datetime(2025, 9, 7, tzinfo=timezone.utc),
+                              reference_only=True)
+    with pytest.raises(ValueError):
+        list(BadTsAdapter().iter_quotes_checked())
+
+
+def test_adapter_checked_rejects_fabricated_suspension():
+    class BadSuspAdapter(MarketSourceAdapter):
+        source_name = "bad_susp"
+        def capabilities(self):
+            return SourceCapabilities(False, False, False, False, False, "bad")
+        def iter_quotes(self):
+            from ball_knower_v3.market.quotes import MarketQuote
+            yield MarketQuote(game_id="g", provider="p", bookmaker="b", market="spread",
+                              period="full_game", side="home", line=-3.5,
+                              is_suspended=False, reference_only=True)
+    with pytest.raises(ValueError):
+        list(BadSuspAdapter().iter_quotes_checked())
+
+
 def test_adapter_checked_rejects_price_from_priceless_source():
     """A source declaring no executable price must not yield a price."""
     class BadAdapter(MarketSourceAdapter):

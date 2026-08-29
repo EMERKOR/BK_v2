@@ -21,10 +21,23 @@ def base_kwargs(**over):
         game_id="2025_01_BUF_BAL", provider="the_odds_api", bookmaker="pinnacle",
         market="spread", period="full_game", side="home", line=-3.5,
         price_american=-105, provider_snapshot_time=_t(10, 5),
-        market_status="ACTIVE", reference_only=False,
+        market_status="ACTIVE", is_suspended=False, reference_only=False,
     )
     kw.update(over)
     return kw
+
+
+# --- #1: executability fails closed on UNKNOWN suspension ------------------
+def test_complete_quote_with_known_not_suspended_is_executable():
+    q = MarketQuote(**base_kwargs(is_suspended=False))
+    assert q.is_executable() is True
+
+
+def test_unknown_suspension_is_not_executable():
+    # ACTIVE + priced + timestamped + non-reference, but suspension UNKNOWN(None)
+    q = MarketQuote(**base_kwargs(is_suspended=None))
+    assert q.is_suspended is None                 # UNKNOWN stays distinct from False
+    assert q.is_executable() is False             # fail closed — never "not suspended"
 
 
 # --- three timestamps stay distinct (§2, §23) ------------------------------
@@ -135,3 +148,19 @@ def test_content_hash_stable_and_frozen():
     assert q.content_hash() == q.content_hash()
     with pytest.raises(Exception):
         q.line = 1.0   # frozen
+
+
+def test_nan_line_fails_closed():
+    with pytest.raises(QuoteContractError):
+        MarketQuote(**base_kwargs(line=float("nan")))
+    with pytest.raises(QuoteContractError):
+        MarketQuote(**base_kwargs(line=float("inf")))
+
+
+def test_content_hash_covers_provenance():
+    """A change to source provenance is NOT content-identical (§9)."""
+    a = MarketQuote(**base_kwargs(source_object_id="fileA", source_quote_id="qA"))
+    b = MarketQuote(**base_kwargs(source_object_id="fileB", source_quote_id="qA"))
+    c = MarketQuote(**base_kwargs(source_object_id="fileA", source_quote_id="qB"))
+    assert a.content_hash() != b.content_hash()   # differing source object id
+    assert a.content_hash() != c.content_hash()   # differing source quote id

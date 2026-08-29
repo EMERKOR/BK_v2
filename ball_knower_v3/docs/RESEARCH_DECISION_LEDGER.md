@@ -175,7 +175,10 @@ Ball Knower validation · Implementation dependency · Notes/revision history.
 - **Status:** BUILD (`market/quotes.py`, three fields + staleness accessor; no
   threshold).
 - **Required BK validation:** none for the contract.
-- **Notes:** unknown book-update time stays null.
+- **Notes:** unknown book-update time stays null. A temporal selection exposes
+  freshness INPUTS (`boundary_age_seconds`, `bookmaker_staleness_seconds`) but
+  reports `freshness_status = UNASSESSED` — being the latest qualifying quote is
+  never an affirmative "fresh/current" judgement (correction-pass item 8).
 
 ### RDL-011 — Reference vs executable market
 - **Claim:** A derived reference market (broad belief) and a specific executable
@@ -277,3 +280,53 @@ Ball Knower validation · Implementation dependency · Notes/revision history.
 - **Status:** AVOID (mining) / BUILD (recording contract).
 - **Required BK validation:** n/a.
 - **Notes:** diagnostic edge buckets may be added later, clearly labeled.
+
+### RDL-020 — CLV definition deferred (correction pass)
+- **Claim:** Closing-line value (raw / value / probability-adjusted) requires a
+  guarantee that the entry and closing quotes refer to the same line/side and a
+  single comparator methodology. That methodology is not yet established.
+- **Evidence class:** B (measurement validity) + E.
+- **Source/reference:** correction-pass item 7.
+- **Establishes:** Build A implements NO CLV arithmetic. `BetRecord` preserves the
+  entry executable-quote reference and the closing quote reference/price so a
+  later, separately-approved CLV definition can use them.
+- **Does NOT establish:** any CLV number, formula, or comparator methodology.
+- **Status:** DEFER (CLV math) / BUILD (preserve fields for later).
+- **Required BK validation:** a separately-approved CLV methodology decision.
+- **Notes:** 2026-08-29 (correction pass) — the earlier concrete `raw_clv()`
+  arithmetic was removed as unauthorized. The Build A report/contracts no longer
+  claim a final CLV definition was implemented.
+
+---
+
+## DESIGN ESCALATIONS — unresolved, do NOT guess
+
+These two questions require an architecture ruling and were deliberately NOT
+resolved in the correction pass. The code leaves a clean seam and current
+behavior is unchanged.
+
+### ESC-A — Historical replay vs prospective ingestion time
+- **Question:** `observed_at = max(provider_snapshot_time, ingested_at)` is correct
+  for LIVE prospective availability, but a genuine historical odds archive acquired
+  *later* would have an `ingested_at` far after the game, making it unusable for
+  historical point-in-time replay under this rule.
+- **Current behavior (unchanged):** `observed_at` uses the max of the two; a
+  legacy/late-ingested quote is therefore not available at a historical `as_of`.
+  Historical ingestion timestamps are NOT fabricated.
+- **Needs a ruling on:** how to represent "knowable at historical as_of" for an
+  archive acquired after the fact (e.g. a separate archival-availability field or
+  replay mode) without fabricating ingestion times.
+- **Seam:** `MarketQuote.observed_at()` is the single chokepoint; a replay policy
+  can be introduced there.
+
+### ESC-B — Durable prospective-evidence semantics
+- **Question:** `prospective_evidence_status` relies on a caller-supplied
+  `examined_and_revised` boolean and does not itself PROVE a forecast existed
+  before its outcome was known (no cryptographic/temporal anchoring of the freeze).
+- **Current behavior (unchanged):** immutable, content-hashed, append-only records
+  classify PROSPECTIVE vs DEVELOPMENT from the caller flag and model version.
+- **Needs a ruling on:** what durably establishes pre-outcome existence (e.g.
+  timestamp anchoring / external attestation) and how examination events are
+  recorded so the flag is not merely asserted.
+- **Seam:** `ForecastRecord` + `ForecastRegistry`; a durable freeze-attestation can
+  attach without changing the record's immutability guarantees.

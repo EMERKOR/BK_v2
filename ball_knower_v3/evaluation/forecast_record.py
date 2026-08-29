@@ -25,13 +25,15 @@ records and refuses to overwrite an existing prediction id.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
 import tempfile
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from types import MappingProxyType
 from typing import Optional
 
 FORECAST_RECORD_VERSION = "forecast_record_v0.1"
@@ -51,6 +53,33 @@ def _utc(ts, name: str) -> datetime:
     if ts.tzinfo is None or ts.utcoffset() is None:
         raise ForecastRecordError(f"{name} {ts!r} is timezone-naive; tz-aware UTC required")
     return ts.astimezone(timezone.utc)
+
+
+def _deep_freeze(obj):
+    """Return a deeply-immutable, detached copy of a JSON-like payload.
+
+    dict -> read-only MappingProxyType, list/tuple -> tuple, other -> as-is. The
+    caller's original object is deep-copied first, so later external mutation of it
+    cannot reach the stored value, and the stored value itself cannot be mutated.
+    """
+    if isinstance(obj, MappingProxyType):
+        obj = dict(obj)
+    if isinstance(obj, dict):
+        return MappingProxyType({k: _deep_freeze(v) for k, v in obj.items()})
+    if isinstance(obj, (list, tuple)):
+        return tuple(_deep_freeze(v) for v in obj)
+    return obj
+
+
+def _to_plain(obj):
+    """Inverse of _deep_freeze for JSON/serialization: frozen -> plain dict/list."""
+    if isinstance(obj, MappingProxyType):
+        return {k: _to_plain(v) for k, v in obj.items()}
+    if isinstance(obj, dict):
+        return {k: _to_plain(v) for k, v in obj.items()}
+    if isinstance(obj, tuple):
+        return [_to_plain(v) for v in obj]
+    return obj
 
 
 @dataclass(frozen=True)
@@ -81,11 +110,21 @@ class ForecastRecord:
                 raise ForecastRecordError(f"required field {name!r} missing")
         object.__setattr__(self, "as_of_time", _utc(self.as_of_time, "as_of_time"))
         object.__setattr__(self, "created_at", _utc(self.created_at, "created_at"))
-        # Causality: a forecast cannot be created before its own as_of decision
-        # boundary reflects available info — we allow created_at >= as_of only
-        # loosely (a record may be logged at as_of). We forbid a market/state ref
-        # that claims to be from the future is enforced elsewhere (timing.py);
-        # here we guard the record's own internal consistency.
+        # Basic chronology: a pregame record cannot be CREATED before its own
+        # decision boundary (its inputs are as-of `as_of_time`). created_at must be
+        # at or after as_of_time.
+        if self.created_at < self.as_of_time:
+            raise ForecastRecordError(
+                f"created_at {self.created_at.isoformat()} precedes as_of_time "
+                f"{self.as_of_time.isoformat()} (a forecast cannot be created before its "
+                f"own decision boundary)"
+            )
+        # Deep-freeze the mutable forecast payload so the stored pregame prediction
+        # cannot be mutated after construction and cannot be affected by later
+        # external mutation of the caller's dict. This keeps prediction_id stable.
+        if self.forecast_outputs is not None:
+            object.__setattr__(self, "forecast_outputs",
+                               _deep_freeze(copy.deepcopy(self.forecast_outputs)))
 
     def prediction_id(self) -> str:
         """Deterministic content id over the immutable pregame fields."""
@@ -94,10 +133,23 @@ class ForecastRecord:
         return "pred_" + hashlib.sha256(payload.encode()).hexdigest()[:24]
 
     def _canonical_payload(self) -> dict:
-        d = asdict(self)
-        d["as_of_time"] = self.as_of_time.isoformat()
-        d["created_at"] = self.created_at.isoformat()
-        return d
+        # build explicitly (asdict cannot recurse a MappingProxyType payload) and
+        # convert the frozen forecast payload back to plain JSON-able structures.
+        return {
+            "game_id": self.game_id,
+            "as_of_time": self.as_of_time.isoformat(),
+            "model_id": self.model_id,
+            "model_version": self.model_version,
+            "created_at": self.created_at.isoformat(),
+            "state_snapshot_id": self.state_snapshot_id,
+            "market_snapshot_ref": self.market_snapshot_ref,
+            "forecast_outputs": _to_plain(self.forecast_outputs),
+            "distribution_id": self.distribution_id,
+            "distribution_version": self.distribution_version,
+            "bet_policy_version": self.bet_policy_version,
+            "data_lineage_id": self.data_lineage_id,
+            "record_version": self.record_version,
+        }
 
     def to_dict(self) -> dict:
         d = self._canonical_payload()

@@ -193,8 +193,17 @@ class MarketQuote:
             raise QuoteContractError(f"{self.market} quote requires a line/point")
         if self.market == "moneyline" and self.line is not None:
             raise QuoteContractError("moneyline quote must not carry a line/point")
-        if self.price_american is not None and int(self.price_american) == 0:
-            raise QuoteContractError("price_american of 0 is invalid")
+        # numeric sanity: a line/price is an observable number — NaN/inf is never a
+        # real market value and must fail closed (never be scored/executed).
+        if self.line is not None:
+            lv = float(self.line)
+            if not math.isfinite(lv):
+                raise QuoteContractError(f"line {self.line!r} is not finite")
+        if self.price_american is not None:
+            if isinstance(self.price_american, float) and not math.isfinite(self.price_american):
+                raise QuoteContractError(f"price_american {self.price_american!r} is not finite")
+            if int(self.price_american) == 0:
+                raise QuoteContractError("price_american of 0 is invalid")
 
         # timing: normalize to tz-aware UTC (or None). Object is frozen, so set
         # via object.__setattr__.
@@ -231,9 +240,11 @@ class MarketQuote:
     def is_executable(self) -> bool:
         """True only if this quote could ACTUALLY have been wagered.
 
-        Requires ALL of: a real price, canonical status ACTIVE, not suspended,
-        a known provider snapshot time (so 'when it existed' is established), and
-        the source affirmatively providing executable history (not reference_only).
+        Requires ALL of: a real price, canonical status ACTIVE, KNOWN-not-suspended
+        (`is_suspended is False` — an UNKNOWN/None suspension state fails closed and
+        is never treated as "not suspended"), a known provider snapshot time (so
+        'when it existed' is established), and the source affirmatively providing
+        executable history (not reference_only).
 
         A missing/unknown value NEVER counts as executable — fail closed.
         """
@@ -241,7 +252,7 @@ class MarketQuote:
             (not self.reference_only)
             and self.has_price
             and self.market_status == "ACTIVE"
-            and self.is_suspended is not True
+            and self.is_suspended is False
             and self.provider_snapshot_time is not None
         )
 
@@ -283,12 +294,21 @@ class MarketQuote:
         )
 
     def content_hash(self) -> str:
+        """Content id over the semantically material observation AND its provenance.
+
+        Provenance identity (event ids, source object/quote/snapshot ids, lineage,
+        raw source odds/status) is included: two quotes that differ in source
+        provenance are NOT content-identical. `source_odds` is normalized via repr
+        so a mutable raw payload cannot leave the hash silently unchanged.
+        """
         payload = "|".join(
             str(x) for x in (
                 *self.quote_key(),
-                self.line, self.price_american,
+                self.line, self.price_american, repr(self.source_odds),
                 self.provider_snapshot_time, self.bookmaker_last_update_time, self.ingested_at,
-                self.market_status, self.is_suspended, self.source_quote_id,
+                self.market_status, repr(self.source_market_status), self.is_suspended,
+                self.provider_event_id, self.bookmaker_event_id,
+                self.source_quote_id, self.source_object_id, self.lineage_id,
                 self.reference_only, self.canonical_version,
             )
         )

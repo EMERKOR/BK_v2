@@ -83,3 +83,33 @@ def test_promotion_gate_detects_contamination():
 def test_naive_time_rejected():
     with pytest.raises(TemporalLeakageError):
         TimeIndexedItem("g", datetime(2025, 9, 1, 12))
+
+
+# --- #5: identity separation across partitions -----------------------------
+def test_walk_forward_rejects_duplicate_item_ids():
+    base = items(12)
+    # same game id reappearing at a later timestamp -> must fail loudly
+    dup = TimeIndexedItem(item_id=base[0].item_id,
+                          event_time=datetime(2025, 10, 1, 12, tzinfo=UTC))
+    with pytest.raises(TemporalLeakageError):
+        walk_forward_folds(base + [dup], n_folds=3)
+
+
+def test_nested_selection_rejects_same_game_across_partitions():
+    tr = items(3, start_day=1)
+    va = items(3, start_day=10)
+    # outer_test reuses a train game id at a later time -> leakage across partitions
+    te = [TimeIndexedItem(item_id=tr[0].item_id,
+                          event_time=datetime(2025, 9, 20, 12, tzinfo=UTC))]
+    with pytest.raises(TemporalLeakageError):
+        NestedSelectionFold(tuple(tr), tuple(va), tuple(te))
+
+
+def test_nested_selection_rejects_internal_duplicate():
+    tr = items(3, start_day=1)
+    tr_dup = tr + [TimeIndexedItem(item_id=tr[0].item_id,
+                                   event_time=datetime(2025, 9, 5, 12, tzinfo=UTC))]
+    va = items(3, start_day=10)
+    te = items(3, start_day=20)
+    with pytest.raises(TemporalLeakageError):
+        NestedSelectionFold(tuple(tr_dup), tuple(va), tuple(te))

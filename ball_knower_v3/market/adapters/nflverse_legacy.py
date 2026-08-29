@@ -103,31 +103,49 @@ class NflverseLegacyMarketAdapter(MarketSourceAdapter):
                 yield MarketQuote(market="total", side="under", line=float(total),
                                   price_american=None, source_odds=None, **base)
 
+            # Home and away moneylines are handled INDEPENDENTLY: a genuinely
+            # present side is preserved even if the other is missing. A missing
+            # side is never manufactured (spec §2). Raw ML lives in source_odds
+            # ONLY; the executable price slot stays null for this legacy source.
             ml_home = row.get("moneyline_home")
-            ml_away = row.get("moneyline_away")
-            if _present(ml_home) and _present(ml_away):
-                # raw ML preserved in source_odds ONLY; executable price stays null.
+            if _present(ml_home):
                 yield MarketQuote(market="moneyline", side="home", line=None,
                                   price_american=None, source_odds=_num(ml_home), **base)
+            ml_away = row.get("moneyline_away")
+            if _present(ml_away):
                 yield MarketQuote(market="moneyline", side="away", line=None,
                                   price_american=None, source_odds=_num(ml_away), **base)
 
 
 def _present(v) -> bool:
+    """True iff `v` is a genuine, present value.
+
+    Correctly rejects None, pandas.NA (incl. from nullable Int64 columns),
+    numpy.nan, and NaT, using pandas.isna. A missing value must produce no
+    fabricated quote/value.
+    """
     if v is None:
         return False
-    # pandas NA / NaN guard without importing pandas at module import time
+    import pandas as pd
     try:
-        return not (v != v)   # NaN != NaN
+        res = pd.isna(v)
+    except (TypeError, ValueError):
+        return True                       # non-scalar (e.g. list) -> treat as present
+    # pd.isna can return an array for array-like input; a scalar bool otherwise
+    if isinstance(res, bool):
+        return not res
+    try:
+        return not bool(getattr(res, "all")())
     except Exception:
         return True
 
 
 def _num(v):
+    # pandas nullable scalars (e.g. numpy.int64 / pandas integers) -> plain int
     try:
         return int(v)
-    except Exception:
+    except (TypeError, ValueError):
         try:
             return float(v)
-        except Exception:
+        except (TypeError, ValueError):
             return v

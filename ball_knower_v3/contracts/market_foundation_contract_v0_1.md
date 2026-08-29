@@ -46,7 +46,12 @@ history is append-only, never overwritten.
   snapshot that reported it — such a quote fails closed.
 
 No universal **staleness threshold** is defined in Build A. The information is
-preserved; the policy is deferred (RDL-010).
+preserved; the policy is deferred (RDL-010). Consequently the architecture does
+**not** claim it can categorically stop a stale quote from being selected — it can
+only *surface* staleness. A temporal selection exposes the freshness inputs
+(`boundary_age_seconds`, `bookmaker_staleness_seconds`) and reports
+`freshness_status = UNASSESSED`; being the latest qualifying observation is never
+an affirmative "fresh/current" judgement.
 
 ## 3. Line and price are separate, mandatory concepts
 
@@ -101,6 +106,13 @@ Hard causal invariants (fail closed):
 ≤ `as_of`. A quote with no knowable observation time cannot establish
 availability and is excluded (a reconstructed/untimestamped legacy line is never a
 decision-time executable quote).
+
+> **Unresolved (DESIGN ESCALATION A).** `observed_at = max(snapshot, ingested)` is
+> correct for live prospective availability but makes a genuine historical archive
+> acquired *later* unusable for historical PIT replay (its `ingested_at` is after
+> the game). This behavior is left **unchanged** in the correction pass; the
+> question of representing historical archival availability without fabricating
+> ingestion times is escalated to the design thread. `observed_at()` is the seam.
 
 The exact book/window methodology (which book, how strict the closing window) is a
 later **TEST** decision, expressed via the rule object — never hard-coded.

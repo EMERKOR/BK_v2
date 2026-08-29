@@ -138,17 +138,44 @@ def fair_price_row(line: float, p_win: float, p_push: float, p_loss: float,
 # --------------------------------------------------------------------------
 # Discrete distributions from a caller-supplied pmf (§16) — arithmetic only
 # --------------------------------------------------------------------------
+def _as_integer_support(k) -> int:
+    """Return the integer support point for a pmf key, or raise.
+
+    Integer-valued support is REQUIRED. A non-integer key (e.g. 3.5) or a
+    non-numeric key is rejected explicitly — we never truncate with `int()`, which
+    would silently move or merge states. `3` and `3.0` map to the same state 3
+    (integer-valued), but `3.5` is invalid.
+    """
+    if isinstance(k, bool):
+        raise DistributionContractError(f"pmf support key {k!r} must be an integer, not bool")
+    if isinstance(k, int):
+        return k
+    if isinstance(k, float):
+        if not math.isfinite(k) or k != round(k):
+            raise DistributionContractError(f"pmf support key {k!r} is not integer-valued")
+        return int(round(k))
+    raise DistributionContractError(f"pmf support key {k!r} must be an integer")
+
+
 def _validate_pmf(pmf: Mapping[int, float]) -> dict:
     if not pmf:
         raise DistributionContractError("empty pmf")
     out = {}
     total = 0.0
     for k, v in pmf.items():
-        ik = int(k)
-        if float(v) < 0 or math.isnan(float(v)):
-            raise DistributionContractError(f"pmf mass {v} at {k} invalid")
-        out[ik] = float(v)
-        total += float(v)
+        ik = _as_integer_support(k)
+        if ik in out:
+            # two distinct supplied keys canonicalize to the same integer state
+            # (e.g. 3 and 3.0) — refuse rather than silently collapsing their mass.
+            raise DistributionContractError(
+                f"pmf has duplicate support state {ik} from distinct keys; refusing to "
+                f"collapse states"
+            )
+        fv = float(v)
+        if not math.isfinite(fv) or fv < 0:
+            raise DistributionContractError(f"pmf mass {v!r} at {k!r} is invalid (must be finite >= 0)")
+        out[ik] = fv
+        total += fv
     if abs(total - 1.0) > 1e-6:
         raise DistributionContractError(f"pmf sums to {total}, not 1 (no silent renormalize)")
     return out

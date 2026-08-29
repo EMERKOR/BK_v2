@@ -69,6 +69,25 @@ def _sorted_items(items: Iterable[TimeIndexedItem]) -> list:
     return sorted(items, key=lambda i: (i.event_time, i.item_id))
 
 
+def _assert_unique_ids(items, where: str) -> None:
+    """Fail loudly on duplicate item_ids.
+
+    A stable game/item identity appearing more than once could place the same
+    underlying game in two partitions under different timestamps — leakage that
+    chronological ordering alone cannot catch (spec §5).
+    """
+    seen, dupes = set(), set()
+    for it in items:
+        if it.item_id in seen:
+            dupes.add(it.item_id)
+        seen.add(it.item_id)
+    if dupes:
+        raise TemporalLeakageError(
+            f"duplicate item_id(s) in {where}: {sorted(dupes)} — the same identity "
+            f"must not appear more than once"
+        )
+
+
 def walk_forward_folds(
     items: Sequence[TimeIndexedItem],
     n_folds: int,
@@ -81,6 +100,7 @@ def walk_forward_folds(
     trains on all blocks up to k and tests on block k+1. Every returned fold is
     verified: max(train time) < min(test time), else TemporalLeakageError.
     """
+    _assert_unique_ids(items, "walk_forward_folds input")
     ordered = _sorted_items(items)
     if n_folds < 1:
         raise TemporalLeakageError("n_folds must be >= 1")
@@ -146,6 +166,21 @@ class NestedSelectionFold:
                             ("outer_test", self.outer_test)):
             if not items:
                 raise TemporalLeakageError(f"{name} is empty")
+            _assert_unique_ids(items, f"NestedSelectionFold.{name}")
+        # identity separation ACROSS partitions: the same game/item id must not
+        # appear in more than one of train/val/test, regardless of timestamps (§5).
+        tr = {i.item_id for i in self.inner_train}
+        va = {i.item_id for i in self.inner_val}
+        te = {i.item_id for i in self.outer_test}
+        for a_name, a, b_name, b in (("inner_train", tr, "inner_val", va),
+                                     ("inner_train", tr, "outer_test", te),
+                                     ("inner_val", va, "outer_test", te)):
+            overlap = a & b
+            if overlap:
+                raise TemporalLeakageError(
+                    f"item_id(s) {sorted(overlap)} appear in both {a_name} and {b_name} — "
+                    f"the same game cannot be in development and evaluation"
+                )
         tr_min, tr_max = self._bounds(self.inner_train)
         va_min, va_max = self._bounds(self.inner_val)
         te_min, te_max = self._bounds(self.outer_test)

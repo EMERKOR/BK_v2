@@ -113,8 +113,17 @@ def pinball_loss(y_true, y_pred_quantile, tau: float) -> float:
 # --------------------------------------------------------------------------
 # Distribution losses (CRPS)
 # --------------------------------------------------------------------------
+def _finite(x: float, name: str) -> float:
+    x = float(x)
+    if not math.isfinite(x):
+        raise MetricError(f"{name}={x} is not a finite number")
+    return x
+
+
 def crps_gaussian(y_true: float, mu: float, sigma: float) -> float:
     """Closed-form CRPS for a Gaussian predictive distribution N(mu, sigma^2)."""
+    y_true, mu = _finite(y_true, "y_true"), _finite(mu, "mu")
+    sigma = _finite(sigma, "sigma")
     if sigma <= 0:
         raise MetricError("sigma must be > 0")
     from scipy.stats import norm
@@ -128,7 +137,10 @@ def crps_sample(y_true: float, samples: Sequence[float]) -> float:
     CRPS = E|X - y| - 0.5 * E|X - X'|, estimated from the sample set. This is
     distribution-agnostic (usable for discrete-aware margin/total forecasts).
     """
-    s = _arr(samples)
+    y_true = _finite(y_true, "y_true")
+    s = _arr(samples)                     # rejects NaN in the sample ensemble
+    if not np.isfinite(s).all():
+        raise MetricError("CRPS samples must be finite")
     n = s.size
     term1 = float(np.mean(np.abs(s - float(y_true))))
     # 0.5 * mean_{i,j} |x_i - x_j| via a sort-based O(n log n) identity
@@ -169,6 +181,10 @@ def log_score(prob_pred, outcome, *, eps: float | None = None) -> float:
         raise MetricError("shape mismatch")
     for x in p:
         _check_prob(x)
+    # binary outcomes must be exactly 0/1 (same discipline as brier_score); a
+    # NaN/other outcome must never be silently scored.
+    if np.isnan(o).any() or not np.isin(o, (0.0, 1.0)).all():
+        raise MetricError("binary outcomes must be 0/1 exactly")
     if eps is not None:
         p = np.clip(p, eps, 1 - eps)
     # log(0) is a legitimate +inf here (a zero prob on the realized outcome); we
@@ -232,7 +248,9 @@ def settle_spread(actual_home_margin: float, line: float, side: str) -> str:
     """
     if side not in ("home", "away"):
         raise MetricError("side must be 'home' or 'away'")
-    margin = float(actual_home_margin)
+    # a missing/NaN/inf outcome must NEVER settle as WIN/PUSH/LOSS.
+    margin = _finite(actual_home_margin, "actual_home_margin")
+    _finite(line, "line")
     if side == "home":
         adjusted = margin + float(line)
     else:
@@ -248,8 +266,9 @@ def settle_total(actual_total: float, line: float, side: str) -> str:
     """Settle a total (over/under) bet to WIN / PUSH / LOSS, push explicit."""
     if side not in ("over", "under"):
         raise MetricError("side must be 'over' or 'under'")
-    t = float(actual_total)
-    ln = float(line)
+    # a missing/NaN/inf outcome must NEVER settle as WIN/PUSH/LOSS.
+    t = _finite(actual_total, "actual_total")
+    ln = _finite(line, "line")
     if t == ln:
         return PUSH
     if side == "over":

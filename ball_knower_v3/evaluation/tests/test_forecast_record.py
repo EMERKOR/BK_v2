@@ -38,6 +38,38 @@ def test_naive_time_rejected():
         rec(as_of_time=datetime(2025, 9, 7, 15))
 
 
+def test_created_at_cannot_precede_as_of():
+    with pytest.raises(ForecastRecordError):
+        rec(as_of_time=datetime(2025, 9, 7, 15, tzinfo=UTC),
+            created_at=datetime(2025, 9, 7, 14, tzinfo=UTC))
+
+
+# --- #4: deep immutability of nested forecast payload ----------------------
+def test_external_dict_mutation_cannot_change_record():
+    outputs = {"mean_home_margin": 2.5, "quantiles": {"0.5": 2.0}}
+    r = rec(forecast_outputs=outputs)
+    pid = r.prediction_id()
+    # mutate the caller-owned dict AFTER construction
+    outputs["mean_home_margin"] = 999
+    outputs["quantiles"]["0.5"] = 999
+    assert r.prediction_id() == pid                       # identity unchanged
+    assert r.to_dict()["forecast_outputs"]["mean_home_margin"] == 2.5
+    assert r.to_dict()["forecast_outputs"]["quantiles"]["0.5"] == 2.0
+
+
+def test_stored_nested_payload_cannot_be_mutated():
+    r = rec(forecast_outputs={"quantiles": {"0.5": 2.0}})
+    with pytest.raises(Exception):
+        r.forecast_outputs["quantiles"]["0.5"] = 999      # read-only proxy
+    with pytest.raises(Exception):
+        r.forecast_outputs["new"] = 1
+
+
+def test_prediction_id_stable_across_calls():
+    r = rec(forecast_outputs={"a": [1, 2, 3]})
+    assert r.prediction_id() == r.prediction_id()
+
+
 def test_evaluated_forecast_does_not_mutate_original():
     r = rec()
     ev = EvaluatedForecast(forecast=r, prediction_id=r.prediction_id(),

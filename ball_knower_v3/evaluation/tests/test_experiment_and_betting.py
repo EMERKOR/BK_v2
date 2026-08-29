@@ -7,7 +7,7 @@ from ball_knower_v3.evaluation.experiment_registry import (
     ExperimentRecord, ExperimentRegistry, ExperimentRegistryError,
 )
 from ball_knower_v3.evaluation.betting_metrics import (
-    BetRecord, summarize, summarize_by, bet_profit_units, raw_clv, BettingMetricError,
+    BetRecord, summarize, summarize_by, bet_profit_units, BettingMetricError,
 )
 from ball_knower_v3.evaluation.metrics import WIN, PUSH, LOSS
 
@@ -52,11 +52,20 @@ def test_append_only_history_retained(tmp_path):
     assert reg.latest_by_id()["e1"]["status"] == "COMPLETED"
 
 
-# --- betting metrics: null discipline (§18, §22) ---------------------------
-def bet(bid, result, price=-110, close=None, units=1.0, season=2024, market="spread", ver="v1"):
-    return BetRecord(bet_id=bid, game_id=f"g{bid}", market=market, model_version=ver,
-                     season=season, units_risked=units, price_american=price,
-                     result=result, closing_american=close)
+# --- betting metrics: actual-wager contract & null discipline (§6, §7, §18) --
+def bet(bid, result, price=-110, order=None, units=1.0, season=2024, market="spread",
+        ver="v1", side="home", line=-3.5, ref="exq_1", close=None):
+    return BetRecord(bet_id=bid, game_id=f"g{bid}", market=market, side=side,
+                     model_version=ver, units_risked=units,
+                     placement_order=order if order is not None else int(bid),
+                     price_american=price, executable_quote_ref=ref, line=line,
+                     season=season, result=result, closing_american=close)
+
+
+def test_units_risked_has_no_default():
+    with pytest.raises(TypeError):
+        BetRecord(bet_id="1", game_id="g", market="spread", side="home",
+                  model_version="v1", placement_order=1)     # units_risked missing
 
 
 def test_missing_result_is_not_a_loss():
@@ -70,17 +79,34 @@ def test_push_refunds_stake():
     assert bet_profit_units(bet("1", PUSH)) == 0.0
 
 
-def test_win_requires_price():
+def test_win_requires_full_wager_facts():
+    # WIN with no executable-quote reference cannot be scored
     with pytest.raises(BettingMetricError):
-        bet_profit_units(BetRecord(bet_id="1", game_id="g", market="spread",
-                                   model_version="v1", result=WIN, price_american=None))
+        bet_profit_units(bet("1", WIN, ref=None))
 
 
-def test_absent_closing_gives_null_clv_not_zero():
-    assert raw_clv(bet("1", WIN, price=-110, close=None)) is None
-    # present closing -> real CLV
-    clv = raw_clv(bet("1", WIN, price=-110, close=-130))
-    assert clv is not None and clv > 0            # entry better than close
+def test_loss_without_price_cannot_enter_performance():
+    # a LOSS with a missing actual price must NOT enter P&L just because it lost
+    with pytest.raises(BettingMetricError):
+        bet_profit_units(bet("1", LOSS, price=None))
+
+
+def test_push_without_executable_ref_cannot_enter_performance():
+    with pytest.raises(BettingMetricError):
+        bet_profit_units(bet("1", PUSH, ref=None))
+
+
+def test_spread_bet_requires_line_to_be_scorable():
+    with pytest.raises(BettingMetricError):
+        bet_profit_units(bet("1", WIN, line=None))          # spread has a line
+
+
+def test_clv_is_not_computed_in_build_a():
+    # closing price preserved for later CLV work, but no CLV arithmetic exists
+    s = summarize([bet("1", WIN, price=100, close=-130)])
+    assert s.clv is None
+    assert s.n_closing_available == 1
+    assert not hasattr(s, "mean_raw_clv")
 
 
 def test_summary_profit_roi_drawdown():
@@ -94,9 +120,24 @@ def test_summary_profit_roi_drawdown():
     assert s.max_drawdown_units is not None
 
 
+def test_drawdown_ordering_uses_placement_order_not_caller_order():
+    # Three settled bets whose max drawdown genuinely depends on sequence:
+    #   win(+3), loss(-1), loss(-2).
+    # placement order A: loss(-1), win(+3), loss(-2) -> cum -1, 2, 0 -> maxdd -2
+    # placement order B: win(+3), loss(-1), loss(-2) -> cum  3, 2, 0 -> maxdd -3
+    def w(order):  return bet("w", WIN, price=300, units=1.0, order=order)     # +3
+    def l1(order): return bet("l1", LOSS, units=1.0, order=order)              # -1
+    def l2(order): return bet("l2", LOSS, units=2.0, order=order)              # -2
+
+    order_a = [w(2), l2(3), l1(1)]        # caller order shuffled on purpose
+    order_b = [l2(3), l1(2), w(1)]        # caller order shuffled on purpose
+    assert summarize(order_a).max_drawdown_units == pytest.approx(-2.0)
+    assert summarize(order_b).max_drawdown_units == pytest.approx(-3.0)
+
+
 def test_summarize_by_market_and_version():
-    bets = [bet("1", WIN, price=100, market="spread", ver="v1"),
-            bet("2", LOSS, market="total", ver="v2")]
+    bets = [bet("1", WIN, price=100, market="spread", ver="v1", line=-3.5),
+            bet("2", LOSS, market="total", ver="v2", line=44.5)]
     by_market = summarize_by(bets, "market")
     assert set(by_market) == {"spread", "total"}
     by_ver = summarize_by(bets, "model_version")

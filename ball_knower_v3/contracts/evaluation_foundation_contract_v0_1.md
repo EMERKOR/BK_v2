@@ -71,6 +71,16 @@ candidate → promotion gate → promotion decision.
     revision.
 - `ForecastRegistry` is append-only and refuses to overwrite an existing
   `prediction_id`. History is never rewritten to make a newer model look older.
+- Records deep-freeze their `forecast_outputs` payload at construction (read-only
+  nested structure, detached from the caller's dict) so `prediction_id()` is
+  stable and external mutation cannot alter the stored prediction. `created_at`
+  may not precede `as_of_time`.
+
+> **Unresolved (DESIGN ESCALATION B).** The PROSPECTIVE/DEVELOPMENT classification
+> relies on a caller-supplied `examined_and_revised` flag and does not itself
+> *prove* a forecast existed before its outcome was known. Build A does **not**
+> invent a new evidence-state architecture; durable freeze attestation is
+> escalated to the design thread. `ForecastRecord`/`ForecastRegistry` are the seam.
 
 ## 6. Metrics match the estimand (RDL-015)
 
@@ -114,15 +124,25 @@ score the three-outcome forecast properly.
   refunds the stake (0 EV contribution). This computes EV; it selects **no** bet
   and applies **no** threshold or stake. There is no single `fair_spread` field.
 
-## 9. Betting-performance recording (RDL-016, RDL-019)
+## 9. Betting-performance recording (RDL-016, RDL-019, RDL-020)
 
 `evaluation/betting_metrics.py` records and aggregates only:
 - bets, wins, losses, pushes, actual wager price, units risked, profit/loss, ROI,
-  bet volume, max drawdown, closing quote, raw CLV, and breakdowns by season /
-  market / model version.
-- Null discipline: a missing result is **unsettled**, never a loss; an absent
-  closing quote gives **null** CLV, never zero; a WIN with no known price cannot be
-  scored (raises). Profit/ROI/drawdown are computed over settled bets only.
+  bet volume, max drawdown, and breakdowns by season / market / model version.
+- A `BetRecord` is an **actual placed wager**: `units_risked` has **no default**
+  and must be supplied; `placement_order` is required (drawdown is computed in
+  explicit placement order, never arbitrary caller order). A settled bet cannot
+  enter P&L/ROI unless its actual executable offer is identified — actual price,
+  an `executable_quote_ref`, and the applicable `line` for markets that have one.
+  This holds for LOSS and PUSH, not only WIN; missing wager facts fail closed and
+  never become a valid one-unit bet.
+- Null discipline: a missing result is **unsettled**, never a loss.
+  Profit/ROI/drawdown are computed over settled bets only.
+- **CLV is deferred (RDL-020).** Build A implements **no** CLV arithmetic — a valid
+  CLV needs a guarantee that entry and close share line/side/comparator
+  methodology, which is not yet established. The entry executable-quote reference
+  and the closing quote reference/price are **preserved** for a later,
+  separately-approved CLV definition; `BettingSummary.clv` is always `None`.
 - **No** betting threshold, **no** staking/Kelly, **no** post-hoc threshold-mining
   optimizer exists. Official policies must be chosen on development evidence and
   frozen before evaluation. Diagnostic edge buckets may be added later, clearly

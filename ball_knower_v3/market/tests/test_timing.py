@@ -118,3 +118,26 @@ def test_ingested_after_snapshot_gates_availability():
 def test_naive_as_of_rejected():
     with pytest.raises(MarketCausalityError):
         select_decision_quote([q(_t(9, 0))], as_of_time=datetime(2025, 9, 7, 10, 0), rule=EXEC)
+
+
+def test_selection_exposes_freshness_as_unassessed():
+    from ball_knower_v3.market.timing import FRESHNESS_UNASSESSED
+    # quote knowable at 9:00, decision boundary 10:00 -> age 3600s; but freshness
+    # is UNASSESSED, never an affirmative "fresh" just because it was the latest.
+    sel = select_decision_quote([q(_t(9, 0))], as_of_time=_t(10, 0), rule=EXEC)
+    assert sel.freshness_status == FRESHNESS_UNASSESSED
+    assert sel.boundary_age_seconds == 3600.0
+
+
+def test_selection_surfaces_bookmaker_staleness_when_known():
+    quote = MarketQuote(
+        game_id="2025_01_BUF_BAL", provider="the_odds_api", bookmaker="pinnacle",
+        market="spread", period="full_game", side="home", line=-3.5, price_american=-110,
+        provider_snapshot_time=_t(9, 0), bookmaker_last_update_time=_t(8, 30),
+        ingested_at=_t(9, 0), market_status="ACTIVE", is_suspended=False,
+        reference_only=False, source_snapshot_id="snap_x",
+    )
+    sel = select_decision_quote([quote], as_of_time=_t(10, 0), rule=EXEC)
+    assert sel.bookmaker_staleness_seconds == 1800.0   # 9:00 - 8:30
+    from ball_knower_v3.market.timing import FRESHNESS_UNASSESSED
+    assert sel.freshness_status == FRESHNESS_UNASSESSED

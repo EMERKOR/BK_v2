@@ -62,18 +62,40 @@ class MarketSourceAdapter:
         raise NotImplementedError
 
     def iter_quotes_checked(self) -> Iterator[MarketQuote]:
+        """Yield quotes, enforcing that no quote CONTRADICTS the declared caps.
+
+        A source may only surface a field it declares it provides. Fabricating a
+        snapshot time, a bookmaker-update time, a suspension state, an executable
+        price, or executable-history status that the source does not actually
+        supply is refused (spec §10, §22 — no silent fabrication).
+        """
         caps = self.capabilities()
+        name = self.source_name
         for q in self.iter_quotes():
             if not caps.timestamped_executable_history and not q.reference_only:
                 raise ValueError(
-                    f"adapter {self.source_name!r} declares no timestamped executable "
-                    f"history but yielded a non-reference_only quote for {q.game_id}; "
-                    f"refusing to let a reconstructed line masquerade as executable"
+                    f"adapter {name!r} declares no timestamped executable history but "
+                    f"yielded a non-reference_only quote for {q.game_id}; refusing to "
+                    f"let a reconstructed line masquerade as executable"
                 )
             if not caps.provides_executable_price and q.price_american is not None:
-                # A source that cannot provide executable prices must not attach one.
                 raise ValueError(
-                    f"adapter {self.source_name!r} declares no executable price but yielded "
-                    f"a price for {q.game_id}; refusing to invent an executable offer"
+                    f"adapter {name!r} declares no executable price but yielded a price "
+                    f"for {q.game_id}; refusing to invent an executable offer"
+                )
+            if not caps.provides_provider_snapshot_time and q.provider_snapshot_time is not None:
+                raise ValueError(
+                    f"adapter {name!r} declares no provider snapshot time but yielded one "
+                    f"for {q.game_id}; refusing to fabricate a timestamp"
+                )
+            if not caps.provides_bookmaker_update_time and q.bookmaker_last_update_time is not None:
+                raise ValueError(
+                    f"adapter {name!r} declares no bookmaker update time but yielded one "
+                    f"for {q.game_id}; refusing to fabricate a timestamp"
+                )
+            if not caps.provides_suspension_state and q.is_suspended is not None:
+                raise ValueError(
+                    f"adapter {name!r} declares no suspension state but yielded one for "
+                    f"{q.game_id}; refusing to fabricate suspension state"
                 )
             yield q

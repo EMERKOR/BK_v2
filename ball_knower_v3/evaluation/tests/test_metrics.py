@@ -98,3 +98,31 @@ def test_total_settlement_push_explicit():
     assert M.settle_total(47.0, 47.0, "over") == M.PUSH
     assert M.settle_total(48.0, 47.0, "over") == M.WIN
     assert M.settle_total(40.0, 47.0, "under") == M.WIN
+
+
+# --- #3 adversarial: NaN/invalid inputs fail closed ------------------------
+def test_nan_outcome_cannot_settle():
+    for bad in (float("nan"), float("inf")):
+        with pytest.raises(M.MetricError):
+            M.settle_spread(bad, -3.0, "home")
+        with pytest.raises(M.MetricError):
+            M.settle_total(bad, 47.0, "over")
+
+
+def test_settlement_rejects_nan_line():
+    with pytest.raises(M.MetricError):
+        M.settle_spread(3.0, float("nan"), "home")
+
+
+def test_log_score_rejects_non_binary_outcome():
+    with pytest.raises(M.MetricError):
+        M.log_score([0.5], [0.5])            # outcome not 0/1
+    with pytest.raises(M.MetricError):
+        M.log_score([0.5], [float("nan")])   # NaN outcome
+
+
+def test_crps_rejects_nonfinite():
+    with pytest.raises(M.MetricError):
+        M.crps_gaussian(float("nan"), 0.0, 1.0)
+    with pytest.raises(M.MetricError):
+        M.crps_sample(0.0, [1.0, float("inf")])
