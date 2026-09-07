@@ -6,9 +6,11 @@
 - PR draft: `#19 — Phase 3A Build A: Market + Evaluation Foundation`
 - Starting commit: `f2ec59f49f3108817de17338fdfa09d27db98a73`
 - `main` comparison commit / PR merge base: `1da9a1a60747f87a86faef456f0c2acbc8d5b547`
-- Ending implementation commit: `9d7da074fa66047c4659ace31bda52be7aa69113`
-- Validation-report commit: the documentation-only commit containing this file
-  (it does not change the tested implementation commit above).
+- Original Codex implementation commit: `9d7da074fa66047c4659ace31bda52be7aa69113`
+- Independent-review remote head: `d7f4712ab0578b37ab65c980def56db5ec60977f`
+- Independent-review correction commit: `b576fc56d36fe628050fa0aa5926f70d8da839a2`
+- Validation-report commit: the documentation-only commit containing this file;
+  it does not change the tested correction commit above.
 
 The starting checkout was clean. No work was performed on `main`; a detached
 worktree at the merge base was used only to prove baseline failures.
@@ -118,6 +120,41 @@ Genuine defects and missing contract work fixed:
 - Local raw market archives, normalized quote artifacts and forecast prediction
   artifacts are gitignored. Mapping and ingestion manifests remain trackable.
 
+## Independent-review corrections (Claude Code)
+
+Claude Code independently reviewed remote head
+`d7f4712ab0578b37ab65c980def56db5ec60977f` and returned **READY AFTER
+MINOR FIXES**, with no BLOCKER or HIGH findings. Correction commit
+`b576fc56d36fe628050fa0aa5926f70d8da839a2` addresses the scoped findings:
+
+- **Forecast-time semantics:** `forecast_time` is now unambiguously documented
+  as the decision/as-of timestamp at which the information state is frozen,
+  distinct from target kickoff. The integrity ordering remains
+  `training_cutoff < forecast_time <= created_at_utc`; the creation-time check
+  prevents backdating the decision snapshot and says nothing about target-event
+  time. A prospective test registers and validates a forecast after its decision
+  snapshot but before kickoff, and confirms target kickoff is not added to the
+  immutable record.
+- **Direct payload hash forgery:** the public in-memory payload parser now
+  rejects every caller-supplied SHA-256 that differs from the supplied payload's
+  canonical hash, even when a caller also provides `raw_payload_id`. The file
+  parser retains its stronger raw-byte identity path, so offline ingestion still
+  binds every quote and manifest record to the archived file bytes. The exact
+  adversarial ID-plus-mismatched-hash case is covered by regression test.
+- **Walk-forward caller responsibility:** contract and utility documentation now
+  state that chronological keys must represent the experiment's information or
+  decision-availability boundary. The primitive orders supplied timestamps but
+  cannot prevent same-day/block leakage when a caller substitutes target kickoff
+  for the actual availability boundary.
+- **Portable manifest paths:** archived inputs under `raw_root` remain relative
+  to that explicit root. Mapping, output and unrooted input paths now become
+  repository-relative when they are inside the repository; truly external paths
+  remain absolute to preserve unambiguous provenance.
+- **Focused test strengthening:** American odds boundaries `-100` and `+100`
+  are explicitly accepted; push-aware multiclass Brier scoring is checked at the
+  exact numeric value `0.65`; the direct hash-forge case is rejected; and the
+  already-existing duplicate sportsbook quote-grain test remains in force.
+
 ## Files changed after the starting commit
 
 - `.gitignore`
@@ -142,14 +179,14 @@ untimestamped and closing-agnostic.
 
 ## Final validation
 
-- Phase 3A suite using the normal repository fixture: **53 passed, 0 failed**.
-- Phase 3A suite isolated with `--noconftest`: **53 passed, 0 failed**.
+- Phase 3A suite using the normal repository fixture: **58 passed, 0 failed**.
+- Phase 3A suite isolated with `--noconftest`: **58 passed, 0 failed**.
 - Deterministic offline regression:
   - Stage B–F synthetic feature suite: **169 passed, 0 failed**.
   - Phase 1 canonical regression: **185 passed, 0 failed**.
   - Combined offline regression: **354 passed, 0 failed**.
-- Complete v3 suite: **598 collected; 574 passed, 7 failed, 17 errors**.
-  Removing the 53 Phase 3A tests leaves exactly the `main` baseline result:
+- Complete v3 suite: **603 collected; 579 passed, 7 failed, 17 errors**.
+  Removing the 58 Phase 3A tests leaves exactly the `main` baseline result:
   **521 passed, 7 failed, 17 errors**. Thus prior Phase 1–2E test behavior was
   unchanged.
 - `python -m compileall` for `ball_knower_v3/market` and
@@ -207,9 +244,10 @@ No paid data was acquired and no API key or secret was added.
 
 ## Readiness decision
 
-**Phase 3A Build A is ready to merge on its scoped evidence:** all 53 Phase 3A
+**Phase 3A Build A is ready for final review and merge on its scoped evidence:**
+all 58 Phase 3A
 tests pass, all 354 deterministic prior-layer regression tests pass, the full
-suite differs from `main` only by 53 passing Phase 3A tests, canonical market
+suite differs from `main` only by 58 passing Phase 3A tests, canonical market
 semantics are untouched, and no model or bet was produced.
 
 This is not a claim that historical market data has been populated. A repository
