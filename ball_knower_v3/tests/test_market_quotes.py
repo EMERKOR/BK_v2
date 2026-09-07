@@ -15,6 +15,7 @@ def base_quote(**overrides):
         line=-2.5,
         price_american=-110,
         bookmaker_last_update_time="2026-09-08T14:59:00Z",
+        market_last_update_time="2026-09-08T14:59:30Z",
         ingested_at="2026-09-08T15:00:02Z",
         timing_label="DECISION",
         status="OPEN",
@@ -22,6 +23,9 @@ def base_quote(**overrides):
         provider_event_id="evt1",
         book_event_id="book1",
         raw_payload_id="payload1",
+        raw_payload_sha256="a" * 64,
+        event_match_method="TEST_EXPLICIT",
+        event_match_version="test_event_map_v0.1",
         quote_schema_version=QUOTE_SCHEMA_VERSION,
     )
     d.update(overrides)
@@ -44,6 +48,11 @@ def test_book_update_cannot_follow_provider_snapshot():
         MarketQuote(**base_quote(bookmaker_last_update_time="2026-09-08T15:01:00Z")).validate()
 
 
+def test_market_update_cannot_follow_provider_snapshot():
+    with pytest.raises(ValueError):
+        MarketQuote(**base_quote(market_last_update_time="2026-09-08T15:01:00Z")).validate()
+
+
 def test_ingestion_cannot_precede_provider_snapshot():
     with pytest.raises(ValueError):
         MarketQuote(**base_quote(ingested_at="2026-09-08T14:59:59Z")).validate()
@@ -64,3 +73,20 @@ def test_duplicate_quote_grain_rejected():
     df = pd.DataFrame([row, row])
     with pytest.raises(ValueError, match="duplicate market quote grain"):
         validate_quote_frame(df)
+
+
+@pytest.mark.parametrize("price", [-99, 0, 99, -110.5, "-110", None])
+def test_american_price_is_required_and_exact(price):
+    with pytest.raises(ValueError, match="price|American"):
+        MarketQuote(**base_quote(price_american=price)).validate()
+
+
+def test_non_finite_line_rejected():
+    with pytest.raises(ValueError, match="finite"):
+        MarketQuote(**base_quote(line=float("nan"))).validate()
+
+
+def test_frame_returns_timezone_aware_timestamp_dtype():
+    out = validate_quote_frame(pd.DataFrame([base_quote()]))
+    assert isinstance(out["provider_snapshot_time"].dtype, pd.DatetimeTZDtype)
+    assert str(out["provider_snapshot_time"].dt.tz) == "UTC"
