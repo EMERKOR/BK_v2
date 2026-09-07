@@ -59,3 +59,10 @@ data/v3/raw_player_sources/
 # (feature_registry.json) stays tracked; parquet outputs and test artifacts do not.
 data/v3/features/*.parquet
 data/v3/features/_test_inputs/
+
+# v3 Phase 3A local/paid market archives and reproducible normalized artifacts.
+# Versioned event mappings, ingestion manifests, contracts, and synthetic test
+# fixtures remain trackable; raw vendor payloads and generated quote rows do not.
+data/v3/market/raw/
+data/v3/market/normalized/
+data/v3/evaluation/predictions/
