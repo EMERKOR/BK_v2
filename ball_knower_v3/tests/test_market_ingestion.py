@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from ball_knower_v3.market.event_mapping import build_event_mapping, write_event_mapping
+from ball_knower_v3.market import ingest
 from ball_knower_v3.market.ingest import ingest_historical_files
 
 
@@ -68,6 +69,28 @@ def test_offline_ingestion_traces_raw_and_mapping_artifacts(tmp_path):
         mapping_path.read_bytes()).hexdigest()
     assert manifest["output"]["sha256"] == hashlib.sha256(output.read_bytes()).hexdigest()
     assert json.loads(manifest_path.read_text())["quote_rows"] == 2
+
+
+def test_manifest_prefers_repository_relative_mapping_and_output_paths(tmp_path, monkeypatch):
+    monkeypatch.setattr(ingest.common, "REPO", tmp_path)
+    raw = tmp_path / "raw" / "snapshot.json"
+    raw.parent.mkdir()
+    raw.write_text(json.dumps(payload()))
+    mapping_path = tmp_path / "metadata" / "mapping.json"
+    mapping_path.parent.mkdir()
+    write_event_mapping(build_event_mapping([payload()], games()), mapping_path)
+    output = tmp_path / "normalized" / "quotes.jsonl"
+
+    _, manifest = ingest_historical_files(
+        [raw],
+        event_mapping_path=mapping_path,
+        ingested_at="2025-10-01T16:02:00Z",
+        output_path=output,
+    )
+
+    assert manifest["raw_payloads"][0]["path"] == "raw/snapshot.json"
+    assert manifest["event_mapping"]["path"] == "metadata/mapping.json"
+    assert manifest["output"]["path"] == "normalized/quotes.jsonl"
 
 
 def test_normalized_output_is_byte_reproducible(tmp_path):
