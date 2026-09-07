@@ -233,6 +233,8 @@ def _parse_historical_payload(payload: dict, *, ingested_at, event_game_map,
                         "market_last_update_time": market_update,
                         "ingested_at": ingested,
                         "timing_label": timing_label,
+                        # The historical endpoint does not prove executable/open
+                        # status or expose suspension state.
                         "status": "UNKNOWN",
                         "period": "FULL_GAME",
                         "provider_event_id": provider_event_id,
