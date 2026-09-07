@@ -36,6 +36,15 @@ def test_split_frame_never_overlaps_train_and_test():
     assert train["kickoff"].max() < test["kickoff"].min()
 
 
+def test_split_frame_refuses_naive_timestamps():
+    df = pd.DataFrame({"kickoff": [pd.Timestamp("2024-09-01 17:00:00")], "y": [1]})
+    fold = make_expanding_folds(
+        ["2024-08-01T17:00:00Z", "2024-09-01T17:00:00Z"],
+    )[0]
+    with pytest.raises(ValueError, match="timezone-aware"):
+        split_frame(df, fold, time_col="kickoff")
+
+
 def test_point_metrics_known_values():
     out = point_metrics([1, 2], [2, 4])
     assert out["n"] == 2
@@ -64,3 +73,8 @@ def test_multiclass_brier_preserves_push_category():
 def test_multiclass_brier_rejects_non_normalized_probabilities():
     with pytest.raises(ValueError, match="sum to 1"):
         multiclass_brier([[0.6, 0.2, 0.3]], [[1, 0, 0]])
+
+
+def test_multiclass_brier_rejects_non_one_hot_outcome():
+    with pytest.raises(ValueError, match="one-hot|exactly one"):
+        multiclass_brier([[0.6, 0.1, 0.3]], [[2, -1, 0]])
