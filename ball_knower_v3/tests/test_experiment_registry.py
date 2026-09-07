@@ -20,6 +20,7 @@ def make_record(tmp_path, **overrides):
         prediction_artifact=str(artifact),
         prediction_sha256=common.sha256_file(artifact),
         builder_git_commit="deadbeef",
+        builder_working_tree_dirty=False,
         created_at_utc="2026-09-08T15:00:01+00:00",
     )
     kwargs.update(overrides)
@@ -80,7 +81,27 @@ def test_append_refuses_wrong_artifact_hash(tmp_path):
         prediction_artifact=rec["prediction_artifact"],
         prediction_sha256="0" * 64,
         builder_git_commit="deadbeef",
+        builder_working_tree_dirty=False,
         created_at_utc="2026-09-08T15:00:01+00:00",
     )
     with pytest.raises(ValueError, match="hash mismatch"):
         er.append_forecast_record(rec, tmp_path / "registry.json")
+
+
+def test_record_metadata_mutation_is_detected(tmp_path):
+    rec, _ = make_record(tmp_path)
+    rec["model_version"] = "mutated"
+    with pytest.raises(ValueError, match="forecast_id mismatch|record_sha256 mismatch"):
+        er.validate_record(rec)
+
+
+def test_result_fields_cannot_be_written_into_frozen_record(tmp_path):
+    rec, _ = make_record(tmp_path)
+    rec["result"] = "WIN"
+    with pytest.raises(ValueError, match="unsupported fields"):
+        er.validate_record(rec)
+
+
+def test_creation_time_is_aware_and_not_before_forecast(tmp_path):
+    with pytest.raises(ValueError, match="created_at_utc"):
+        make_record(tmp_path, created_at_utc="2026-09-08T14:59:59Z")
