@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from ..canonical import common
 from .event_mapping import EVENT_MAPPING_VERSION, load_event_mapping
 from .providers.the_odds_api import parse_historical_file
 from .quotes import QUOTE_COLUMNS, validate_quote_frame
@@ -31,14 +32,18 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _stored_path(path: Path, root: Path | None) -> str:
+def _stored_path(path: Path, root: Path | None = None) -> str:
     resolved = path.resolve()
-    if root is None:
-        return str(resolved)
+    if root is not None:
+        try:
+            return str(resolved.relative_to(root.resolve()))
+        except ValueError as exc:
+            raise ValueError(f"archived payload {path} is outside raw_root {root}") from exc
     try:
-        return str(resolved.relative_to(root.resolve()))
-    except ValueError as exc:
-        raise ValueError(f"archived payload {path} is outside raw_root {root}") from exc
+        return str(resolved.relative_to(common.REPO.resolve()))
+    except ValueError:
+        # External paths remain absolute so provenance is never made ambiguous.
+        return str(resolved)
 
 
 def _write_bytes_atomic(path: Path, data: bytes) -> None:
@@ -127,7 +132,7 @@ def ingest_historical_files(raw_paths, *, event_mapping_path, ingested_at,
         "provider": "the_odds_api",
         "ingested_at": pd.Timestamp(quotes["ingested_at"].iloc[0]).isoformat(),
         "event_mapping": {
-            "path": str(mapping_path),
+            "path": _stored_path(mapping_path),
             "sha256": mapping_sha,
             "version": EVENT_MAPPING_VERSION,
         },
@@ -137,6 +142,7 @@ def ingest_historical_files(raw_paths, *, event_mapping_path, ingested_at,
 
     if output_path is not None:
         manifest["output"] = write_quote_artifact(quotes, output_path)
+        manifest["output"]["path"] = _stored_path(Path(output_path))
     if manifest_path is not None:
         manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()
         _write_bytes_atomic(Path(manifest_path), manifest_bytes)
