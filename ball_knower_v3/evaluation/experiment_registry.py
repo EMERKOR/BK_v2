@@ -135,6 +135,13 @@ def build_forecast_record(*, experiment_id, model_family, model_version, target_
                           prediction_artifact, prediction_sha256,
                           builder_git_commit=None, created_at_utc=None,
                           builder_working_tree_dirty=None, notes=None) -> dict:
+    """Build an immutable record for a forecast's frozen information state.
+
+    ``forecast_time`` is the decision/as-of timestamp, not the target event
+    timestamp. Record creation may follow that snapshot but must not be
+    backdated before it. Target kickoff/outcome data belongs outside this
+    immutable forecast record.
+    """
     ft = _aware_utc(forecast_time, "forecast_time")
     tc = _aware_utc(training_cutoff, "training_cutoff")
     if tc >= ft:
@@ -154,7 +161,9 @@ def build_forecast_record(*, experiment_id, model_family, model_version, target_
         created_at_utc or common.utc_now_iso(), "created_at_utc",
     )
     if created < ft:
-        raise ValueError("created_at_utc cannot be before forecast_time")
+        raise ValueError(
+            "created_at_utc cannot precede the forecast decision/as-of snapshot"
+        )
     commit = builder_git_commit or common.git_commit()
     if not str(commit).strip() or commit == "UNKNOWN":
         raise ValueError("builder_git_commit must identify a real commit")
@@ -198,7 +207,9 @@ def validate_record(record: dict) -> dict:
     if tc >= ft:
         raise ValueError("training_cutoff must be strictly before forecast_time")
     if created < ft:
-        raise ValueError("created_at_utc cannot be before forecast_time")
+        raise ValueError(
+            "created_at_utc cannot precede the forecast decision/as-of snapshot"
+        )
     if record["created_at_utc"] != created.isoformat():
         raise ValueError("created_at_utc is not in canonical UTC form")
     recomputed, identity = compute_forecast_id(
