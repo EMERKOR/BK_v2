@@ -2,6 +2,9 @@
 
 This module is deliberately model-agnostic. It defines temporal folds and basic
 forecast scoring without selecting features, fitting models, or grading bets.
+Callers must supply timestamps that represent the experiment's information or
+decision-availability boundary. Target-event ordering alone cannot prevent
+same-day or block leakage when data became available after a decision.
 """
 from __future__ import annotations
 
@@ -33,8 +36,9 @@ def make_expanding_folds(timestamps, *, min_train_periods: int = 1) -> list[Walk
     """Create one-step expanding-window folds from ordered unique timestamps.
 
     Training for each fold ends strictly before its test timestamp. The function
-    does not inspect outcomes or features, so fold creation cannot leak target
-    information.
+    does not know when source information became available. Callers must pass the
+    availability/decision boundary appropriate to the experiment; using target
+    kickoff alone can still leak same-day or block information.
     """
     if min_train_periods < 1:
         raise ValueError("min_train_periods must be >= 1")
@@ -57,7 +61,11 @@ def make_expanding_folds(timestamps, *, min_train_periods: int = 1) -> list[Walk
 
 
 def split_frame(df: pd.DataFrame, fold: WalkForwardFold, *, time_col: str):
-    """Return strict chronological train/test frames for a fold."""
+    """Return train/test frames ordered by a caller-defined information boundary.
+
+    ``time_col`` must encode when each row is eligible for the experiment, not
+    merely its target event time when those timestamps differ.
+    """
     if time_col not in df.columns:
         raise ValueError(f"missing time column {time_col!r}")
     # ``pd.to_datetime(..., utc=True)`` silently interprets naive values as UTC;
