@@ -81,6 +81,11 @@ def test_american_price_is_required_and_exact(price):
         MarketQuote(**base_quote(price_american=price)).validate()
 
 
+@pytest.mark.parametrize("price", [-100, 100])
+def test_american_price_boundaries_are_accepted(price):
+    assert MarketQuote(**base_quote(price_american=price)).to_record()["price_american"] == price
+
+
 def test_non_finite_line_rejected():
     with pytest.raises(ValueError, match="finite"):
         MarketQuote(**base_quote(line=float("nan"))).validate()
