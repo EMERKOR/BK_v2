@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from ball_knower_v3.canonical import common
@@ -103,5 +104,22 @@ def test_result_fields_cannot_be_written_into_frozen_record(tmp_path):
 
 
 def test_creation_time_is_aware_and_not_before_forecast(tmp_path):
-    with pytest.raises(ValueError, match="created_at_utc"):
+    with pytest.raises(ValueError, match="decision/as-of snapshot"):
         make_record(tmp_path, created_at_utc="2026-09-08T14:59:59Z")
+
+
+def test_prospective_forecast_is_registered_before_target_kickoff(tmp_path):
+    decision_time = "2026-09-08T15:00:00Z"
+    target_kickoff = "2026-09-08T17:00:00Z"
+    record, _ = make_record(
+        tmp_path,
+        forecast_time=decision_time,
+        created_at_utc="2026-09-08T15:00:01Z",
+    )
+
+    er.append_forecast_record(record, tmp_path / "registry.json")
+
+    assert er.validate_record(record) is record
+    assert pd.Timestamp(record["forecast_time"]) < pd.Timestamp(target_kickoff)
+    assert pd.Timestamp(record["created_at_utc"]) < pd.Timestamp(target_kickoff)
+    assert "target_kickoff" not in record
