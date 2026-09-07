@@ -26,6 +26,7 @@ EXPERIMENT_REGISTRY_JSON = EVALUATION_DIR / "experiment_registry.json"
 LOCK_NAME = ".experiment_registry.lock"
 
 REQUIRED_FIELDS = (
+    "experiment_registry_version",
     "forecast_id",
     "experiment_id",
     "model_family",
@@ -37,8 +38,12 @@ REQUIRED_FIELDS = (
     "prediction_artifact",
     "prediction_sha256",
     "builder_git_commit",
+    "builder_working_tree_dirty",
     "created_at_utc",
+    "notes",
+    "record_sha256",
 )
+ALLOWED_FIELDS = frozenset(REQUIRED_FIELDS)
 
 
 class _ExclusiveLock:
@@ -80,6 +85,21 @@ def _aware_utc(ts, field: str) -> pd.Timestamp:
 def _canonical_identity(*, experiment_id, model_family, model_version, target_name,
                         forecast_time, feature_context_id, training_cutoff,
                         prediction_artifact, prediction_sha256):
+    values = {
+        "experiment_id": experiment_id,
+        "model_family": model_family,
+        "model_version": model_version,
+        "target_name": target_name,
+        "feature_context_id": feature_context_id,
+        "prediction_artifact": prediction_artifact,
+        "prediction_sha256": prediction_sha256,
+    }
+    for field, value in values.items():
+        if value is None or not str(value).strip():
+            raise ValueError(f"{field} is required and must be non-blank")
+    sha = str(prediction_sha256)
+    if len(sha) != 64 or any(ch not in "0123456789abcdef" for ch in sha):
+        raise ValueError("prediction_sha256 must be a lowercase 64-character SHA-256")
     return {
         "experiment_id": str(experiment_id),
         "model_family": str(model_family),
@@ -99,11 +119,22 @@ def compute_forecast_id(**kwargs) -> tuple[str, dict]:
     return "forecast_" + hashlib.sha256(payload).hexdigest()[:24], identity
 
 
+def _record_sha256(record: dict) -> str:
+    payload = {key: record[key] for key in sorted(ALLOWED_FIELDS - {"record_sha256"})}
+    try:
+        raw = json.dumps(
+            payload, sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode()
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"forecast record is not canonical JSON: {exc}") from exc
+    return hashlib.sha256(raw).hexdigest()
+
+
 def build_forecast_record(*, experiment_id, model_family, model_version, target_name,
                           forecast_time, feature_context_id, training_cutoff,
                           prediction_artifact, prediction_sha256,
                           builder_git_commit=None, created_at_utc=None,
-                          notes=None) -> dict:
+                          builder_working_tree_dirty=None, notes=None) -> dict:
     ft = _aware_utc(forecast_time, "forecast_time")
     tc = _aware_utc(training_cutoff, "training_cutoff")
     if tc >= ft:
@@ -119,14 +150,31 @@ def build_forecast_record(*, experiment_id, model_family, model_version, target_
         prediction_artifact=prediction_artifact,
         prediction_sha256=prediction_sha256,
     )
-    return {
+    created = _aware_utc(
+        created_at_utc or common.utc_now_iso(), "created_at_utc",
+    )
+    if created < ft:
+        raise ValueError("created_at_utc cannot be before forecast_time")
+    commit = builder_git_commit or common.git_commit()
+    if not str(commit).strip() or commit == "UNKNOWN":
+        raise ValueError("builder_git_commit must identify a real commit")
+    dirty = (
+        common.working_tree_dirty()
+        if builder_working_tree_dirty is None else builder_working_tree_dirty
+    )
+    if not isinstance(dirty, bool):
+        raise ValueError("builder_working_tree_dirty must be boolean")
+    record = {
         "experiment_registry_version": EXPERIMENT_REGISTRY_VERSION,
         "forecast_id": fid,
         **identity,
-        "builder_git_commit": builder_git_commit or common.git_commit(),
-        "created_at_utc": created_at_utc or common.utc_now_iso(),
+        "builder_git_commit": str(commit),
+        "builder_working_tree_dirty": dirty,
+        "created_at_utc": created.isoformat(),
         "notes": notes,
     }
+    record["record_sha256"] = _record_sha256(record)
+    return record
 
 
 def validate_record(record: dict) -> dict:
@@ -137,10 +185,22 @@ def validate_record(record: dict) -> dict:
         raise ValueError(f"forecast record missing required fields: {missing}")
     if record.get("experiment_registry_version") != EXPERIMENT_REGISTRY_VERSION:
         raise ValueError("unexpected experiment_registry_version")
+    extra = sorted(set(record) - ALLOWED_FIELDS)
+    if extra:
+        raise ValueError(f"forecast record contains unsupported fields: {extra}")
+    if not isinstance(record["builder_working_tree_dirty"], bool):
+        raise ValueError("builder_working_tree_dirty must be boolean")
+    if not str(record["builder_git_commit"]).strip() or record["builder_git_commit"] == "UNKNOWN":
+        raise ValueError("builder_git_commit must identify a real commit")
     ft = _aware_utc(record["forecast_time"], "forecast_time")
     tc = _aware_utc(record["training_cutoff"], "training_cutoff")
+    created = _aware_utc(record["created_at_utc"], "created_at_utc")
     if tc >= ft:
         raise ValueError("training_cutoff must be strictly before forecast_time")
+    if created < ft:
+        raise ValueError("created_at_utc cannot be before forecast_time")
+    if record["created_at_utc"] != created.isoformat():
+        raise ValueError("created_at_utc is not in canonical UTC form")
     recomputed, identity = compute_forecast_id(
         experiment_id=record["experiment_id"],
         model_family=record["model_family"],
@@ -157,6 +217,11 @@ def validate_record(record: dict) -> dict:
     for key, value in identity.items():
         if record[key] != value:
             raise ValueError(f"forecast identity field {key} is not canonical")
+    expected_record_hash = _record_sha256(record)
+    if record["record_sha256"] != expected_record_hash:
+        raise ValueError(
+            f"record_sha256 mismatch: expected {expected_record_hash} "
+            f"got {record['record_sha256']} (record mutated)")
     return record
 
 
@@ -169,7 +234,10 @@ def load_registry(path=None) -> list:
     if not p.exists():
         return []
     data = json.loads(p.read_text())
-    return [data] if isinstance(data, dict) else data
+    records = [data] if isinstance(data, dict) else data
+    if not isinstance(records, list) or not all(isinstance(record, dict) for record in records):
+        raise ValueError("experiment registry must contain a JSON object or list of objects")
+    return records
 
 
 def _atomic_write_json(path: Path, data) -> None:
@@ -196,6 +264,8 @@ def append_forecast_record(record: dict, registry_path=None) -> dict:
     path = _resolve(registry_path)
     with _ExclusiveLock(path.parent / LOCK_NAME):
         records = load_registry(path)
+        for existing in records:
+            validate_record(existing)
         if record["forecast_id"] in {r.get("forecast_id") for r in records}:
             raise ValueError(f"forecast_id {record['forecast_id']} already exists; forecasts are immutable")
         artifact = _artifact_path(record["prediction_artifact"])
