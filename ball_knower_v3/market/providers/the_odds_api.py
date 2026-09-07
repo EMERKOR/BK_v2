@@ -145,16 +145,10 @@ def _validated_outcomes(market_name: str, market: dict, home_team: str,
     return outcomes
 
 
-def parse_historical_payload(payload: dict, *, ingested_at, event_game_map,
-                             raw_payload_id: str | None = None,
-                             raw_payload_sha256: str | None = None,
-                             timing_label=None) -> pd.DataFrame:
-    """Parse one archived historical response into validated quote rows.
-
-    `event_game_map` maps provider event id -> canonical BK game_id. Missing
-    mappings fail loudly. `timing_label` should normally remain null; use it only
-    when the collection procedure independently proves OPEN/DECISION/CLOSE.
-    """
+def _parse_historical_payload(payload: dict, *, ingested_at, event_game_map,
+                              payload_id: str, payload_sha: str,
+                              timing_label=None) -> pd.DataFrame:
+    """Normalize a payload whose identity was established by its caller."""
     if not isinstance(payload, dict):
         raise ValueError("historical payload must be a dict")
     if "timestamp" not in payload or "data" not in payload:
@@ -168,16 +162,6 @@ def parse_historical_payload(payload: dict, *, ingested_at, event_game_map,
 
     provider_snapshot_time = _utc(payload["timestamp"], "payload.timestamp")
     ingested = _utc(ingested_at, "ingested_at")
-    computed_sha = _payload_sha256(payload)
-    payload_sha = raw_payload_sha256 or computed_sha
-    if raw_payload_sha256 is not None and raw_payload_sha256 != computed_sha:
-        # A file's raw-byte hash differs from its parsed canonical-JSON hash by
-        # design. File callers provide a stable id/hash pair and are checked
-        # before reaching this function; dict callers may not forge a hash.
-        if raw_payload_id is None:
-            raise ValueError("raw_payload_sha256 does not match the supplied payload")
-    payload_id = raw_payload_id or f"sha256:{payload_sha}"
-
     rows = []
     for event in data:
         if not isinstance(event, dict):
@@ -249,8 +233,6 @@ def parse_historical_payload(payload: dict, *, ingested_at, event_game_map,
                         "market_last_update_time": market_update,
                         "ingested_at": ingested,
                         "timing_label": timing_label,
-                        # The historical endpoint does not prove executable/open
-                        # status or expose suspension state.
                         "status": "UNKNOWN",
                         "period": "FULL_GAME",
                         "provider_event_id": provider_event_id,
@@ -267,8 +249,36 @@ def parse_historical_payload(payload: dict, *, ingested_at, event_game_map,
     return validate_quote_frame(pd.DataFrame(rows, columns=QUOTE_COLUMNS))
 
 
+def parse_historical_payload(payload: dict, *, ingested_at, event_game_map,
+                             raw_payload_id: str | None = None,
+                             raw_payload_sha256: str | None = None,
+                             timing_label=None) -> pd.DataFrame:
+    """Parse one in-memory historical response into validated quote rows.
+
+    ``event_game_map`` maps provider event id -> canonical BK game_id. Missing
+    mappings fail loudly. A caller-supplied hash must equal the deterministic
+    canonical-JSON hash of ``payload``; providing an ID never bypasses that
+    check. File ingestion separately binds rows to the archived raw-byte hash.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("historical payload must be a dict")
+    computed_sha = _payload_sha256(payload)
+    if raw_payload_sha256 is not None and raw_payload_sha256 != computed_sha:
+        raise ValueError("raw_payload_sha256 does not match the supplied payload")
+    payload_sha = raw_payload_sha256 or computed_sha
+    payload_id = raw_payload_id or f"sha256:{payload_sha}"
+    return _parse_historical_payload(
+        payload,
+        ingested_at=ingested_at,
+        event_game_map=event_game_map,
+        payload_id=str(payload_id),
+        payload_sha=str(payload_sha),
+        timing_label=timing_label,
+    )
+
+
 def parse_historical_file(path, *, ingested_at, event_game_map, timing_label=None) -> pd.DataFrame:
-    """Read one archived JSON response and parse it reproducibly."""
+    """Read one archived JSON response and bind quotes to its raw-byte hash."""
     p = Path(path)
     raw = p.read_bytes()
     payload_sha = hashlib.sha256(raw).hexdigest()
@@ -276,11 +286,11 @@ def parse_historical_file(path, *, ingested_at, event_game_map, timing_label=Non
         payload = json.loads(raw)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ValueError(f"invalid archived JSON payload {p}: {exc}") from exc
-    return parse_historical_payload(
+    return _parse_historical_payload(
         payload,
         ingested_at=ingested_at,
         event_game_map=event_game_map,
-        raw_payload_id=f"sha256:{payload_sha}",
-        raw_payload_sha256=payload_sha,
+        payload_id=f"sha256:{payload_sha}",
+        payload_sha=payload_sha,
         timing_label=timing_label,
     )
