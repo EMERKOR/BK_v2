@@ -118,3 +118,14 @@ def test_provider_update_after_snapshot_fails():
             ingested_at="2025-10-01T16:02:00Z",
             event_game_map={"evt1": "2025_05_NE_BUF"},
         )
+
+
+def test_direct_caller_cannot_forge_payload_hash_with_explicit_id():
+    with pytest.raises(ValueError, match="raw_payload_sha256 does not match"):
+        parse_historical_payload(
+            _payload(),
+            ingested_at="2025-10-01T16:02:00Z",
+            event_game_map={"evt1": "2025_05_NE_BUF"},
+            raw_payload_id="attacker-controlled-id",
+            raw_payload_sha256="0" * 64,
+        )
