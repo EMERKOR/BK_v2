@@ -77,12 +77,22 @@ Whole-number spread and total prices must preserve push as a distinct result/pro
 
 Every out-of-sample or prospective forecast that may later be evaluated must be registered before its target outcome is admitted to that model's future training state.
 
+`forecast_time` is specifically the timezone-aware **decision/as-of timestamp**
+at which the forecast's information state is frozen. It is not the target game
+or event timestamp. The target may occur later (for example, kickoff after a
+pregame decision), and a prospective forecast may and should be registered
+before that target begins. The registry requires
+`training_cutoff < forecast_time <= created_at_utc`: creation at or after the
+decision snapshot prevents backdating the frozen-information claim; it does not
+require or encourage creation after the target event. Target timestamps and
+outcomes are not fields in the immutable forecast record.
+
 Each forecast record identifies at minimum:
 
 - deterministic `forecast_id`
 - experiment/model family/version
 - target
-- timezone-aware forecast timestamp
+- timezone-aware forecast decision/as-of timestamp (distinct from target time)
 - feature context ID
 - strict training cutoff before forecast time
 - prediction artifact path
@@ -106,6 +116,13 @@ Outer evaluation must be rolling/chronological:
 `train through t-1 -> fit/select/calibrate using prior data only -> predict t -> freeze -> advance`
 
 Hyperparameters, preprocessing, calibration and feature selection are part of training and therefore cannot use the outer forecast block.
+
+The chronological key supplied to the walk-forward utility must represent the
+information-availability or decision boundary appropriate to the experiment.
+The utility can enforce ordering of supplied timestamps, but it cannot detect
+same-day or within-block leakage if a caller supplies target kickoff while
+training information only became available later. Establishing that eligibility
+timestamp is the caller's responsibility.
 
 ## 6. Estimand/metric alignment
 
@@ -164,3 +181,6 @@ deterministic JSON Lines; a companion `market_ingestion_manifest_v0.1` records
 every raw file path/hash, provider snapshot time, mapping artifact path/hash,
 ingestion timestamp and output hash. Synthetic fixtures validate this machinery;
 they do not establish that paid historical market data has been populated.
+Paths under an explicit raw root are stored relative to that root. Mapping,
+output and unrooted raw paths are stored relative to the repository when they
+are inside it; external paths remain absolute to avoid ambiguous provenance.
