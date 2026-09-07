@@ -67,7 +67,7 @@ def test_multiclass_brier_preserves_push_category():
     probs = [[0.6, 0.1, 0.3], [0.2, 0.2, 0.6]]
     outcomes = [[1, 0, 0], [0, 1, 0]]
     score = multiclass_brier(probs, outcomes)
-    assert score > 0
+    assert score == pytest.approx(0.65)
 
 
 def test_multiclass_brier_rejects_non_normalized_probabilities():
