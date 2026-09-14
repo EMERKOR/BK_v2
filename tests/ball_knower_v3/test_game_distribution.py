@@ -1,6 +1,7 @@
 """Tests for betting-relevant v3 discrete distribution mechanics."""
 
 import numpy as np
+import pytest
 
 from ball_knower_v3.modeling.game_distribution import (
     StudentTMixture,
@@ -27,6 +28,24 @@ def test_discretization_preserves_total_mass_with_explicit_tails():
     assert distribution.upper_tail > 0.0
 
 
+def test_cdf_is_consistent_with_atoms_and_explicit_upper_tail():
+    distribution = _distribution()
+    support = distribution.support
+    for outcome in (-20, 0, 20, int(support[-1])):
+        current = distribution.cdf_at(outcome)
+        previous = distribution.lower_tail if outcome == support[0] else distribution.cdf_at(outcome - 1)
+        assert abs((current - previous) - distribution.mass_at(outcome)) < 1e-12
+    assert abs(distribution.cdf_at(int(support[-1])) + distribution.upper_tail - 1.0) < 1e-12
+
+
+def test_exact_cdf_refuses_unresolved_tail_internals():
+    distribution = _distribution()
+    with pytest.raises(ValueError, match="outside represented support"):
+        distribution.cdf_at(int(distribution.support[0]) - 1)
+    with pytest.raises(ValueError, match="outside represented support"):
+        distribution.cdf_at(int(distribution.support[-1]) + 1)
+
+
 def test_whole_number_line_has_exact_push_mass():
     distribution = _distribution()
     probs = threshold_probabilities(distribution, 3.0)
@@ -49,6 +68,17 @@ def test_randomized_pit_lives_inside_observed_atom_interval():
     high = randomized_pit(distribution, outcome, uniform=1.0)
     assert high > low
     assert abs(high - low - distribution.mass_at(outcome)) < 1e-12
+
+
+def test_randomized_pit_handles_tail_observations_as_coarsened_bins():
+    distribution = _distribution()
+    below = int(distribution.support[0]) - 5
+    above = int(distribution.support[-1]) + 5
+
+    assert randomized_pit(distribution, below, uniform=0.0) == 0.0
+    assert abs(randomized_pit(distribution, below, uniform=1.0) - distribution.lower_tail) < 1e-12
+    assert abs(randomized_pit(distribution, above, uniform=0.0) - (1.0 - distribution.upper_tail)) < 1e-12
+    assert randomized_pit(distribution, above, uniform=1.0) == 1.0
 
 
 def test_mixture_differs_from_plug_in_single_component():
