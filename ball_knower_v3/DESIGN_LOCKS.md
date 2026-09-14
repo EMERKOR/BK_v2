@@ -192,6 +192,67 @@ Do not assume every game has the same uncertainty. Starter uncertainty, limited 
 
 Latent-state uncertainty must propagate into downstream game distributions.
 
+## Direct game-model implementation contract — RESOLVED
+
+Detailed research and implementation rationale are preserved in `design_decisions/game_forecast_implementation_contract_v1.md`.
+
+### Structural predictors — LOCK / BASELINE
+
+`LOCK`: matchup predictors are constructed from the same causal joint posterior state draw. Structural state remains market-free.
+
+`BASELINE`:
+
+- `eta_home = alpha_state + O_home - D_away`;
+- `eta_away = alpha_state + O_away - D_home`;
+- margin uses `eta_home - eta_away` plus time-varying league HFA/neutral handling;
+- total uses `eta_home + eta_away` plus a league/era baseline.
+
+Weather, roof, rest, travel, pace, PROE, non-QB injuries, explicit QB adjustment and key-number correction remain outside the first baseline.
+
+### State uncertainty integration — LOCK / BASELINE
+
+`LOCK`: posterior-mean team ratings alone do not count as uncertainty propagation.
+
+`BASELINE`: integrate the direct game model over joint posterior state draws and game-model parameter uncertainty. Monte Carlo integration over frozen causal state draws is the reference implementation.
+
+### Regression and priors — LOCK / BASELINE
+
+`LOCK`: the structural EPA-to-score coefficient is learned; no play-count multiplier is imposed. Predictor scaling uses training information only.
+
+`BASELINE`: small linear location models with proper weakly informative priors after scaling. Exact coefficient-prior family/scale is selected by prior-predictive checks and chronological sensitivity, not copied mechanically from generic defaults.
+
+### Residual family — BASELINE
+
+Use target-specific homoskedastic Student-t residuals first, with learned scale and tail behavior from prior-time data. Gaussian, heteroskedastic, empirical-residual and richer distributional forms remain `TEST`.
+
+### Integer PMF — LOCK / BASELINE
+
+`LOCK`: final exposed margin/total distributions are discrete and retain explicit push mass.
+
+`BASELINE`: for integer `k`, compute `P(Y=k)=F(k+0.5)-F(k-0.5)` for each posterior predictive mixture component/draw and average the bin masses. Use explicit tail accumulation and normalization checks.
+
+Do not hand-delete improbable football score values or move probability to key numbers in the baseline.
+
+### Key numbers — LOCK / TEST
+
+`LOCK`: exact-margin calibration, especially 3 and 7, must be measured.
+
+`BASELINE`: no custom key-number reweighting.
+
+`TEST`: post-hoc reweighting, empirical PMF, discrete margin models and coherent exact-score/scoring-process models.
+
+### Historical fit cadence — LOCK / BASELINE
+
+`LOCK`: each historical forecast uses only outcomes, scaling, HFA, era-baseline estimates and calibration information available before that origin.
+
+`BASELINE`: expanding-window forecast origins aligned with the team-state replay shell.
+
+### Calibration diagnostics — LOCK / BASELINE
+
+`LOCK`: evaluate full predictive distributions with proper scores and valid discrete calibration diagnostics. Continuous PIT applied naively to an integer PMF is not sufficient.
+
+`BASELINE`: report CRPS, reproducibly seeded randomized PIT/discrete calibration, interval/quantile coverage, exact margin calibration at 3 and 7, and threshold reliability. Post-hoc recalibration is diagnostic/challenger work, not an automatic baseline layer.
+
 ---
 
 # Design Lock 6 — Shared game environment
@@ -576,13 +637,13 @@ Durable proof that a model/experiment artifact existed and was actually frozen/e
 
 # Current stopping point / next-thread boundary
 
-The minimum team-state implementation contract is now resolved. The project should move into implementation of the benchmark ladder rather than reopen the settled team-state architecture.
+The minimum team-state and direct game-model implementation contracts are now resolved. Both predictive baseline layers are ready to enter implementation and benchmark validation without reopening their settled architecture.
 
 Priority open work:
 
-1. implement and validate the reviewed team-state benchmark ladder under the resolved contract;
-2. resolve the exact direct game-model implementation/calibration contract without premature key-number correction;
-3. QB representation promotion experiment;
+1. implement and validate the reviewed team-state benchmark ladder;
+2. implement and validate the direct margin/total benchmark ladder under `game_forecast_implementation_contract_v1.md`;
+3. design the QB representation promotion experiment;
 4. PIT weather-data feasibility before weather promotion;
 5. ESC-A archive semantics;
 6. ESC-B durable pre-outcome artifact proof;
@@ -608,6 +669,8 @@ Key sources include:
 - Yurko, Ventura & Horowitz (2019), `nflWAR` — expected-points/player attribution methodology and limitations.
 - Dmochowski (2023), *A statistical theory of optimal decision-making in sports betting* — threshold/quantile relevance to betting decisions.
 - Gneiting & Raftery (2007), *Strictly Proper Scoring Rules, Prediction, and Estimation* — proper probabilistic evaluation.
+- Gneiting, Balabdaoui & Raftery (2007), *Probabilistic Forecasts, Calibration and Sharpness* — distribution calibration and sharpness diagnostics.
+- Gneiting & Katzfuss (2014), *Probabilistic Forecasting* — proper-score/calibration framework.
 - Bailey et al., *The Probability of Backtest Overfitting* — repeated model-selection/holdout reuse risk.
 - Borghesi (2008), *Weather biases in the NFL totals market* — historical weather/scoring evidence; insufficient by itself for modern baseline promotion.
 - nfelo (2020), *Weighted EPA Methodology & Performance* — practitioner evidence for leverage weighting plus explicit overfitting/lookahead caution.
