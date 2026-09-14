@@ -30,14 +30,15 @@ class GameObservationBatch:
     """One completed game's eligible play observations.
 
     ``state_week`` is a monotonically increasing competition-week index used by
-    the latent process.  It is deliberately distinct from a cosmetic schedule
-    label so historical postponements/reschedules can be encoded according to
-    the actual replay chronology.
+    the latent process. It is deliberately distinct from a cosmetic schedule
+    label so postponements/reschedules can be encoded according to actual
+    replay chronology.
     """
 
     game_id: str
     season: int
     state_week: int
+    kickoff_at: datetime
     completed_at: datetime
     offenses: tuple[str, ...]
     defenses: tuple[str, ...]
@@ -48,6 +49,8 @@ class GameObservationBatch:
             raise ValueError("game_id is required")
         if self.state_week < 0:
             raise ValueError("state_week cannot be negative")
+        if self.completed_at < self.kickoff_at:
+            raise ValueError("completed_at cannot precede kickoff_at")
         if not (len(self.offenses) == len(self.defenses) == len(self.epa)):
             raise ValueError("offense, defense, and EPA arrays must have equal length")
         if not self.epa:
@@ -64,7 +67,12 @@ class FrozenPregameState:
 
 
 class CausalTeamStateReplay:
-    """Replay completed games without future smoothing or retroactive states."""
+    """Replay completed games without future smoothing or retroactive states.
+
+    Games are incorporated only after completion. A game's frozen pregame
+    state is timestamped at kickoff and therefore cannot contain its own result.
+    Earlier completed games may inform later kickoffs when chronology permits.
+    """
 
     def __init__(self, model: ReplayableTeamStateModel) -> None:
         self.model = model
@@ -96,7 +104,7 @@ class CausalTeamStateReplay:
                 assert current_week is not None
                 if game.state_week < current_week:
                     raise ValueError(
-                        "state_week moved backward in actual completion order; encode reschedules "
+                        "state_week moved backward in completion order; encode reschedules "
                         "with a causal competition-week index"
                     )
                 if game.state_week > current_week:
@@ -109,7 +117,7 @@ class CausalTeamStateReplay:
                     game_id=game.game_id,
                     season=game.season,
                     state_week=game.state_week,
-                    as_of=game.completed_at,
+                    as_of=game.kickoff_at,
                     posterior=TeamStatePosterior(
                         posterior.team_ids,
                         posterior.mean.copy(),
