@@ -2,26 +2,26 @@
 
 ## Purpose
 
-This file is the canonical repo-level record of Ball Knower v3 modeling architecture decisions made before implementation.
+This is the canonical repo-level source of truth for Ball Knower v3 modeling architecture.
 
-Research or discussion in chat is **not** considered an adopted Ball Knower design decision until it is recorded here. Implementation contracts and build reports must preserve these decisions or explicitly document an approved revision.
+Individual files under `design_decisions/` preserve supporting research and decision history. If one of those files conflicts with this document, this document controls unless a later explicit reconciliation says otherwise.
 
-This file was comprehensively reconciled on **2026-09-14** against recent Ball Knower chats, the current repository, and a fresh research pass. Older chat conclusions were treated as hypotheses to re-evaluate, not as authority.
+This file was independently adversarially reviewed on **2026-09-14** after a long sequence of research decisions. That review deliberately demoted several over-specified proposals back to `TEST` where the evidence supported plausibility but not baseline promotion. See `DESIGN_ADVERSARIAL_REVIEW_2026-09-14.md`.
 
 ## Status vocabulary
 
-Use only these four statuses for modeling decisions:
+Use only these four modeling statuses:
 
-- **LOCK** — architectural requirement. Implementations may vary, but they may not violate the principle without an explicit design revision.
-- **BASELINE** — first implementation/reference model. It is not presumed to be the eventual production winner.
-- **TEST** — plausible extension or challenger that must earn promotion through leakage-resistant chronological evaluation.
-- **DEFER** — intentionally outside the current design/build scope.
+- **LOCK** — architectural requirement; may change only through explicit design revision.
+- **BASELINE** — first implementation/reference model; not presumed to be the eventual production winner.
+- **TEST** — challenger/extension that must earn promotion through leakage-resistant chronological evaluation.
+- **DEFER** — intentionally outside current scope.
 
-Engineering audit escalations may continue to use the existing `ESC-*` naming where a build discovers an unresolved architecture question.
+Engineering audit escalations may use `ESC-*` labels for unresolved engineering architecture questions.
 
 ## Evidence discipline — LOCK
 
-Every substantive modeling decision must identify the strongest evidence class supporting it:
+Every substantive modeling decision must distinguish evidence strength:
 
 - **A — direct peer-reviewed NFL evidence**
 - **B — established statistical/methodological theory**
@@ -29,7 +29,7 @@ Every substantive modeling decision must identify the strongest evidence class s
 - **D — data/vendor documentation**
 - **E — engineering/design inference**
 
-A strong design inference must not be described as “research-proven” merely because it is football-plausible. Where direct evidence is weak, the correct status is normally `BASELINE`, `TEST`, or `DEFER`.
+Football intuition or a plausible mechanism is not enough to call a design research-proven. Where direct evidence is weak, prefer `BASELINE`, `TEST`, or `DEFER` rather than a false lock.
 
 ---
 
@@ -39,134 +39,101 @@ A strong design inference must not be described as “research-proven” merely 
 
 `ball_knower_v3` is the production architecture and source of truth.
 
-Legacy v2 outputs, assumptions, historical model results, and performance claims are untrusted reference material unless independently revalidated under v3's point-in-time and evaluation standards. Legacy ideas may inspire challengers; they may not silently enter production.
+Legacy v2 outputs, assumptions, historical model results, and performance claims are untrusted unless independently revalidated under v3 point-in-time and evaluation standards.
 
 ## Layer separation — LOCK
 
 The conceptual dependency chain is:
 
-`raw source -> canonical facts -> point-in-time feature/state layers -> predictive football state -> shared game environment -> game/player predictive distributions -> market comparison -> wager selection/sizing -> evaluation/reporting`
+`raw source -> canonical facts -> PIT feature/state layers -> predictive football state -> shared game environment -> game/player predictive distributions -> market comparison -> wager selection/sizing -> evaluation/reporting`
 
-Upstream factual layers may not silently contain downstream ratings, models, betting assumptions, or post-outcome information.
+Upstream factual layers may not silently contain downstream ratings, market information, betting assumptions, or post-outcome information.
 
 ## Point-in-time causality — LOCK
 
-Every input used by a forecast must be supportable as available at that forecast's decision/as-of timestamp.
+Every forecast input must be supportable as available at the forecast decision/as-of timestamp.
 
-Where a source has an availability field, the invariant is conceptually:
+Where available:
 
 `source_known_time <= forecast_time`
 
-There is **no universal weekly cutoff** that makes information valid merely because it describes an earlier football event. Actual historical availability governs eligibility.
-
-Unknown historical availability remains unknown. The system must fail closed rather than invent availability timestamps.
+There is no universal weekly cutoff that retroactively makes information valid. Unknown historical availability remains unknown; fail closed rather than invent timestamps.
 
 ## Frozen evidence chain — LOCK
 
-Out-of-sample/prospective forecasts that may later be evaluated must be frozen before the outcome can influence the model version being evaluated. The architecture must preserve durable lineage from the frozen information state through the forecast/model version and, when applicable, the executable wager.
-
-Historical records are append-only evidence. Discovering a bug does not authorize rewriting the old forecast as though the corrected version had existed at the time.
+Forecasts used for out-of-sample/prospective evaluation must be frozen before outcomes can affect the evaluated version. Historical forecasts are append-only evidence; fixing a bug does not authorize rewriting what was forecast originally.
 
 ---
 
-# Evaluation and promotion discipline
+# Evaluation and promotion
 
 ## Chronological evaluation — LOCK
 
-Production evidence must use rolling/chronological out-of-sample evaluation. Random production train/test splits are not valid evidence for temporal NFL forecasting.
+Production evidence uses rolling/chronological out-of-sample evaluation. Random production train/test splits are not acceptable evidence for temporal forecasting.
 
-Hyperparameters, recency parameters, preprocessing, feature selection, calibration, and model-family choices are training decisions and may use prior-time data only.
+Hyperparameters, recency, preprocessing, feature selection, calibration and model-family decisions use prior-time data only.
 
 ## Separate scorecards — LOCK
 
-Keep separate evaluation layers for:
+Maintain distinct scorecards for:
 
-1. **football forecast quality**;
-2. **market-relative forecast quality**;
-3. **actual betting performance at executable prices**.
-
-A model can be a useful football forecaster and still add no information beyond the market. A profitable finite backtest can also occur without durable forecasting skill.
-
-## Metric/estimand alignment — LOCK
-
-- conditional mean -> MSE / RMSE
-- conditional median -> MAE
-- quantile -> pinball loss
-- full predictive distribution -> CRPS or another proper distributional score
-- binary threshold probability -> Brier/log score
-- whole-number cover/push/lose -> proper multicategory probability score
+1. football forecast quality;
+2. market-relative forecast quality;
+3. actual wagering performance at executable prices.
 
 ROI alone is never sufficient model evidence.
 
+## Metric/estimand alignment — LOCK
+
+- conditional mean -> MSE/RMSE
+- conditional median -> MAE
+- quantile -> pinball loss
+- full distribution -> CRPS or another proper distributional score
+- binary threshold probability -> Brier/log score
+- whole-number cover/push/lose -> proper multicategory probability score
+
 ## Calibration — LOCK
 
-Probability and distribution forecasts must be evaluated for calibration as well as sharpness/accuracy. Calibration procedures themselves must be fit only on prior-time data.
+Probability/distribution forecasts must be evaluated for calibration as well as sharpness/accuracy. Calibration procedures themselves are trained only on prior-time data.
 
 ## Promotion gate — LOCK
 
-Repeatedly comparing hundreds of variants against the same historical holdout contaminates that holdout through model-selection feedback even if the rows were never directly fit.
+Repeated model selection against the same holdout contaminates the holdout. Before production promotion, preserve a final genuinely unconsumed promotion gate after candidate family, feature policy and tuning process are frozen.
 
-Before promotion, Ball Knower must preserve a final promotion gate that remains unseen until the candidate model family, feature policy, and tuning process are frozen. The exact gate construction may evolve, but it must be temporally later or otherwise genuinely unconsumed by the development process.
+## Prospective contamination — LOCK
 
-## Prospective evidence contamination — LOCK
-
-Once observed prospective results cause a model, feature, threshold, calibration, or policy change, those observations become **development evidence for the revised version**. They remain valid prospective evidence for the previously frozen version but may not continue to be described as untouched prospective evidence for the revision.
-
-Research basis: proper scoring-rule theory supports distribution/probability evaluation; backtest-overfitting literature supports guarding against repeated model-selection reuse of the same historical evidence. Exact promotion mechanics are Ball Knower design inference and must be documented before use.
+Once observed prospective results drive a revision, those observations become development evidence for the revised version. They remain prospective evidence only for the prior frozen version.
 
 ---
 
 # Market and betting semantics
 
-## Football forecast -> market evaluation -> betting decision — LOCK
+## Structural football forecast is separate from market and wager layers — LOCK
 
-The structural football model, market-informed forecasting, and wager selection are separate layers.
-
-The structural football branch must not ingest sportsbook information and then claim an independent football forecast. Market information may be used in a separately identified market-informed branch and as a benchmark.
+The structural football branch may not ingest sportsbook information and then claim to be an independent football forecast. Market-informed forecasting, market benchmarking and wager selection are separate identified layers.
 
 ## Timestamped market facts — LOCK
 
-Where available, preserve separately:
+Preserve provider snapshot, bookmaker update, market update and Ball Knower ingestion timestamps separately when available. Never substitute one timestamp for another merely because a field is missing.
 
-- provider snapshot time;
-- bookmaker last-update time;
-- market last-update time;
-- Ball Knower ingestion time.
+## Margin / fair-line terminology — LOCK
 
-Do not substitute one timestamp for another merely because another field is missing. Unknown status or executability must not become affirmative availability.
+- **expected margin** = conditional mean of home margin
+- **median margin** = 50th percentile
+- **price-neutral handicap** = threshold approximately equalizing side probabilities under neutral pricing, with pushes/discreteness handled explicitly
+- **fair price at line X** = price implied by Ball Knower cover/push/lose probabilities at the actual offered line
 
-## Expected margin is not “the fair spread” — LOCK
+Do not call a sportsbook spread the market expected mean margin by default.
 
-Use precise terminology:
+## Fair-value calculation at actual line — LOCK
 
-- **expected margin** — conditional mean of home margin;
-- **median margin** — 50th percentile of home margin;
-- **price-neutral handicap** — a handicap that approximately equalizes side probabilities under neutral/equal-price treatment, with NFL scoring discreteness and pushes handled explicitly;
-- **fair price at line X** — the price implied by Ball Knower's cover/push/lose probabilities at the actual sportsbook line.
+Betting decisions use probability mass relative to the actual line and executable price. Whole-number lines retain explicit push probability.
 
-Do not describe a sportsbook spread as literally “the market's expected mean margin.” Empirical NFL evidence shows spreads are strongly informative about the median outcome, while betting decisions depend on threshold probabilities/quantiles and the offered price.
+## Reference market vs executable quote — LOCK
 
-## Fair-value calculation at the offered line — LOCK
+A reference/consensus market used as a forecast benchmark is distinct from the executable sportsbook offer used for a wager.
 
-For a candidate wager, the economically relevant output is the predictive probability mass relative to the actual line and the actual executable price. Whole-number lines retain push probability explicitly.
-
-## Market residual language — LOCK
-
-A target such as:
-
-`actual margin - contemporaneous market handicap`
-
-may be modeled as a **market-relative margin residual**. It must not be mislabeled as error relative to the market's conditional mean unless that estimand has actually been established.
-
-## Reference market vs executable book — LOCK
-
-A market-information benchmark and an executable offer are different objects.
-
-- The executable book/quote determines whether a wager could actually be placed and at what price.
-- A contemporaneous multi-book or otherwise defined reference market may serve as the forecasting benchmark.
-- No sportsbook is permanently declared universally “sharp” without empirical evidence for the relevant market family and era.
-
-The exact production consensus recipe is `TEST` and remains to be selected.
+The exact production consensus recipe remains `TEST`.
 
 ---
 
@@ -174,287 +141,334 @@ The exact production consensus recipe is `TEST` and remains to be selected.
 
 ## Predictive targets — LOCK
 
-Game models must ultimately produce distributions sufficient to price sides/totals, including push probabilities where applicable.
+Game models ultimately produce distributions sufficient to price sides and totals, including pushes.
 
-Primary game quantities may include:
+Useful primary quantities include:
 
 `M = home points - away points`
 
 `T = home points + away points`
 
-The architecture does not require these to be the only internal representation.
+but internal representation is not permanently fixed.
 
-## Direct margin and total models — BASELINE
+## Learned scoreboard bridge — LOCK
 
-The first game-model baselines may model margin and total directly and separately.
+Do **not** mechanically convert EPA into points by multiplying EPA/play by an assumed play count.
 
-## Joint score / multivariate game models — TEST
+Latent football-state quantities are inputs to a learned scoreboard-scale model because final scores also depend on possessions, field position, finishing, turnovers, special teams and discrete football scoring.
 
-Required challengers may include:
+## Separate direct margin and total models — BASELINE
 
-- joint home/away score models;
-- multivariate margin/total models;
-- coherent game-score simulation.
+The first game-forecast baseline models margin and total directly and separately from causal pregame state summaries and a small approved context set.
 
-NFL exact-score research demonstrates that coherent score models are feasible and can be competitive. Ball Knower therefore must not make separate direct margin/total modeling a permanent dogma.
+## First direct probabilistic family — BASELINE
+
+A simple regularized probabilistic location model is the first implementation baseline; Bayesian Student-t regression is the preferred initial candidate because it supports robust tails and uncertainty propagation.
+
+Output must be converted to discrete/integer probabilities sufficient for exact push calculations.
+
+## Key-number structure — LOCK principle / TEST correction
+
+NFL final margins have structural probability mass at key numbers, especially 3 and 7. A smooth continuous density must not be assumed adequate merely because its mean/variance are calibrated.
+
+However, the previously proposed custom post-hoc key-number multiplier/calibration layer is **TEST**, not BASELINE. Exact-margin calibration must be measured chronologically before any correction is promoted.
+
+## Joint score / multivariate models — TEST
+
+Required challengers include:
+
+- empirical residual/PMF approaches;
+- heteroskedastic/distributional regression;
+- coherent quantile models;
+- joint margin/total models;
+- joint home/away exact-score models;
+- drive/possession simulation.
+
+NFL exact-score research establishes feasibility, not automatic superiority.
 
 ## Conditional uncertainty — LOCK
 
-Do not assume one global residual/error distribution applies equally to every game. Predictive uncertainty should ultimately be allowed to depend on the information state (for example starter uncertainty, limited team evidence, unusual context, or other validated factors).
+Do not assume every game has the same uncertainty. Starter uncertainty, limited state evidence and other validated conditions must be able to widen or reshape the predictive distribution.
 
-A simple out-of-sample empirical residual distribution is a valid `BASELINE`; conditional residual models, quantile/distributional regression, and calibrated simulation are `TEST` challengers.
+Latent-state uncertainty must propagate into downstream game distributions.
 
 ---
 
-# Design Lock 6 — Shared Game Environment
+# Design Lock 6 — Shared game environment
 
 ## One-way v1 dependency graph — LOCK
 
-For the initial architecture:
+Initial architecture:
 
-`predictive football state -> shared game-environment facts/features -> separate side/total/prop predictive models`
+`predictive football state -> shared environment -> separate side/total/prop models`
 
-Do not create circular prediction dependencies in which a prop forecast changes the game forecast which then changes the same prop forecast. A future coherent joint generative system may replace this structure only after explicit design review and validation.
+No circular prediction loop in which the prop forecast changes the game forecast which then changes the same prop forecast.
 
-## Home-field advantage is time-varying — LOCK principle / TEST exact form
+## Home-field advantage — LOCK principle / BASELINE league trend
 
-Home advantage must not be a permanently fixed historical constant. NFL research using long samples finds that home advantage has declined over time, and recent state-space work explicitly models a temporal HFA trend.
+Home advantage is not a permanently fixed historical constant. Modern NFL research shows it has declined.
 
-`BASELINE`: a league-level time-varying HFA parameter estimated from historical data.
-
-`TEST`: richer venue/team interactions if they add out-of-sample value.
+`BASELINE`: league-level time-varying HFA estimated from prior-time data.
 
 Neutral-site games receive no ordinary home-site HFA contribution.
 
+Team/venue-specific effects remain `TEST`.
+
 ## Rest differential — TEST; no fixed modern bye bonus
 
-Rest information remains an eligible shared-environment feature, but no hand-coded universal bye-week or mini-bye point bonus is permitted.
+No universal hand-coded bye, mini-bye or short-week bonus. Modern NFL evidence finds no significant current universal bye/mini-bye advantage. Rest remains an eligible challenger.
 
-Fresh NFL research covering 2002–2023 found no significant current advantage for the commonly cited bye/mini-bye effects and documented a historical decline after the 2011 CBA. Any modern rest effect must therefore earn inclusion empirically and may vary by era/context.
+## Weather and roof — TEST
 
-## Weather and roof/stadium state — TEST
+Weather can materially affect NFL scoring historically, but the evidence does not establish stable modern incremental value for the current Ball Knower model, and historical replay requires genuine PIT forecast provenance.
 
-Historically available pregame weather forecasts and roof/stadium status are legitimate candidate inputs, particularly for totals and play environment. Older NFL evidence establishes that adverse weather can affect scoring, but it does not prove a durable modern market-relative edge after all other information is included.
+Therefore roof, forecast wind, precipitation and temperature/climate interactions remain `TEST` until Ball Knower has a supportable historical forecast dataset and chronological evidence.
 
-Use only weather information that was actually available at forecast time. Do not use realized game weather to simulate an earlier historical decision.
+Never use realized postgame weather as if it were known at an earlier forecast time. No fixed weather point rule is allowed.
 
-No universal “wind = minus X points” or similar hand rule is locked.
+## Travel / time zone — TEST
 
-## Travel / time-zone effects — TEST
+Travel distance, direction, time zones, body-clock context and international travel are plausible but insufficiently supported for a fixed baseline adjustment.
 
-Travel distance, time-zone direction, local body-clock context, and unusual scheduling are plausible candidate inputs, but the NFL-specific evidence is not strong enough to justify a fixed production adjustment.
+## Pace / play volume / PROE — TEST
 
-Keep them available for PIT-safe testing. Do not hand-code a universal travel penalty.
+Expected possessions, pace and pass/rush tendency are plausible shared-environment features but may duplicate team/QB/game-state information. They must earn inclusion chronologically.
 
-## Pace and pass/rush tendency — TEST / shared capability
+## Initial environment baseline
 
-Expected play volume, pace, dropback/pass tendency, and designed rushing volume are legitimate shared-environment quantities. Observed tendencies should be contextualized rather than treated as invariant raw rates.
+**Margin:** structural matchup state + time-varying HFA + neutral-site handling + propagated state uncertainty.
 
-The exact model (including PROE-style constructions) must earn promotion chronologically.
+**Total:** structural matchup state + league/era baseline + propagated state uncertainty.
+
+Weather/roof/rest/travel/pace/PROE/non-QB injury features remain challengers until validated.
 
 ---
 
-# Design Lock 7 — Team State
+# Design Lock 7 — Team state
 
 ## Dynamic team ability — LOCK
 
-Team ability is latent, time-varying, and uncertain rather than a collection of arbitrary rolling-window averages.
-
-A team's state is updated sequentially as new games become available. Previous state persists, new evidence updates it, and older evidence loses influence through an estimated transition process rather than disappearing at a hand-selected window boundary.
+Team ability is latent, time-varying and uncertain rather than a collection of arbitrary rolling averages.
 
 ## Opponent-relative estimation — LOCK
 
-Opponent quality must be incorporated in the estimation problem itself.
+Opponent quality belongs directly in the estimation problem:
 
-Conceptually:
+`observed offensive performance = offense state - opponent defense state + context + noise`
 
-`observed offensive performance = offensive ability + opponent defensive effect + context + noise`
-
-A separate hand-built opponent-adjustment feature is not required when the state estimator already accounts for opponent quality. Redundant opponent adjustment must not be added automatically.
+Do not automatically add a second opponent-adjustment feature when the state model already handles opponent quality.
 
 ## State uncertainty — LOCK
 
-Every latent team state must carry uncertainty. Limited or unstable evidence must not be treated as equally certain as a well-supported state.
+Every latent state carries uncertainty. Sparse/unstable evidence cannot be treated as equally certain as a mature state.
+
+## Weekly observation signal — RESOLVED
+
+### Play-level EPA — BASELINE
+
+The first serious weekly component-state observation uses eligible play-level scrimmage EPA rather than final score alone or arbitrary last-N averages.
+
+### Robust observation likelihood — LOCK / BASELINE
+
+EPA is noisy and heavy-tailed. Use a robust/heavy-tailed observation model; Student-t is the first baseline candidate.
+
+### Opponent adjustment inside likelihood — LOCK
+
+Offense and opposing defense are estimated jointly from the play evidence.
+
+### Required challengers — TEST
+
+- success rate;
+- properly correlated EPA + success multi-signal models;
+- score/point-differential dynamic benchmark;
+- pass/rush state decomposition;
+- turnover/event weighting;
+- game-state/leverage weighting;
+- joint score + play-value state.
+
+No arbitrary turnover deletion or garbage-time cutoff is locked.
+
+## State-model class — BASELINE / LOCK principles
+
+`BASELINE`: hierarchical Bayesian dynamic offense/defense state-space model with first-order autoregressive transitions and robust play-level observation likelihood.
+
+`LOCK`:
+
+- distinct process vs observation uncertainty;
+- causal forward filtering for historical predictions;
+- posterior uncertainty available downstream;
+- offense and defense may learn separate persistence/process/observation parameters.
+
+`TEST`:
+
+- Gaussian/Kalman approximation;
+- weighted/decayed regression;
+- score-driven models;
+- richer local-trend/change-point transitions;
+- pass/rush states;
+- heavy-tailed process noise.
+
+Backward smoothing may be used only for retrospective diagnostics, never to construct historical forecast states.
 
 ## Offense + defense representation — BASELINE
 
-The first serious component-state representation is:
+The first component representation remains combined team offense and team defense.
 
-- offensive strength;
-- defensive strength.
+A one-dimensional overall-strength model remains a required simpler `TEST` benchmark.
 
-Each component carries a current level and uncertainty estimate.
+## Observation-context policy — LOCK / TEST
 
-## One-dimensional overall team strength — TEST
+Do not automatically re-control variables already embedded in nflfastR's expected-points construction (such as down/distance/field position and other EP context) without residual evidence.
 
-A simpler dynamic overall-strength model remains a required benchmark/challenger. More football-specific state dimensionality must earn its complexity out of sample.
+Core baseline scrimmage observations include ordinary pass/dropback and designed rush plays with valid EPA; sacks and turnovers on otherwise eligible plays remain evidence. Kneels, special teams, extra points/two-point attempts and invalid/no-comparable scrimmage observations do not define ordinary state.
 
-## Pass/rush subcomponents — TEST
+Penalty decomposition, turnover-specific variance, weather adjustment and other nuisance corrections remain `TEST`.
 
-Separate pass offense, rush offense, pass defense, and rush defense are candidate extensions, not mandatory production states.
+### Score/time game-state adjustment — TEST, not mandatory baseline
+
+NFL behavior changes with score/time and crude garbage-time rules are poor. However, direct evidence does not establish that subtracting a smooth `g(score,time)` improves latent team-strength estimation, and score differential is partly endogenous to team quality.
+
+Therefore the baseline robust EPA state has **no mandatory extra score/time mean correction**.
+
+Required challengers:
+
+- jointly estimated smooth score × time mean effect;
+- prior-time-fit/cross-fit game-state model;
+- non-market WP adjustment;
+- leverage weighting;
+- game-state-dependent observation variance;
+- hard garbage-time exclusion only as diagnostic benchmark.
+
+Market/spread-informed WP is prohibited from structural team state.
+
+## Identification — LOCK
+
+Additive offense/defense states require explicit centering, preferably sum-to-zero or an equivalent identified parameterization, with a distinct league intercept.
+
+Any optional game-state smooth must be separately centered/identified.
 
 ## Sequential updating and recency — LOCK
 
-State at time `t` is a function of prior state, new game evidence, opponent/context, and uncertainty.
+Recent evidence influences current state through an estimated transition process rather than a hand-selected last-N window.
 
-Conceptually:
+## State-time granularity — BASELINE
 
-`S_t = f(S_{t-1}, new evidence, opponent, context, uncertainty)`
+Use discrete NFL-week evolution with game-batched observations and a separately modeled offseason transition.
 
-Recent evidence should generally influence current state more than older evidence, but exact persistence/decay parameters are estimated rather than set through unsupported last-N-game rules.
+The implementation must specify deterministic update ordering for unusual schedule/reschedule cases.
+
+Continuous elapsed-time evolution remains `TEST`.
 
 ## Cross-season transition — LOCK
 
-The new season does not reset every team to league average.
+The new season does not reset every team to league average. Prior state carries forward with learned regression toward average and increased uncertainty.
 
-Previous-season state carries into the next season with regression toward league average and increased cross-season uncertainty. Carryover/regression coefficients are learned from historical data rather than chosen by intuition.
+## Offseason personnel — TEST
 
-There is no hand-coded week at which prior-season evidence is discarded; it fades naturally as new evidence accumulates.
+Historically supportable QB change, continuity, coaching and personnel variables may condition offseason transition only after chronological validation.
 
-## Offseason personnel information — TEST
+---
 
-Historically supportable offseason information may be tested for incremental value, including quarterback change, returning snaps/starter continuity, major personnel movement, and coaching/coordinator changes.
-
-Subjective offseason roster grades are `DEFER` for the baseline.
-
-## Independent offense/defense transition parameters — LOCK
-
-Offense and defense must not be forced to share identical persistence, offseason carryover, process variance, or observation variance.
-
-The model must distinguish:
-
-- **process variance** — real movement in underlying strength;
-- **observation variance** — game-level noise around that strength.
-
-Research suggests offense is generally more stable than defense, but Ball Knower must estimate the magnitude rather than hard-code coefficients.
+# Quarterback architecture
 
 ## Quarterback is first-class — LOCK
 
-Quarterback quality and availability require explicit treatment because they can materially alter the complete game distribution.
+QB identity/availability can materially alter the game distribution and must not be ignored as ordinary noise.
 
-EPA/dropback, CPOE, sack avoidance, rushing contribution, turnovers, and related variables are `TEST` candidate features; they are not a universally locked QB specification.
+## Avoid double counting — LOCK
 
-## Avoid quarterback double counting — LOCK
+Do not simply add a full QB rating on top of an offense state that already contains that quarterback's historical production.
 
-Recent offensive team performance already contains quarterback contribution. Do not naively add a full QB-strength estimate on top of an offensive state that already embeds that player's historical production.
+## Uncertain starters use complete outcome mixtures — LOCK
 
-A “current expected QB minus historically embedded QB” adjustment is a `TEST` baseline candidate, not a law.
+When materially different starters remain plausible:
 
-## Unresolved starter uncertainty uses outcome mixtures — LOCK
+`P(Y) = sum_q P(q starts) * P(Y | q starts)`
 
-When materially different starters remain plausible, forecast conditional outcome distributions and mix them by start probability:
+Do not collapse distinct starter scenarios into one synthetic average quarterback if nonlinear outcome effects matter.
 
-`P(Y) = sum_q P(QB=q starts) * P(Y | QB=q)`
+Historical starter probabilities require PIT provenance; do not infer certainty from who eventually started.
 
-Do not collapse substantially different starter scenarios into a single synthetic average player before prediction when nonlinear effects may matter.
+## No fixed QB point values — LOCK
 
-## Weekly observation signal — OPEN
+Do not use subjective rules such as “elite QB = +6 points.” Any translation from QB information to margin/total must be learned and uncertainty-aware.
 
-The next unresolved Design Lock 7 research question remains what game evidence should update offensive and defensive states each week.
+## Explicit QB representation — TEST, not yet canonical BASELINE
 
-Candidates include EPA/play, success rate, score-based observations, pass/rush components, play-volume/context-adjusted measures, or a latent observation model combining multiple signals.
+The adversarial review found the recent QB branch over-specified before identification was demonstrated.
+
+The core team-state baseline therefore remains combined team offense + defense.
+
+Required QB challengers:
+
+1. no explicit decomposition beyond team offense;
+2. recency-consistent current-QB minus embedded-QB approximation;
+3. crossed hierarchical dynamic `NQB_team + Q_qb` decomposition;
+4. richer QB observation signals such as CPOE/sack/turnover/rushing decomposition;
+5. richer rookie/no-NFL priors;
+6. experience-dependent QB process variance.
+
+The crossed decomposition may be promoted only after simulation-based parameter recovery, posterior-correlation diagnostics, chronological starter-change tests, same-starter negative controls and demonstrable improvement over combined offense.
+
+## Rookie/no-NFL priors — TEST
+
+Draft position is a plausible and research-supported prior predictor, with college rushing ability a plausible incremental signal, but exact rookie prior structure is conditional on promotion of an explicit QB model and remains `TEST`.
+
+No special rookie “fast update multiplier” is baseline. Experience-dependent process variance remains `TEST`.
 
 ---
 
 # Player Props
 
-## Props are a first-class product branch — LOCK
+## Props are a first-class branch — LOCK
 
-Sides, totals, and player props are distinct predictive products sharing upstream football state and game context. Player props are not merely derivatives of a side/total projection.
+Sides, totals and player props are distinct predictive products sharing upstream state/environment. Props are not merely derivatives of side/total projections.
 
-## Hierarchical/generative prop architecture — BASELINE
+## Hierarchical/generative architecture — BASELINE
 
-The principal prop baseline is:
+Principal prop baseline:
 
 `PIT football state -> game environment -> player role/opportunity -> conversion/efficiency -> player-stat distribution`
 
-Uncertainty should propagate rather than replacing intermediate distributions with point estimates wherever that loss of uncertainty is material.
-
-This is a strong football/statistical design, but it is not treated as proven universally superior.
+Uncertainty should propagate where material.
 
 ## Direct final-stat challengers — TEST and required
 
-For each supported prop family, maintain a direct final-stat statistical/distributional challenger where feasible.
+For each supported prop family, compare direct final-stat models against decomposed opportunity/efficiency models and ensembles. Decomposition must earn promotion.
 
-The key comparison is:
+## Role/opportunity uncertainty — LOCK principle
 
-`direct model vs decomposed opportunity/efficiency model vs ensemble`
+Participation/opportunity must respond to injuries, depth-chart changes, committees and role uncertainty. Do not mechanically transfer an absent player's historical volume to one replacement.
 
-Decomposition must earn promotion rather than receive production status because it sounds more football-aware.
+## Initial development order — BASELINE
 
-## Role/opportunity uncertainty — LOCK principle / BASELINE implementation
+Start with opportunity/count markets such as QB attempts, RB carries, receptions and QB completions; then add yardage and more complex outcome markets.
 
-Player participation and opportunity must be represented explicitly enough to respond to injuries, depth-chart changes, committees, role changes, and uncertainty.
-
-Candidate state quantities include, as appropriate by position:
-
-- snap share;
-- route participation;
-- target share or target rate conditional on routes/dropbacks;
-- carry share;
-- high-leverage/red-zone/third-down/two-minute role.
-
-Use partial pooling/change-point or other uncertainty-aware methods as `TEST` model choices; do not simply insert arbitrary rolling averages into a final yards model and assume role certainty.
-
-## Injury/absence redistribution — LOCK principle
-
-Opportunity is constrained. Do not mechanically transfer an absent player's historical targets/carries to one named replacement through a hand rule.
-
-Role redistribution should condition on available personnel and carry wider uncertainty when historical precedent is weak.
-
-## Initial prop development order — BASELINE
-
-Start with opportunity/count markets where the architecture can be evaluated more directly:
-
-- QB pass attempts;
-- RB rushing attempts;
-- WR/RB/TE receptions;
-- QB completions.
-
-Then add passing/rushing/receiving yardage. Add interception modeling after the core volume pipeline is stable.
-
-This is a development baseline, not a claim that these markets are inherently easier to beat.
+This is a development sequence, not a claim that those markets are easier to beat.
 
 ## Matchup architecture — TEST
 
-Defensive/matchup variables should be opponent-adjusted and shrunk before promotion. Prefer mechanistic interactions—such as effects on target probability, catch probability, target depth, pressure, or rushing efficiency—over a single final-yard multiplier.
+Opponent-adjust and shrink matchup effects. Prefer mechanistic interactions over one final-yard multiplier.
 
-Alignment, route type, man/zone/shell, pressure/blitz, run-front, and player-scheme interactions remain `TEST` features.
+## Raw DvP / tiny narrative splits — DEFER
 
-## Raw DvP and small narrative splits — DEFER
+Do not promote raw fantasy/yards-allowed-to-position or tiny recent splits as intrinsic matchup skill.
 
-Do not promote raw “fantasy points/yards allowed to position,” tiny last-N-game matchup splits, or targeted-only defender statistics as intrinsic defensive ability without opponent/context adjustment and stability evidence.
+## Deterministic WR-CB / defender-specific suppression — DEFER
 
-## Individual defender / deterministic WR-CB adjustments — DEFER
-
-Modern NFL/AWS tracking demonstrates that defender-receiver assignments can be modeled, but comprehensive historical PIT assignment data and pregame assignment expectations remain difficult dependencies.
-
-Deterministic shadow-CB or defender-specific suppression models remain deferred until Ball Knower has historically supportable pregame assignment probabilities, reliable availability/alignment data, and sufficient sample sizes.
+Tracking research shows assignment modeling is complex. Defer until historically supportable PIT assignment probabilities/data exist.
 
 ## Participation-data availability — LOCK
 
-The date a statistic describes is not the date it became available.
-
-In particular, nflverse documents that its participation data from 2023 onward is supplied after the postseason. Those data may not be used as contemporaneous in-season historical inputs unless an independently documented PIT source exists.
+The date a statistic describes is not necessarily the date it became available. Public nflverse 2023+ participation data supplied after postseason may not be treated as contemporaneous in-season historical information without another PIT source.
 
 ## Prop distributions — LOCK
 
-Each prop model must return or imply enough of a CDF/PMF to compute over, under, and push probability at arbitrary book lines.
-
-Do not assume one Gaussian likelihood is adequate for all player statistics. Zero mass, discreteness, skew, and heavy/explosive-play tails must be respected through model choice or empirical validation.
+Prop models must return or imply enough of a CDF/PMF to price over/under/push at book lines. Zero mass, discreteness, skew and tails must be respected rather than assuming one Gaussian family for all stats.
 
 ## Prop market benchmark — LOCK
 
-Evaluate the football prop distribution against the contemporaneous no-vig market at the same line/time when a valid market benchmark exists.
-
-Keep distinct:
-
-1. football-only prop forecast;
-2. macro-market-informed game-context branch;
-3. current prop market as forecast benchmark;
-4. optional prop-market shrinkage/ensemble (`TEST`).
-
-Do not use a later closing prop market to improve an earlier historical forecast.
+Compare football prop distributions to contemporaneous no-vig markets at the same line/time when available. Never use a later close to improve an earlier historical forecast.
 
 ---
 
@@ -462,81 +476,94 @@ Do not use a later closing prop market to improve an earlier historical forecast
 
 ## Correlated wagers require portfolio treatment — LOCK
 
-Multiple bets sharing the same game, player, team, role, or game-script assumptions are not independent diversification.
+Bets sharing game/player/team/role/game-script assumptions are not independent diversification.
 
 ## Joint scenario simulation — TEST / long-term target
 
-The preferred long-term correlation engine is a joint scenario model in which shared draws such as game volume, game-state path, pass/rush tendency, player availability/role, allocation, QB efficiency, and defensive context generate correlated player/game outcomes.
-
-Exact simulator/correlation structure must be validated rather than assumed.
+A future coherent scenario model may generate correlated game/player outcomes from shared draws. Exact simulator/correlation structure must be validated.
 
 ## Conservative exposure caps before validated joint modeling — LOCK
 
-Until trustworthy joint distributions exist, use conservative exposure controls at game/team/player/shared-thesis levels rather than summing independent Kelly stakes.
+Until trustworthy joint distributions exist, use conservative game/team/player/shared-thesis exposure controls rather than summing independent Kelly stakes.
 
 ## Kelly sizing — TEST
 
-Fractional/uncertainty-aware Kelly and later scenario-based portfolio optimization are candidates only after probability calibration and dependence handling are credible. Full independent Kelly across correlated bets is not allowed as a default production policy.
+Fractional/uncertainty-aware Kelly and later portfolio optimization are candidates only after calibration and dependence handling are credible. Full independent Kelly across correlated bets is not the default.
 
 ---
 
-# Build A / Phase 3A status and escalations
+# Build A / Phase 3A status
 
-## Narrow Phase 3A foundation — CONFIRMED SCOPE
+## Narrow current Phase 3A foundation — CONFIRMED SCOPE
 
-The current `main` Phase 3A implementation is a narrow market-observation and forecast/evaluation foundation. It deliberately does **not** implement executable quote selection, bet records, CLV, ROI optimization, Kelly sizing, predictive models, or a production market-consensus recipe.
+Current `main` Phase 3A is a narrow market-observation and forecast/evaluation foundation. It does not implement predictive models, executable wager selection, BetRecord, CLV/P&L optimization, Kelly or a production wager engine.
 
-Its validation report therefore remains evidence about that narrow scope only.
+Its validation report applies only to that narrow scope.
 
-## Later expanded Build A audit — separate implementation surface
+## Later expanded Build A attempt — NOT APPROVED
 
-A later adversarial audit in chat evaluated a broader implementation at commit `72f41dd0ffd9b7c76bb4fc3421d0517bada493ee` containing concepts such as executable quote selection, betting metrics, and bet records that are not present on current `main`.
+A later broader implementation at commit `72f41dd0ffd9b7c76bb4fc3421d0517bada493ee` included executable/betting components absent from current `main` and failed adversarial review on causality, executability, validation, immutability, scoring and provenance issues.
 
-That broader attempt was **NOT APPROVED**. Its findings must not be erased or conflated with the earlier narrow Phase 3A validation.
-
-Before any of those expanded betting/executability components are reintroduced, the implementation must explicitly address the audited classes of failure: causality/availability, strict price and market validation, verifiable executable-quote binding, deep immutability, finite/proper scoring behavior, and durable experiment provenance.
+Before reintroducing those components, the audited blocker classes must be regression-tested and closed.
 
 ## ESC-A — OPEN
 
-Later-acquired historical archive semantics remain unresolved: what evidence is sufficient to establish historical availability when Ball Knower's original ingestion time is absent?
-
-Until resolved, missing ingestion time cannot be used to assert prospective/live availability.
+Historical archive availability semantics remain unresolved when Ball Knower lacks original ingestion time. Missing ingestion time cannot be used to assert prospective/live availability.
 
 ## ESC-B — OPEN
 
-Durable proof that a model/experiment artifact existed and was actually frozen/examined before outcomes were known remains unresolved. A local registry plus a caller-supplied assertion is not by itself sufficient final evidence architecture.
+Durable proof that a model/experiment artifact existed and was actually frozen/examined before outcomes remains unresolved. A local registry plus caller assertion is not sufficient final evidence architecture.
 
 ---
 
-# Research basis for the 2026-09-14 reconciliation
+# Current stopping point / next-thread boundary
 
-The fresh pass prioritized direct NFL evidence and general statistical methodology, including:
+The architecture is now sufficiently specified for an independent implementation/readiness review. Do **not** continue resolving increasingly narrow model details before implementing and benchmarking the core ladder.
 
-- Glickman & Stern, *A State-Space Model for National Football League Scores* (JASA, 1998) — dynamic team strength, week/season transitions, uncertainty, home-field modeling.
-- Benz, Bliss & Lopez, *A comprehensive survey of the home advantage in American football* (2024) — NFL home advantage has declined; supports time-varying rather than fixed HFA.
-- Lopez & Bliss, *Bye-bye, bye advantage* (Frontiers in Behavioral Economics, 2024) — current bye/mini-bye advantage not significant; state-space treatment of team strength/HFA; historical era change.
-- Baker & McHale, *Forecasting exact scores in National Football League games* (International Journal of Forecasting, 2013) — coherent exact-score models are feasible and can be evaluated out of sample.
-- Dmochowski, *A statistical theory of optimal decision-making in sports betting* (PLOS ONE, 2023) — betting decisions depend on outcome quantiles/threshold probabilities; spread/total strongly track median outcomes.
-- Gneiting & Raftery, *Strictly Proper Scoring Rules, Prediction, and Estimation* (JASA, 2007) — proper evaluation of probabilistic/distributional forecasts.
-- Bailey et al., *The Probability of Backtest Overfitting* — model-selection reuse of historical evidence can produce severe selection bias; used here as methodological support, not NFL-specific proof.
-- Borghesi, *Weather biases in the NFL totals market* (2008) — adverse weather can affect NFL scoring; modern incremental market value must still be retested.
-- nflverse data availability documentation — 2023+ participation data is postseason-only in that public source.
-- NFL Next Gen Stats / AWS Coverage Responsibility documentation (2025) — matchup/assignment modeling is technically feasible but complex and tracking-data dependent.
+Priority open work:
 
-These sources do **not** establish that one exact Ball Knower model family, feature set, or betting strategy will outperform. Where the evidence supports only plausibility or mechanism, the decision above remains `BASELINE`, `TEST`, or `DEFER`.
+1. implementation contract + benchmark ladder for reviewed team-state core;
+2. QB representation promotion experiment;
+3. PIT weather-data feasibility before weather promotion;
+4. direct game-model implementation/calibration benchmark without premature key-number correction;
+5. ESC-A archive semantics;
+6. ESC-B durable pre-outcome artifact proof;
+7. production reference-market consensus recipe;
+8. later prop and correlation implementation under the existing locks.
+
+The next thread should begin from this reviewed canonical state and independently verify implementation readiness rather than reconstructing decisions from chat.
+
+---
+
+# Research basis for the reviewed architecture
+
+Key sources include:
+
+- Glickman & Stern (1998), *A State-Space Model for National Football League Scores* — dynamic uncertain NFL team strength.
+- Benz, Bliss & Lopez (2024), *A comprehensive survey of the home advantage in American football* — declining NFL HFA.
+- Lopez & Bliss (2024), *Bye-bye, bye advantage* — no significant current universal bye/mini-bye advantage.
+- Baker & McHale (2013), *Forecasting exact scores in National Football League games* — coherent exact-score forecasting and discrete football-score structure.
+- Yurko, Ventura & Horowitz (2019), `nflWAR` — expected-points/player attribution methodology and limitations.
+- Dmochowski (2023), *A statistical theory of optimal decision-making in sports betting* — threshold/quantile relevance to betting decisions.
+- Gneiting & Raftery (2007), *Strictly Proper Scoring Rules, Prediction, and Estimation* — proper probabilistic evaluation.
+- Bailey et al., *The Probability of Backtest Overfitting* — repeated model-selection/holdout reuse risk.
+- Borghesi (2008), *Weather biases in the NFL totals market* — historical weather/scoring evidence; insufficient by itself for modern baseline promotion.
+- nfelo (2020), *Weighted EPA Methodology & Performance* — practitioner evidence for leverage weighting plus explicit overfitting/lookahead caution.
+- Financial Research Letters (2026), *Do economically meaningful quote differences convey private information?* — structural mass at NFL margins 3 and 7.
+- nflverse availability documentation and NFL/AWS tracking documentation — PIT and assignment-data constraints.
+
+These sources do not prove one complete Ball Knower model will outperform. Baselines remain hypotheses that must survive chronological testing.
 
 ---
 
 ## Change discipline
 
-When a design decision is resolved:
+When a design decision changes:
 
 1. update this file in the same work session;
-2. mark it `LOCK`, `BASELINE`, `TEST`, or `DEFER`;
-3. identify the evidence class and minimum rationale necessary to prevent later reinterpretation;
-4. do not silently rewrite prior locks after seeing evaluation results;
-5. when a lock changes, preserve the old decision in git history and explain the reason in the commit message/replacement text;
-6. implementation contracts/build reports should reference the relevant design section when that decision enters code;
-7. update `DESIGN_DECISION_RECONCILIATION.md` so chat, design, and implementation status remain synchronized.
-
-The purpose is to make Ball Knower architecture reviewable from the repository without reconstructing it from chat history.
+2. use only LOCK / BASELINE / TEST / DEFER for modeling status;
+3. identify evidence strength and the minimum rationale;
+4. do not silently rewrite locks after seeing results;
+5. preserve old decisions in git history and individual decision files;
+6. implementation contracts/build reports should reference the canonical section entering code;
+7. update `DESIGN_DECISION_RECONCILIATION.md` in the same work session.
