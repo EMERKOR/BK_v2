@@ -2,16 +2,17 @@
 
 The statistical contract is defined in ``ball_knower_v3/DESIGN_LOCKS.md`` and
 ``design_decisions/team_state_implementation_contract_v1.md``. This module
-contains two computational implementations used by the benchmark ladder:
+contains computational reference implementations used by the benchmark ladder:
 
 * ``GaussianOffenseDefenseFilter``: linear-Gaussian reference challenger.
-* ``RobustOffenseDefenseFilter``: Student-t-inspired robust filtering
-  approximation for the reviewed design baseline.
+* ``RobustOffenseDefenseFilter``: one-sided robust Gaussian filtering
+  approximation used to exercise the robust-observation design before the full
+  hierarchical Bayesian Student-t baseline is implemented.
 
 Both models:
 * estimate offense and defense opponent-relatively;
 * keep offense and defense centered separately at league average;
-* retain an explicit league residual-EPA intercept;
+* retain an explicit season-level league residual-EPA intercept;
 * distinguish process from observation uncertainty;
 * transition only between observation batches, never within a game;
 * expose covariance-aware posterior draws for downstream propagation.
@@ -47,9 +48,10 @@ class StateSpaceConfig:
     initial_offense_sd: float = 0.20
     initial_defense_sd: float = 0.20
     initial_intercept_sd: float = 0.10
+    league_intercept_global: float = 0.0
     offseason_offense_rho: float = 0.70
     offseason_defense_rho: float = 0.70
-    offseason_intercept_rho: float = 0.0
+    offseason_intercept_rho: float = 0.50
     offseason_offense_sd: float = 0.08
     offseason_defense_sd: float = 0.08
     offseason_intercept_sd: float = 0.10
@@ -79,16 +81,18 @@ class StateSpaceConfig:
         ):
             if getattr(self, name) <= 0.0:
                 raise ValueError(f"{name} must be positive")
+        if not np.isfinite(self.league_intercept_global):
+            raise ValueError("league_intercept_global must be finite")
         if self.student_t_df <= 2.0:
             raise ValueError("student_t_df must exceed 2 so variance is finite")
 
 
 @dataclass(frozen=True)
 class TeamStatePosterior:
-    """Joint posterior for centered team effects plus league intercept.
+    """Joint posterior for centered team effects plus seasonal league intercept.
 
-    State-vector layout is ``[O_1..O_N, D_1..D_N, alpha]`` where offense and
-    defense are each sum-to-zero and ``alpha`` is the residual league EPA
+    State-vector layout is ``[O_1..O_N, D_1..D_N, alpha_y]`` where offense and
+    defense are each sum-to-zero and ``alpha_y`` is the residual league EPA
     intercept for the current season-level state.
     """
 
@@ -154,8 +158,10 @@ class TeamStatePosterior:
         z = rng.normal(size=(n_draws, len(self.mean)))
         draws = self.mean + z @ (vectors * np.sqrt(values)).T
         n = self.n_teams
-        draws[:, :n] -= draws[:, :n].mean(axis=1, keepdims=True)
-        draws[:, n : 2 * n] -= draws[:, n : 2 * n].mean(axis=1, keepdims=True)
+        offense_means = draws[:, :n].mean(axis=1)
+        defense_means = draws[:, n : 2 * n].mean(axis=1)
+        if np.max(np.abs(offense_means)) > 1e-10 or np.max(np.abs(defense_means)) > 1e-10:
+            raise RuntimeError("posterior draws violated centered team-state subspace")
         return draws
 
 
@@ -173,6 +179,7 @@ class GaussianOffenseDefenseFilter:
         self._n = len(self.team_ids)
         self._dim = 2 * self._n + 1
         self._mean = np.zeros(self._dim, dtype=float)
+        self._mean[-1] = self.config.league_intercept_global
         initial_var = np.concatenate(
             [
                 np.full(self._n, self.config.initial_offense_sd**2),
@@ -248,9 +255,9 @@ class GaussianOffenseDefenseFilter:
     def offseason_transition(self) -> None:
         """Apply distinct cross-season regression/uncertainty.
 
-        Offense and defense carry over with learned regression in the canonical
-        model. The season-level intercept is renewed through its own pooled
-        transition rather than being forced to equal the preceding season.
+        Offense and defense regress toward league-average team effects. The
+        seasonal league intercept partially pools toward a learned global
+        residual-EPA level rather than hard-resetting to zero.
         """
 
         c = self.config
@@ -272,7 +279,9 @@ class GaussianOffenseDefenseFilter:
                 ]
             )
         )
-        self._mean = transition @ self._mean
+        shift = np.zeros(self._dim, dtype=float)
+        shift[-1] = (1.0 - c.offseason_intercept_rho) * c.league_intercept_global
+        self._mean = transition @ self._mean + shift
         self._covariance = transition @ self._covariance @ transition.T + process
         self._project_centered()
 
@@ -343,20 +352,21 @@ class GaussianOffenseDefenseFilter:
 
 
 class RobustOffenseDefenseFilter(GaussianOffenseDefenseFilter):
-    """Student-t-inspired robust offense/defense filtering approximation.
+    """One-sided robust offense/defense filtering approximation.
 
-    The Student-t scale-mixture update downweights observations whose residual
-    is large relative to the play-level observation scale. Weights are frozen
-    from the pre-batch state so play order does not create a pseudo live state
-    evolution inside the batch.
+    This is not the final hierarchical Bayesian Student-t implementation. It
+    uses Student-t-inspired residual weights to downweight surprising plays but
+    never increases precision above the declared Gaussian observation scale.
+    Weights are frozen from the pre-batch predictive distribution so play order
+    does not create pseudo live state evolution inside the batch.
     """
 
     def _observation_variances(self, design: np.ndarray, values: np.ndarray) -> np.ndarray:
         c = self.config
         residuals = values - design @ self._mean
-        standardized_sq = (residuals / c.observation_sd) ** 2
+        state_variances = np.einsum("ij,jk,ik->i", design, self._covariance, design)
+        predictive_sd = np.sqrt(np.maximum(state_variances, 0.0) + c.observation_sd**2)
+        standardized_sq = (residuals / predictive_sd) ** 2
         weights = (c.student_t_df + 1.0) / (c.student_t_df + standardized_sq)
-        # Conservative approximation: robustness may downweight an outlier but
-        # cannot make a central play more precise than the declared base scale.
         weights = np.clip(weights, 1e-6, 1.0)
         return (c.observation_sd**2) / weights
