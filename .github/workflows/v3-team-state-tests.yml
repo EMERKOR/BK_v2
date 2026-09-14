@@ -39,6 +39,7 @@ jobs:
           numpy==2.5.3
           scipy==1.18.1
           pandas==3.0.5
+          pyarrow==21.0.0
           pytest==9.1.1
       - name: Run v3 predictive baseline tests
         run: python -m pytest -q tests/ball_knower_v3 ball_knower_v3/tests
