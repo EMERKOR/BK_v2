@@ -27,7 +27,7 @@ class ReplayableTeamStateModel(Protocol):
 
 @dataclass(frozen=True)
 class GameObservationBatch:
-    """One completed game's eligible play observations.
+    """One game's eligible play observations and causal event timestamps.
 
     ``state_week`` is a monotonically increasing competition-week index used by
     the latent process. It is deliberately distinct from a cosmetic schedule
@@ -66,65 +66,101 @@ class FrozenPregameState:
     posterior: TeamStatePosterior
 
 
-class CausalTeamStateReplay:
-    """Replay completed games without future smoothing or retroactive states.
+@dataclass(frozen=True)
+class _ReplayEvent:
+    at: datetime
+    priority: int
+    game_id: str
+    kind: str
 
-    Games are incorporated only after completion. A game's frozen pregame
-    state is timestamped at kickoff and therefore cannot contain its own result.
-    Earlier completed games may inform later kickoffs when chronology permits.
+
+class CausalTeamStateReplay:
+    """Replay kickoff and completion events without future leakage.
+
+    Pregame states are frozen at kickoff. A completed game updates the filter
+    only at its completion event, so simultaneous games cannot contaminate one
+    another's pregame snapshots.
+
+    A rare delayed completion that arrives after the process has already moved
+    into a later modeled state week fails closed. Correctly assimilating an
+    observation from an older latent slice requires an explicit delayed-data
+    filtering design; silently applying it to the current state would be wrong.
     """
 
     def __init__(self, model: ReplayableTeamStateModel) -> None:
         self.model = model
 
     @staticmethod
-    def ordered_games(games: Iterable[GameObservationBatch]) -> list[GameObservationBatch]:
-        return sorted(games, key=lambda game: (game.completed_at, game.game_id))
+    def _events(games: Sequence[GameObservationBatch]) -> list[_ReplayEvent]:
+        events: list[_ReplayEvent] = []
+        for game in games:
+            events.append(_ReplayEvent(game.kickoff_at, 1, game.game_id, "kickoff"))
+            # If timestamps are exactly equal, an already completed result is
+            # eligible under source_known_time <= forecast_time, so completion
+            # receives the earlier deterministic priority.
+            events.append(_ReplayEvent(game.completed_at, 0, game.game_id, "completion"))
+        return sorted(events, key=lambda event: (event.at, event.priority, event.game_id))
+
+    @staticmethod
+    def _copy_posterior(posterior: TeamStatePosterior) -> TeamStatePosterior:
+        return TeamStatePosterior(
+            posterior.team_ids,
+            posterior.mean.copy(),
+            posterior.covariance.copy(),
+        )
 
     def run(self, games: Iterable[GameObservationBatch]) -> tuple[FrozenPregameState, ...]:
-        ordered = self.ordered_games(games)
-        if not ordered:
+        game_list = list(games)
+        if not game_list:
             return ()
+        by_id = {game.game_id: game for game in game_list}
+        if len(by_id) != len(game_list):
+            raise ValueError("game_id must be unique within a replay")
 
-        snapshots: list[FrozenPregameState] = []
+        snapshots: dict[str, FrozenPregameState] = {}
         current_season: int | None = None
         current_week: int | None = None
 
-        for game in ordered:
-            if current_season is None:
-                current_season = game.season
-                current_week = game.state_week
-            elif game.season != current_season:
-                if game.season <= current_season:
-                    raise ValueError("causal replay cannot move backward across seasons")
-                self.model.offseason_transition()
-                current_season = game.season
-                current_week = game.state_week
-            else:
-                assert current_week is not None
-                if game.state_week < current_week:
-                    raise ValueError(
-                        "state_week moved backward in completion order; encode reschedules "
-                        "with a causal competition-week index"
-                    )
-                if game.state_week > current_week:
-                    self.model.transition(game.state_week - current_week)
-                    current_week = game.state_week
+        for event in self._events(game_list):
+            game = by_id[event.game_id]
 
-            posterior = self.model.posterior
-            snapshots.append(
-                FrozenPregameState(
+            if event.kind == "kickoff":
+                if current_season is None:
+                    current_season = game.season
+                    current_week = game.state_week
+                elif game.season != current_season:
+                    if game.season <= current_season:
+                        raise ValueError("causal replay cannot move backward across seasons")
+                    self.model.offseason_transition()
+                    current_season = game.season
+                    current_week = game.state_week
+                else:
+                    assert current_week is not None
+                    if game.state_week < current_week:
+                        raise ValueError(
+                            "state_week moved backward at kickoff; encode reschedules with a "
+                            "causal competition-week index"
+                        )
+                    if game.state_week > current_week:
+                        self.model.transition(game.state_week - current_week)
+                        current_week = game.state_week
+
+                snapshots[game.game_id] = FrozenPregameState(
                     game_id=game.game_id,
                     season=game.season,
                     state_week=game.state_week,
                     as_of=game.kickoff_at,
-                    posterior=TeamStatePosterior(
-                        posterior.team_ids,
-                        posterior.mean.copy(),
-                        posterior.covariance.copy(),
-                    ),
+                    posterior=self._copy_posterior(self.model.posterior),
                 )
-            )
+                continue
+
+            if game.game_id not in snapshots:
+                raise RuntimeError("completion encountered before kickoff snapshot")
+            if current_season != game.season or current_week != game.state_week:
+                raise ValueError(
+                    "delayed game observation belongs to an older latent state slice; "
+                    "explicit delayed-observation handling is required"
+                )
             self.model.update_game_batch(game.offenses, game.defenses, game.epa)
 
-        return tuple(snapshots)
+        return tuple(snapshots[game.game_id] for game in sorted(game_list, key=lambda g: (g.kickoff_at, g.game_id)))
