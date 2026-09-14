@@ -1,4 +1,4 @@
-name: v3 team-state tests
+name: v3 predictive baseline tests
 
 on:
   push:
@@ -27,6 +27,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install focused test dependencies
-        run: python -m pip install --upgrade pip numpy pytest
-      - name: Run v3 team-state tests
+        run: python -m pip install --upgrade pip numpy scipy pandas pytest
+      - name: Run v3 predictive baseline tests
         run: python -m pytest -q tests/ball_knower_v3
