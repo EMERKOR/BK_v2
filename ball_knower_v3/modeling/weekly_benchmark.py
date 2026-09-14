@@ -1,12 +1,12 @@
 """Conservative weekly replay shell for the first v3 predictive benchmarks.
 
 The canonical game table has kickoff timestamps but not trustworthy wall-clock
-completion timestamps.  For the initial Tuesday/Wednesday-style historical
+completion timestamps. For the initial Tuesday/Wednesday-style historical
 benchmark, every game in an NFL week is therefore forecast from one shared
 pre-week state and that week's football evidence is assimilated only after all
 of those forecasts are frozen.
 
-This is intentionally stricter than inventing intra-week availability.  A
+This is intentionally stricter than inventing intra-week availability. A
 future event-time runner may use the separate ``replay`` module once genuine
 completion/availability timestamps are available.
 """
@@ -47,6 +47,8 @@ class WeeklyStateForecast:
     kickoff: pd.Timestamp
     home_team: str
     away_team: str
+    league_intercept_mean: float
+    league_intercept_var: float
     eta_home_mean: float
     eta_home_var: float
     eta_away_mean: float
@@ -74,12 +76,14 @@ def _matchup_vectors(posterior: TeamStatePosterior, home_team: str, away_team: s
     except KeyError as exc:
         raise KeyError(f"unknown team in canonical game: {exc.args[0]}") from exc
     n = posterior.n_teams
-    eta_home = np.zeros(2 * n, dtype=float)
-    eta_away = np.zeros(2 * n, dtype=float)
+    eta_home = np.zeros(2 * n + 1, dtype=float)
+    eta_away = np.zeros(2 * n + 1, dtype=float)
     eta_home[home] = 1.0
     eta_home[n + away] = -1.0
+    eta_home[posterior.intercept_index] = 1.0
     eta_away[away] = 1.0
     eta_away[n + home] = -1.0
+    eta_away[posterior.intercept_index] = 1.0
     return eta_home, eta_away
 
 
@@ -123,6 +127,8 @@ class WeeklyTeamStateBenchmarkRunner:
             kickoff=kickoff,
             home_team=home_team,
             away_team=away_team,
+            league_intercept_mean=posterior.league_intercept_mean,
+            league_intercept_var=posterior.league_intercept_var,
             eta_home_mean=eta_home_mean,
             eta_home_var=eta_home_var,
             eta_away_mean=eta_away_mean,
@@ -160,10 +166,7 @@ class WeeklyTeamStateBenchmarkRunner:
         if target_games.empty:
             return ()
 
-        batches = {
-            (batch.season, batch.week): batch
-            for batch in make_weekly_batches(plays, games)
-        }
+        batches = {(batch.season, batch.week): batch for batch in make_weekly_batches(plays, games)}
         forecasts: list[WeeklyStateForecast] = []
         current_season: int | None = None
         current_week: int | None = None
@@ -191,8 +194,8 @@ class WeeklyTeamStateBenchmarkRunner:
                 self.model.transition(week - current_week)
                 current_week = week
 
-            # Freeze every game in this week before any observation from this
-            # week is assimilated.  This prevents same-week outcome leakage.
+            # Every game in the week is frozen before any same-week evidence is
+            # assimilated. This preserves the conservative weekly decision shell.
             for _, game in week_games.iterrows():
                 forecasts.append(self._forecast_game(game))
 
