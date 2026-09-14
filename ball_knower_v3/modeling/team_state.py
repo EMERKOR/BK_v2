@@ -294,7 +294,7 @@ class GaussianOffenseDefenseFilter:
         return design
 
     def _observation_variances(self, design: np.ndarray, values: np.ndarray) -> np.ndarray:
-        del design, values
+        del design
         return np.full(len(values), self.config.observation_sd**2, dtype=float)
 
     def update_game_batch(
