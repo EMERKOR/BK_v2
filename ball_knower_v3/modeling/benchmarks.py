@@ -10,22 +10,36 @@ import numpy as np
 
 @dataclass(frozen=True)
 class OneDimensionalConfig:
+    """Smoke parameters for the dynamic MOV challenger.
+
+    These are executable defaults only. Scored historical work must tune/freeze
+    them under the same prior-time policy as the offense/defense models.
+    """
+
     rho: float = 0.96
     process_sd: float = 0.75
     observation_sd: float = 13.5
     initial_sd: float = 6.0
+    offseason_rho: float = 0.70
+    offseason_process_sd: float = 3.0
 
     def __post_init__(self) -> None:
-        if not 0.0 <= self.rho <= 1.0:
-            raise ValueError("rho must be in [0, 1]")
-        if min(self.process_sd, self.observation_sd, self.initial_sd) <= 0.0:
+        for name in ("rho", "offseason_rho"):
+            if not 0.0 <= getattr(self, name) <= 1.0:
+                raise ValueError(f"{name} must be in [0, 1]")
+        if min(
+            self.process_sd,
+            self.observation_sd,
+            self.initial_sd,
+            self.offseason_process_sd,
+        ) <= 0.0:
             raise ValueError("standard deviations must be positive")
 
 
 class OneDimensionalStrengthFilter:
     """Simple dynamic overall-strength benchmark using game point margin.
 
-    This is deliberately not the canonical offense/defense EPA model.  It is
+    This is deliberately not the canonical offense/defense EPA model. It is
     the required low-dimensional score/MOV benchmark against which extra
     component complexity must earn its keep.
     """
@@ -60,6 +74,17 @@ class OneDimensionalStrengthFilter:
         self.covariance = rho_k**2 * self.covariance + np.eye(len(self.team_ids)) * q
         self._center()
 
+    def offseason_transition(self) -> None:
+        """Apply a distinct offseason transition for replay compatibility."""
+
+        c = self.config
+        self.mean *= c.offseason_rho
+        self.covariance = (
+            c.offseason_rho**2 * self.covariance
+            + np.eye(len(self.team_ids)) * c.offseason_process_sd**2
+        )
+        self._center()
+
     def update_game(self, home_team: str, away_team: str, home_margin: float, hfa: float = 0.0) -> None:
         if home_team == away_team:
             raise ValueError("home and away teams must differ")
@@ -79,6 +104,7 @@ class OneDimensionalStrengthFilter:
         gain = ph / s
         self.mean += gain * (y - h @ self.mean)
         self.covariance -= np.outer(gain, ph)
+        self.covariance = (self.covariance + self.covariance.T) / 2.0
         self._center()
 
     def matchup_moments(self, home_team: str, away_team: str) -> tuple[float, float]:
@@ -104,8 +130,10 @@ class WeightedDecayOffenseDefense:
     """Exponentially weighted ridge offense/defense EPA challenger.
 
     It intentionally represents recency with a fixed decay rather than a
-    latent transition process.  That makes it a useful simpler challenger, not
-    the reviewed production baseline.
+    latent transition process. Approximate coefficient covariance is retained
+    so the challenger can enter the same uncertainty-aware benchmark shell;
+    this covariance is a ridge-regression approximation, not a Bayesian
+    posterior claim.
     """
 
     def __init__(self, team_ids: Sequence[str], config: WeightedDecayConfig | None = None) -> None:
@@ -117,6 +145,25 @@ class WeightedDecayOffenseDefense:
         self.offense = np.zeros(len(team_ids), dtype=float)
         self.defense = np.zeros(len(team_ids), dtype=float)
         self.intercept = 0.0
+        self.residual_sd = float("nan")
+        self._theta = np.zeros(1 + 2 * len(team_ids), dtype=float)
+        self._coef_covariance = np.zeros((1 + 2 * len(team_ids), 1 + 2 * len(team_ids)), dtype=float)
+        self.is_fitted = False
+
+    def _centering_transform(self) -> np.ndarray:
+        n = len(self.team_ids)
+        p = 1 + 2 * n
+        transform = np.zeros((p, p), dtype=float)
+        # alpha' = alpha + mean(O) - mean(D)
+        transform[0, 0] = 1.0
+        transform[0, 1 : 1 + n] = 1.0 / n
+        transform[0, 1 + n :] = -1.0 / n
+        # O' = O - mean(O)
+        center = np.eye(n) - np.ones((n, n)) / n
+        transform[1 : 1 + n, 1 : 1 + n] = center
+        # D' = D - mean(D)
+        transform[1 + n :, 1 + n :] = center
+        return transform
 
     def fit(
         self,
@@ -135,35 +182,73 @@ class WeightedDecayOffenseDefense:
             raise ValueError("EPA and nonnegative ages must be finite")
 
         n = len(self.team_ids)
-        # Columns: intercept, N offense effects, N defense effects.  Centering
-        # after the fit gives league-average-zero team components.
         x = np.zeros((len(values), 1 + 2 * n), dtype=float)
         x[:, 0] = 1.0
         for row, (offense, defense) in enumerate(zip(offenses, defenses, strict=True)):
             if offense == defense:
                 raise ValueError("offense and defense cannot be the same team")
-            x[row, 1 + self.index[offense]] = 1.0
-            x[row, 1 + n + self.index[defense]] = -1.0
+            try:
+                off_idx = self.index[offense]
+                def_idx = self.index[defense]
+            except KeyError as exc:
+                raise KeyError(f"unknown team: {exc.args[0]}") from exc
+            x[row, 1 + off_idx] = 1.0
+            x[row, 1 + n + def_idx] = -1.0
 
         weights = 0.5 ** (ages / self.config.half_life_weeks)
         sqrt_w = np.sqrt(weights)
         xw = x * sqrt_w[:, None]
         yw = values * sqrt_w
+        gram = xw.T @ xw
         penalty = np.eye(x.shape[1]) * self.config.ridge
         penalty[0, 0] = 0.0
-        beta = np.linalg.solve(xw.T @ xw + penalty, xw.T @ yw)
+        system = gram + penalty
+        beta = np.linalg.solve(system, xw.T @ yw)
 
-        offense = beta[1 : 1 + n]
-        # beta defense columns multiply -1 in X; positive beta means stronger
-        # defense under the canonical O - D sign convention.
-        defense = beta[1 + n :]
-        offense_shift = float(offense.mean())
-        defense_shift = float(defense.mean())
-        self.offense = offense - offense_shift
-        self.defense = defense - defense_shift
-        # Preserve fitted means after component centering.
-        self.intercept = float(beta[0] + offense_shift - defense_shift)
+        residuals = values - x @ beta
+        rank = np.linalg.matrix_rank(xw)
+        effective_df = max(float(weights.sum()) - float(rank), 1.0)
+        sigma2 = float(np.sum(weights * residuals**2) / effective_df)
+        inv_system = np.linalg.inv(system)
+        covariance_beta = sigma2 * (inv_system @ gram @ inv_system)
+
+        transform = self._centering_transform()
+        theta = transform @ beta
+        covariance = transform @ covariance_beta @ transform.T
+        covariance = (covariance + covariance.T) / 2.0
+
+        self._theta = theta
+        self._coef_covariance = covariance
+        self.intercept = float(theta[0])
+        self.offense = theta[1 : 1 + n].copy()
+        self.defense = theta[1 + n :].copy()
+        self.residual_sd = float(np.sqrt(max(sigma2, 0.0)))
+        self.is_fitted = True
         return self
 
+    def _matchup_vector(self, offense: str, defense: str) -> np.ndarray:
+        n = len(self.team_ids)
+        try:
+            off_idx = self.index[offense]
+            def_idx = self.index[defense]
+        except KeyError as exc:
+            raise KeyError(f"unknown team: {exc.args[0]}") from exc
+        h = np.zeros(1 + 2 * n, dtype=float)
+        h[0] = 1.0
+        h[1 + off_idx] = 1.0
+        h[1 + n + def_idx] = -1.0
+        return h
+
+    def matchup_moments(self, offense: str, defense: str) -> tuple[float, float]:
+        if not self.is_fitted:
+            raise RuntimeError("weighted-decay model has not been fit")
+        h = self._matchup_vector(offense, defense)
+        mean = float(h @ self._theta)
+        variance = float(h @ self._coef_covariance @ h)
+        return mean, max(variance, 0.0)
+
     def matchup_value(self, offense: str, defense: str) -> float:
-        return float(self.intercept + self.offense[self.index[offense]] - self.defense[self.index[defense]])
+        if not self.is_fitted:
+            # Preserve the original smoke-test behavior before first fit.
+            return float(self.intercept + self.offense[self.index[offense]] - self.defense[self.index[defense]])
+        return self.matchup_moments(offense, defense)[0]
