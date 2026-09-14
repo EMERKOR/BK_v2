@@ -57,7 +57,6 @@ def _plays():
                     "epa": value,
                 }
             )
-    # Explicitly excluded canonical play types.
     rows.extend(
         [
             {"game_id": "g1", "season": 2025, "week": 1, "posteam": "A", "defteam": "B", "play_type": "qb_kneel", "epa": -1.0},
@@ -67,6 +66,42 @@ def _plays():
         ]
     )
     return pd.DataFrame(rows)
+
+
+def _extended_history():
+    games = _games().copy()
+    later_games = pd.DataFrame(
+        {
+            "game_id": ["g5", "g6"],
+            "season": [2025, 2025],
+            "week": [3, 3],
+            "kickoff": pd.to_datetime(["2025-09-21T13:00:00-04:00", "2025-09-21T16:00:00-04:00"]),
+            "home_team": ["B", "C"],
+            "away_team": ["A", "D"],
+            "is_final": [True, True],
+            "home_margin": [-6, 3],
+            "total_points": [44, 37],
+        }
+    )
+    games = pd.concat([games, later_games], ignore_index=True)
+
+    plays = _plays().copy()
+    later_rows = []
+    for game_id, offense, defense, value in (("g5", "B", "A", 0.9), ("g6", "C", "D", -0.7)):
+        for play_type in ("pass", "run", "pass"):
+            later_rows.append(
+                {
+                    "game_id": game_id,
+                    "season": 2025,
+                    "week": 3,
+                    "posteam": offense,
+                    "defteam": defense,
+                    "play_type": play_type,
+                    "epa": value,
+                }
+            )
+    plays = pd.concat([plays, pd.DataFrame(later_rows)], ignore_index=True)
+    return games, plays
 
 
 def test_eligible_play_adapter_uses_explicit_scrimmage_allow_list():
@@ -100,13 +135,22 @@ def test_all_same_week_forecasts_are_frozen_before_same_week_updates():
 
     assert week1[0].league_intercept_mean == week1[1].league_intercept_mean
     assert week1[0].strength_margin_mean == week1[1].strength_margin_mean
-
-    # Week 1 evidence is available to week 2, so at least one structural state
-    # quantity must differ from the frozen week-1 state.
     assert any(
         abs(forecast.strength_margin_mean - week1[0].strength_margin_mean) > 0.0
         for forecast in week2
     )
+
+
+def test_appending_future_games_cannot_change_frozen_earlier_forecasts():
+    short_runner = WeeklyTeamStateBenchmarkRunner(GaussianOffenseDefenseFilter(TEAMS))
+    short = {forecast.game_id: forecast for forecast in short_runner.run(_games(), _plays())}
+
+    full_games, full_plays = _extended_history()
+    long_runner = WeeklyTeamStateBenchmarkRunner(GaussianOffenseDefenseFilter(TEAMS))
+    long = {forecast.game_id: forecast for forecast in long_runner.run(full_games, full_plays)}
+
+    for game_id in short:
+        assert short[game_id] == long[game_id]
 
 
 def test_margin_contrast_cancels_common_league_intercept_but_total_keeps_it():
