@@ -49,7 +49,13 @@ class StudentTMixture:
 
 @dataclass(frozen=True)
 class DiscretePredictivePMF:
-    """Integer PMF with explicit probability outside the represented support."""
+    """Integer PMF with explicit probability outside the represented support.
+
+    ``lower_tail`` and ``upper_tail`` are aggregate probability bins outside the
+    represented integer support. Exact CDF values are therefore defined only on
+    represented support points; calibration utilities may treat each tail as one
+    coarsened category when an observation falls outside support.
+    """
 
     support: np.ndarray
     probabilities: np.ndarray
@@ -82,10 +88,15 @@ class DiscretePredictivePMF:
         return float(self.probabilities[outcome - self.support[0]])
 
     def cdf_at(self, outcome: int) -> float:
-        if outcome < self.support[0]:
-            return self.lower_tail
-        if outcome >= self.support[-1]:
-            return 1.0
+        """Return ``P(Y <= outcome)`` for a represented support point.
+
+        Exact CDF values outside support are unknowable from aggregate tail mass,
+        so callers must not interpret a tail bin as though its internal integer
+        allocation were known.
+        """
+
+        if outcome < self.support[0] or outcome > self.support[-1]:
+            raise ValueError("exact cdf is unavailable outside represented support")
         index = outcome - self.support[0]
         return float(self.lower_tail + self.probabilities[: index + 1].sum())
 
@@ -155,10 +166,9 @@ def threshold_probabilities(distribution: DiscretePredictivePMF, line: float) ->
 
     below = float(distribution.lower_tail + distribution.probabilities[below_mask].sum())
     above = float(distribution.upper_tail + distribution.probabilities[above_mask].sum())
-    # Small floating error is assigned to the above side only after the exact
-    # below/push calculations; no probability is discarded.
-    residual = 1.0 - (below + push + above)
-    above += residual
+    total = below + push + above
+    if not np.isclose(total, 1.0, atol=1e-9):
+        raise RuntimeError(f"threshold partition does not conserve mass; got {total}")
     return ThresholdProbabilities(below=below, push=push, above=above)
 
 
@@ -171,13 +181,23 @@ def randomized_pit(
     """Randomized PIT for an observed discrete outcome.
 
     ``uniform`` is supplied by the caller so evaluation can use a reproducibly
-    seeded random stream. For outcome y, PIT = F(y-) + U * P(Y=y).
+    seeded random stream. For represented outcome y,
+    ``PIT = F(y-) + U * P(Y=y)``.
+
+    If an observation lies outside finite represented support, the corresponding
+    aggregate tail is treated as one coarsened category. This preserves a valid
+    calibration diagnostic for the stored finite-support forecast without
+    pretending the unknown integer allocation inside that tail is available.
+    Tail-hit rates should still be reported separately so support can be widened
+    if coarsening is material.
     """
 
     if not 0.0 <= uniform <= 1.0:
         raise ValueError("uniform must be in [0, 1]")
-    if observed < distribution.support[0] or observed > distribution.support[-1]:
-        raise ValueError("observed outcome lies outside represented support")
+    if observed < distribution.support[0]:
+        return float(uniform * distribution.lower_tail)
+    if observed > distribution.support[-1]:
+        return float(1.0 - distribution.upper_tail + uniform * distribution.upper_tail)
     index = observed - distribution.support[0]
     below = distribution.lower_tail + float(distribution.probabilities[:index].sum())
     return float(below + uniform * distribution.probabilities[index])
