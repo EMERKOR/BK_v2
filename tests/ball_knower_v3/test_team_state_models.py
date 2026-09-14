@@ -27,6 +27,20 @@ def test_offense_and_defense_are_centered_after_updates_and_transitions():
     assert abs(posterior.defense_mean.mean()) < 1e-12
 
 
+def test_league_intercept_is_explicit_and_can_move_from_zero():
+    model = GaussianOffenseDefenseFilter(TEAMS)
+    # Symmetric team matchups with universally positive EPA should primarily
+    # move the common league residual level rather than requiring common-mode
+    # offense/defense drift, which centering prohibits.
+    offenses = ["A", "B", "C", "D"] * 10
+    defenses = ["B", "C", "D", "A"] * 10
+    model.update_game_batch(offenses, defenses, [0.3] * len(offenses))
+    posterior = model.posterior
+    assert posterior.league_intercept_mean > 0.0
+    assert abs(posterior.offense_mean.mean()) < 1e-12
+    assert abs(posterior.defense_mean.mean()) < 1e-12
+
+
 def test_positive_epa_moves_offense_and_opposing_defense_in_expected_directions():
     model = GaussianOffenseDefenseFilter(TEAMS)
     model.update_game_batch(
@@ -38,8 +52,6 @@ def test_positive_epa_moves_offense_and_opposing_defense_in_expected_directions(
     a = posterior.team_ids.index("A")
     b = posterior.team_ids.index("B")
     assert posterior.offense_mean[a] > 0.0
-    # Larger D means better defense and enters the likelihood as -D, so a
-    # defense allowing strongly positive EPA should move below average.
     assert posterior.defense_mean[b] < 0.0
 
 
@@ -52,7 +64,7 @@ def test_no_observation_transition_adds_process_uncertainty():
     assert after > before
 
 
-def test_multiweek_ar_transition_matches_closed_form_mean():
+def test_multiweek_ar_transition_matches_closed_form_mean_and_holds_intercept():
     config = StateSpaceConfig(offense_rho=0.8, defense_rho=0.7)
     model = GaussianOffenseDefenseFilter(TEAMS, config)
     model.update_game_batch(["A"] * 10, ["B"] * 10, [0.6] * 10)
@@ -61,6 +73,7 @@ def test_multiweek_ar_transition_matches_closed_form_mean():
     after = model.posterior
     np.testing.assert_allclose(after.offense_mean, before.offense_mean * 0.8**3, atol=1e-12)
     np.testing.assert_allclose(after.defense_mean, before.defense_mean * 0.7**3, atol=1e-12)
+    np.testing.assert_allclose(after.league_intercept_mean, before.league_intercept_mean, atol=1e-12)
 
 
 def test_offseason_transition_is_distinct_and_regresses_mean():
@@ -69,6 +82,7 @@ def test_offseason_transition_is_distinct_and_regresses_mean():
         defense_rho=1.0,
         offseason_offense_rho=0.5,
         offseason_defense_rho=0.4,
+        offseason_intercept_rho=0.0,
     )
     model = GaussianOffenseDefenseFilter(TEAMS, config)
     model.update_game_batch(["A"] * 12, ["B"] * 12, [0.7] * 12)
@@ -77,6 +91,7 @@ def test_offseason_transition_is_distinct_and_regresses_mean():
     after = model.posterior
     np.testing.assert_allclose(after.offense_mean, before.offense_mean * 0.5, atol=1e-12)
     np.testing.assert_allclose(after.defense_mean, before.defense_mean * 0.4, atol=1e-12)
+    np.testing.assert_allclose(after.league_intercept_mean, 0.0, atol=1e-12)
 
 
 def test_robust_filter_downweights_extreme_epa_relative_to_gaussian():
@@ -93,13 +108,14 @@ def test_robust_filter_downweights_extreme_epa_relative_to_gaussian():
     assert abs(r_mean) < abs(g_mean)
 
 
-def test_joint_draws_remain_centered_for_each_draw():
+def test_joint_draws_keep_team_components_centered_and_intercept_free():
     model = GaussianOffenseDefenseFilter(TEAMS)
     model.update_game_batch(["A"] * 8, ["B"] * 8, [0.4] * 8)
     draws = model.posterior.draws(100, seed=7)
     n = len(TEAMS)
     np.testing.assert_allclose(draws[:, :n].mean(axis=1), 0.0, atol=1e-12)
-    np.testing.assert_allclose(draws[:, n:].mean(axis=1), 0.0, atol=1e-12)
+    np.testing.assert_allclose(draws[:, n : 2 * n].mean(axis=1), 0.0, atol=1e-12)
+    assert draws.shape[1] == 2 * n + 1
 
 
 def test_one_dimensional_mov_benchmark_updates_team_difference():
