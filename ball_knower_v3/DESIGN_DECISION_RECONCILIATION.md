@@ -1,31 +1,32 @@
 # Ball Knower v3 — Design Decision Reconciliation Ledger
 
+Date: 2026-09-14
+
 ## Purpose
 
-This ledger records the reviewed status of Ball Knower v3 architecture after the **2026-09-14 adversarial checkpoint**.
+This ledger records the reviewed state of Ball Knower v3 after the Sep. 14 adversarial review and subsequent implementation-contract/provenance research.
 
-The canonical source of truth is `DESIGN_LOCKS.md`. Supporting research/history lives in `design_decisions/`. The new `DESIGN_ADVERSARIAL_REVIEW_2026-09-14.md` explains why several recent proposals were demoted from BASELINE to TEST.
-
-## Reconciliation statuses
-
-- **CONFIRMED** — durably represented and consistent with the reviewed canonical architecture.
-- **IMPLEMENTATION OPEN** — architecture resolved, implementation absent/not verified.
-- **MODEL TEST OPEN** — candidate architecture/model requires chronological evidence before promotion.
-- **DESIGN OPEN** — architecture itself unresolved.
-- **SUPERSEDED** — prior proposal explicitly replaced/demoted by the adversarial review.
+`DESIGN_LOCKS.md` is canonical. Files under `design_decisions/` preserve supporting research/history and may contain superseded proposals.
 
 ---
 
-# 1. Foundation / PIT
+# 1. Foundation / PIT / provenance
 
 | Area | Status | Current disposition |
 |---|---|---|
-| v3 system of record; v2 untrusted unless revalidated | **CONFIRMED** | `DESIGN_LOCKS.md` Foundation |
-| Layer separation from facts through market/wager layers | **CONFIRMED** | Canonical Foundation |
-| Actual historical availability governs PIT eligibility | **CONFIRMED** | Canonical Foundation |
-| Unknown availability fails closed | **CONFIRMED principle / DESIGN OPEN archive semantics** | `ESC-A` |
-| Frozen/append-only forecast evidence | **CONFIRMED architecture** | Canonical Foundation |
-| Durable proof artifact existed pre-outcome | **DESIGN OPEN** | `ESC-B` |
+| v3 system of record | CONFIRMED | Canonical Foundation |
+| Layer separation | CONFIRMED | Canonical Foundation |
+| Actual historical availability governs PIT eligibility | CONFIRMED | Canonical Foundation |
+| Distinct event/source-generation/source-availability/ingestion semantics | CONFIRMED | `evidence_provenance_esc_a_b_v1.md` |
+| Later-acquired archive may support replay only with trustworthy pre-cutoff source provenance | CONFIRMED | Former ESC-A resolved architecturally |
+| Later archive cannot prove Ball Knower possessed source live | CONFIRMED | Provenance lock |
+| Unknown historical availability fails closed | CONFIRMED | Provenance lock |
+| Frozen/append-only forecast evidence | CONFIRMED | Canonical Foundation |
+| Content-addressed prospective manifest | CONFIRMED architecture | Former ESC-B resolution |
+| Public GitHub/Sigstore attestation as durable existence/freeze baseline | CONFIRMED BASELINE / IMPLEMENTATION OPEN | `evidence_provenance_esc_a_b_v1.md` |
+| Human examination requires separate explicit pre-outcome review assertion | CONFIRMED | Cannot be inferred from attestation |
+
+Former `ESC-A` and `ESC-B` are no longer design-open. Their implementation remains open.
 
 ---
 
@@ -33,129 +34,117 @@ The canonical source of truth is `DESIGN_LOCKS.md`. Supporting research/history 
 
 | Area | Status | Current disposition |
 |---|---|---|
-| Rolling chronological OOS | **CONFIRMED** | Canonical Evaluation |
-| Prior-time-only tuning/calibration/features | **CONFIRMED** | Canonical Evaluation |
-| Separate football / market-relative / betting scorecards | **CONFIRMED** | Canonical Evaluation |
-| Proper metric/estimand alignment | **CONFIRMED** | Canonical Evaluation |
-| Calibration required | **CONFIRMED** | Canonical Evaluation |
-| Unseen final promotion gate | **CONFIRMED architecture / IMPLEMENTATION OPEN** | Canonical Evaluation |
-| Prospective results become development evidence after revision | **CONFIRMED** | Canonical Evaluation |
+| Rolling chronological OOS | CONFIRMED |
+| Prior-time-only tuning/calibration/features | CONFIRMED |
+| Separate football / market-relative / betting scorecards | CONFIRMED |
+| Proper metric/estimand alignment | CONFIRMED |
+| Calibration required | CONFIRMED |
+| Unseen final promotion gate | CONFIRMED architecture / IMPLEMENTATION OPEN |
+| Prospective results become development evidence after revision | CONFIRMED |
 
 ---
 
-# 3. Market/output semantics
+# 3. Team state
 
 | Area | Status | Current disposition |
 |---|---|---|
-| Structural football branch separate from market-informed branch | **CONFIRMED** | Canonical Market semantics |
-| Distinct market timestamps | **CONFIRMED** | Canonical Market semantics |
-| Expected margin ≠ automatically fair spread | **CONFIRMED** | Canonical terminology |
-| Explicit cover/push/lose at actual line/price | **CONFIRMED** | Canonical fair-value rules |
-| Reference market distinct from executable quote | **CONFIRMED** | Canonical market rules |
-| Production consensus recipe | **MODEL TEST OPEN** | Remains TEST |
+| Dynamic uncertain opponent-relative team state | CONFIRMED LOCK |
+| Play-level EPA first serious weekly observation | CONFIRMED BASELINE |
+| Robust Student-t observation treatment | CONFIRMED LOCK / BASELINE |
+| Bayesian dynamic offense/defense state-space | CONFIRMED BASELINE |
+| Causal forward filtering; no future smoothing in historical forecasts | CONFIRMED LOCK |
+| Process vs observation noise distinct | CONFIRMED LOCK |
+| Sum-to-zero/equivalent identification + league intercept | CONFIRMED LOCK |
+| Discrete NFL-week evolution + game-batched observations | CONFIRMED BASELINE |
+| Separate learned offseason transition | CONFIRMED LOCK / BASELINE |
+| Exchangeable uncertain initialization | CONFIRMED LOCK / BASELINE |
+| Proper weakly informative hyperpriors / prior predictive checks | CONFIRMED BASELINE |
+| Joint posterior-draw handoff | CONFIRMED BASELINE |
+| Expanding-window historical forecast origins | CONFIRMED BASELINE |
+| Deterministic causal replay/reschedule ordering | CONFIRMED LOCK / BASELINE |
+| Mandatory smooth score×time correction | SUPERSEDED as BASELINE | TEST |
+| Success, pass/rush, turnover/game-state weighting, richer transitions | MODEL TEST OPEN |
+
+The minimum team-state implementation contract is resolved and implementation-ready.
 
 ---
 
-# 4. Team state — Design Lock 7
+# 4. Shared game environment
 
 | Area | Status | Current disposition |
 |---|---|---|
-| Dynamic uncertain opponent-relative team state | **CONFIRMED LOCK** | Canonical Team State |
-| Play-level EPA as first serious weekly observation | **CONFIRMED BASELINE** | `team_state_weekly_observation_v1.md`; canonicalized |
-| Robust/heavy-tailed observation treatment | **CONFIRMED LOCK / BASELINE Student-t** | Canonical Team State |
-| Success rate / EPA+success / MOV benchmark / pass-rush states | **MODEL TEST OPEN** | Required challengers |
-| Bayesian dynamic offense/defense state-space class | **CONFIRMED BASELINE** | `team_state_state_model_v1.md`; canonicalized |
-| Causal forward filtering; no future smoothing in historical forecasts | **CONFIRMED LOCK** | Canonical Team State |
-| Process vs observation noise distinct | **CONFIRMED LOCK** | Canonical Team State |
-| Sum-to-zero/equivalent identification + league intercept | **CONFIRMED LOCK** | `team_state_identification_v1.md`; canonicalized |
-| Discrete NFL-week evolution + game-batched observations | **CONFIRMED BASELINE** | `team_state_time_granularity_v1.md`; canonicalized |
-| Continuous elapsed-time state evolution | **MODEL TEST OPEN** | TEST |
-| Mandatory smooth score×time correction | **SUPERSEDED as BASELINE** | Demoted to TEST by adversarial review |
-| Garbage-time / WP weighting / state-dependent variance | **MODEL TEST OPEN** | TEST |
-| Team-state initialization contract | **CONFIRMED BASELINE / LOCK principles** | `team_state_implementation_contract_v1.md` |
-| Team-state prior/hyperprior policy | **CONFIRMED BASELINE / LOCK principles** | Proper, scale-aware, prior-time only |
-| Within-season process implementation | **CONFIRMED BASELINE** | Separate O/D AR(1), Gaussian process noise |
-| Offseason transition implementation | **CONFIRMED BASELINE / LOCK principles** | Separate learned regime; O/D-specific parameters |
-| Historical global-parameter fit cadence | **CONFIRMED BASELINE / IMPLEMENTATION OPEN** | Expanding-window weekly reference fits |
-| Posterior state artifact/handoff | **CONFIRMED BASELINE / IMPLEMENTATION OPEN** | Joint posterior draws reference representation |
-| Weak-information / early-history behavior | **CONFIRMED BASELINE / LOCK principles** | Warm-up history if available; uncertainty otherwise |
-| Deterministic replay/update ordering | **CONFIRMED BASELINE / IMPLEMENTATION OPEN** | Actual chronology + stable `game_id` tie-break |
+| Time-varying league HFA | CONFIRMED BASELINE / LOCK principle |
+| Neutral-site handling | CONFIRMED |
+| Fixed modern bye/mini-bye bonus | SUPERSEDED / prohibited |
+| Rest/short week | MODEL TEST OPEN |
+| Travel/time zone | MODEL TEST OPEN |
+| Pace/PROE | MODEL TEST OPEN |
+| Weather in initial baseline | SUPERSEDED as BASELINE | TEST |
+| PIT weather archive feasibility | RESOLVED | Operational forecast archives exist; HRRR supports modern 2014+ test window |
+| Realized/reanalysis weather as pregame feature | prohibited | Diagnostics only unless valid pregame forecast provenance exists |
 
-The minimum team-state model is now **implementation-ready**. Remaining `TEST` choices are benchmark/tuning questions rather than blockers to coding.
+Weather is now feasible to test correctly, but remains TEST until chronological incremental value is demonstrated.
 
 ---
 
-# 5. Shared game environment — Design Lock 6
+# 5. Game forecast construction
 
 | Area | Status | Current disposition |
 |---|---|---|
-| Time-varying league HFA | **CONFIRMED BASELINE / LOCK principle** | Canonical Shared Environment |
-| Neutral-site handling | **CONFIRMED** | Canonical Shared Environment |
-| Fixed modern bye/mini-bye bonus | **SUPERSEDED / prohibited** | Rest remains TEST |
-| Rest/short week | **MODEL TEST OPEN** | TEST |
-| Travel/time zone | **MODEL TEST OPEN** | TEST |
-| Pace/PROE | **MODEL TEST OPEN** | TEST |
-| Roof/wind/precipitation in initial total baseline | **SUPERSEDED as BASELINE** | Demoted to TEST |
-| PIT-valid weather/roof candidate features | **MODEL TEST OPEN** | Need historical forecast provenance + chronological gain |
+| Learned EPA-state to scoreboard bridge | CONFIRMED LOCK |
+| Separate direct margin + total models | CONFIRMED BASELINE |
+| Bayesian Student-t first direct family | CONFIRMED BASELINE |
+| Joint posterior state uncertainty propagation | CONFIRMED LOCK / BASELINE draws |
+| Integer/discrete output sufficient for pushes | CONFIRMED LOCK |
+| Posterior-mixture CDF-bin discretization | CONFIRMED BASELINE |
+| Exact 3/7 calibration must be measured | CONFIRMED LOCK principle |
+| Custom key-number multiplier | SUPERSEDED as BASELINE | TEST |
+| Randomized PIT/discrete calibration diagnostics | CONFIRMED BASELINE |
+| Empirical residual, heteroskedastic, quantile, joint models | MODEL TEST OPEN |
+| Joint score / drive simulator | MODEL TEST OPEN |
+
+The minimum direct game-model implementation contract is resolved and implementation-ready.
 
 ---
 
-# 6. Game forecast construction
+# 6. Quarterback architecture
 
 | Area | Status | Current disposition |
 |---|---|---|
-| Learned bridge from EPA-state inputs to scoreboard outcomes | **CONFIRMED LOCK** | No mechanical EPA×plays conversion |
-| Separate direct margin + total models | **CONFIRMED BASELINE** | Canonical Game Forecast |
-| Regularized probabilistic location model / Student-t first candidate | **CONFIRMED BASELINE** | Canonical Game Forecast |
-| Propagate latent-state uncertainty | **CONFIRMED LOCK** | Canonical Game Forecast |
-| Integer/discrete output sufficient for pushes | **CONFIRMED LOCK** | Canonical Game Forecast |
-| NFL key-number mass at 3/7 must be evaluated | **CONFIRMED LOCK principle** | Exact-margin calibration required |
-| Custom key-number multiplier layer | **SUPERSEDED as BASELINE** | Demoted to TEST |
-| Empirical residual, heteroskedastic, quantile, joint margin/total | **MODEL TEST OPEN** | TEST |
-| Joint score / drive simulator | **MODEL TEST OPEN** | TEST |
-| Direct game-model implementation contract | **CONFIRMED BASELINE / LOCK principles** | `game_forecast_implementation_contract_v1.md` |
-| Structural predictor contract | **CONFIRMED BASELINE** | State sum/difference + HFA / era baseline |
-| State-uncertainty integration | **CONFIRMED BASELINE / IMPLEMENTATION OPEN** | Joint posterior-draw integration |
-| Direct-model prior policy | **CONFIRMED BASELINE / LOCK principles** | Proper weakly informative, training-only scaling |
-| Residual distribution | **CONFIRMED BASELINE** | Target-specific homoskedastic Student-t |
-| Integer PMF mechanics | **CONFIRMED BASELINE** | Posterior-mixture CDF bins + tail normalization |
-| Discrete calibration diagnostics | **CONFIRMED LOCK / BASELINE** | CRPS + seeded randomized PIT + coverage |
-| Exact 3/7 margin reporting | **CONFIRMED LOCK** | Required diagnostic, no baseline correction |
-| Game-model historical fit cadence | **CONFIRMED BASELINE / IMPLEMENTATION OPEN** | Expanding-window forecast origins |
+| QB first-class | CONFIRMED LOCK |
+| No QB double counting | CONFIRMED LOCK |
+| Uncertain starters use mixtures of full conditional distributions | CONFIRMED LOCK |
+| Fixed subjective QB point values | DEFER / prohibited |
+| Combined team offense as core baseline | CONFIRMED BASELINE |
+| Embedded-QB delta | MODEL TEST OPEN |
+| Crossed dynamic `NQB_team + Q_qb` decomposition | MODEL TEST OPEN; prior BASELINE promotion superseded |
+| QB promotion protocol | RESOLVED | `qb_representation_promotion_protocol_v1.md` |
+| Simulation parameter recovery before decomposition promotion | CONFIRMED required gate |
+| Posterior correlation/identifiability diagnostics | CONFIRMED required gate |
+| Starter-change / team-change / same-starter negative controls | CONFIRMED required gates |
+| Draft-slot/college rookie priors | CONDITIONAL TEST only after representation survives |
 
-## Direct game-model implementation contract resolution
-
-The first game-distribution baseline is now implementation-ready:
-
-- **BASELINE:** separate Bayesian Student-t margin and total location models;
-- **BASELINE:** margin uses structural strength difference + league time-varying HFA/neutral handling;
-- **BASELINE:** total uses structural strength sum + league/era baseline;
-- **LOCK:** state uncertainty is integrated, not replaced by posterior means;
-- **BASELINE:** joint state posterior draws are the reference integration mechanism;
-- **LOCK:** no forced EPA-to-points coefficient;
-- **BASELINE:** integer PMF from CDF bins of the full posterior predictive mixture;
-- **LOCK:** exact key-number calibration is measured;
-- **BASELINE:** no custom key-number reweighting;
-- **LOCK:** discrete calibration uses a valid atom-aware method;
-- **BASELINE:** CRPS, seeded randomized PIT, coverage and exact 3/7 reporting;
-- **TEST:** empirical PMF, heteroskedasticity, quantile models, post-hoc calibration, joint margin/total, exact-score and drive simulation.
+Research does not justify promoting explicit QB decomposition a priori. It resolves how that promotion must be tested.
 
 ---
 
-# 7. Quarterback architecture
+# 7. Market/output semantics and reference consensus
 
 | Area | Status | Current disposition |
 |---|---|---|
-| QB is first-class | **CONFIRMED LOCK** | Canonical QB architecture |
-| Do not double count QB in team offense | **CONFIRMED LOCK** | Canonical QB architecture |
-| Uncertain starters use mixtures of full conditional outcome distributions | **CONFIRMED LOCK** | Canonical QB architecture |
-| Fixed subjective QB point values | **DEFER / prohibited** | Canonical QB architecture |
-| Post-hoc embedded-QB delta | **MODEL TEST OPEN** | TEST |
-| Crossed dynamic `NQB_team + Q_qb` decomposition | **SUPERSEDED as BASELINE / MODEL TEST OPEN** | Required challenger |
-| Crossed QB/team priors and identification details | **CONDITIONAL TEST SPECIFICATION** | Apply only if decomposition survives promotion tests |
-| Draft-slot rookie prior | **CONDITIONAL MODEL TEST OPEN** | TEST, not core baseline |
-| College-rushing rookie signal | **CONDITIONAL MODEL TEST OPEN** | TEST |
-| Special rookie fast-update multiplier | **NOT BASELINE** | Experience-dependent process variance may be tested |
+| Structural football branch separate from market branch | CONFIRMED |
+| Distinct market timestamps | CONFIRMED |
+| Expected margin != sportsbook spread | CONFIRMED |
+| Explicit cover/push/lose at actual executable line | CONFIRMED |
+| Reference market distinct from executable quote | CONFIRMED |
+| Same-threshold requirement for probability consensus | CONFIRMED LOCK |
+| First reference consensus recipe | CONFIRMED BASELINE benchmark | per-book multiplicative no-vig + equal-weight median |
+| Median quoted line as descriptive consensus | CONFIRMED BASELINE |
+| Leave-one-book-out reference when benchmarking target book | CONFIRMED BASELINE when coverage permits |
+| Shin/power de-vig, learned weights, interpolation/CDF reconstruction | MODEL TEST OPEN |
+| Exact production-optimal consensus recipe | MODEL TEST OPEN | initial implementation is resolved, superiority is not |
+
+Do not average probabilities at different spread/total thresholds without an explicit interpolation/distribution model.
 
 ---
 
@@ -163,17 +152,17 @@ The first game-distribution baseline is now implementation-ready:
 
 | Area | Status | Current disposition |
 |---|---|---|
-| Props are first-class branch | **CONFIRMED LOCK** | Canonical Props |
-| Hierarchical game→role/opportunity→conversion architecture | **CONFIRMED BASELINE** | Canonical Props |
-| Direct final-stat models required challengers | **CONFIRMED TEST** | Canonical Props |
-| Role/opportunity uncertainty and non-mechanical redistribution | **CONFIRMED principle** | Canonical Props |
-| Initial count/opportunity development order | **CONFIRMED BASELINE** | Canonical Props |
-| Opponent-adjusted/shrunk matchup effects | **MODEL TEST OPEN** | TEST |
-| Raw DvP / tiny narrative splits | **DEFER** | Canonical Props |
-| Deterministic WR-CB/shadow adjustments | **DEFER** | Canonical Props |
-| 2023+ public nflverse participation cannot be assumed in-season PIT | **CONFIRMED LOCK** | Canonical Props |
-| Threshold-ready prop distributions | **CONFIRMED LOCK** | Canonical Props |
-| Same-line/time market benchmark | **CONFIRMED LOCK** | Canonical Props |
+| Props first-class branch | CONFIRMED LOCK |
+| Hierarchical game -> role/opportunity -> conversion architecture | CONFIRMED BASELINE |
+| Direct final-stat challengers | CONFIRMED TEST |
+| Role/opportunity uncertainty | CONFIRMED principle |
+| Initial count/opportunity development order | CONFIRMED BASELINE |
+| Opponent-adjusted/shrunk matchup effects | MODEL TEST OPEN |
+| Raw DvP / tiny narrative splits | DEFER |
+| Deterministic WR-CB/shadow adjustments | DEFER |
+| Participation availability requires PIT provenance | CONFIRMED LOCK |
+| Threshold-ready prop distributions | CONFIRMED LOCK |
+| Same-line/time prop market benchmark | CONFIRMED LOCK |
 
 ---
 
@@ -181,68 +170,55 @@ The first game-distribution baseline is now implementation-ready:
 
 | Area | Status | Current disposition |
 |---|---|---|
-| Correlated bets require portfolio treatment | **CONFIRMED LOCK** | Canonical Risk |
-| Joint scenario simulator | **MODEL TEST OPEN / long-term target** | TEST |
-| Conservative exposure caps before joint model | **CONFIRMED LOCK** | Canonical Risk |
-| Full independent Kelly | **Not allowed as default** | Canonical Risk |
-| Fractional/portfolio Kelly | **MODEL TEST OPEN** | TEST |
+| Correlated bets require portfolio treatment | CONFIRMED LOCK |
+| Joint scenario simulator | MODEL TEST OPEN / long-term target |
+| Conservative exposure caps before joint model | CONFIRMED LOCK |
+| Full independent Kelly | not allowed as default |
+| Fractional/portfolio Kelly | MODEL TEST OPEN |
 
 ---
 
 # 10. Phase 3A / Build A
 
-## Current narrow Phase 3A
+Current `main` Phase 3A remains a narrow market-observation and forecast/evaluation foundation.
 
-**CONFIRMED SCOPE:** current `main` contains the narrow market-observation and forecast/evaluation foundation. Validation applies to that limited surface only.
-
-## Later expanded Build A attempt
-
-**NOT APPROVED:** commit `72f41dd0ffd9b7c76bb4fc3421d0517bada493ee` contained broader executable/betting components and failed adversarial checks on causality, executability, immutability, validation/scoring and provenance.
-
-Those blocker classes must be regression-tested before reintroduction.
-
-## Remaining engineering escalations
-
-- `ESC-A` — **DESIGN OPEN:** later-acquired historical archive availability semantics.
-- `ESC-B` — **DESIGN OPEN:** durable proof of pre-outcome artifact existence/examination.
+The expanded Build A attempt at commit `72f41dd0ffd9b7c76bb4fc3421d0517bada493ee` remains **NOT APPROVED**. Its causality, executability, immutability, scoring, validation and provenance blocker classes must be regression-tested before reintroduction.
 
 ---
 
-# 11. Superseded recent promotions
+# 11. Superseded promotions that remain superseded
 
-Do not treat the following individual-file labels as canonical:
+Do not re-promote without new chronological evidence:
 
-| Prior promoted proposal | Reviewed status |
+| Prior proposal | Canonical status |
 |---|---|
-| Smooth joint score×time adjustment as team-state BASELINE | **TEST** |
-| Wind/precipitation/roof as initial total BASELINE | **TEST** |
-| Post-hoc key-number multiplier as game-distribution BASELINE | **TEST** |
-| Crossed dynamic `NQB + QB` decomposition as team-state BASELINE | **TEST** |
-| Draft-informed rookie QB prior as required core BASELINE | **TEST conditional on explicit QB model** |
+| Smooth score×time adjustment as team-state baseline | TEST |
+| Weather/roof in initial total baseline | TEST |
+| Post-hoc key-number margin multiplier | TEST |
+| Crossed dynamic QB/non-QB decomposition | TEST |
+| Draft-informed rookie prior as required core baseline | conditional TEST |
 
 ---
 
-# 12. Current handoff
+# 12. Current stopping point
 
-Both predictive baseline implementation contracts are now resolved and canonicalized.
+The principal architecture questions needed before predictive-baseline implementation are now resolved.
 
-Priority sequence now:
+Next work is implementation and empirical evidence, not another serial architecture-research chain:
 
-1. **Implement and validate the team-state benchmark ladder.**
-2. **Implement and validate the direct margin/total benchmark ladder.**
-3. Design the QB representation promotion experiment.
-4. Determine historical PIT weather-forecast feasibility.
-5. Resolve `ESC-A` and `ESC-B` when implementation reaches those surfaces.
-6. Keep production reference-market consensus as `TEST` until empirical evidence exists.
-
-Do not reopen settled locks merely because a richer football model sounds more realistic; added complexity must earn promotion through chronological proper-score/calibration evidence.
+1. implement the minimum team-state benchmark ladder;
+2. implement the direct margin/total benchmark ladder;
+3. implement provenance classes and Sigstore/GitHub attested prospective manifests;
+4. implement the initial reference-market benchmark;
+5. run QB/weather/key-number/richer-model challengers only under pre-registered TEST protocols;
+6. retain the final untouched promotion gate.
 
 ## Ongoing audit rule
 
 Before each implementation phase:
 
 - check intended work against `DESIGN_LOCKS.md`;
-- treat individual decision files as supporting history, not automatic authority;
-- update this ledger and `DESIGN_LOCKS.md` together for any status change;
-- preserve explicit OPEN/TEST items until evidence actually resolves them;
-- never mark an architecture idea CONFIRMED merely because it has a detailed design document.
+- treat decision files as supporting history, not automatic authority;
+- update this ledger and `DESIGN_LOCKS.md` together for status changes;
+- preserve TEST items until evidence resolves them;
+- never promote an idea merely because its design document is detailed.
