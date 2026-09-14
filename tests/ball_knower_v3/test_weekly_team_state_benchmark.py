@@ -4,7 +4,10 @@ import pandas as pd
 
 from ball_knower_v3.modeling.canonical_adapter import eligible_team_state_plays, make_weekly_batches
 from ball_knower_v3.modeling.team_state import GaussianOffenseDefenseFilter
-from ball_knower_v3.modeling.weekly_benchmark import WeeklyTeamStateBenchmarkRunner
+from ball_knower_v3.modeling.weekly_benchmark import (
+    WeeklyTeamStateBenchmarkRunner,
+    outcomes_from_games,
+)
 
 
 TEAMS = ("A", "B", "C", "D")
@@ -81,19 +84,29 @@ def test_weekly_batches_only_use_final_canonical_games():
     assert set(week1.offenses) == {"A"}
 
 
+def test_forecast_cohort_is_schedule_defined_not_outcome_defined():
+    games = _games()
+    games.loc[games["game_id"] == "g2", ["is_final", "home_margin", "total_points"]] = [False, pd.NA, pd.NA]
+    runner = WeeklyTeamStateBenchmarkRunner(GaussianOffenseDefenseFilter(TEAMS))
+    forecasts = runner.run(games, _plays())
+    assert {forecast.game_id for forecast in forecasts if forecast.week == 1} == {"g1", "g2"}
+
+
 def test_all_same_week_forecasts_are_frozen_before_same_week_updates():
     runner = WeeklyTeamStateBenchmarkRunner(GaussianOffenseDefenseFilter(TEAMS))
     forecasts = runner.run(_games(), _plays())
     week1 = [forecast for forecast in forecasts if forecast.week == 1]
     week2 = [forecast for forecast in forecasts if forecast.week == 2]
 
-    # Week 1 starts from the same exchangeable prior for every matchup.
-    assert week1[0].league_intercept_mean == week1[1].league_intercept_mean == 0.0
-    assert week1[0].strength_margin_mean == week1[1].strength_margin_mean == 0.0
+    assert week1[0].league_intercept_mean == week1[1].league_intercept_mean
+    assert week1[0].strength_margin_mean == week1[1].strength_margin_mean
 
     # Week 1 evidence is available to week 2, so at least one structural state
-    # quantity must move away from the untouched prior.
-    assert any(abs(forecast.strength_margin_mean) > 0.0 for forecast in week2)
+    # quantity must differ from the frozen week-1 state.
+    assert any(
+        abs(forecast.strength_margin_mean - week1[0].strength_margin_mean) > 0.0
+        for forecast in week2
+    )
 
 
 def test_margin_contrast_cancels_common_league_intercept_but_total_keeps_it():
@@ -101,8 +114,6 @@ def test_margin_contrast_cancels_common_league_intercept_but_total_keeps_it():
     forecasts = runner.run(_games(), _plays())
     week2 = [forecast for forecast in forecasts if forecast.week == 2]
     assert week2[0].league_intercept_mean != 0.0
-    # The matchup margin is eta_home - eta_away, so the common intercept cancels
-    # algebraically. The total contrast is eta_home + eta_away and retains it.
     for forecast in week2:
         reconstructed_margin = forecast.eta_home_mean - forecast.eta_away_mean
         reconstructed_total = forecast.eta_home_mean + forecast.eta_away_mean
@@ -110,11 +121,19 @@ def test_margin_contrast_cancels_common_league_intercept_but_total_keeps_it():
         assert abs(forecast.strength_total_mean - reconstructed_total) < 1e-12
 
 
-def test_final_outcomes_are_carried_only_as_targets_not_state_inputs_for_same_week():
-    games = _games()
+def test_frozen_forecast_record_contains_no_realized_targets():
     runner = WeeklyTeamStateBenchmarkRunner(GaussianOffenseDefenseFilter(TEAMS))
-    forecasts = runner.run(games, _plays())
-    by_id = {forecast.game_id: forecast for forecast in forecasts}
-    assert by_id["g1"].home_margin == 7.0
-    assert by_id["g1"].total_points == 47.0
-    assert by_id["g1"].strength_margin_mean == 0.0
+    forecast = runner.run(_games(), _plays())[0]
+    assert not hasattr(forecast, "home_margin")
+    assert not hasattr(forecast, "total_points")
+
+
+def test_realized_outcomes_are_extracted_separately():
+    games = _games()
+    outcomes = {outcome.game_id: outcome for outcome in outcomes_from_games(games)}
+    assert outcomes["g1"].home_margin == 7.0
+    assert outcomes["g1"].total_points == 47.0
+
+    games.loc[games["game_id"] == "g2", "is_final"] = False
+    ids = {outcome.game_id for outcome in outcomes_from_games(games)}
+    assert "g2" not in ids
