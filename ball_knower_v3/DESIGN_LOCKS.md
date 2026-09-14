@@ -367,6 +367,64 @@ The new season does not reset every team to league average. Prior state carries 
 
 Historically supportable QB change, continuity, coaching and personnel variables may condition offseason transition only after chronological validation.
 
+## Team-state implementation contract — RESOLVED
+
+Detailed research and rationale are preserved in `design_decisions/team_state_implementation_contract_v1.md`.
+
+### Initialization — LOCK / BASELINE
+
+`LOCK`: when earlier PIT-safe state evidence is absent, initialize offense and defense from exchangeable league-centered distributions with nonzero uncertainty.
+
+`BASELINE`: learn separate initial offense and defense population scales under proper weakly informative hyperpriors. Do not initialize every team as known exactly average and do not copy fixed scales from historical papers.
+
+Stationary-AR initialization tied algebraically to process variance/persistence remains `TEST`.
+
+### Prior policy — LOCK / BASELINE
+
+`LOCK`: priors and hyperpriors used for historical replay are proper, scale-aware and defined from generic statistical knowledge or prior-time training information only.
+
+`BASELINE`: use documented weakly informative half-t/half-normal-style priors for positive hierarchical scales, with prior-predictive checks. Learn within-season persistence separately for offense and defense rather than fixing historical-paper values.
+
+Student-t observation tail thickness should be estimated under a proper regularizing prior when computationally stable. A fixed `nu` is only an implementation approximation and must be pre-registered from training-only analysis with sensitivity checks.
+
+### Within-season process — BASELINE
+
+Use Gaussian AR(1) state innovations first, with separate offense/defense persistence and process scales. Robustification begins in the play-level observation likelihood; heavy-tailed process noise remains `TEST`.
+
+### Offseason process — LOCK / BASELINE
+
+`LOCK`: the offseason uses a separate learned transition regime with regression toward league average and increased uncertainty; it is neither a full reset nor many ordinary weekly transitions.
+
+`BASELINE`: offense and defense receive separate offseason persistence and innovation scales. Personnel-conditioned offseason transitions remain `TEST`.
+
+### Historical fitting cadence — LOCK / BASELINE
+
+`LOCK`: every evaluated forecast origin must be generated from parameters, hyperparameters and states conditioned only on information available before that origin. A later full-history fit cannot replace the historical forecast artifact.
+
+`BASELINE`: use expanding-window weekly forecast origins for the initial offline benchmark. Warm starts are computationally allowed, but the posterior at each origin must condition only on the prior-time dataset.
+
+Slower global-hyperparameter refit cadences remain `TEST` efficiency approximations.
+
+### Posterior handoff — LOCK / BASELINE
+
+`LOCK`: the state layer must preserve uncertainty and relevant joint dependence downstream; marginal point ratings alone are insufficient.
+
+`BASELINE`: joint posterior draws are the reference handoff to the game model so matchup sums/differences are constructed from coherent draws.
+
+Compressed posterior approximations remain `TEST` until downstream probabilities/calibration are materially unchanged.
+
+### Weak-information states — LOCK / BASELINE
+
+`LOCK`: sparse evidence is represented by wider posterior uncertainty, not a manual early-season confidence multiplier.
+
+`BASELINE`: when earlier usable history exists before the formal scored evaluation window, use it causally as warm-up. If it does not exist, start from the exchangeable uncertain prior rather than silently excluding early forecasts.
+
+### Deterministic replay ordering — LOCK / BASELINE
+
+`LOCK`: forecast state is keyed to an as-of timestamp; completed games may update only later forecasts; frozen pregame states are never changed retroactively.
+
+`BASELINE`: replay games in actual causal chronology with stable `game_id` tie-breaking, apply required NFL-week transitions before the next team observation batch, and use actual reschedule chronology rather than cosmetic schedule order.
+
 ---
 
 # Quarterback architecture
@@ -518,20 +576,20 @@ Durable proof that a model/experiment artifact existed and was actually frozen/e
 
 # Current stopping point / next-thread boundary
 
-The architecture is now sufficiently specified for an independent implementation/readiness review. Do **not** continue resolving increasingly narrow model details before implementing and benchmarking the core ladder.
+The minimum team-state implementation contract is now resolved. The project should move into implementation of the benchmark ladder rather than reopen the settled team-state architecture.
 
 Priority open work:
 
-1. implementation contract + benchmark ladder for reviewed team-state core;
-2. QB representation promotion experiment;
-3. PIT weather-data feasibility before weather promotion;
-4. direct game-model implementation/calibration benchmark without premature key-number correction;
+1. implement and validate the reviewed team-state benchmark ladder under the resolved contract;
+2. resolve the exact direct game-model implementation/calibration contract without premature key-number correction;
+3. QB representation promotion experiment;
+4. PIT weather-data feasibility before weather promotion;
 5. ESC-A archive semantics;
 6. ESC-B durable pre-outcome artifact proof;
 7. production reference-market consensus recipe;
 8. later prop and correlation implementation under the existing locks.
 
-The next thread should begin from this reviewed canonical state and independently verify implementation readiness rather than reconstructing decisions from chat.
+Do not reopen settled locks merely because a richer football model sounds more realistic; added complexity must earn promotion through chronological proper-score/calibration evidence.
 
 ---
 
@@ -539,7 +597,11 @@ The next thread should begin from this reviewed canonical state and independentl
 
 Key sources include:
 
-- Glickman & Stern (1998), *A State-Space Model for National Football League Scores* — dynamic uncertain NFL team strength.
+- Glickman & Stern (1998), *A State-Space Model for National Football League Scores* — dynamic uncertain NFL team strength and separate week/season evolution.
+- Koopmeiners (2012), *A Comparison of the Autocorrelation and Variance of NFL Team Strengths Over Time using a Bayesian State-Space Model* — NFL team-strength persistence/variance as estimable dynamic quantities.
+- Durbin & Koopman (2012), *Time Series Analysis by State Space Methods* — filtering, smoothing, initialization and forecasting.
+- Gelman (2006), *Prior distributions for variance parameters in hierarchical models* — weakly informative hierarchical scale priors and caution on inverse-gamma defaults.
+- Anderson (2021), *Estimating Team Ability From EPA* — opponent-adjusted hierarchical NFL EPA estimation and Student-t robustness.
 - Benz, Bliss & Lopez (2024), *A comprehensive survey of the home advantage in American football* — declining NFL HFA.
 - Lopez & Bliss (2024), *Bye-bye, bye advantage* — no significant current universal bye/mini-bye advantage.
 - Baker & McHale (2013), *Forecasting exact scores in National Football League games* — coherent exact-score forecasting and discrete football-score structure.
