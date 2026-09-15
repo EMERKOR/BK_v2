@@ -76,7 +76,7 @@ A separate event-time replay module exists for future use when genuine completio
 Implemented distribution mechanics required downstream of the direct game model:
 
 - equal-weight posterior predictive Student-t mixtures;
-- integer bin mass via `F(k+0.5)-F(k-0.5)`;
+- integer bin mass via `F(k+0.5)-F(k+0.5)`;
 - explicit lower/upper tail mass rather than silent renormalization;
 - whole-number push probability;
 - half-point zero-push semantics;
@@ -143,6 +143,16 @@ Therefore the next implementation unit is a training-only hyperparameter estimat
 
 The hard-coded defaults currently present in the model classes are for smoke testing and interface verification only.
 
+### Observation-scale clarification — resolved 2026-09-15
+
+See `design_decisions/team_state_observation_scale_calibration_v1.md`.
+
+Do **not** replace the smoke-test `observation_sd = 1.0` with the approximately `1.38` pooled residual standard deviation. That comparison is not parameter-equivalent under Student-t observation treatment and the pooled residual dispersion may include latent team/state variation.
+
+For scored work, observation scale must be learned/tuned under the prior-time conditional model and validated jointly with process uncertainty and Student-t tail thickness. Raw pooled residual SD is not a plug-in estimate of the Student-t observation-scale parameter.
+
+This is an implementation-validation requirement, not a new architecture blocker.
+
 ## What is not being added yet
 
 Consistent with the reviewed architecture, this phase does not add:
@@ -159,5 +169,7 @@ Consistent with the reviewed architecture, this phase does not add:
 Those remain `TEST` or downstream work under the canonical locks.
 
 ## Next step
+
+Follow `CODEX_PHASE3B_NEXT_STEP.md`.
 
 Implement prior-time team-state hyperparameter fitting and frozen configuration provenance, execute the focused test suite, and then generate the first chronological structural-state forecast table. Only after that table exists should the direct margin/total regression be fitted and evaluated.
