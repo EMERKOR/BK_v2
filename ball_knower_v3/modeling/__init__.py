@@ -14,12 +14,20 @@ from .team_state import (
     TeamStatePosterior,
 )
 from .weekly_benchmark import (
+    run_fitted_weekly_benchmark,
     WeeklyStateForecast,
     WeeklyTeamStateBenchmarkRunner,
     forecasts_to_frame,
 )
+from .state_fitting import AvailableWeek, CandidateSpace, fit_prior_time
+from .frozen_state_config import FrozenStateConfig
 
 __all__ = [
+    "AvailableWeek",
+    "CandidateSpace",
+    "fit_prior_time",
+    "FrozenStateConfig",
+    "run_fitted_weekly_benchmark",
     "CausalTeamStateReplay",
     "FrozenPregameState",
     "GameObservationBatch",

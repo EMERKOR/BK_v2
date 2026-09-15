@@ -2,6 +2,12 @@
 
 Date: 2026-09-15
 
+Current implementation status (2026-09-15): the fitting/provenance mechanics below
+are implemented and the focused suite passes. Read
+`PHASE3B_TEAM_STATE_BENCHMARK_BUILD_REPORT.md` for results and the remaining
+audited-availability blocker before strict NFL forecast-table generation.
+The original scope below is retained as the acceptance contract.
+
 Repository: `EMERKOR/BK_v2`
 
 Primary scope: `ball_knower_v3/`
