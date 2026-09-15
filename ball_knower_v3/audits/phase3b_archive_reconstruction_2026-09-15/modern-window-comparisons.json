@@ -1,0 +1,32 @@
+[
+  {
+    "comparison": "October2_vs_October9_week4",
+    "left_rows": 2761,
+    "right_rows": 2761,
+    "shared_keys": 2761,
+    "epa_changes_over_1e6": 0,
+    "epa_missingness_changes": 0,
+    "epa_max_absolute_change": 0.0,
+    "exact_epa_changes": 0
+  },
+  {
+    "comparison": "October2_vs_current_week4",
+    "left_rows": 2761,
+    "right_rows": 2761,
+    "shared_keys": 2761,
+    "epa_changes_over_1e6": 0,
+    "epa_missingness_changes": 0,
+    "epa_max_absolute_change": 0.0,
+    "exact_epa_changes": 0
+  },
+  {
+    "comparison": "October9_vs_current_week5",
+    "left_rows": 2454,
+    "right_rows": 2454,
+    "shared_keys": 2454,
+    "epa_changes_over_1e6": 0,
+    "epa_missingness_changes": 0,
+    "epa_max_absolute_change": 0.0,
+    "exact_epa_changes": 0
+  }
+]

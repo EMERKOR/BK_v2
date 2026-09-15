@@ -225,3 +225,9 @@ PR #21 merged into `main` as `47ee18319cf3c85a2dc87fc95fea6b7256abf528`; the [me
 Read the [historical availability audit](PHASE3B_HISTORICAL_AVAILABILITY_AUDIT.md). The current 2010–2025 raw/canonical source chain cannot support a fit-ready historical weekly availability manifest. Four exact dated nflverse RDS assets have verified source-version/public-upload receipts, but those dates cannot be assigned to later refreshed EPA values. Separate archive-derived canonical reconstruction and schedule/registration/chronology evidence remain necessary. No strict NFL table or NFL calibration metrics were fabricated. Fail-closed rules are unchanged.
 
 The model remains the robust-filter approximation, not a validated production Bayesian baseline. Neither `1.0` nor `1.38` is promoted, pooled residual SD is not substituted for Student-t scale, and the synthetic demo is execution/mechanics evidence only. Direct margin/total fitting has not begun.
+
+## Archive reconstruction investigation — 2026-09-15
+
+The [archive reconstruction report](PHASE3B_ARCHIVE_RECONSTRUCTION_REPORT.md) verifies a separate source cohort for **2025 Weeks 4–5**, directly from dated PBP and schedule/result assets (30 completed games). Checksums, terminal records, score agreement and per-asset publication bounds pass. This is source reconstruction, not a certified strict replay period.
+
+The approved runner rejects delayed Tuesday/Wednesday multiweek chronology, and the exporter rejects a genuinely registered-today candidate fixture at a 2025 cutoff. No guard was bypassed, no NFL table or calibration evidence was produced, and no margin/total modeling began. Historical experiment-registration semantics and delayed/revised-data replay require an explicit architecture decision before further execution. Regression validation: **88 tests passed in 13.32s**.

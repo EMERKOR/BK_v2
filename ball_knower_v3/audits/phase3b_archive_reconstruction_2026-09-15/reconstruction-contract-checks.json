@@ -1,0 +1,47 @@
+{
+  "schema_version": "archive_reconstruction_contract_checks_v1",
+  "source_week_window": [
+    2025,
+    4,
+    5
+  ],
+  "source_checks": [
+    {
+      "week": 4,
+      "complete_source_game_count": 16,
+      "source_rows": 2761,
+      "scores_match": true,
+      "end_game_markers_cover_all_source_games": true,
+      "source_available_at": "2025-10-02T15:33:20Z",
+      "completion_time_invented": false
+    },
+    {
+      "week": 5,
+      "complete_source_game_count": 14,
+      "source_rows": 2454,
+      "scores_match": true,
+      "end_game_markers_cover_all_source_games": true,
+      "source_available_at": "2025-10-09T15:45:49Z",
+      "completion_time_invented": false
+    }
+  ],
+  "source_bound_thursday_chronology_passes": true,
+  "tuesday_week6_eligible_source_weeks": [
+    4
+  ],
+  "tuesday_multiweek_chronology_rejected": "delayed/overlapping evidence requires delayed-state handling",
+  "candidate_registered_at": "2026-09-15T21:47:02.667692+00:00",
+  "candidate_purpose": "Guard exercise only; never fitted or promoted",
+  "exporter_attempt_origin": "2025-10-09T17:00:00Z",
+  "exporter_rejected": "candidate space must be registered before forecast origin",
+  "forecast_table_generated": false,
+  "completion_manifest_generated": false,
+  "nfl_calibration_generated": false,
+  "certified_baseline_replay_period": null,
+  "review_input_hashes": {
+    "THURSDAY_DIAGNOSTIC_ORIGIN_ONLY.csv": "720934f55e3e0a3cdfa34ba261b8f8ec5fcf525881d01d382bf164391a869b02",
+    "archive_schedule_cohort.parquet": "9c8680b0927ed8f954314c7f190cb424e6db436b033ee521e836f92aad47b99f",
+    "source_availability_THURSDAY_DIAGNOSTIC_ONLY.csv": "1caa3cac7c667985eb02c7ff475272f540aa7f3eb612521200943453e78e6fff",
+    "archive_weekly_cohort.parquet": "7488479316b5e1985d72c431d5c28d57d57c7098f333e646aecc4a0a95dd7b59"
+  }
+}
