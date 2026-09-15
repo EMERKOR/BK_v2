@@ -1,0 +1,15 @@
+{
+  "old_git_commit": "e027eddef6feb5987e2ad79f1cacb6b2f79f8c89",
+  "old_sha256": "b153bd865bf2e24d6be6e7da408b0416713fe5455c466ea9c38587ed0b2b4435",
+  "old_rows": 35714,
+  "old_week_max": 14,
+  "new_rows": 48771,
+  "shared_keys": 35714,
+  "changed_shared_columns": {
+    "epa": 12,
+    "play_type": 0,
+    "posteam": 0,
+    "defteam": 0,
+    "week": 0
+  }
+}

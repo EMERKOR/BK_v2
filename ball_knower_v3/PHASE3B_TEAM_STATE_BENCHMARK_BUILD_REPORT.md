@@ -217,3 +217,11 @@ The canonical baseline's richer inference/calibration validation and the separat
 prospective Sigstore workflow remain open. QB decomposition, score/time EPA
 adjustment, weather, rest/travel/pace/PROE, key-number reweighting, joint score
 simulation, sportsbook state inputs, wager selection and Kelly remain excluded.
+
+## Historical availability audit — 2026-09-15
+
+PR #21 merged into `main` as `47ee18319cf3c85a2dc87fc95fea6b7256abf528`; the [merge workflow passed](https://github.com/EMERKOR/BK_v2/actions/runs/35018964111), and the focused suite passed again locally: **88 tests**.
+
+Read the [historical availability audit](PHASE3B_HISTORICAL_AVAILABILITY_AUDIT.md). The current 2010–2025 raw/canonical source chain cannot support a fit-ready historical weekly availability manifest. Four exact dated nflverse RDS assets have verified source-version/public-upload receipts, but those dates cannot be assigned to later refreshed EPA values. Separate archive-derived canonical reconstruction and schedule/registration/chronology evidence remain necessary. No strict NFL table or NFL calibration metrics were fabricated. Fail-closed rules are unchanged.
+
+The model remains the robust-filter approximation, not a validated production Bayesian baseline. Neither `1.0` nor `1.38` is promoted, pooled residual SD is not substituted for Student-t scale, and the synthetic demo is execution/mechanics evidence only. Direct margin/total fitting has not begun.
