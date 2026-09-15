@@ -1,0 +1,26 @@
+{
+  "schema_version": "source_weekly_reconstruction_review_v1",
+  "scope": "Source-only audit, not certified baseline replay",
+  "origin_policy": "Thursday 17 UTC diagnostic alternative; not promoted or historically registered",
+  "availability": [
+    {
+      "season": 2025,
+      "week": 4,
+      "origin_at": "2025-09-25T17:00:00Z",
+      "available_at": "2025-10-02T15:33:20Z",
+      "dataset_id": "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "evidence_id": "archive-2025-10-02:pbp-asset-299770475:schedule-asset-299769091",
+      "provenance_class": "historical_source_proven"
+    },
+    {
+      "season": 2025,
+      "week": 5,
+      "origin_at": "2025-10-02T17:00:00Z",
+      "available_at": "2025-10-09T15:45:49Z",
+      "dataset_id": "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "evidence_id": "archive-2025-10-09:pbp-asset-302374075:schedule-asset-302373781",
+      "provenance_class": "historical_source_proven"
+    }
+  ],
+  "forecast_table_generated": false
+}

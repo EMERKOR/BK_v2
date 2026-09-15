@@ -1,0 +1,62 @@
+[
+  {
+    "tag": "2022-05-06",
+    "season": 2021,
+    "archive_rows": 50712,
+    "shared_keys": 49922,
+    "missing_keys": 790,
+    "epa_changes": 44127,
+    "posteam_changes": 0,
+    "defteam_changes": 0,
+    "play_type_changes": 0,
+    "week_changes": 0,
+    "epa_max_absolute_change": 4.821426205927198,
+    "epa_changes_over_1e-6": 336,
+    "epa_missingness_changes": 285
+  },
+  {
+    "tag": "2023-09-14",
+    "season": 2023,
+    "archive_rows": 2816,
+    "shared_keys": 2816,
+    "missing_keys": 0,
+    "epa_changes": 2460,
+    "posteam_changes": 0,
+    "defteam_changes": 0,
+    "play_type_changes": 0,
+    "week_changes": 0,
+    "epa_max_absolute_change": 0.5073809092864394,
+    "epa_changes_over_1e-6": 790,
+    "epa_missingness_changes": 0
+  },
+  {
+    "tag": "2024-09-12",
+    "season": 2024,
+    "archive_rows": 2740,
+    "shared_keys": 2740,
+    "missing_keys": 0,
+    "epa_changes": 2486,
+    "posteam_changes": 0,
+    "defteam_changes": 0,
+    "play_type_changes": 0,
+    "week_changes": 0,
+    "epa_max_absolute_change": 4.1117891669273376e-07,
+    "epa_changes_over_1e-6": 0,
+    "epa_missingness_changes": 0
+  },
+  {
+    "tag": "2025-09-11",
+    "season": 2025,
+    "archive_rows": 2738,
+    "shared_keys": 2738,
+    "missing_keys": 0,
+    "epa_changes": 1,
+    "posteam_changes": 0,
+    "defteam_changes": 0,
+    "play_type_changes": 0,
+    "week_changes": 0,
+    "epa_max_absolute_change": 2.179037803784013,
+    "epa_changes_over_1e-6": 1,
+    "epa_missingness_changes": 0
+  }
+]

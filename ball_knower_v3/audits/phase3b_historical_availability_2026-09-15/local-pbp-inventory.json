@@ -1,0 +1,713 @@
+[
+  {
+    "path": "data/RAW_pbp/pbp_2010.parquet",
+    "sha256": "b32cc5c4b016eab60b2db96a4506908c37c0e6a7eac329a575ac8571cc1b39bf",
+    "bytes": 15433239,
+    "rows": 46892,
+    "games": 267,
+    "seasons": [
+      2010
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 372,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2011.parquet",
+    "sha256": "197a4ebb55ef7e12cd8ce1e13c9e72ad7473e62455325a6d8340929c75180cda",
+    "bytes": 15485966,
+    "rows": 47448,
+    "games": 267,
+    "seasons": [
+      2011
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 372,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2012.parquet",
+    "sha256": "92cc8f27f3e97f0121b8d0bc90207facfc61600f1719bd3f09c69cdff359e005",
+    "bytes": 15638861,
+    "rows": 47834,
+    "games": 267,
+    "seasons": [
+      2012
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 372,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2013.parquet",
+    "sha256": "e9141ddb56a4ad2aa7f3ba7198ecc778d66541c536b9f56b0c5dd7a2bc597f7f",
+    "bytes": 15765484,
+    "rows": 48158,
+    "games": 267,
+    "seasons": [
+      2013
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 372,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2014.parquet",
+    "sha256": "c7bc69063be8d08e7d740cc20ef7e2d23dd40991027fc58ca4c988dcac01765c",
+    "bytes": 15652107,
+    "rows": 47629,
+    "games": 267,
+    "seasons": [
+      2014
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 372,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2015.parquet",
+    "sha256": "8f237115b4a8b36f73a967f7ead639a7cd59f013d9ef9ac66bce9e018edc6069",
+    "bytes": 15828669,
+    "rows": 48122,
+    "games": 267,
+    "seasons": [
+      2015
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 372,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2016.parquet",
+    "sha256": "8109d8f65cb24111ffcd8571958d9b0b22aca66d80ea1c83be4b09ed7527cfc9",
+    "bytes": 18597966,
+    "rows": 47651,
+    "games": 267,
+    "seasons": [
+      2016
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 391,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2017.parquet",
+    "sha256": "aaa45234d33dfe09e2f5f59672fdcdd0bcfad5c45f993836c97f82e6a0406794",
+    "bytes": 18248432,
+    "rows": 47245,
+    "games": 267,
+    "seasons": [
+      2017
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 391,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2018.parquet",
+    "sha256": "5a791ee4d147e197642f11a6f6f7a13c365744d50fd05d28cdd845e8b87a05da",
+    "bytes": 18282601,
+    "rows": 47109,
+    "games": 267,
+    "seasons": [
+      2018
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 391,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2019.parquet",
+    "sha256": "fd691cc2eac8d05ea2a9a19eb67f0ec686341f0584011886852a4e8ea66d8272",
+    "bytes": 18342630,
+    "rows": 47260,
+    "games": 267,
+    "seasons": [
+      2019
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 391,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2020.parquet",
+    "sha256": "7e7cf8c1db6d6d289e52749e62e5b4e343fe2a2efdbec22813dc1100e4008941",
+    "bytes": 18319510,
+    "rows": 47705,
+    "games": 269,
+    "seasons": [
+      2020
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "column_count": 391,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2021.parquet",
+    "sha256": "de89b51c479caf26d411a29308158db9f9c92c4e10f0f20e698c4dda160587e2",
+    "bytes": 19221332,
+    "rows": 49922,
+    "games": 285,
+    "seasons": [
+      2021
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "column_count": 391,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2022.parquet",
+    "sha256": "1f6221d8afd969f63f40d8345d16b726518a5e28142b3809e609846d1beb6632",
+    "bytes": 19459155,
+    "rows": 49434,
+    "games": 284,
+    "seasons": [
+      2022
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "column_count": 391,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2023.parquet",
+    "sha256": "787c5585f4e77027bdb15899301afa54ce1630dd607f908a69f3d7eb181b1a3f",
+    "bytes": 21439263,
+    "rows": 49665,
+    "games": 285,
+    "seasons": [
+      2023
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "column_count": 397,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2024.parquet",
+    "sha256": "1c77f3e01cb27a1715a4a00b101ba4b167a15ec3d32b6c3b16aeb85c23d04df3",
+    "bytes": 21458281,
+    "rows": 49492,
+    "games": 285,
+    "seasons": [
+      2024
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "column_count": 397,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  },
+  {
+    "path": "data/RAW_pbp/pbp_2025.parquet",
+    "sha256": "2c1899aaf5fc2b8d3e0ea2e75480d6f67593d9f40e8f56e0151f6c7c8846c791",
+    "bytes": 20434380,
+    "rows": 48771,
+    "games": 285,
+    "seasons": [
+      2025
+    ],
+    "weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "column_count": 372,
+    "metadata_keys": [
+      "pandas"
+    ],
+    "version_fields": [],
+    "git_history": [
+      "18606c10068c8f46bd692cf291c3575552a946c0 2026-08-10T21:28:51Z 2026-08-10T21:28:51Z Refresh 2025 nflverse raw snapshot (PBP/scores/markets/injuries/schedule)",
+      "e027eddef6feb5987e2ad79f1cacb6b2f79f8c89 2025-12-12T15:22:32Z 2025-12-12T15:22:32Z Extend week range to include playoffs (weeks 19-22)",
+      "ec76d0556c84986432916b084ef797829ac6f352 2025-12-07T19:45:02Z 2025-12-07T19:45:02Z Add RAW data (pbp, schedule, scores, market) and test_games for 2011-2024"
+    ],
+    "provenance_class": "RETROSPECTIVE_ONLY",
+    "historical_available_at": null,
+    "excluded_false_positive_field": "two_point_conversion_prob is a football probability, not a provider version"
+  }
+]

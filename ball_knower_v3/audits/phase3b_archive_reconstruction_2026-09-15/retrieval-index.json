@@ -1,0 +1,357 @@
+[
+  {
+    "id": "fastrmodels_tree",
+    "url": "https://api.github.com/repos/nflverse/fastrmodels/git/trees/master?recursive=1",
+    "retrieved_at": "2026-09-15T21:42:38.839443+00:00",
+    "sha256": "2dc0c3b1d4b360d3baff99c4c36bb99a4b69b6fdd9bb4eef59348c71a6d34256",
+    "path": "fastrmodels_tree.json"
+  },
+  {
+    "id": "fastrmodels_v101_ref",
+    "url": "https://api.github.com/repos/nflverse/fastrmodels/git/ref/tags/v1.0.1",
+    "retrieved_at": "2026-09-15T21:42:38.790478+00:00",
+    "sha256": "5a81a3fc3d1d639c6c498b7f92ec3a5c993ae164655e6ce99145e9ebf3f68e1e",
+    "path": "fastrmodels_v101_ref.json"
+  },
+  {
+    "id": "fastrmodels_v101_tree",
+    "url": "https://api.github.com/repos/nflverse/fastrmodels/git/trees/v1.0.1?recursive=1",
+    "retrieved_at": "2026-09-15T21:42:38.800396+00:00",
+    "sha256": "beec184925a159b6bc0aecfbe568758e980142e549300468688b087073d348e9",
+    "path": "fastrmodels_v101_tree.json"
+  },
+  {
+    "id": "fastrmodels_v101_readme",
+    "url": "https://raw.githubusercontent.com/nflverse/fastrmodels/v1.0.1/README.md",
+    "retrieved_at": "2026-09-15T21:42:38.787484+00:00",
+    "sha256": "597918b09fb761b495ae9061fb0929ede3651cca6f28d4031aea4a1b62d734f6",
+    "path": "fastrmodels_v101_readme.txt"
+  },
+  {
+    "id": "fastrmodels_model_archive",
+    "url": "https://api.github.com/repos/nflverse/fastrmodels/releases/tags/model_archive",
+    "retrieved_at": "2026-09-15T21:42:39.020755+00:00",
+    "sha256": "ad8a94f8df0abd7a40d571a88590cc10719b8a5e9667a279cb5fb75de7c9988f",
+    "path": "fastrmodels_model_archive.json"
+  },
+  {
+    "id": "nflfastR_sep2023_history",
+    "url": "https://api.github.com/repos/nflverse/nflfastR/commits?path=DESCRIPTION&since=2023-09-01T00:00:00Z&until=2023-09-22T00:00:00Z&per_page=100",
+    "retrieved_at": "2026-09-15T21:42:39.167646+00:00",
+    "sha256": "f0e645c3bbd3ee6b6f90e1f474da24b741c03cbd1a62d9fdd13fabe7563d9fea",
+    "path": "nflfastR_sep2023_history.json"
+  },
+  {
+    "id": "nflfastR_models_v451",
+    "url": "https://raw.githubusercontent.com/nflverse/nflfastR/f63fcfba2da8bbd6e11e91df3026184af9fbd2a1/data-raw/MODELS.R",
+    "retrieved_at": "2026-09-15T21:42:39.038161+00:00",
+    "sha256": "c7fa6850862157f42477e218d2bc0c496f0724d39d236f2f9b5caaa1bd204906",
+    "path": "nflfastR_models_v451.txt"
+  },
+  {
+    "id": "archive-2025-10-02",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/tags/archive-2025-10-02",
+    "retrieved_at": "2026-09-15T21:42:39.463363+00:00",
+    "sha256": "ec27c9c24d34dae4515285f5e6877d2f6be60d197adf104820cf0738934d3766",
+    "path": "archive-2025-10-02.json"
+  },
+  {
+    "id": "archive-2025-10-09",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/tags/archive-2025-10-09",
+    "retrieved_at": "2026-09-15T21:42:39.647644+00:00",
+    "sha256": "33dbe38d64d82482607f3ae25789d9b36cbba58c3d56e8c7bcf0adcece300d91",
+    "path": "archive-2025-10-09.json"
+  },
+  {
+    "id": "archive-2025-10-02-games",
+    "url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-02/games.rds",
+    "retrieved_at": "2026-09-15T21:43:49.155633+00:00",
+    "sha256": "97689d88414fed363c017c849dd8e43c3ffe9f3db1ce09ea4984f92e391b0a90",
+    "path": "archive-2025-10-02-games.rds"
+  },
+  {
+    "id": "asset-299769091-post",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/299769091",
+    "retrieved_at": "2026-09-15T21:43:49.155633+00:00",
+    "sha256": "1210987b887406419a65144e116e3bfcdfcfcdc0b4c57f3048dd60fad741c3fd",
+    "path": "asset-299769091-post.json"
+  },
+  {
+    "id": "archive-2025-10-02-play_by_play_2025",
+    "url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-02/play_by_play_2025.rds",
+    "retrieved_at": "2026-09-15T21:43:51.961856+00:00",
+    "sha256": "0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b",
+    "path": "archive-2025-10-02-play_by_play_2025.rds"
+  },
+  {
+    "id": "asset-299770475-post",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/299770475",
+    "retrieved_at": "2026-09-15T21:43:51.961856+00:00",
+    "sha256": "540108341f9b9fa4c666bd6a5755ea20c6b6292208a66dab6bb254171eb5efad",
+    "path": "asset-299770475-post.json"
+  },
+  {
+    "id": "archive-2025-10-09-games",
+    "url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-09/games.rds",
+    "retrieved_at": "2026-09-15T21:44:10.462632+00:00",
+    "sha256": "e4520f43c14c79657dff904a5f3a56e467fb3aea0de933db087da8de84f767b2",
+    "path": "archive-2025-10-09-games.rds"
+  },
+  {
+    "id": "asset-302373781-post",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/302373781",
+    "retrieved_at": "2026-09-15T21:44:10.462632+00:00",
+    "sha256": "b860a6231b8d43e46145f4afed9e40c1b1479a5a46b85d9b9376ab2b4b067d73",
+    "path": "asset-302373781-post.json"
+  },
+  {
+    "id": "archive-2025-10-09-play_by_play_2025",
+    "url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-09/play_by_play_2025.rds",
+    "retrieved_at": "2026-09-15T21:44:13.179795+00:00",
+    "sha256": "14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c",
+    "path": "archive-2025-10-09-play_by_play_2025.rds"
+  },
+  {
+    "id": "asset-302374075-post",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/302374075",
+    "retrieved_at": "2026-09-15T21:44:13.179795+00:00",
+    "sha256": "539635a1ea4f9dae89645ea4a0cddb8d95405b59f5e6ee54b9b2fbd467e9b4eb",
+    "path": "asset-302374075-post.json"
+  },
+  {
+    "id": "nflfastR_v451_ref",
+    "url": "https://api.github.com/repos/nflverse/nflfastR/git/ref/tags/v4.5.1",
+    "retrieved_at": "2026-09-15T21:40:19.968459+00:00",
+    "sha256": "6896dd63be9bd2fc2e99d72e30e8f97b4a8691a322b49d0bfea12b1b781df5c1",
+    "path": "nflfastR_v451_ref.json"
+  },
+  {
+    "id": "nflfastR_v451_ep_code",
+    "url": "https://raw.githubusercontent.com/nflverse/nflfastR/v4.5.1/R/helper_add_ep_wp.R",
+    "retrieved_at": "2026-09-15T21:40:20.002126+00:00",
+    "sha256": "2a399902d4f7e2328874cb64bd088077c90e66a23113f139817a828ab17ae73c",
+    "path": "nflfastR_v451_ep_code.txt"
+  },
+  {
+    "id": "nflfastR_v451_calculator",
+    "url": "https://raw.githubusercontent.com/nflverse/nflfastR/v4.5.1/R/ep_wp_calculators.R",
+    "retrieved_at": "2026-09-15T21:40:19.963725+00:00",
+    "sha256": "34ce2903f29bceabc60460ec5563ea0e7e7ba78549e62f8dbd20990021b1640a",
+    "path": "nflfastR_v451_calculator.txt"
+  },
+  {
+    "id": "nflfastR_models_history",
+    "url": "https://api.github.com/repos/nflverse/nflfastR/commits?path=data-raw/MODELS.R&per_page=100",
+    "retrieved_at": "2026-09-15T21:40:20.117519+00:00",
+    "sha256": "823eb97690bb9aab5467abbe54439f80896a44cd799ed3ce74668f019b4910c5",
+    "path": "nflfastR_models_history.json"
+  },
+  {
+    "id": "nfldata_games_2023_sept12",
+    "url": "https://api.github.com/repos/nflverse/nfldata/commits?path=data/games.csv&until=2023-09-12T12:00:00Z&per_page=3",
+    "retrieved_at": "2026-09-15T21:40:21.637403+00:00",
+    "sha256": "fcf9e5b6b2731fa99561ee1161746659613bed44d068c1c6f677a75addf4d70d",
+    "path": "nfldata_games_2023_sept12.json"
+  },
+  {
+    "id": "nfldata_workflow",
+    "url": "https://raw.githubusercontent.com/nflverse/nfldata/master/.github/workflows/release_games.yml",
+    "retrieved_at": "2026-09-15T21:40:20.217724+00:00",
+    "sha256": "ba251a3e9f93820b6347a0563028b8320cb3a1342ba0147de781a0ed41cfb821",
+    "path": "nfldata_workflow.txt"
+  },
+  {
+    "id": "nfldata_releases",
+    "url": "https://api.github.com/repos/nflverse/nfldata/releases?per_page=100",
+    "retrieved_at": "2026-09-15T21:40:20.221270+00:00",
+    "sha256": "2ba33ca0557f1bb5b7ba88d67f9d0093c7185a36ec51fe2b7bd9372d3e001d6d",
+    "path": "nfldata_releases.json"
+  },
+  {
+    "id": "old_guga_history",
+    "url": "https://api.github.com/repos/guga31bb/nflfastR-data/commits?path=data/play_by_play_2020.parquet&per_page=3",
+    "retrieved_at": "2026-09-15T21:40:20.514931+00:00",
+    "sha256": "2ba33ca0557f1bb5b7ba88d67f9d0093c7185a36ec51fe2b7bd9372d3e001d6d",
+    "path": "old_guga_history.json"
+  },
+  {
+    "id": "archive_asset_2023w2",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/127113948",
+    "retrieved_at": "2026-09-15T21:40:20.488676+00:00",
+    "sha256": "07e3fdfaf7c1169b6f993249ac4be38e5f054b64e05465cba2663a162491b997",
+    "path": "archive_asset_2023w2.json"
+  },
+  {
+    "id": "nflfastR_games_history",
+    "url": "https://api.github.com/repos/nflverse/nflfastR/commits?path=tests/testthat/games.rds&until=2023-09-01T00:00:00Z&per_page=3",
+    "retrieved_at": "2026-09-15T21:40:20.501082+00:00",
+    "sha256": "aa96fd6a7fdfdbecafcc52d9153075e8b1bcb1c3394d68ad03bca1b2ca957bf6",
+    "path": "nflfastR_games_history.json"
+  },
+  {
+    "id": "schedule_commit_details",
+    "url": "https://api.github.com/repos/nflverse/nfldata/commits/8d467b2d51c3aaaece8f69e06ab61e5792c5b381",
+    "retrieved_at": "2026-09-15T21:41:58.805586+00:00",
+    "sha256": "78cfe1253cc7cb4ddc72aaaeff17ba43a79b9cda3a8bc0a73278b357a1135b63",
+    "path": "schedule_commit_details.json"
+  },
+  {
+    "id": "schedule_commit_runs",
+    "url": "https://api.github.com/repos/nflverse/nfldata/actions/runs?head_sha=8d467b2d51c3aaaece8f69e06ab61e5792c5b381&per_page=100",
+    "retrieved_at": "2026-09-15T21:41:58.650840+00:00",
+    "sha256": "52d589da93373d1efadfa660185a0970a1b2320703a8b87d6ed693946661e1cd",
+    "path": "schedule_commit_runs.json"
+  },
+  {
+    "id": "schedule_commit_checks",
+    "url": "https://api.github.com/repos/nflverse/nfldata/commits/8d467b2d51c3aaaece8f69e06ab61e5792c5b381/check-runs",
+    "retrieved_at": "2026-09-15T21:41:58.689560+00:00",
+    "sha256": "c7b61227444bbb547c0bf732c29f8c6b96105350ff14f4512d97def04b2ccd1b",
+    "path": "schedule_commit_checks.json"
+  },
+  {
+    "id": "schedule_commit_prs",
+    "url": "https://api.github.com/repos/nflverse/nfldata/commits/8d467b2d51c3aaaece8f69e06ab61e5792c5b381/pulls",
+    "retrieved_at": "2026-09-15T21:41:58.679036+00:00",
+    "sha256": "2ba33ca0557f1bb5b7ba88d67f9d0093c7185a36ec51fe2b7bd9372d3e001d6d",
+    "path": "schedule_commit_prs.json"
+  },
+  {
+    "id": "schedules_release",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data/releases/tags/schedules",
+    "retrieved_at": "2026-09-15T21:41:58.919928+00:00",
+    "sha256": "bbd8498ad965c1b8986bdc336a0ff4c3c28b3d24ff9247408f14350a5c13d9e2",
+    "path": "schedules_release.json"
+  },
+  {
+    "id": "fastrmodels_repo",
+    "url": "https://api.github.com/repos/nflverse/fastrmodels",
+    "retrieved_at": "2026-09-15T21:41:58.944549+00:00",
+    "sha256": "60f5a827bbb3324fae95fe8ebc19d0a092d4f8ba2d489ac1c53e360230246628",
+    "path": "fastrmodels_repo.json"
+  },
+  {
+    "id": "fastrmodels_releases",
+    "url": "https://api.github.com/repos/nflverse/fastrmodels/releases?per_page=100",
+    "retrieved_at": "2026-09-15T21:41:59.007300+00:00",
+    "sha256": "3267bdd1974ab8d769bcae7430be7b946a57ba6de5d4a396f93f0dc8d9f06aab",
+    "path": "fastrmodels_releases.json"
+  },
+  {
+    "id": "fastrmodels_tree",
+    "url": "https://api.github.com/repos/nflverse/fastrmodels/git/trees/main?recursive=1",
+    "error": "Command '['curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '45', 'https://api.github.com/repos/nflverse/fastrmodels/git/trees/main?recursive=1']' returned non-zero exit status 56."
+  },
+  {
+    "id": "nflfastR_repo",
+    "url": "https://api.github.com/repos/nflverse/nflfastR",
+    "retrieved_at": "2026-09-15T21:39:08.326475+00:00",
+    "sha256": "c3e0ab37484a94f814ab64d3599cc9b46dbd370914cbf9bd8c29c0d6c4f49939",
+    "path": "nflfastR_repo.json"
+  },
+  {
+    "id": "nflfastR_tree",
+    "url": "https://api.github.com/repos/nflverse/nflfastR/git/trees/master?recursive=1",
+    "retrieved_at": "2026-09-15T21:39:08.422459+00:00",
+    "sha256": "4c3eef833a4a20936fc73221de38ee1cc68f6d5713f2efc833eed5ddcf4d2ad1",
+    "path": "nflfastR_tree.json"
+  },
+  {
+    "id": "nflfastR_releases",
+    "url": "https://api.github.com/repos/nflverse/nflfastR/releases?per_page=100",
+    "retrieved_at": "2026-09-15T21:39:08.504485+00:00",
+    "sha256": "d87ce66d8c47b36aab40f944f3a25724584c0ea8033dfc7436beb4482d3900e9",
+    "path": "nflfastR_releases.json"
+  },
+  {
+    "id": "nfldata_repo",
+    "url": "https://api.github.com/repos/nflverse/nfldata",
+    "retrieved_at": "2026-09-15T21:39:08.321061+00:00",
+    "sha256": "1a110742c9a55dc672ef14ba2b557fd1a0f90c3469b465630f9977349b78a4b6",
+    "path": "nfldata_repo.json"
+  },
+  {
+    "id": "nfldata_tree",
+    "url": "https://api.github.com/repos/nflverse/nfldata/git/trees/master?recursive=1",
+    "retrieved_at": "2026-09-15T21:39:08.598274+00:00",
+    "sha256": "d4350a932b9ad5611bb66815f48df1e1cd5cd504d95da6bd00993ce25bce0639",
+    "path": "nfldata_tree.json"
+  },
+  {
+    "id": "games_history_2023",
+    "url": "https://api.github.com/repos/nflverse/nfldata/commits?path=data/games.csv&since=2023-09-01T00:00:00Z&until=2023-09-20T00:00:00Z&per_page=100",
+    "retrieved_at": "2026-09-15T21:39:09.410961+00:00",
+    "sha256": "e168541c93f35538445eab483d63385ab95deaa5e8ab220ba474b978e15dddad",
+    "path": "games_history_2023.json"
+  },
+  {
+    "id": "archive_2023_09_21",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/tags/archive-2023-09-21",
+    "retrieved_at": "2026-09-15T21:39:08.916583+00:00",
+    "sha256": "d7b13104dfe206bdba2f33b30ccb7704052092be2e82ed3f3f437e0bb7367af5",
+    "path": "archive_2023_09_21.json"
+  },
+  {
+    "id": "archive_2023_09_07",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/tags/archive-2023-09-07",
+    "retrieved_at": "2026-09-15T21:39:08.845278+00:00",
+    "sha256": "0310bb7c5122a93697ff0c1f6de33b1983d13069c7c2c1c72fdfb8ea7c9d8461",
+    "path": "archive_2023_09_07.json"
+  },
+  {
+    "id": "archive_2022_10_20",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/tags/archive-2022-10-20",
+    "retrieved_at": "2026-09-15T21:39:09.059087+00:00",
+    "sha256": "2b8484bca46e04229f96b4b9b09de909304fd87e7ad637798979e7bbde6c2db8",
+    "path": "archive_2022_10_20.json"
+  },
+  {
+    "id": "archive_2022_10_15",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/tags/archive-2022-10-15",
+    "retrieved_at": "2026-09-15T21:39:09.076477+00:00",
+    "sha256": "8900a87ba2ace8adb2779e4391657e7a04e1e8a2674fc33e20cb809c5a6bc620",
+    "path": "archive_2022_10_15.json"
+  },
+  {
+    "id": "archive-2023-09-21-2023.rds",
+    "url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2023-09-21/pbp_play_by_play_2023.rds",
+    "retrieved_at": "2026-09-15T21:41:49.740535+00:00",
+    "sha256": "5169c8e22be4d74e5478dc38082e18cb022e48acf532efb0dc957912f10788c9",
+    "path": "archive-2023-09-21-2023.rds"
+  },
+  {
+    "id": "asset-127113948-post.json",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/127113948",
+    "retrieved_at": "2026-09-15T21:41:50.007674+00:00",
+    "sha256": "07e3fdfaf7c1169b6f993249ac4be38e5f054b64e05465cba2663a162491b997",
+    "path": "asset-127113948-post.json"
+  },
+  {
+    "id": "games-2023-09-12.csv",
+    "url": "https://raw.githubusercontent.com/nflverse/nfldata/8d467b2d51c3aaaece8f69e06ab61e5792c5b381/data/games.csv",
+    "retrieved_at": "2026-09-15T21:42:12.457045+00:00",
+    "sha256": "c5df01ad0b53f9a8aa5cea0ce82e19061c62c6707cb1f8699448bab842a0aa23",
+    "path": "games-2023-09-12.csv"
+  },
+  {
+    "id": "nfldata-datasets",
+    "url": "https://raw.githubusercontent.com/nflverse/nfldata/master/DATASETS.md",
+    "retrieved_at": "2026-09-15T21:52:22.284995+00:00",
+    "sha256": "8835ca9c15784a2cdc04c2c599c54b373629f8fbe91117acd5b7d0c615e03bf4",
+    "path": "nfldata-datasets.txt"
+  },
+  {
+    "id": "asset-127113948-id-addressed.bin",
+    "url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/127113948?download=1",
+    "retrieved_at": "2026-09-15T21:53:04.486273+00:00",
+    "sha256": "5169c8e22be4d74e5478dc38082e18cb022e48acf532efb0dc957912f10788c9",
+    "path": "asset-127113948-id-addressed.bin"
+  },
+  {
+    "id": "fastrmodels-v101-ep-model.rda",
+    "url": "https://raw.githubusercontent.com/nflverse/fastrmodels/f071c857cf083225d525c2ee93fced235578b231/data/ep_model.rda",
+    "retrieved_at": "2026-09-15T21:53:04.820128+00:00",
+    "sha256": "8fb5ef767334836599c098b81b7fcc0674686c62600adb67299c2ef2f27b4e7d",
+    "path": "fastrmodels-v101-ep-model.rda"
+  }
+]
