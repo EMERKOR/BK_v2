@@ -6,9 +6,9 @@ benchmark, every game in an NFL week is therefore forecast from one shared
 pre-week state and that week's football evidence is assimilated only after all
 of those forecasts are frozen.
 
-This is intentionally stricter than inventing intra-week availability. A
-future event-time runner may use the separate ``replay`` module once genuine
-completion/availability timestamps are available.
+Frozen forecast records contain only information available to the forecast
+artifact. Realized outcomes are extracted separately for later evaluation so a
+pre-outcome forecast can be content-addressed without embedding its result.
 """
 
 from __future__ import annotations
@@ -58,8 +58,13 @@ class WeeklyStateForecast:
     strength_margin_var: float
     strength_total_mean: float
     strength_total_var: float
-    home_margin: float | None
-    total_points: float | None
+
+
+@dataclass(frozen=True)
+class WeeklyStateOutcome:
+    game_id: str
+    home_margin: float
+    total_points: float
 
 
 def _linear_moments(posterior: TeamStatePosterior, weights: np.ndarray) -> tuple[float, float]:
@@ -87,17 +92,8 @@ def _matchup_vectors(posterior: TeamStatePosterior, home_team: str, away_team: s
     return eta_home, eta_away
 
 
-def _optional_float(value) -> float | None:
-    if value is None or pd.isna(value):
-        return None
-    number = float(value)
-    if not np.isfinite(number):
-        return None
-    return number
-
-
 class WeeklyTeamStateBenchmarkRunner:
-    """Freeze, score, then assimilate each competition week in order."""
+    """Freeze every scheduled kickoff, then assimilate completed weekly evidence."""
 
     def __init__(self, model: WeeklyReplayModel) -> None:
         self.model = model
@@ -138,31 +134,19 @@ class WeeklyTeamStateBenchmarkRunner:
             strength_margin_var=margin_var,
             strength_total_mean=total_mean,
             strength_total_var=total_var,
-            home_margin=_optional_float(game.get("home_margin")),
-            total_points=_optional_float(game.get("total_points")),
         )
 
-    def run(
-        self,
-        games: pd.DataFrame,
-        plays: pd.DataFrame,
-        *,
-        final_only: bool = True,
-    ) -> tuple[WeeklyStateForecast, ...]:
-        required = {
-            "game_id", "season", "week", "kickoff", "home_team", "away_team",
-            "is_final", "home_margin", "total_points",
-        }
+    def run(self, games: pd.DataFrame, plays: pd.DataFrame) -> tuple[WeeklyStateForecast, ...]:
+        required = {"game_id", "season", "week", "kickoff", "home_team", "away_team"}
         missing = sorted(required - set(games.columns))
         if missing:
             raise ValueError(f"canonical games missing required columns: {missing}")
         if games["game_id"].duplicated().any():
             raise ValueError("canonical games contains duplicate game_id values")
 
-        target_games = games.copy()
-        if final_only:
-            target_games = target_games.loc[target_games["is_final"].fillna(False)].copy()
-        target_games = target_games.loc[target_games["kickoff"].notna()].copy()
+        # Forecast cohort is defined by schedule facts, not by whether an outcome
+        # later became final. Outcome availability is handled separately.
+        target_games = games.loc[games["kickoff"].notna()].copy()
         if target_games.empty:
             return ()
 
@@ -206,8 +190,39 @@ class WeeklyTeamStateBenchmarkRunner:
         return tuple(forecasts)
 
 
+def outcomes_from_games(games: pd.DataFrame) -> tuple[WeeklyStateOutcome, ...]:
+    """Extract realized targets separately from frozen forecast artifacts."""
+
+    required = {"game_id", "is_final", "home_margin", "total_points"}
+    missing = sorted(required - set(games.columns))
+    if missing:
+        raise ValueError(f"canonical games missing outcome columns: {missing}")
+    rows = games.loc[games["is_final"].eq(True)].copy()
+    outcomes: list[WeeklyStateOutcome] = []
+    for _, game in rows.sort_values("game_id").iterrows():
+        margin = pd.to_numeric(pd.Series([game["home_margin"]]), errors="coerce").iloc[0]
+        total = pd.to_numeric(pd.Series([game["total_points"]]), errors="coerce").iloc[0]
+        if pd.isna(margin) or pd.isna(total):
+            raise ValueError(f"final game {game['game_id']} is missing a realized target")
+        outcomes.append(
+            WeeklyStateOutcome(
+                game_id=str(game["game_id"]),
+                home_margin=float(margin),
+                total_points=float(total),
+            )
+        )
+    return tuple(outcomes)
+
+
 def forecasts_to_frame(forecasts: Iterable[WeeklyStateForecast]) -> pd.DataFrame:
     rows = [forecast.__dict__ for forecast in forecasts]
     if not rows:
         return pd.DataFrame(columns=[field for field in WeeklyStateForecast.__dataclass_fields__])
     return pd.DataFrame(rows).sort_values(["season", "week", "kickoff", "game_id"]).reset_index(drop=True)
+
+
+def outcomes_to_frame(outcomes: Iterable[WeeklyStateOutcome]) -> pd.DataFrame:
+    rows = [outcome.__dict__ for outcome in outcomes]
+    if not rows:
+        return pd.DataFrame(columns=[field for field in WeeklyStateOutcome.__dataclass_fields__])
+    return pd.DataFrame(rows).sort_values("game_id").reset_index(drop=True)
