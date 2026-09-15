@@ -211,3 +211,71 @@ def forecasts_to_frame(forecasts: Iterable[WeeklyStateForecast]) -> pd.DataFrame
     if not rows:
         return pd.DataFrame(columns=[field for field in WeeklyStateForecast.__dataclass_fields__])
     return pd.DataFrame(rows).sort_values(["season", "week", "kickoff", "game_id"]).reset_index(drop=True)
+
+
+def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, seed=0):
+    """Expanding weekly fitting with persisted configs and joint state snapshots.
+
+    origins supplies season/week/as_of, established before evaluating outcomes.
+    Schedule rows require schedule_known_at. All same-week games use one frozen
+    posterior. Outcomes are omitted from the structural table. Synthetic input
+    produces explicitly synthetic diagnostics, never historical evidence.
+    """
+    from pathlib import Path
+    from .state_fitting import fit_prior_time, aware_time, canonical_json, digest
+    from .frozen_state_config import FrozenStateConfig
+
+    if "schedule_known_at" not in games:
+        raise ValueError("schedule_known_at evidence is required")
+    if games["game_id"].duplicated().any() or origins.duplicated(["season", "week"]).any():
+        raise ValueError("duplicate game or forecast origin")
+    if not {"season", "week", "as_of"} <= set(origins):
+        raise ValueError("origins require season/week/as_of")
+    output = []
+    previous_as_of = None
+    for origin in origins.sort_values(["season", "week"]).itertuples(index=False):
+        as_of = aware_time(origin.as_of)
+        if previous_as_of is not None and as_of <= previous_as_of:
+            raise ValueError("origins must advance in actual chronology")
+        previous_as_of = as_of
+        target = (int(origin.season), int(origin.week))
+        fit = fit_prior_time(weeks, cutoff=as_of, target=target, space=space, seed=seed)
+        frozen = FrozenStateConfig.from_fit(fit)
+        model = frozen.replay(weeks, as_of=as_of, target=target)
+        runner = WeeklyTeamStateBenchmarkRunner(model)
+        week_games = games.loc[(games.season == target[0]) & (games.week == target[1])].copy()
+        rows = []
+        for _, game in week_games.sort_values(["kickoff", "game_id"]).iterrows():
+            if aware_time(game.schedule_known_at) > as_of:
+                continue
+            if aware_time(game.kickoff) <= as_of:
+                raise ValueError("forecast origin must precede all target kickoffs")
+            game = game.copy()
+            game["home_margin"] = None
+            game["total_points"] = None
+            forecast = runner._forecast_game(game)
+            rows.append({**forecast.__dict__, "config_sha256": frozen.identity,
+                         "as_of": as_of.isoformat(), "search_space_sha256": space.identity,
+                         "evidence_class": "synthetic" if any(w.provenance_class == "synthetic"
+                                                            for w in fit.training)
+                         else "historical_source_proven"})
+        posterior = model.posterior
+        state = {"config_sha256": frozen.identity, "as_of": as_of.isoformat(),
+                 "team_ids": posterior.team_ids, "mean": posterior.mean.tolist(),
+                 "covariance": posterior.covariance.tolist(), "draw_seed": seed,
+                 "model_version": frozen.content["model_version"]}
+        state_hash = digest(state)
+        frozen.save(Path(artifact_dir) / "configs")
+        state_dir = Path(artifact_dir) / "states"
+        state_dir.mkdir(parents=True, exist_ok=True)
+        state_path = state_dir / f"{state_hash}.json"
+        try:
+            with state_path.open("x") as stream:
+                stream.write(canonical_json(state) + "\n")
+        except FileExistsError:
+            if state_path.read_text().strip() != canonical_json(state):
+                raise ValueError("existing state artifact differs")
+        for row in rows:
+            row["state_sha256"] = state_hash
+        output.extend(rows)
+    return pd.DataFrame(output)

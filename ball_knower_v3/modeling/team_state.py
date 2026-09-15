@@ -56,6 +56,9 @@ class StateSpaceConfig:
     student_t_df: float = 5.0
 
     def __post_init__(self) -> None:
+        for name in self.__dataclass_fields__:
+            if not np.isfinite(getattr(self, name)):
+                raise ValueError(f"{name} must be finite")
         for name in (
             "offense_rho",
             "defense_rho",

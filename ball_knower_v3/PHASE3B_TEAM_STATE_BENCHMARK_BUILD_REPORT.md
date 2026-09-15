@@ -1,175 +1,219 @@
 # Ball Knower v3 — Phase 3B Team-State Benchmark Build Report
 
-Date: 2026-09-14
+Date: 2026-09-15
 
-Status: implementation in progress; not yet a validated predictive baseline.
+Status: causal fitting/provenance mechanics validated for the existing robust
+filter approximation. Strict historical NFL forecast export remains blocked by
+missing audited availability metadata. This is not a validated production
+Bayesian team-state baseline.
 
-## Scope
+Canonical source: `DESIGN_LOCKS.md`. No LOCK / BASELINE / TEST / DEFER status was
+changed. No direct margin/total regression or other deferred feature was added.
 
-This phase begins implementation of the reviewed predictive architecture without reopening settled model design.
+## Existing implementation retained
 
-The implemented path is:
+- `modeling/team_state.py`: centered opponent-relative offense/defense/intercept,
+  separate process and observation uncertainty, within-season AR transitions,
+  distinct offseason transition, and covariance-preserving joint draws.
+- The Gaussian filter remains a challenger. The existing robust filter remains
+  a Student-t-inspired reweighting **approximation**, not exact Student-t
+  posterior inference. Its update equations were not changed in this unit.
+- `modeling/benchmarks.py`: one-dimensional dynamic strength and weighted-decay
+  offense/defense challengers.
+- `modeling/canonical_adapter.py`: canonical pass/run EPA cohort; sacks and
+  turnovers remain evidence; noncomparable play types are excluded.
+- Existing weekly replay freezes every same-week forecast before assimilating
+  that week's observations. The separate event-time replay still fails closed
+  for observations belonging to older latent slices.
+- `modeling/game_distribution.py`: downstream distribution mechanics only;
+  this unit does not fit the direct margin/total model.
 
-`canonical games + canonical plays -> eligible scrimmage EPA -> causal weekly state replay -> joint offense/defense/intercept posterior -> matchup structural state -> discrete predictive-distribution mechanics`
+## New fitting API
 
-The canonical architecture remains `DESIGN_LOCKS.md`.
+`modeling/state_fitting.py` separates:
 
-## Implemented modules
+1. `CandidateSpace`: explicit immutable complete candidate configurations and
+   a supplied pre-evaluation registration time.
+2. `AvailableWeek` / `canonical_available_weeks`: canonical weekly evidence
+   bound to dataset-version and source-availability identifiers.
+3. `score_training`: pre-week predictive scoring and diagnostics.
+4. `fit_prior_time`: expanding-prefix selection at one weekly origin.
+5. `FrozenStateConfig` in `modeling/frozen_state_config.py`: persist and apply
+   the selected immutable configuration.
 
-### `ball_knower_v3/modeling/team_state.py`
+All configuration fields must vary across the candidate family: separate
+offense/defense persistence and process scales, observation scale, initial
+offense/defense/intercept scales, separate offseason offense/defense persistence
+and innovation, intercept renewal persistence/innovation, and Student-t df.
+Only df may be fixed, with an explicit recorded rationale. The tests separately
+exercise df sensitivity. Every candidate score is retained; a tied objective
+selects the first declared candidate.
 
-Implemented:
+There is no automatic NFL candidate family and no promoted numeric constant.
+Callers must declare their complete family before consuming evaluation outcomes.
+The registration timestamp is caller-supplied provenance, **not proof that the
+search specification existed historically**. No tool here externally attests it.
 
-- centered offense and defense latent states;
-- explicit league residual-EPA intercept;
-- opponent-relative `alpha + O - D` observation design;
-- Gaussian offense/defense state-space benchmark;
-- Student-t-inspired robust observation reweighting approximation;
-- separate process and observation uncertainty;
-- weekly AR(1) transitions;
-- distinct offseason transition;
-- covariance-aware posterior handoff/draws;
-- explicit sum-to-zero projection for offense and defense.
+### Objective and numerical treatment
 
-Important limitation: current numeric `StateSpaceConfig` defaults are computational seed values only. They are not promoted NFL constants and cannot be used for scored production claims without prior-time estimation/tuning.
+Selection maximizes summed pre-week marginal predictive log densities plus a
+normalized discrete regularizing log prior. Each density convolves the existing
+filter's Gaussian latent-state approximation with Student-t observation noise.
+Every matchup in a week is scored before that week's update.
 
-### `ball_knower_v3/modeling/benchmarks.py`
+This is a proper **marginal** predictive score, not the joint likelihood of a
+correlated weekly batch, betting ROI, or a continuous Bayesian hyperparameter
+posterior. The declared candidate distribution uses half-normal-style scale
+regularization (generic EPA-unit scales: 0.5 for latent scales and 2 for
+observation scale), increasing persistence mass proportional to 0.01 + rho,
+and exponential df-minus-2 regularization with mean 10, normalized over the
+finite family. These choices are engineering priors requiring chronological
+sensitivity evaluation; they are not NFL estimates.
 
-Implemented required simpler challengers:
+Gauss-Hermite quadrature integrates state uncertainty. A doubled-node density/CDF
+check rejects numerical instability rather than silently selecting an inaccurate
+candidate. Defaults use 64 nodes, density log tolerance 1e-4, CDF tolerance 1e-5.
+Any future bounds revision must precede consuming that revised experiment's
+evaluation outcomes.
 
-- one-dimensional dynamic point-differential strength filter;
-- exponentially weighted/ridge offense-defense EPA challenger.
+`observation_sd` is still Student-t **scale**, with marginal noise SD
+`scale * sqrt(df / (df - 2))`. Neither 1.0 nor approximately 1.38 was promoted.
+No pooled/raw residual SD is substituted anywhere. State variance is integrated
+separately rather than reinterpreted as Student-t scale.
 
-These are benchmark implementations, not canonical production winners.
+## Causality and availability boundary
 
-### `ball_knower_v3/modeling/canonical_adapter.py`
+Training eligibility requires both:
 
-Implemented a canonical-only team-state observation adapter.
+- the complete weekly source version's audited availability is strictly before
+  the forecast cutoff; and
+- its competition season/week is before the target week.
 
-The v1 eligible cohort uses canonical `play_type in {pass, run}` with valid EPA and known offense/defense. This is consistent with nflfastR's documented play-type semantics:
+Filtering occurs before deriving the training team universe, data hashes,
+scores, or selected configuration. Unknown/retrospective-only availability fails
+closed. The adapter binds supplied dataset IDs to canonical snapshot IDs when
+present and checks timing against actual kickoffs.
 
-- `pass` includes sacks;
-- `run` includes scrambles;
-- `qb_kneel`, `qb_spike`, `no_play`, punts, field goals, kickoffs and extra points are distinct play types.
+Weekly source availability is externally supplied audit evidence. Kickoff,
+final-game flags, season/week, and canonical build time are not fabricated into
+historical completion/publication timestamps. Delayed/overlapping weekly evidence
+and missing intervening seasons fail closed; this unit does not silently add a
+delayed-state inference algorithm.
 
-Therefore the allow-list includes ordinary pass/dropback and rush football while excluding the major non-comparable categories required by the canonical baseline policy without inferring intent from downstream outcomes.
+Each origin re-fits on the expanding eligible prefix, reconstructs the state
+from that same prefix with the frozen selected config, then transitions to the
+target week. Empty training history fails explicitly; smoke defaults cannot
+be used for scored forecasts. Teams absent from prior training also fail
+explicitly rather than acquiring a state inferred from future rows.
 
-### `ball_knower_v3/modeling/weekly_benchmark.py`
+## Frozen provenance and weekly integration
 
-Implemented the first scored historical replay shell.
+Each JSON config freeze records:
 
-Because `canonical_games` contains trustworthy kickoff timestamps but no trustworthy wall-clock completion timestamp, the initial runner does not fabricate intra-week result availability.
+- schema/model version and every StateSpaceConfig field;
+- cutoff/as-of, target week, training range and ordered training-content SHA-256;
+- training teams, dataset IDs, availability-evidence IDs and provenance classes;
+- git commit when available plus modeling-source digest covering local edits;
+- objective, selected score, all candidate scores and predictive diagnostics;
+- complete search specification and its deterministic hash;
+- df selected/fixed status and the fixed-df rationale when applicable;
+- seed, deterministic fitting declaration, and actual creation time.
 
-Instead:
+The deterministic config-content identity excludes creation time. A separate
+envelope checksum includes creation time. JSON round-trips verify both hashes.
+Exclusive file creation preserves old artifacts; repeated deterministic freezes
+reuse existing content without changing its original creation time.
 
-1. transition to the new NFL competition week;
-2. freeze every target game in that week from the same pre-week state;
-3. produce matchup structural features for all games;
-4. only after all forecasts are frozen, assimilate that week's eligible play evidence.
+`run_fitted_weekly_benchmark` extends the weekly benchmark path without changing
+the original runner. It requires supplied forecast origins and known-at schedule
+metadata, freezes all same-week games from one state, and persists full joint
+posterior mean/covariance plus draw seed. Forecast rows reference both config
+and state hashes. Outcomes are omitted from the structural export.
 
-This is deliberately conservative and matches the intended Tuesday/Wednesday pre-week betting workflow. It prevents same-week result leakage.
+`modeling/export_structural_state.py` provides a CLI:
 
-A separate event-time replay module exists for future use when genuine completion/availability timestamps are available. It fails closed on delayed observations that cannot be assigned safely to the current latent slice.
+```sh
+python -m ball_knower_v3.modeling.export_structural_state \
+  --games canonical_games.parquet --plays canonical_plays.parquet \
+  --availability audited_weekly_availability.csv --origins weekly_origins.csv \
+  --candidates frozen_candidate_space.json --output-dir new_export_directory \
+  --seed 13
+```
 
-### `ball_knower_v3/modeling/game_distribution.py`
+CSV canonical tables are also accepted; Parquet needs a pandas Parquet engine.
+The candidate JSON must explicitly provide every config field. Availability
+requires season, week, origin_at, available_at, dataset_id, evidence_id,
+provenance_class. Origins require season, week, as_of; games additionally require
+schedule_known_at. Timestamps must be timezone-aware. Input evidence assertions
+must be supported externally.
 
-Implemented distribution mechanics required downstream of the direct game model:
+The exporter creates a new directory, writes the table/configs/states, and emits
+a completion manifest with file hashes last. It refuses to overwrite an existing
+bundle. These are reproducible local artifacts, **not Sigstore attestation**,
+historical existence proof, or proof of human review.
 
-- equal-weight posterior predictive Student-t mixtures;
-- integer bin mass via `F(k+0.5)-F(k-0.5)`;
-- explicit lower/upper tail mass rather than silent renormalization;
-- whole-number push probability;
-- half-point zero-push semantics;
-- below/push/above threshold probabilities;
-- randomized PIT primitive for valid discrete calibration diagnostics.
+## Executed validation
 
-No custom key-number reweighting is implemented in the baseline path.
+Base checkout: `6493ac1ef81327975d5bc582e4276674c215c56b`.
 
-## Tests added
+Executed from the repository root in an isolated Python 3.14 environment with
+NumPy 2.5.3, SciPy 1.18.1, pandas 3.0.5 and pytest 9.1.1:
 
-Added focused tests under `tests/ball_knower_v3/` for:
+```text
+python -m pytest -q tests/ball_knower_v3
+88 passed in 22.49s
+```
 
-- offense/defense centering;
-- league-intercept identification;
-- opponent-relative sign behavior;
-- process uncertainty growth;
-- multiweek AR transitions;
-- offseason regression;
-- robust outlier downweighting;
-- covariance-preserving centered posterior draws;
-- one-dimensional and weighted-decay benchmark behavior;
-- simultaneous-game causality;
-- prior completed-game eligibility for later kickoffs;
-- fail-closed delayed observations;
-- canonical pass/run eligibility;
-- final-game gating;
-- pre-week freeze before same-week updates;
-- structural margin/total algebra;
-- integer PMF mass accounting;
-- exact push handling;
-- randomized PIT atom semantics.
+The existing focused GitHub Actions workflow already includes the new tests via
+`tests/ball_knower_v3`; no remote workflow result is claimed.
 
-A focused GitHub Actions workflow was added at `.github/workflows/v3-team-state-tests.yml`.
+Covered:
 
-## Validation status
+- identical fit/data/seed reproduction and future-append invariance;
+- strict cutoff equality exclusion and exclusion of unseen future teams;
+- invalid/NaN/infinite parameters and invalid candidate families;
+- artifact round-trip, checksum tampering, nested immutability and reuse;
+- changed training evidence selecting a new config without mutating the old one;
+- independent synthetic observation/process regimes (.3/.9 observation scale
+  crossed with .03/.24 process scale), all correctly ranked by the fitted family;
+- tail-thickness sensitivity distinguishing df 3.5 versus 15;
+- explicit Student-t scale-to-SD handling and normalized predictive convolution;
+- prior-predictive coverage, conditional predictive coverage/tail/innovation
+  diagnostics, and numerical quadrature failure;
+- source-version binding, unknown availability and delayed-evidence rejection;
+- fitted weekly causality, same-week freeze, full joint state retention;
+- content-bound forecast export and overwrite refusal;
+- all existing Phase 3B centering, filtering/replay, bye/multiweek/offseason
+  uncertainty, robust-outlier and distribution-mechanics tests.
 
-The code has **not yet been claimed as test-passing**.
+Synthetic score/coverage diagnostics validate mechanics and limited recovery,
+not NFL predictive quality. Initial/offseason/intercept parameters can remain
+weakly identified and prior-dominated. This unit does not demonstrate their
+NFL recovery or infer a full hyperparameter posterior. Fitting is deliberately
+a finite deterministic comparison; repeated full-prefix runs can be expensive.
+Broader prior-family sensitivity and chronological NFL calibration remain
+required before promotion.
 
-The current execution environment could not clone/reach the repository through the shell, and GitHub had not exposed a workflow run after the workflow was committed. Until the test suite executes successfully in an ordinary repository environment, this phase is implementation-in-progress rather than validated.
+## Forecast-table status and next blocker
 
-## Remaining blocker before scored benchmark evidence
+The end-to-end CLI also generated a **12-row, two-origin synthetic** structural
+forecast table with content-addressed configurations and joint state snapshots.
+This is an execution demonstration only, not the requested historical NFL table.
 
-### Hyperparameter fitting is not yet implemented
+The checked-in canonical play builder preserves source/snapshot identities but
+does not supply audited historical publication/availability timestamps for exact
+play-data versions. The canonical game builder does not supply trustworthy
+completion times. No audited weekly availability manifest was found in this
+checkout. Therefore strict historical NFL export is blocked rather than
+substituting kickoff, week-end, ingestion, or retrospectively acquired current
+archives for actual prior-time evidence.
 
-The reviewed baseline requires the following quantities to be learned/tuned from prior-time evidence rather than treated as football constants:
+Next: supply/validate exact-version historical availability evidence and a
+predeclared candidate/evaluation specification; run the exporter to produce the
+first strict chronological NFL structural-state table and assess calibration.
+Do not begin direct margin/total fitting until that table exists.
 
-- offense persistence;
-- defense persistence;
-- offense process scale;
-- defense process scale;
-- play-level observation scale;
-- initial state scales;
-- offseason offense/defense carryover and innovation scales;
-- league-intercept pooling/renewal scale;
-- Student-t tail thickness when computationally stable.
-
-Therefore the next implementation unit is a training-only hyperparameter estimation/tuning shell that:
-
-1. accepts only canonical observations before a training cutoff;
-2. optimizes or compares pre-registered parameter configurations using predictive likelihood/proper forecast evidence;
-3. freezes the selected configuration for the subsequent test origin;
-4. never reuses future test outcomes to revise an earlier configuration;
-5. records the fitted configuration/provenance with the forecast artifact.
-
-The hard-coded defaults currently present in the model classes are for smoke testing and interface verification only.
-
-### Observation-scale clarification — resolved 2026-09-15
-
-See `design_decisions/team_state_observation_scale_calibration_v1.md`.
-
-Do **not** replace the smoke-test `observation_sd = 1.0` with the approximately `1.38` pooled residual standard deviation. That comparison is not parameter-equivalent under Student-t observation treatment and the pooled residual dispersion may include latent team/state variation.
-
-For scored work, observation scale must be learned/tuned under the prior-time conditional model and validated jointly with process uncertainty and Student-t tail thickness. Raw pooled residual SD is not a plug-in estimate of the Student-t observation-scale parameter.
-
-This is an implementation-validation requirement, not a new architecture blocker.
-
-## What is not being added yet
-
-Consistent with the reviewed architecture, this phase does not add:
-
-- QB/non-QB decomposition;
-- score/time EPA correction;
-- weather adjustment;
-- rest/travel/pace/PROE adjustments;
-- key-number multiplier calibration;
-- joint score simulation;
-- market information inside football state;
-- wagering/Kelly logic.
-
-Those remain `TEST` or downstream work under the canonical locks.
-
-## Next step
-
-Follow `CODEX_PHASE3B_NEXT_STEP.md`.
-
-Implement prior-time team-state hyperparameter fitting and frozen configuration provenance, execute the focused test suite, and then generate the first chronological structural-state forecast table. Only after that table exists should the direct margin/total regression be fitted and evaluated.
+The canonical baseline's richer inference/calibration validation and the separate
+prospective Sigstore workflow remain open. QB decomposition, score/time EPA
+adjustment, weather, rest/travel/pace/PROE, key-number reweighting, joint score
+simulation, sportsbook state inputs, wager selection and Kelly remain excluded.
