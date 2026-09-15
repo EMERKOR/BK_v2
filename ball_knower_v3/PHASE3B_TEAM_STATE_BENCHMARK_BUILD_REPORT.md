@@ -76,7 +76,7 @@ A separate event-time replay module exists for future use when genuine completio
 Implemented distribution mechanics required downstream of the direct game model:
 
 - equal-weight posterior predictive Student-t mixtures;
-- integer bin mass via `F(k+0.5)-F(k+0.5)`;
+- integer bin mass via `F(k+0.5)-F(k-0.5)`;
 - explicit lower/upper tail mass rather than silent renormalization;
 - whole-number push probability;
 - half-point zero-push semantics;
