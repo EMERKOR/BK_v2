@@ -1,0 +1,127 @@
+{
+  "outcome": "partial_strict_retrospective_replay",
+  "merge_commit": "7ddd56e11ab09459d03eb0da16036cd564bfc371",
+  "implementation_commit": "9a2c1601a4b7613dcbf89c14b05494dc5ff440b8",
+  "modeling_source_sha256": "7799fd0ceddf8ef9a4afa4c97ec00cd98840bc8cb7e89b69d54926e54ad85dd8",
+  "source_catalog_sha256": "4cdea0385f366c1494e598ef48e936403477228f09bc46f43db37f8557c010fb",
+  "experiment_sha256": "409e995897caecc51cf216c5b2919042d4671e6c7f0b4bf2cf2f1a47a91fcd5a",
+  "experiment_registered_at": "2026-09-15T22:39:15.871134+00:00",
+  "replay_execution_at": "2026-09-15T22:48:23.514536+00:00",
+  "forecast_table_sha256": "fd8043cb6cd1fb688feb348cc89d59bbbbae34d5c13b05334979020e552eed87",
+  "manifest_sha256": "a3f59606f19c8822e1dd8028cb27eaeecf85fa878dc3805f62dd5be8df8c7be2",
+  "origins": [
+    {
+      "target": [
+        2025,
+        6
+      ],
+      "forecast_as_of": "2025-10-07T16:00:00+00:00",
+      "config_sha256": "0f156fddba3bc86a7276b1ae90d6204c070811aa38eae4f0d578f41f780d1128",
+      "training_sha256": "a5e559b792ebd02821c85211cfe273f720398f611e09a04b91dd3d18df15f4ff",
+      "eligible_weeks": [
+        4
+      ],
+      "excluded_fixture_weeks": [
+        5
+      ],
+      "dataset_ids": [
+        "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4"
+      ],
+      "evidence_ids": [
+        "archive:pbp:299770475:schedule:299769091"
+      ],
+      "team_count": 32,
+      "forecast_rows": 15,
+      "selected_diagnostics": {
+        "config": {
+          "defense_process_sd": 0.025,
+          "defense_rho": 0.96,
+          "initial_defense_sd": 0.2,
+          "initial_intercept_sd": 0.1,
+          "initial_offense_sd": 0.2,
+          "observation_sd": 1.6,
+          "offense_process_sd": 0.025,
+          "offense_rho": 0.96,
+          "offseason_defense_rho": 0.7,
+          "offseason_defense_sd": 0.08,
+          "offseason_intercept_rho": 0.0,
+          "offseason_intercept_sd": 0.1,
+          "offseason_offense_rho": 0.7,
+          "offseason_offense_sd": 0.08,
+          "student_t_df": 5.0
+        },
+        "coverage_90": 0.9622543950361944,
+        "innovation_mean": 0.013544716410676378,
+        "innovation_second_moment": 0.43435859731804677,
+        "log_predictive": -3433.2416547391554,
+        "log_prior": -1.478391151936429,
+        "observations": 1934,
+        "tail_fraction_02": 0.008273009307135471
+      }
+    },
+    {
+      "target": [
+        2025,
+        7
+      ],
+      "forecast_as_of": "2025-10-14T16:00:00+00:00",
+      "config_sha256": "2b13b9a07e243d5e994ca8667363073f37e505a42b7d46b751abc015e7960ae5",
+      "training_sha256": "04542d3d2f6d1e269577fb8035f8c8e015bcd42b926bf4dbcd62a890ae538eef",
+      "eligible_weeks": [
+        4,
+        5
+      ],
+      "excluded_fixture_weeks": [],
+      "dataset_ids": [
+        "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+        "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5"
+      ],
+      "evidence_ids": [
+        "archive:pbp:299770475:schedule:299769091",
+        "archive:pbp:302374075:schedule:302373781"
+      ],
+      "team_count": 32,
+      "forecast_rows": 15,
+      "selected_diagnostics": {
+        "config": {
+          "defense_process_sd": 0.025,
+          "defense_rho": 0.96,
+          "initial_defense_sd": 0.2,
+          "initial_intercept_sd": 0.1,
+          "initial_offense_sd": 0.2,
+          "observation_sd": 1.6,
+          "offense_process_sd": 0.025,
+          "offense_rho": 0.96,
+          "offseason_defense_rho": 0.7,
+          "offseason_defense_sd": 0.08,
+          "offseason_intercept_rho": 0.0,
+          "offseason_intercept_sd": 0.1,
+          "offseason_offense_rho": 0.7,
+          "offseason_offense_sd": 0.08,
+          "student_t_df": 5.0
+        },
+        "coverage_90": 0.9629018961253092,
+        "innovation_mean": 0.021871824130917268,
+        "innovation_second_moment": 0.449909227953251,
+        "log_predictive": -6461.7006984261925,
+        "log_prior": -1.478391151936429,
+        "observations": 3639,
+        "tail_fraction_02": 0.008793624622148942
+      }
+    }
+  ],
+  "artifact_hashes_verified": 12,
+  "same_source_spec_numerical_reexecution_equal": true,
+  "tests": {
+    "passed": 103,
+    "existing": 88,
+    "new": 15,
+    "elapsed_seconds": 13.64
+  },
+  "evidence_class": "retrospective_historical_source_replay",
+  "prospective_evidence": false,
+  "historical_forecast_existence_proven": false,
+  "calibration_scope": "eligible-prefix tuning diagnostics; no target outcomes scored",
+  "ci": "no merge workflow runs; new unit local only",
+  "margin_total_fitting_started": false
+}

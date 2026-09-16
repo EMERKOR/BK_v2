@@ -3,7 +3,14 @@
 Audit date: 2026-09-15. Repository: `EMERKOR/BK_v2`.
 Audited implementation: merged PR #21, commit `47ee18319cf3c85a2dc87fc95fea6b7256abf528`.
 
-## Decision
+## Subsequent bounded replay reconciliation
+
+This report preserves the original audit. The later explicit architecture decision
+and [retrospective replay report](PHASE3B_RETROSPECTIVE_REPLAY_REPORT.md) establish
+a separate two-origin archive-derived fixture. They do not change this audit's
+failure to prove the current 2010–2025 canonical snapshot as a whole.
+
+## Original audit decision
 
 **A fit-ready weekly availability manifest for the existing 2010–2025 canonical play snapshot cannot defensibly be generated from the retained evidence. No strict NFL structural-state table was generated.** No timestamps or version identities were fabricated, and the fail-closed implementation is unchanged.
 

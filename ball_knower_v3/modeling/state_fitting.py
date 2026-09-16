@@ -6,7 +6,7 @@ or exact Bayesian hyperparameter posterior. No pooled-scale shortcut is used.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, fields, field
 from functools import lru_cache
 import hashlib
 import json
@@ -48,13 +48,20 @@ class CandidateSpace:
     a discrete tuning approximation, not continuous hyperprior inference.
     """
     candidates: tuple[StateSpaceConfig, ...]
-    registered_at: str
+    registered_at: str | None = None
     fixed_df_reason: str | None = None
     quadrature_nodes: int = 64
+    experiment_registered_at: str | None = None
 
     def __post_init__(self):
         object.__setattr__(self, "candidates", tuple(self.candidates))
-        object.__setattr__(self, "registered_at", aware_time(self.registered_at).isoformat())
+        # registered_at is a compatibility alias, never a historical-existence claim.
+        stamp = self.experiment_registered_at or self.registered_at
+        stamp = aware_time(stamp).isoformat()
+        if self.registered_at and aware_time(self.registered_at).isoformat() != stamp:
+            raise ValueError("registration aliases disagree")
+        object.__setattr__(self, "registered_at", stamp)
+        object.__setattr__(self, "experiment_registered_at", stamp)
         if len(self.candidates) < 2 or len(set(self.candidates)) != len(self.candidates):
             raise ValueError("at least two distinct candidates required")
         if not 32 <= self.quadrature_nodes <= 256:
@@ -152,9 +159,9 @@ def training_window(weeks, cutoff, target):
     keys = [(w.batch.season, w.batch.week) for w in eligible]
     if len(set(keys)) != len(keys):
         raise ValueError("duplicate eligible week")
-    for previous, current in zip(eligible, eligible[1:]):
-        if aware_time(previous.available_at) >= aware_time(current.origin_at):
-            raise ValueError("delayed/overlapping evidence requires delayed-state handling")
+    # Offline reconstruction starts afresh at each cutoff. Delayed evidence
+    # belongs to its competition slice; publication need not precede the next
+    # slice's origin. Multiple eligible versions of one slice remain ambiguous.
     return eligible
 
 
@@ -262,12 +269,26 @@ class FitResult:
     target: tuple[int, int]
     space: CandidateSpace
     seed: int
+    evidence_class: str
+    replay_execution_at: str = field(compare=False)
 
 
-def fit_prior_time(weeks, *, cutoff, target, space, seed=0):
+def fit_prior_time(weeks, *, cutoff, target, space, seed=0,
+                   evidence_class="retrospective_historical_source_replay",
+                   replay_execution_at=None):
     cutoff = aware_time(cutoff)
-    if aware_time(space.registered_at) >= cutoff:
-        raise ValueError("candidate space must be registered before forecast origin")
+    execution = aware_time(replay_execution_at or pd.Timestamp.now(tz="UTC"))
+    if evidence_class == "prospective_ingested":
+        if aware_time(space.experiment_registered_at) >= cutoff:
+            raise ValueError("prospective candidate space must be registered before forecast origin")
+        # This local runner has no verified ESC-B attestation acceptance path.
+        raise ValueError("prospective evidence requires verified pre-outcome attestation")
+    if evidence_class != "retrospective_historical_source_replay":
+        raise ValueError("unsupported forecast evidence class")
+    if aware_time(space.experiment_registered_at) >= execution:
+        raise ValueError("experiment must be registered before replay execution/evaluation")
+    if cutoff >= execution:
+        raise ValueError("retrospective forecast cutoff must precede replay execution")
     if not isinstance(seed, int) or seed < 0:
         raise ValueError("seed must be a nonnegative integer")
     training = training_window(weeks, cutoff, target)
@@ -277,4 +298,6 @@ def fit_prior_time(weeks, *, cutoff, target, space, seed=0):
     scores = tuple(score_training(c, training, teams, log_prior=p, nodes=space.quadrature_nodes)
                    for c, p in zip(space.candidates, space.log_prior_masses()))
     selected = max(scores, key=lambda score: score.objective)  # first wins ties
-    return FitResult(selected, scores, training, teams, cutoff.isoformat(), tuple(target), space, seed)
+    label = "synthetic" if any(w.provenance_class == "synthetic" for w in training) else evidence_class
+    return FitResult(selected, scores, training, teams, cutoff.isoformat(), tuple(target), space, seed,
+                     label, execution.isoformat())

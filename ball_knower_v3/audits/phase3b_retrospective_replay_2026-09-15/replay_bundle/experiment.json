@@ -1,0 +1,56 @@
+{
+  "experiment_registered_at": "2026-09-15T22:39:15.871134+00:00",
+  "candidates": [
+    {
+      "offense_rho": 0.96,
+      "defense_rho": 0.96,
+      "offense_process_sd": 0.025,
+      "defense_process_sd": 0.025,
+      "observation_sd": 1.6,
+      "initial_offense_sd": 0.2,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_defense_rho": 0.7,
+      "offseason_intercept_rho": 0.0,
+      "offseason_offense_sd": 0.08,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_sd": 0.1,
+      "student_t_df": 5.0
+    },
+    {
+      "offense_rho": 0.768,
+      "defense_rho": 0.768,
+      "offense_process_sd": 0.020000000000000004,
+      "defense_process_sd": 0.020000000000000004,
+      "observation_sd": 2.0,
+      "initial_offense_sd": 0.16000000000000003,
+      "initial_defense_sd": 0.16000000000000003,
+      "initial_intercept_sd": 0.08000000000000002,
+      "offseason_offense_rho": 0.5599999999999999,
+      "offseason_defense_rho": 0.5599999999999999,
+      "offseason_intercept_rho": 0.1,
+      "offseason_offense_sd": 0.064,
+      "offseason_defense_sd": 0.064,
+      "offseason_intercept_sd": 0.08000000000000002,
+      "student_t_df": 7.0
+    }
+  ],
+  "seed": 13,
+  "origins": [
+    {
+      "season": 2025,
+      "week": 6,
+      "as_of": "2025-10-07T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 7,
+      "as_of": "2025-10-14T16:00:00Z"
+    }
+  ],
+  "origin_policy": "2025_weeks_4_5_exact_archive_cohort_v1; published_EPA; competition_clock; no heldout_outcomes",
+  "source_catalog_sha256": "4cdea0385f366c1494e598ef48e936403477228f09bc46f43db37f8557c010fb",
+  "evidence_class": "retrospective_historical_source_replay",
+  "purpose": "Bounded source/clock execution integration; generic untuned family; no predictive promotion; no heldout outcome evaluation"
+}
