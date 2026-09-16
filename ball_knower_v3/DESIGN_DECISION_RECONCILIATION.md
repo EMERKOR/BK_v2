@@ -21,6 +21,9 @@ This ledger records the reviewed state of Ball Knower v3 after the Sep. 14 adver
 | Later-acquired archive may support replay only with trustworthy pre-cutoff source provenance | CONFIRMED | Former ESC-A resolved architecturally |
 | Later archive cannot prove Ball Knower possessed source live | CONFIRMED | Provenance lock |
 | Unknown historical availability fails closed | CONFIRMED | Provenance lock |
+| Experiment registration distinct from historical forecast cutoff | CONFIRMED LOCK — 2026-09-15 clarification | `retrospective_replay_experiment_and_source_clocks_v1.md` |
+| Offline delayed-source prefix rebuilding on competition clock | CONFIRMED LOCK / BASELINE — 2026-09-15 clarification | No blanket next-origin publication rejection; source proof unchanged |
+| Retrospective forecast evidence distinct from source provenance/prospective existence | CONFIRMED LOCK | `retrospective_historical_source_replay`; verified prospective attestation remains required |
 | Frozen/append-only forecast evidence | CONFIRMED | Canonical Foundation |
 | Content-addressed prospective manifest | CONFIRMED architecture | Former ESC-B resolution |
 | Public GitHub/Sigstore attestation as durable existence/freeze baseline | CONFIRMED BASELINE / IMPLEMENTATION OPEN | `evidence_provenance_esc_a_b_v1.md` |
@@ -222,3 +225,13 @@ Before each implementation phase:
 - update this ledger and `DESIGN_LOCKS.md` together for status changes;
 - preserve TEST items until evidence resolves them;
 - never promote an idea merely because its design document is detailed.
+
+## Phase 3B replay reconciliation — 2026-09-15
+
+PR #22 merged as `7ddd56e11ab09459d03eb0da16036cd564bfc371`. Its two
+execution guards are superseded for offline retrospective replay by the explicit
+user clarification recorded in the new decision. Prior audit conclusions remain
+historical records. A bounded Weeks 4–5 source experiment can support Weeks 6–7
+origins; see the new retrospective replay report for execution/diagnostics.
+No broader window or validated production baseline is promoted. Direct margin/total
+implementation has not begun. ESC-B prospective proof remains implementation-open.

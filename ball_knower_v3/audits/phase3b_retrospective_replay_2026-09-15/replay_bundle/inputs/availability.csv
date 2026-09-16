@@ -1,0 +1,3 @@
+season,week,origin_at,available_at,dataset_id,evidence_id,provenance_class
+2025,4,2025-09-23T16:00:00Z,2025-10-02T15:33:20Z,archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4,archive:pbp:299770475:schedule:299769091,historical_source_proven
+2025,5,2025-09-30T16:00:00Z,2025-10-09T15:45:49Z,archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5,archive:pbp:302374075:schedule:302373781,historical_source_proven

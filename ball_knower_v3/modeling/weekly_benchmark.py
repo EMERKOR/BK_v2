@@ -213,7 +213,9 @@ def forecasts_to_frame(forecasts: Iterable[WeeklyStateForecast]) -> pd.DataFrame
     return pd.DataFrame(rows).sort_values(["season", "week", "kickoff", "game_id"]).reset_index(drop=True)
 
 
-def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, seed=0):
+def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, seed=0,
+                                evidence_class="retrospective_historical_source_replay",
+                                replay_execution_at=None):
     """Expanding weekly fitting with persisted configs and joint state snapshots.
 
     origins supplies season/week/as_of, established before evaluating outcomes.
@@ -231,6 +233,7 @@ def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, s
         raise ValueError("duplicate game or forecast origin")
     if not {"season", "week", "as_of"} <= set(origins):
         raise ValueError("origins require season/week/as_of")
+    execution = aware_time(replay_execution_at or pd.Timestamp.now(tz="UTC")).isoformat()
     output = []
     previous_as_of = None
     for origin in origins.sort_values(["season", "week"]).itertuples(index=False):
@@ -239,15 +242,22 @@ def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, s
             raise ValueError("origins must advance in actual chronology")
         previous_as_of = as_of
         target = (int(origin.season), int(origin.week))
-        fit = fit_prior_time(weeks, cutoff=as_of, target=target, space=space, seed=seed)
+        fit = fit_prior_time(weeks, cutoff=as_of, target=target, space=space, seed=seed,
+                             evidence_class=evidence_class, replay_execution_at=execution)
         frozen = FrozenStateConfig.from_fit(fit)
         model = frozen.replay(weeks, as_of=as_of, target=target)
         runner = WeeklyTeamStateBenchmarkRunner(model)
         week_games = games.loc[(games.season == target[0]) & (games.week == target[1])].copy()
         rows = []
         for _, game in week_games.sort_values(["kickoff", "game_id"]).iterrows():
-            if aware_time(game.schedule_known_at) > as_of:
+            if aware_time(game.schedule_known_at) >= as_of:
                 continue
+            if fit.evidence_class != "synthetic":
+                required_schedule = {"schedule_dataset_id", "schedule_evidence_id", "schedule_provenance_class"}
+                if not required_schedule <= set(game.index) or any(pd.isna(game[k]) or not str(game[k]) for k in required_schedule):
+                    raise ValueError("exact-version schedule availability evidence is required")
+                if game.schedule_provenance_class not in {"historical_source_proven", "prospective_ingested"}:
+                    raise ValueError("unknown/retrospective schedule availability fails closed")
             if aware_time(game.kickoff) <= as_of:
                 raise ValueError("forecast origin must precede all target kickoffs")
             game = game.copy()
@@ -256,9 +266,12 @@ def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, s
             forecast = runner._forecast_game(game)
             rows.append({**forecast.__dict__, "config_sha256": frozen.identity,
                          "as_of": as_of.isoformat(), "search_space_sha256": space.identity,
-                         "evidence_class": "synthetic" if any(w.provenance_class == "synthetic"
-                                                            for w in fit.training)
-                         else "historical_source_proven"})
+                         "forecast_as_of": as_of.isoformat(),
+                         "experiment_registered_at": space.experiment_registered_at,
+                         "evidence_class": fit.evidence_class,
+                         "historical_forecast_existence_proven": False,
+                         **{k: game[k] for k in ("schedule_dataset_id", "schedule_evidence_id",
+                                                 "schedule_provenance_class") if k in game}})
         posterior = model.posterior
         state = {"config_sha256": frozen.identity, "as_of": as_of.isoformat(),
                  "team_ids": posterior.team_ids, "mean": posterior.mean.tolist(),

@@ -13,7 +13,7 @@ from .state_fitting import (
 )
 from .team_state import RobustOffenseDefenseFilter, StateSpaceConfig
 
-SCHEMA_VERSION = "team_state_config_freeze_v1"
+SCHEMA_VERSION = "team_state_config_freeze_v2"
 
 
 def code_identity():
@@ -47,6 +47,12 @@ class FrozenStateConfig:
             raise ValueError("complete StateSpaceConfig required")
         StateSpaceConfig(**content["config"])
         aware_time(content["cutoff"])
+        if content["evidence_class"] not in {"synthetic", "retrospective_historical_source_replay"} or content["historical_forecast_existence_proven"] is not False:
+            raise ValueError("local freeze cannot claim prospective historical existence")
+        if content["forecast_as_of"] != content["cutoff"]:
+            raise ValueError("forecast cutoff aliases disagree")
+        if aware_time(content["experiment_registered_at"]) >= aware_time(self.created_at):
+            raise ValueError("experiment must be registered before execution/freeze")
         object.__setattr__(self, "created_at", aware_time(self.created_at).isoformat())
         object.__setattr__(self, "content_json", canonical_json(content))
 
@@ -68,6 +74,11 @@ class FrozenStateConfig:
             "schema_version": SCHEMA_VERSION, "model_version": MODEL_VERSION,
             "config": asdict(fit.selected.config), "cutoff": fit.cutoff,
             "target": fit.target, "team_ids": fit.team_ids,
+            "forecast_as_of": fit.cutoff,
+            "experiment_registered_at": fit.space.experiment_registered_at,
+            "evidence_class": fit.evidence_class,
+            "historical_forecast_existence_proven": False,
+            "diagnostics_scope": "eligible-prefix candidate tuning; not held-out forecast calibration",
             "training_range": [[fit.training[0].batch.season, fit.training[0].batch.week],
                                [fit.training[-1].batch.season, fit.training[-1].batch.week]],
             "training_sha256": training_identity(fit.training),

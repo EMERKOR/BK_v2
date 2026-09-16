@@ -2,9 +2,33 @@
 
 Date: 2026-09-15. Repository: `EMERKOR/BK_v2`.
 Implementation inspected: PR #21 merge `47ee18319cf3c85a2dc87fc95fea6b7256abf528`.
-Audit preserved first in [draft PR #22](https://github.com/EMERKOR/BK_v2/pull/22), commit `ce6f85f5ab1e4046505dcf4c1ebdfb9d51f9e1c1`.
+Audit preserved first in [PR #22](https://github.com/EMERKOR/BK_v2/pull/22), commit `ce6f85f5ab1e4046505dcf4c1ebdfb9d51f9e1c1`.
 
-## Conclusion — STRICT HISTORICAL REPLAY NOT FEASIBLE
+## Current outcome — PARTIAL STRICT RETROSPECTIVE REPLAY
+
+The explicit 2026-09-15 architecture clarification in
+[the new decision](design_decisions/retrospective_replay_experiment_and_source_clocks_v1.md)
+and its implementation change the execution conclusion to **partial strict
+retrospective historical-source replay**. The bounded Weeks 4–5 source fixture
+supports Week 6 at October 7 16:00Z and Week 7 at October 14 16:00Z, with 30
+structural-state rows. See the [execution report](PHASE3B_RETROSPECTIVE_REPLAY_REPORT.md)
+for exact versions/hashes, eligible/excluded evidence and diagnostics.
+
+This does not certify the current canonical snapshot, a continuous broad window,
+prospective forecast existence, or NFL predictive quality. The original source
+proof standard and ESC-B attestation requirement remain intact. Experiment
+registration now precedes actual retrospective execution/evaluation; delayed
+sources enter a rebuilt prefix only at origins after their own publication.
+The Week 6 target schedule comes from October 2's exact asset (not the later
+October 9 schedule used by the prior Thursday guard exercise).
+
+PR #22 merged at `7ddd56e11ab09459d03eb0da16036cd564bfc371`. The following
+sections preserve the **prior audit's** guarded-export outcome and evidence.
+The two blanket guards described below are now superseded by explicit decision,
+not bypassed by backdating or falsified source metadata. Source inventories,
+publication bounds, revision findings and unsupported windows remain unchanged.
+
+## Prior audit conclusion — STRICT HISTORICAL REPLAY NOT FEASIBLE
 
 **Outcome #3 applies to execution under the current approved Phase 3B exporter and initial Tuesday/Wednesday workflow. No end-to-end strict replay period or NFL structural-state forecast table is certified.** No NFL calibration or predictive evidence was generated. The provenance standard and registration/delayed-evidence guards were not relaxed.
 
@@ -135,3 +159,13 @@ The existing present-day historical dataset remains clearly **retrospective/non-
 There is **no certified replay forecast period**, **no legitimate NFL structural-state forecast table**, and **no NFL calibration evidence** from this unit. The model remains the existing robust-filter approximation, not a validated production Bayesian baseline. Neither `1.0` nor `1.38` is promoted; pooled residual SD is not substituted for Student-t observation scale. The synthetic demo remains execution/mechanics evidence only. No margin/total fitting began, and no design/provenance guard was weakened.
 
 Large RDS/RDA downloads and review Parquet inputs are kept in the local evidence deliverable, not committed to Git. The PR contains reports and small JSON catalogs/checks/indexes only. Local digests verify delivered content; they are not external historical attestation of Ball Knower forecasts.
+
+## Reconciliation outcome
+
+The prior "no certified replay" statement describes the PR #22 execution result.
+It is superseded only for the bounded fixture by the decision and successful run
+above. Unknown/retrospective-only data, duplicate eligible versions and ambiguous
+chronology still fail closed. No retrospective download timestamps, kickoff,
+final status, build/ingestion dates or refreshed values were promoted into source
+publication evidence. The two-origin training diagnostics are not predictive
+validation. No margin/total fitting began.

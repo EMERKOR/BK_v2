@@ -2,13 +2,22 @@
 
 Date: 2026-09-15
 
-Status: causal fitting/provenance mechanics validated for the existing robust
-filter approximation. Strict historical NFL forecast export remains blocked by
-missing audited availability metadata. This is not a validated production
-Bayesian team-state baseline.
+Status: **partial strict retrospective historical-source replay** is now
+supported for the bounded 2025 Weeks 4–5 cohort at Week 6–7 forecast origins.
+The current 2010–2025 canonical snapshot still lacks audited exact-version
+availability as a whole. This remains the robust-filter approximation, not a
+validated production Bayesian team-state baseline.
 
-Canonical source: `DESIGN_LOCKS.md`. No LOCK / BASELINE / TEST / DEFER status was
-changed. No direct margin/total regression or other deferred feature was added.
+The 2026-09-15 [replay reconciliation](design_decisions/retrospective_replay_experiment_and_source_clocks_v1.md)
+explicitly supersedes two historical-execution guards. Read the current
+[retrospective replay report](PHASE3B_RETROSPECTIVE_REPLAY_REPORT.md).
+Earlier sections below preserve the PR #21/#22 implementation/audit history;
+the final reconciliation section states current execution behavior.
+
+Canonical source: `DESIGN_LOCKS.md`. Experiment/source-clock and delayed-prefix
+semantics were explicitly reconciled with the user's architecture clarification.
+No model family or numeric scale was promoted. No direct margin/total regression
+or other deferred feature was added.
 
 ## Existing implementation retained
 
@@ -231,3 +240,53 @@ The model remains the robust-filter approximation, not a validated production Ba
 The [archive reconstruction report](PHASE3B_ARCHIVE_RECONSTRUCTION_REPORT.md) verifies a separate source cohort for **2025 Weeks 4–5**, directly from dated PBP and schedule/result assets (30 completed games). Checksums, terminal records, score agreement and per-asset publication bounds pass. This is source reconstruction, not a certified strict replay period.
 
 The approved runner rejects delayed Tuesday/Wednesday multiweek chronology, and the exporter rejects a genuinely registered-today candidate fixture at a 2025 cutoff. No guard was bypassed, no NFL table or calibration evidence was produced, and no margin/total modeling began. Historical experiment-registration semantics and delayed/revised-data replay require an explicit architecture decision before further execution. Regression validation: **88 tests passed in 13.32s**.
+
+## Retrospective replay reconciliation and execution — 2026-09-15
+
+PR #22 merged as `7ddd56e11ab09459d03eb0da16036cd564bfc371`. No workflow run
+was triggered for that documentation-only merge under the focused path filters;
+its local predecessor suite passed 88 tests. This is not a claim of new merge CI.
+
+The new decision separates `experiment_registered_at` from historical
+`forecast_as_of`. Registration must precede replay execution/evaluation and
+consumption of evaluation results, rather than the simulated historical cutoff.
+Forecasts are labeled `retrospective_historical_source_replay`, with historical
+forecast existence explicitly unproven. Prospective claims still require verified
+pre-outcome attestation; this local runner refuses them.
+
+The offline reference path reconstructs each eligible competition-order prefix
+from scratch. Delayed source versions are excluded until their own publication
+bounds precede the origin. Missing weeks receive transitions, never fake zero
+observations. Duplicate eligible slice versions and missing seasons remain fail
+closed; the live/event-time runner is unchanged. Historical schedules now require
+separate exact-version IDs, evidence IDs, provenance class and availability.
+Config freeze schema v2 records the clocks/label; v1 artifacts remain preserved
+as historical files and are not relabeled or silently migrated.
+
+The bounded archive fixture verifies original RDS bytes and complete terminal
+records/results. A complete generic two-candidate experiment was genuinely frozen
+in 2026 before execution; it was not historically possessed or prospectively
+attested. Week 6 (Oct 7 16:00Z) uses Week 4/October 2 evidence; Week 5 is excluded.
+Week 7 (Oct 14 16:00Z) uses Weeks 4–5 plus October 9's target schedule. Each origin
+produces 15 structural-state rows, for **30 rows** total. No target outcomes enter
+the exported state. The experiment declares Week 4 initialization and no older
+warm-up; it is not a full-season replay or a certified broader window.
+
+Validation: **103 focused Phase 3B tests passed in 13.64s**, comprising the
+existing 88 plus 15 new clock/source/schedule/completion/provenance regressions.
+The exact-source integration executed successfully; manifest file hashes were
+verified. The current replay report preserves output hashes, source IDs and
+training diagnostics. Optional RDS execution uses rdata; the focused tests do not
+need rdata or Parquet. No new remote CI result is claimed for local work.
+
+Selected candidate scale 1.6/df 5 in this generic fixture is not promoted.
+Training-prefix nominal-90% coverage is about 96.2%; these are candidate tuning
+mechanics, not held-out forecast calibration or predictive-quality evidence.
+Neither 1.0 nor 1.38 is promoted, and pooled residual SD is never substituted for
+Student-t observation scale. The robust approximation remains unvalidated as a
+production Bayesian baseline. The synthetic demo remains execution evidence only.
+Direct margin/total modeling has not begun.
+
+CSV replay inputs now use round-trip float parsing. Default parsing changed some
+last-place EPA values; frozen replay rejected that mismatch. The new regression
+preserves the exact observation version instead of weakening the fingerprint.

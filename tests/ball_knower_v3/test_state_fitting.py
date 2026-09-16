@@ -112,10 +112,11 @@ def test_invalid_search_and_cutoffs():
         CandidateSpace((StateSpaceConfig(), replace(StateSpaceConfig(), observation_sd=.8)),
                        "2019-01-01T00:00:00Z")
     with pytest.raises(ValueError, match="timezone"):
-        replace(space(), registered_at="2019-01-01")
+        CandidateSpace(space().candidates, "2019-01-01")
     with pytest.raises(ValueError, match="registered"):
         fit_prior_time(simulated_weeks(count=2), cutoff=START, target=(2020, 1),
-                       space=replace(space(), registered_at=START.isoformat()))
+                       space=CandidateSpace(space().candidates, START.isoformat()),
+                       evidence_class="prospective_ingested")
     with pytest.raises(ValueError, match="no prior-time"):
         fit_prior_time(simulated_weeks(count=2), cutoff=START, target=(2020, 1), space=space())
     week = simulated_weeks(count=1)[0]
@@ -161,11 +162,10 @@ def test_new_evidence_changes_config_without_mutating_old_freeze():
     assert old.to_json() == saved
 
 
-def test_delayed_evidence_and_training_tampering_fail_closed():
+def test_delayed_reconstruction_and_training_tampering_fail_closed():
     weeks = simulated_weeks(count=3)
     delayed = replace(weeks[0], available_at=weeks[1].available_at)
-    with pytest.raises(ValueError, match="delayed"):
-        fit((delayed, *weeks[1:]), 3)
+    assert len(fit((delayed, *weeks[1:]), 3).training) == 3
     frozen = FrozenStateConfig.from_fit(fit(weeks, 3))
     changed = replace(weeks[0], batch=replace(weeks[0].batch, epa=tuple(0. for _ in weeks[0].batch.epa)))
     with pytest.raises(ValueError, match="identity"):

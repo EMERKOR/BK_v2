@@ -94,6 +94,34 @@ This resolves former `ESC-A` architecturally; schema/audit implementation remain
 
 ---
 
+# Retrospective experiment and delayed-source replay
+
+Detailed reconciliation: `design_decisions/retrospective_replay_experiment_and_source_clocks_v1.md` (2026-09-15, explicit architecture clarification).
+
+## Experiment registration versus forecast cutoff — LOCK
+
+A retrospective historical-source replay may freeze its specification now for
+older forecast origins. Require `experiment_registered_at < replay_execution/evaluation`
+and freeze before consuming evaluation results; do not require registration to
+precede historical `forecast_as_of`. All per-origin data/tuning inputs remain PIT.
+Label forecasts `retrospective_historical_source_replay`, retrospective chronological/OOS
+development evidence, never proof of historical model possession or pre-outcome
+forecast existence. Actual prospective artifacts still require the existing
+verified pre-outcome freeze/attestation architecture.
+
+## Offline delayed-evidence reconstruction — LOCK / BASELINE
+
+Rebuild each origin from all eligible exact versions in the declared cohort:
+`source_available_at < forecast_as_of` and competition week before the target.
+Publication overlapping the next competition week's origin is not itself leakage;
+the version is excluded until available at a later origin. Rebuild in competition
+order and transition through missing weeks without fake observations. Duplicate
+eligible slice versions, missing-season chronology, and genuinely ambiguous latent
+slices fail closed. Preserve original bytes; newer revisions never overwrite old
+forecast evidence. The separate live/event-time runner is not loosened.
+
+---
+
 # Durable prospective artifact proof
 
 Detailed resolution: `design_decisions/evidence_provenance_esc_a_b_v1.md`.

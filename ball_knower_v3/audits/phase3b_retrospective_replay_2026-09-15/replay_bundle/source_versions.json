@@ -1,0 +1,62 @@
+[
+  {
+    "release_tag": "archive-2025-10-02",
+    "release_id": 251774023,
+    "asset_id": 299769091,
+    "source_url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-02/games.rds",
+    "metadata_url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/299769091",
+    "source_sha256": "97689d88414fed363c017c849dd8e43c3ffe9f3db1ce09ea4984f92e391b0a90",
+    "provider_digest": "sha256:97689d88414fed363c017c849dd8e43c3ffe9f3db1ce09ea4984f92e391b0a90",
+    "release_published_at": "2025-10-02T15:29:23Z",
+    "asset_created_at": "2025-10-02T15:30:53Z",
+    "asset_updated_at": "2025-10-02T15:30:53Z",
+    "source_available_at": "2025-10-02T15:30:53Z",
+    "provenance_class": "historical_source_proven",
+    "local_file": "archive-2025-10-02-games.rds"
+  },
+  {
+    "release_tag": "archive-2025-10-02",
+    "release_id": 251774023,
+    "asset_id": 299770475,
+    "source_url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-02/play_by_play_2025.rds",
+    "metadata_url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/299770475",
+    "source_sha256": "0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b",
+    "provider_digest": "sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b",
+    "release_published_at": "2025-10-02T15:29:23Z",
+    "asset_created_at": "2025-10-02T15:33:19Z",
+    "asset_updated_at": "2025-10-02T15:33:20Z",
+    "source_available_at": "2025-10-02T15:33:20Z",
+    "provenance_class": "historical_source_proven",
+    "local_file": "archive-2025-10-02-play_by_play_2025.rds"
+  },
+  {
+    "release_tag": "archive-2025-10-09",
+    "release_id": 253388329,
+    "asset_id": 302373781,
+    "source_url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-09/games.rds",
+    "metadata_url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/302373781",
+    "source_sha256": "e4520f43c14c79657dff904a5f3a56e467fb3aea0de933db087da8de84f767b2",
+    "provider_digest": "sha256:e4520f43c14c79657dff904a5f3a56e467fb3aea0de933db087da8de84f767b2",
+    "release_published_at": "2025-10-09T15:40:37Z",
+    "asset_created_at": "2025-10-09T15:44:45Z",
+    "asset_updated_at": "2025-10-09T15:44:46Z",
+    "source_available_at": "2025-10-09T15:44:46Z",
+    "provenance_class": "historical_source_proven",
+    "local_file": "archive-2025-10-09-games.rds"
+  },
+  {
+    "release_tag": "archive-2025-10-09",
+    "release_id": 253388329,
+    "asset_id": 302374075,
+    "source_url": "https://github.com/nflverse/nflverse-data-archives/releases/download/archive-2025-10-09/play_by_play_2025.rds",
+    "metadata_url": "https://api.github.com/repos/nflverse/nflverse-data-archives/releases/assets/302374075",
+    "source_sha256": "14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c",
+    "provider_digest": "sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c",
+    "release_published_at": "2025-10-09T15:40:37Z",
+    "asset_created_at": "2025-10-09T15:45:49Z",
+    "asset_updated_at": "2025-10-09T15:45:49Z",
+    "source_available_at": "2025-10-09T15:45:49Z",
+    "provenance_class": "historical_source_proven",
+    "local_file": "archive-2025-10-09-play_by_play_2025.rds"
+  }
+]
