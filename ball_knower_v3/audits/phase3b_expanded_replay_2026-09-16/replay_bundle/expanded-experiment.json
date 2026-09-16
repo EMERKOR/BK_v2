@@ -1,0 +1,115 @@
+{
+  "schema_version": "phase3b_expanded_retrospective_experiment_v1",
+  "experiment_registered_at": "2026-09-16T14:30:24.618705+00:00",
+  "candidates": [
+    {
+      "offense_rho": 0.96,
+      "defense_rho": 0.96,
+      "offense_process_sd": 0.025,
+      "defense_process_sd": 0.025,
+      "observation_sd": 1.6,
+      "initial_offense_sd": 0.2,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_defense_rho": 0.7,
+      "offseason_intercept_rho": 0.0,
+      "offseason_offense_sd": 0.08,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_sd": 0.1,
+      "student_t_df": 5.0
+    },
+    {
+      "offense_rho": 0.768,
+      "defense_rho": 0.768,
+      "offense_process_sd": 0.020000000000000004,
+      "defense_process_sd": 0.020000000000000004,
+      "observation_sd": 2.0,
+      "initial_offense_sd": 0.16000000000000003,
+      "initial_defense_sd": 0.16000000000000003,
+      "initial_intercept_sd": 0.08000000000000002,
+      "offseason_offense_rho": 0.5599999999999999,
+      "offseason_defense_rho": 0.5599999999999999,
+      "offseason_intercept_rho": 0.1,
+      "offseason_offense_sd": 0.064,
+      "offseason_defense_sd": 0.064,
+      "offseason_intercept_sd": 0.08000000000000002,
+      "student_t_df": 7.0
+    }
+  ],
+  "seed": 13,
+  "origins": [
+    {
+      "season": 2025,
+      "week": 6,
+      "as_of": "2025-10-07T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 7,
+      "as_of": "2025-10-14T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 8,
+      "as_of": "2025-10-21T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 9,
+      "as_of": "2025-10-28T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 10,
+      "as_of": "2025-11-04T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 11,
+      "as_of": "2025-11-11T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 12,
+      "as_of": "2025-11-18T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 13,
+      "as_of": "2025-11-25T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 14,
+      "as_of": "2025-12-02T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 15,
+      "as_of": "2025-12-09T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 16,
+      "as_of": "2025-12-16T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 17,
+      "as_of": "2025-12-23T16:00:00Z"
+    },
+    {
+      "season": 2025,
+      "week": 18,
+      "as_of": "2025-12-30T16:00:00Z"
+    }
+  ],
+  "evidence_class": "retrospective_historical_source_replay",
+  "source_selection_policy": "first jointly complete exact PBP plus schedule/result artifact per competition week; later versions retained as revision evidence and never replace selected state inputs",
+  "schedule_selection_policy": "latest exact games asset strictly before Tuesday 16:00 UTC origin; concrete teams/game set; missing target scores",
+  "selected_week_versions_sha256": "ef93af4270a1e01d73eb01240c534001c0b711d500c900355bb82720d7e2333e",
+  "decoded_source_catalog_sha256": "8d303faf3f95f8c014fbc9ceb0173c563517639bdb6261f7433f9ac2b4622644",
+  "schedule_version_plan_sha256": "66d4d5380be4f05e0fb933890211967bdace8a6524683f740afa5985f476af67",
+  "purpose": "Maximal verified 2025 regular-season Tuesday structural replay; no target outcomes; no predictive promotion"
+}

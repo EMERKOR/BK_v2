@@ -1,0 +1,46 @@
+{
+  "schema_version": "phase3b_expanded_replay_completion_v1",
+  "outcome": "195_rows_14_origins_partial_strict_2025_replay",
+  "draft_pr": {
+    "number": 23,
+    "url": "https://github.com/EMERKOR/BK_v2/pull/23",
+    "head": "5ade4f640b49f297f8615dd56605e937d1285481",
+    "ci": "success",
+    "merged": false
+  },
+  "expansion_branch": "review/phase3b-expanded-replay",
+  "execution_code_commit": "e8f2a5ee40f050890e0d208e363b8dc5597d2057",
+  "forecast_table_sha256": "0fab56f5a145ad5d9fcbbc52b85cf02267337ab31747a546b42bda4bc826103e",
+  "manifest_sha256": "346b4966e1bbfd86c968290c91d7b7f5c16bd53770eafac21ffe6684f27e6053",
+  "tests": {
+    "passed": 104,
+    "elapsed_seconds": 15.01
+  },
+  "rows": 195,
+  "origins": 14,
+  "weeks": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    22
+  ],
+  "teams": 32,
+  "source_assets": 32,
+  "valid_pbp_assets": 15,
+  "invalid_pbp_assets": 1,
+  "valid_schedule_assets": 16,
+  "prospective_evidence": false,
+  "target_outcomes_scored": false,
+  "direct_margin_total_started": false,
+  "stop_assessment": "insufficient independent origins and cross-season variation for scientifically credible scoreboard-model selection/calibration/promotion"
+}

@@ -24,6 +24,7 @@ def read_frame(path):
 
 
 def export_table(*, games, plays, availability, origins, space, output_dir, seed=0,
+                 forecast_games=None,
                  evidence_class="retrospective_historical_source_replay",
                  replay_execution_at=None, write_completion_manifest=True):
     """The destination must be new: failed runs remain inspectable, never replaced."""
@@ -31,7 +32,7 @@ def export_table(*, games, plays, availability, origins, space, output_dir, seed
     output_dir.mkdir(parents=True, exist_ok=False)
     weeks = canonical_available_weeks(plays, games, availability)
     forecasts = run_fitted_weekly_benchmark(
-        games, weeks, origins, space=space, artifact_dir=output_dir, seed=seed,
+        games if forecast_games is None else forecast_games, weeks, origins, space=space, artifact_dir=output_dir, seed=seed,
         evidence_class=evidence_class, replay_execution_at=replay_execution_at)
     if forecasts.empty:
         raise ValueError("no structural forecasts; no completion manifest emitted")
@@ -58,6 +59,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("games", "plays", "availability", "origins", "candidates", "output-dir"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--forecast-games", help="Optional exact pre-origin schedule table; games remains completed observation evidence")
     parser.add_argument("--evidence-class", default="retrospective_historical_source_replay",
                         choices=["retrospective_historical_source_replay", "prospective_ingested"])
     parser.add_argument("--seed", type=int, default=0)
@@ -70,6 +72,7 @@ def main():
     space = CandidateSpace(**spec)
     export_table(games=read_frame(args.games), plays=read_frame(args.plays),
                  availability=read_frame(args.availability), origins=read_frame(args.origins),
+                 forecast_games=read_frame(args.forecast_games) if args.forecast_games else None,
                  space=space, output_dir=args.output_dir, seed=args.seed, evidence_class=args.evidence_class)
 
 

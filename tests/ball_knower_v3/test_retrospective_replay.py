@@ -129,3 +129,16 @@ def test_local_config_cannot_be_relabeled_as_prospective():
     content['evidence_class'] = 'prospective_ingested'
     with pytest.raises(ValueError,match='cannot claim prospective'):
         FrozenStateConfig(json.dumps(content), frozen.created_at)
+
+
+def test_forecast_schedule_is_separate_from_completed_observation_table(tmp_path):
+    from ball_knower_v3.modeling.export_structural_state import export_table
+    from test_state_fitting import export_inputs, space
+    inputs = export_inputs()
+    forecast_games = inputs['games'].copy()
+    # A later result-table representation must not supply the pre-origin matchup.
+    inputs['games'].loc[inputs['games'].week.eq(13), 'home_team'] = 'RESULT_ONLY'
+    table = export_table(**inputs, forecast_games=forecast_games, space=space(),
+                         output_dir=tmp_path/'separate-schedule', seed=13)
+    assert 'RESULT_ONLY' not in set(table.home_team)
+    assert len(table) == 12

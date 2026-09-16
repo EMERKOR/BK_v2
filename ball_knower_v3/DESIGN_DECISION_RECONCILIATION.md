@@ -235,3 +235,13 @@ historical records. A bounded Weeks 4–5 source experiment can support Weeks 6�
 origins; see the new retrospective replay report for execution/diagnostics.
 No broader window or validated production baseline is promoted. Direct margin/total
 implementation has not begun. ESC-B prospective proof remains implementation-open.
+
+## Phase 3B expanded replay — 2026-09-16
+
+Implementation now separates completed-game observation tables from exact
+pre-origin schedule tables while binding both source versions. This applies the
+existing temporal/provenance locks; it is not a new predictive-model promotion.
+The largest audited window is 2025 Weeks 6–18 plus Week 22, 195 games at 14
+origins. Weeks 19–21 and prior seasons fail closed on exact pre-cutoff schedule
+availability. Direct margin/total work remains blocked by insufficient independent
+origin and cross-season variation. See `PHASE3B_EXPANDED_RETROSPECTIVE_REPLAY_REPORT.md`.

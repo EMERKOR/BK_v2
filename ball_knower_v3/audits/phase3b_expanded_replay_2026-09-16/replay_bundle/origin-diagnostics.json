@@ -1,0 +1,1139 @@
+[
+  {
+    "config_sha256": "65de7a0734653280c45842dab375c9e5830147b28bb97709cd91019a622fda1a",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4"
+    ],
+    "defense_sd_max": 0.09831977713196982,
+    "defense_sd_mean": 0.09533614242705582,
+    "defense_sd_min": 0.09175700443160012,
+    "forecast_as_of": "2025-10-07T16:00:00+00:00",
+    "intercept_sd": 0.018271843319634988,
+    "offense_sd_max": 0.09916835326859849,
+    "offense_sd_mean": 0.09533418731810221,
+    "offense_sd_min": 0.09287885177398597,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9654503105590062,
+      "innovation_mean": 0.0026618921470602523,
+      "innovation_second_moment": 0.42525311064779553,
+      "log_predictive": -13633.423111768807,
+      "log_prior": -1.478391151936429,
+      "observations": 7728,
+      "tail_fraction_02": 0.006469979296066253
+    },
+    "target": [
+      2025,
+      6
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        4
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "unavailable_prior_competition_weeks": [
+      5
+    ],
+    "forecast_rows": 15
+  },
+  {
+    "config_sha256": "e9af78a644da2600015e20be6a336a01704428e1aa44a02fb1c03378c99ad69b",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5"
+    ],
+    "defense_sd_max": 0.0965634227537294,
+    "defense_sd_mean": 0.08814143123311302,
+    "defense_sd_min": 0.08437261601673901,
+    "forecast_as_of": "2025-10-14T16:00:00+00:00",
+    "intercept_sd": 0.016677008688174972,
+    "offense_sd_max": 0.0962120709391945,
+    "offense_sd_mean": 0.08814133322124745,
+    "offense_sd_min": 0.08477783093339758,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9651224424891339,
+      "innovation_mean": 0.00845062388563913,
+      "innovation_second_moment": 0.43349919438747253,
+      "log_predictive": -16656.664587436066,
+      "log_prior": -1.478391151936429,
+      "observations": 9433,
+      "tail_fraction_02": 0.007102724477896745
+    },
+    "target": [
+      2025,
+      7
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        5
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "unavailable_prior_competition_weeks": [
+      6
+    ],
+    "forecast_rows": 15
+  },
+  {
+    "config_sha256": "40a8873ad4e391634d56a8b050c9569320a232ac32dd91201d5db6d393029e85",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6"
+    ],
+    "defense_sd_max": 0.08914360156287429,
+    "defense_sd_mean": 0.08274870601049591,
+    "defense_sd_min": 0.08010692104507425,
+    "forecast_as_of": "2025-10-21T16:00:00+00:00",
+    "intercept_sd": 0.015324213442422649,
+    "offense_sd_max": 0.08863248759170249,
+    "offense_sd_mean": 0.08273878945446882,
+    "offense_sd_min": 0.07943917793498383,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9657173466654763,
+      "innovation_mean": 0.006711612041882362,
+      "innovation_second_moment": 0.42879559745145884,
+      "log_predictive": -19744.530852830452,
+      "log_prior": -1.478391151936429,
+      "observations": 11201,
+      "tail_fraction_02": 0.007142219444692438
+    },
+    "target": [
+      2025,
+      8
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        6
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "unavailable_prior_competition_weeks": [
+      7
+    ],
+    "forecast_rows": 13
+  },
+  {
+    "config_sha256": "2cbcdf8df384025208d9e3df7784819e7744bdded3d2dba0884a8bb9d1fd987d",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7"
+    ],
+    "defense_sd_max": 0.08287426606111895,
+    "defense_sd_mean": 0.07859186684879908,
+    "defense_sd_min": 0.07576056176223504,
+    "forecast_as_of": "2025-10-28T16:00:00+00:00",
+    "intercept_sd": 0.014218930480761484,
+    "offense_sd_max": 0.08423326538846211,
+    "offense_sd_mean": 0.07859487164445178,
+    "offense_sd_min": 0.0757331775184863,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9652240520873229,
+      "innovation_mean": 0.002650207567863687,
+      "innovation_second_moment": 0.4350754166254973,
+      "log_predictive": -23062.56501312063,
+      "log_prior": -1.478391151936429,
+      "observations": 13055,
+      "tail_fraction_02": 0.007276905400229797
+    },
+    "target": [
+      2025,
+      9
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        7
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "unavailable_prior_competition_weeks": [
+      8
+    ],
+    "forecast_rows": 14
+  },
+  {
+    "config_sha256": "45e3ea0ce2f3419185dc36590fc0c90d2ddbdfab44e504a69793a19f8abd95b2",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8"
+    ],
+    "defense_sd_max": 0.07941552822354361,
+    "defense_sd_mean": 0.0761960328275784,
+    "defense_sd_min": 0.07367086958374927,
+    "forecast_as_of": "2025-11-04T16:00:00+00:00",
+    "intercept_sd": 0.013451444906045608,
+    "offense_sd_max": 0.08018067378577526,
+    "offense_sd_mean": 0.07622644091801073,
+    "offense_sd_min": 0.07347442218390454,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9645132561485237,
+      "innovation_mean": 0.004236742452581829,
+      "innovation_second_moment": 0.4365610433039295,
+      "log_predictive": -25805.28812142908,
+      "log_prior": -1.478391151936429,
+      "observations": 14597,
+      "tail_fraction_02": 0.0072617661163252726
+    },
+    "target": [
+      2025,
+      10
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        8
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "unavailable_prior_competition_weeks": [
+      9
+    ],
+    "forecast_rows": 14
+  },
+  {
+    "config_sha256": "35b0013102922ab6451086fb27e2b91cbbda22c81fea72b87023bd72065db6bc",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9"
+    ],
+    "defense_sd_max": 0.07674231796527906,
+    "defense_sd_mean": 0.07397729246438585,
+    "defense_sd_min": 0.07108321272359061,
+    "forecast_as_of": "2025-11-11T16:00:00+00:00",
+    "intercept_sd": 0.012728629296342478,
+    "offense_sd_max": 0.07730952144952387,
+    "offense_sd_mean": 0.0739919623662128,
+    "offense_sd_min": 0.07130466187229954,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9648025508952661,
+      "innovation_mean": 0.00578628009083522,
+      "innovation_second_moment": 0.4352867770076131,
+      "log_predictive": -28824.032269106774,
+      "log_prior": -1.478391151936429,
+      "observations": 16308,
+      "tail_fraction_02": 0.007235712533725779
+    },
+    "target": [
+      2025,
+      11
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        9
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "unavailable_prior_competition_weeks": [
+      10
+    ],
+    "forecast_rows": 15
+  },
+  {
+    "config_sha256": "6bcb2b634a802bf0b5d8e1ae20eb87827a483f085b9152a9d9ecbcbdb13f4d2e",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10"
+    ],
+    "defense_sd_max": 0.07538391974752957,
+    "defense_sd_mean": 0.07237948518987689,
+    "defense_sd_min": 0.07023481193273533,
+    "forecast_as_of": "2025-11-18T16:00:00+00:00",
+    "intercept_sd": 0.012105973089175891,
+    "offense_sd_max": 0.07506485502290068,
+    "offense_sd_mean": 0.0723897032481973,
+    "offense_sd_min": 0.06961602073021135,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9641153632834165,
+      "innovation_mean": 0.004088032956113694,
+      "innovation_second_moment": 0.4377258885059656,
+      "log_predictive": -31885.17876926354,
+      "log_prior": -1.478391151936429,
+      "observations": 18030,
+      "tail_fraction_02": 0.0074875207986688855
+    },
+    "target": [
+      2025,
+      12
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        10
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "unavailable_prior_competition_weeks": [
+      11
+    ],
+    "forecast_rows": 14
+  },
+  {
+    "config_sha256": "a582b57bfdb9e865dcad96665ee5fdae3e8310532df2d6f6d3070e4768366145",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10",
+      "archive:asset:318839645:sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae:week:11"
+    ],
+    "defense_sd_max": 0.07306099596009671,
+    "defense_sd_mean": 0.07098143266383171,
+    "defense_sd_min": 0.06901868492081252,
+    "forecast_as_of": "2025-11-25T16:00:00+00:00",
+    "intercept_sd": 0.011531019284973089,
+    "offense_sd_max": 0.07323144964223183,
+    "offense_sd_mean": 0.0709892077350546,
+    "offense_sd_min": 0.0689731347814808,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9642011983283822,
+      "innovation_mean": 0.0019512859750819972,
+      "innovation_second_moment": 0.43743638906816296,
+      "log_predictive": -35105.640535414794,
+      "log_prior": -1.478391151936429,
+      "observations": 19861,
+      "tail_fraction_02": 0.007502139872111173
+    },
+    "target": [
+      2025,
+      13
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        11
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "unavailable_prior_competition_weeks": [
+      12
+    ],
+    "forecast_rows": 16
+  },
+  {
+    "config_sha256": "d029dee2893e2e3980c557cbeb18324d9a02eb225cee7a95db09173a51494bd5",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10",
+      "archive:asset:318839645:sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae:week:11",
+      "archive:asset:321532841:sha256:7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482:week:12"
+    ],
+    "defense_sd_max": 0.07198974297845225,
+    "defense_sd_mean": 0.0699561243043099,
+    "defense_sd_min": 0.0684458792286787,
+    "forecast_as_of": "2025-12-02T16:00:00+00:00",
+    "intercept_sd": 0.011061454163503506,
+    "offense_sd_max": 0.0722058670294987,
+    "offense_sd_mean": 0.06996471524657269,
+    "offense_sd_min": 0.06772807623071762,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9634208454877993,
+      "innovation_mean": -0.001910442870833921,
+      "innovation_second_moment": 0.4408264113907058,
+      "log_predictive": -38197.42978750248,
+      "log_prior": -1.478391151936429,
+      "observations": 21597,
+      "tail_fraction_02": 0.007686252720285225
+    },
+    "target": [
+      2025,
+      14
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        12
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "unavailable_prior_competition_weeks": [
+      13
+    ],
+    "forecast_rows": 14
+  },
+  {
+    "config_sha256": "e967cf2f3b6cb1235c42a878e4ab9b8f36405f5aecda4533ceb053890ced7a12",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10",
+      "archive:asset:318839645:sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae:week:11",
+      "archive:asset:321532841:sha256:7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482:week:12",
+      "archive:asset:324364390:sha256:a23a110d335ef5361e70166976cca8f13392b97dcf98dfe783e4066c1df224bd:week:13"
+    ],
+    "defense_sd_max": 0.07124093847666835,
+    "defense_sd_mean": 0.06888368113403927,
+    "defense_sd_min": 0.06737280478497554,
+    "forecast_as_of": "2025-12-09T16:00:00+00:00",
+    "intercept_sd": 0.010596856892863256,
+    "offense_sd_max": 0.07079431734973987,
+    "offense_sd_mean": 0.06888956860202305,
+    "offense_sd_min": 0.06720065258156366,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9633089859011381,
+      "innovation_mean": -0.0027360718182180264,
+      "innovation_second_moment": 0.44067399267499374,
+      "log_predictive": -41642.52283826166,
+      "log_prior": -1.478391151936429,
+      "observations": 23548,
+      "tail_fraction_02": 0.007601494819092916
+    },
+    "target": [
+      2025,
+      15
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        13
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "unavailable_prior_competition_weeks": [
+      14
+    ],
+    "forecast_rows": 16
+  },
+  {
+    "config_sha256": "6bca632b220d916d1abbbd7b4fc019beeb771956d52ac0a7fb782c0dba435f1c",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10",
+      "archive:asset:318839645:sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae:week:11",
+      "archive:asset:321532841:sha256:7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482:week:12",
+      "archive:asset:324364390:sha256:a23a110d335ef5361e70166976cca8f13392b97dcf98dfe783e4066c1df224bd:week:13"
+    ],
+    "defense_sd_max": 0.07268313968134278,
+    "defense_sd_mean": 0.0705584921543414,
+    "defense_sd_min": 0.06920042297808747,
+    "forecast_as_of": "2025-12-16T16:00:00+00:00",
+    "intercept_sd": 0.010596856892863256,
+    "offense_sd_max": 0.07227984661082819,
+    "offense_sd_mean": 0.07056385674474022,
+    "offense_sd_min": 0.0690459826863866,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9633089859011381,
+      "innovation_mean": -0.0027360718182180264,
+      "innovation_second_moment": 0.44067399267499374,
+      "log_predictive": -41642.52283826166,
+      "log_prior": -1.478391151936429,
+      "observations": 23548,
+      "tail_fraction_02": 0.007601494819092916
+    },
+    "target": [
+      2025,
+      16
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        13
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "unavailable_prior_competition_weeks": [
+      14,
+      15
+    ],
+    "forecast_rows": 16
+  },
+  {
+    "config_sha256": "1ea24e8aad330ab8c6ad9b1991c4423039e6bc047068c8b065b9c5f9f32c203e",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10",
+      "archive:asset:318839645:sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae:week:11",
+      "archive:asset:321532841:sha256:7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482:week:12",
+      "archive:asset:324364390:sha256:a23a110d335ef5361e70166976cca8f13392b97dcf98dfe783e4066c1df224bd:week:13"
+    ],
+    "defense_sd_max": 0.07398738394140507,
+    "defense_sd_mean": 0.07206742523472329,
+    "defense_sd_min": 0.07084301888530072,
+    "forecast_as_of": "2025-12-23T16:00:00+00:00",
+    "intercept_sd": 0.010596856892863256,
+    "offense_sd_max": 0.0736223735012652,
+    "offense_sd_mean": 0.07207231633073893,
+    "offense_sd_min": 0.07070400563955834,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9633089859011381,
+      "innovation_mean": -0.0027360718182180264,
+      "innovation_second_moment": 0.44067399267499374,
+      "log_predictive": -41642.52283826166,
+      "log_prior": -1.478391151936429,
+      "observations": 23548,
+      "tail_fraction_02": 0.007601494819092916
+    },
+    "target": [
+      2025,
+      17
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        13
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "unavailable_prior_competition_weeks": [
+      14,
+      15,
+      16
+    ],
+    "forecast_rows": 16
+  },
+  {
+    "config_sha256": "d0bd49b23cdeaa02925f774c454d6afdaee5b0618088c4a0dbb07ec7b5351134",
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10",
+      "archive:asset:318839645:sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae:week:11",
+      "archive:asset:321532841:sha256:7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482:week:12",
+      "archive:asset:324364390:sha256:a23a110d335ef5361e70166976cca8f13392b97dcf98dfe783e4066c1df224bd:week:13",
+      "archive:asset:332863213:sha256:fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867:week:14",
+      "archive:asset:332863213:sha256:fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867:week:15",
+      "archive:asset:332863213:sha256:fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867:week:16"
+    ],
+    "defense_sd_max": 0.06838310985947478,
+    "defense_sd_mean": 0.06718687778601806,
+    "defense_sd_min": 0.06599727319729211,
+    "forecast_as_of": "2025-12-30T16:00:00+00:00",
+    "intercept_sd": 0.009530668326951696,
+    "offense_sd_max": 0.06851104247673244,
+    "offense_sd_mean": 0.06718831036577466,
+    "offense_sd_min": 0.06616820394468349,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9627659574468085,
+      "innovation_mean": 0.0010125604165838865,
+      "innovation_second_moment": 0.44114631520372855,
+      "log_predictive": -51534.11512314772,
+      "log_prior": -1.478391151936429,
+      "observations": 29140,
+      "tail_fraction_02": 0.007206588881262869
+    },
+    "target": [
+      2025,
+      18
+    ],
+    "team_count": 32,
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        16
+      ]
+    ],
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "unavailable_prior_competition_weeks": [
+      17
+    ],
+    "forecast_rows": 16
+  },
+  {
+    "target": [
+      2025,
+      22
+    ],
+    "forecast_as_of": "2026-02-03T16:00:00+00:00",
+    "config_sha256": "8f849bb87b80ced5e0f935080b7b010567c8979f000875f0433b37ef1f5ff179",
+    "training_range": [
+      [
+        2025,
+        1
+      ],
+      [
+        2025,
+        21
+      ]
+    ],
+    "dataset_ids": [
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:1",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:2",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:3",
+      "archive:asset:299770475:sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b:week:4",
+      "archive:asset:302374075:sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c:week:5",
+      "archive:asset:305097630:sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15:week:6",
+      "archive:asset:307813872:sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b:week:7",
+      "archive:asset:310572709:sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c:week:8",
+      "archive:asset:313356862:sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53:week:9",
+      "archive:asset:316011371:sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec:week:10",
+      "archive:asset:318839645:sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae:week:11",
+      "archive:asset:321532841:sha256:7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482:week:12",
+      "archive:asset:324364390:sha256:a23a110d335ef5361e70166976cca8f13392b97dcf98dfe783e4066c1df224bd:week:13",
+      "archive:asset:332863213:sha256:fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867:week:14",
+      "archive:asset:332863213:sha256:fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867:week:15",
+      "archive:asset:332863213:sha256:fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867:week:16",
+      "archive:asset:335212696:sha256:e912cd312aca03724079fe1d13a7efe5e2d335b27b1000cbc486623c2aeadfd5:week:17",
+      "archive:asset:337934967:sha256:59ac112922db4531327908d7f18f0cfed7c4e37f4382ab2f27d98fb832a0e8c6:week:18",
+      "archive:asset:344356279:sha256:fb8b7221797516c062aaba0c10ca1e347acf5a2029f0d58a33261498744309b1:week:19",
+      "archive:asset:347741288:sha256:4cf54e6c29bb6e9eb2d3e3480985713d4dae93d16deed059470f29d4e12a653d:week:20",
+      "archive:asset:347741288:sha256:4cf54e6c29bb6e9eb2d3e3480985713d4dae93d16deed059470f29d4e12a653d:week:21"
+    ],
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "selected_training_diagnostics": {
+      "coverage_90": 0.9627138300956799,
+      "innovation_mean": -0.0029014423334767993,
+      "innovation_second_moment": 0.4434603467775231,
+      "log_predictive": -61003.15154475516,
+      "log_prior": -1.478391151936429,
+      "observations": 34490,
+      "tail_fraction_02": 0.007393447376051029
+    },
+    "team_count": 32,
+    "offense_sd_mean": 0.06858610994579648,
+    "offense_sd_min": 0.06321856248736918,
+    "offense_sd_max": 0.0710017989573984,
+    "defense_sd_mean": 0.06855086846293479,
+    "defense_sd_min": 0.06349996706897224,
+    "defense_sd_max": 0.07093991744019305,
+    "intercept_sd": 0.008806034293172465,
+    "eligible_competition_weeks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "unavailable_prior_competition_weeks": [],
+    "forecast_rows": 1
+  }
+]
