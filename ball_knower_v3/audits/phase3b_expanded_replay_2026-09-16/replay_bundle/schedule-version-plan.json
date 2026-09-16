@@ -1,0 +1,119 @@
+[
+  {
+    "target_week": 6,
+    "forecast_as_of": "2025-10-07T16:00:00+00:00",
+    "schedule_release": "archive-2025-10-02",
+    "schedule_asset_id": 299769091,
+    "schedule_sha256": "97689d88414fed363c017c849dd8e43c3ffe9f3db1ce09ea4984f92e391b0a90",
+    "schedule_available_at": "2025-10-02T15:30:53Z",
+    "games": 15
+  },
+  {
+    "target_week": 7,
+    "forecast_as_of": "2025-10-14T16:00:00+00:00",
+    "schedule_release": "archive-2025-10-09",
+    "schedule_asset_id": 302373781,
+    "schedule_sha256": "e4520f43c14c79657dff904a5f3a56e467fb3aea0de933db087da8de84f767b2",
+    "schedule_available_at": "2025-10-09T15:44:46Z",
+    "games": 15
+  },
+  {
+    "target_week": 8,
+    "forecast_as_of": "2025-10-21T16:00:00+00:00",
+    "schedule_release": "archive-2025-10-16",
+    "schedule_asset_id": 305098532,
+    "schedule_sha256": "a8420a6949b782c450e92ed57ce19bcdde751e9bec627f86c1a58e5051170083",
+    "schedule_available_at": "2025-10-16T15:45:33Z",
+    "games": 13
+  },
+  {
+    "target_week": 9,
+    "forecast_as_of": "2025-10-28T16:00:00+00:00",
+    "schedule_release": "archive-2025-10-23",
+    "schedule_asset_id": 307812009,
+    "schedule_sha256": "7e0cca2e97a6ca6a6de54f402905a251e084236f8e90a7a674d7f42196f856be",
+    "schedule_available_at": "2025-10-23T15:32:34Z",
+    "games": 14
+  },
+  {
+    "target_week": 10,
+    "forecast_as_of": "2025-11-04T16:00:00+00:00",
+    "schedule_release": "archive-2025-10-30",
+    "schedule_asset_id": 310570721,
+    "schedule_sha256": "ab96f6641c891d46a73cd33baeb05b9ec5cd4e1dec5b03dccee343b1769070e7",
+    "schedule_available_at": "2025-10-30T15:34:50Z",
+    "games": 14
+  },
+  {
+    "target_week": 11,
+    "forecast_as_of": "2025-11-11T16:00:00+00:00",
+    "schedule_release": "archive-2025-11-06",
+    "schedule_asset_id": 313354781,
+    "schedule_sha256": "33e44a0c02934558ee79649b4de326a2b046169ba491a244da662f9f7eb6439a",
+    "schedule_available_at": "2025-11-06T15:34:54Z",
+    "games": 15
+  },
+  {
+    "target_week": 12,
+    "forecast_as_of": "2025-11-18T16:00:00+00:00",
+    "schedule_release": "archive-2025-11-13",
+    "schedule_asset_id": 316009177,
+    "schedule_sha256": "73f6bce17fa6876ead1ee07522afdd4a3627fc218fc543b22de97ec97b335905",
+    "schedule_available_at": "2025-11-13T15:33:07Z",
+    "games": 14
+  },
+  {
+    "target_week": 13,
+    "forecast_as_of": "2025-11-25T16:00:00+00:00",
+    "schedule_release": "archive-2025-11-20",
+    "schedule_asset_id": 318837553,
+    "schedule_sha256": "0c3cc4cb9fdff4d1991c25a9edfa6e77fcff0f0c395d55981f1791da85cd5d5a",
+    "schedule_available_at": "2025-11-20T15:34:43Z",
+    "games": 16
+  },
+  {
+    "target_week": 14,
+    "forecast_as_of": "2025-12-02T16:00:00+00:00",
+    "schedule_release": "archive-2025-11-27",
+    "schedule_asset_id": 321531075,
+    "schedule_sha256": "329873c6f615a0c3aecac8b59a323c695af8c33435b396f2ef1c2b1c24977a22",
+    "schedule_available_at": "2025-11-27T15:33:15Z",
+    "games": 14
+  },
+  {
+    "target_week": 15,
+    "forecast_as_of": "2025-12-09T16:00:00+00:00",
+    "schedule_release": "archive-2025-12-04",
+    "schedule_asset_id": 324362504,
+    "schedule_sha256": "899a366f22db4cb561fb4d88d209476a769ea9bee0cd8beab34020389fba5016",
+    "schedule_available_at": "2025-12-04T15:37:22Z",
+    "games": 16
+  },
+  {
+    "target_week": 16,
+    "forecast_as_of": "2025-12-16T16:00:00+00:00",
+    "schedule_release": "archive-2025-12-11",
+    "schedule_asset_id": 327433996,
+    "schedule_sha256": "fa7666574968fa23b6f3fefd1bfaf1e7a3e971d5be509730925e203b43ee9068",
+    "schedule_available_at": "2025-12-11T15:39:24Z",
+    "games": 16
+  },
+  {
+    "target_week": 17,
+    "forecast_as_of": "2025-12-23T16:00:00+00:00",
+    "schedule_release": "archive-2025-12-11",
+    "schedule_asset_id": 327433996,
+    "schedule_sha256": "fa7666574968fa23b6f3fefd1bfaf1e7a3e971d5be509730925e203b43ee9068",
+    "schedule_available_at": "2025-12-11T15:39:24Z",
+    "games": 16
+  },
+  {
+    "target_week": 18,
+    "forecast_as_of": "2025-12-30T16:00:00+00:00",
+    "schedule_release": "archive-2025-12-25",
+    "schedule_asset_id": 332861918,
+    "schedule_sha256": "493dc1dc5a36242e6329e6c421f09447e5938c1681ffda92ad61165c0f8b512f",
+    "schedule_available_at": "2025-12-25T15:32:52Z",
+    "games": 16
+  }
+]

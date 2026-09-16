@@ -1,0 +1,1595 @@
+[
+  {
+    "release_tag": "archive-2025-10-02",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-02",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-02",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-02",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-09",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-09",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-09",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-09",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-09",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-16",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-16",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-16",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-16",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-16",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-16",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-23",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-23",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-23",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-23",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-23",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-23",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-23",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-10-30",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-06",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-13",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-20",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-11-27",
+    "week": 12,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 12,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-04",
+    "week": 13,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 12,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 13,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 14,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 15,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2025-12-25",
+    "week": 16,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 12,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 13,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 14,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 15,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 16,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-01",
+    "week": 17,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 12,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 13,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 14,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 15,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 16,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 17,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-08",
+    "week": 18,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 12,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 13,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 14,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 15,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 16,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 17,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 18,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 19,
+    "pbp_games": 6,
+    "schedule_games": 6,
+    "terminal_games": 6,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-15",
+    "week": 20,
+    "pbp_games": 4,
+    "schedule_games": 4,
+    "terminal_games": 4,
+    "all_scores_present": false,
+    "joint_complete": false
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 1,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 2,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 3,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 4,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 5,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 6,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 7,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 8,
+    "pbp_games": 13,
+    "schedule_games": 13,
+    "terminal_games": 13,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 9,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 10,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 11,
+    "pbp_games": 15,
+    "schedule_games": 15,
+    "terminal_games": 15,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 12,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 13,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 14,
+    "pbp_games": 14,
+    "schedule_games": 14,
+    "terminal_games": 14,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 15,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 16,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 17,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 18,
+    "pbp_games": 16,
+    "schedule_games": 16,
+    "terminal_games": 16,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 19,
+    "pbp_games": 6,
+    "schedule_games": 6,
+    "terminal_games": 6,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 20,
+    "pbp_games": 4,
+    "schedule_games": 4,
+    "terminal_games": 4,
+    "all_scores_present": true,
+    "joint_complete": true
+  },
+  {
+    "release_tag": "archive-2026-01-29",
+    "week": 21,
+    "pbp_games": 2,
+    "schedule_games": 2,
+    "terminal_games": 2,
+    "all_scores_present": true,
+    "joint_complete": true
+  }
+]

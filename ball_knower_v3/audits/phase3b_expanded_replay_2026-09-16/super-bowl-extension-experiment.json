@@ -1,0 +1,59 @@
+{
+  "schema_version": "phase3b_super_bowl_retrospective_extension_v1",
+  "experiment_registered_at": "2026-09-16T14:34:04.836743+00:00",
+  "candidates": [
+    {
+      "offense_rho": 0.96,
+      "defense_rho": 0.96,
+      "offense_process_sd": 0.025,
+      "defense_process_sd": 0.025,
+      "observation_sd": 1.6,
+      "initial_offense_sd": 0.2,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_defense_rho": 0.7,
+      "offseason_intercept_rho": 0.0,
+      "offseason_offense_sd": 0.08,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_sd": 0.1,
+      "student_t_df": 5.0
+    },
+    {
+      "offense_rho": 0.768,
+      "defense_rho": 0.768,
+      "offense_process_sd": 0.020000000000000004,
+      "defense_process_sd": 0.020000000000000004,
+      "observation_sd": 2.0,
+      "initial_offense_sd": 0.16000000000000003,
+      "initial_defense_sd": 0.16000000000000003,
+      "initial_intercept_sd": 0.08000000000000002,
+      "offseason_offense_rho": 0.5599999999999999,
+      "offseason_defense_rho": 0.5599999999999999,
+      "offseason_intercept_rho": 0.1,
+      "offseason_offense_sd": 0.064,
+      "offseason_defense_sd": 0.064,
+      "offseason_intercept_sd": 0.08000000000000002,
+      "student_t_df": 7.0
+    }
+  ],
+  "seed": 13,
+  "origins": [
+    {
+      "season": 2025,
+      "week": 22,
+      "as_of": "2026-02-03T16:00:00Z"
+    }
+  ],
+  "evidence_class": "retrospective_historical_source_replay",
+  "source_selection_policy": "first jointly complete exact PBP plus schedule/result artifact per competition week; later versions retained as revision evidence and never replace selected state inputs",
+  "schedule_selection_policy": "latest exact games asset strictly before Tuesday 16:00 UTC origin; concrete teams/game set; missing target scores",
+  "selected_week_versions_sha256": "ef93af4270a1e01d73eb01240c534001c0b711d500c900355bb82720d7e2333e",
+  "decoded_source_catalog_sha256": "8d303faf3f95f8c014fbc9ceb0173c563517639bdb6261f7433f9ac2b4622644",
+  "schedule_asset_id": 347739173,
+  "schedule_sha256": "1a9ae09e03df4c53e6b5d29ff5ac4259a198fc21dffccdf10f5bc78a48e41ca8",
+  "schedule_available_at": "2026-01-29T15:53:07Z",
+  "prior_regular_experiment_results_known": true,
+  "extension_reason": "Schedule feasibility only; candidate family and source selection unchanged; no target outcomes consumed",
+  "purpose": "Append-only strict Super Bowl structural origin; retrospective development evidence only"
+}

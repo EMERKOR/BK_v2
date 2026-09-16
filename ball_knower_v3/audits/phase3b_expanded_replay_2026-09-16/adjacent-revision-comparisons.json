@@ -1,0 +1,156 @@
+[
+  {
+    "left": "archive-2025-10-02",
+    "right": "archive-2025-10-09",
+    "left_rows": 11034,
+    "right_rows": 13488,
+    "shared_keys": 11034,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-10-09",
+    "right": "archive-2025-10-16",
+    "left_rows": 13488,
+    "right_rows": 16011,
+    "shared_keys": 13488,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-10-16",
+    "right": "archive-2025-10-23",
+    "left_rows": 16011,
+    "right_rows": 18625,
+    "shared_keys": 16011,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-10-23",
+    "right": "archive-2025-10-30",
+    "left_rows": 18625,
+    "right_rows": 20767,
+    "shared_keys": 18625,
+    "exact_epa_changes": 1,
+    "changes_over_1e6": 1,
+    "max_absolute_change": 2.179037803784013,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-10-30",
+    "right": "archive-2025-11-06",
+    "left_rows": 20767,
+    "right_rows": 23152,
+    "shared_keys": 20767,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-11-06",
+    "right": "archive-2025-11-13",
+    "left_rows": 23152,
+    "right_rows": 25552,
+    "shared_keys": 23152,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-11-13",
+    "right": "archive-2025-11-20",
+    "left_rows": 25552,
+    "right_rows": 28127,
+    "shared_keys": 25552,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-11-20",
+    "right": "archive-2025-11-27",
+    "left_rows": 28127,
+    "right_rows": 30572,
+    "shared_keys": 28127,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-11-27",
+    "right": "archive-2025-12-04",
+    "left_rows": 30572,
+    "right_rows": 33292,
+    "shared_keys": 30572,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-12-04",
+    "right": "archive-2025-12-25",
+    "left_rows": 33292,
+    "right_rows": 41152,
+    "shared_keys": 33292,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2025-12-25",
+    "right": "archive-2026-01-01",
+    "left_rows": 41152,
+    "right_rows": 43816,
+    "shared_keys": 41152,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2026-01-01",
+    "right": "archive-2026-01-08",
+    "left_rows": 43816,
+    "right_rows": 46452,
+    "shared_keys": 43816,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2026-01-08",
+    "right": "archive-2026-01-15",
+    "left_rows": 46452,
+    "right_rows": 48238,
+    "shared_keys": 46452,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  },
+  {
+    "left": "archive-2026-01-15",
+    "right": "archive-2026-01-29",
+    "left_rows": 48238,
+    "right_rows": 48578,
+    "shared_keys": 48238,
+    "exact_epa_changes": 0,
+    "changes_over_1e6": 0,
+    "max_absolute_change": 0.0,
+    "missingness_changes": 0
+  }
+]

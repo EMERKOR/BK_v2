@@ -290,3 +290,30 @@ Direct margin/total modeling has not begun.
 CSV replay inputs now use round-trip float parsing. Default parsing changed some
 last-place EPA values; frozen replay rejected that mismatch. The new regression
 preserves the exact observation version instead of weakening the fingerprint.
+
+## Expanded strict replay — 2026-09-16
+
+The follow-on archive audit extends the table to **195 games at 14 origins**:
+continuous Tuesday Weeks 6–18 plus a separately frozen Week 22 Super Bowl origin.
+The detailed result, source inventory, per-origin missing weeks, configuration
+history and stop-condition assessment are in
+[PHASE3B_EXPANDED_RETROSPECTIVE_REPLAY_REPORT.md](PHASE3B_EXPANDED_RETROSPECTIVE_REPLAY_REPORT.md).
+
+Completed observation evidence is now accepted separately from an exact
+pre-origin schedule table. This avoids assigning later result publication time
+to an older schedule version while preserving each source identity. One new
+regression covers that boundary; **104 tests passed in 14.72s**.
+
+The December 11 PBP asset is provider-hash-valid HTML and is rejected; the
+December 18 release is missing. Missing competition weeks transition without
+fake observations and enter only when the December 25 joint artifact is available.
+One excluded non-play Week 1 EPA revision and later Week 18 kickoff flexes are
+reported without altering earlier inputs.
+
+The larger table is still retrospective development evidence from one season,
+not prospective or held-out predictive validation. It has no cross-season
+variation and only 14 origin-level states, so it is insufficient for scientifically
+credible game-model selection, calibration and an untouched promotion gate.
+Direct margin/total modeling has not begun. The robust state filter remains an
+approximation; neither 1.0 nor 1.38 is promoted, and pooled residual SD is not
+Student-t scale.
