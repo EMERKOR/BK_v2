@@ -195,7 +195,7 @@ def _manifest(root: Path, *, spec: dict, source_receipts: dict, code_commit: str
     files = {
         str(path.relative_to(root)): _sha256(path)
         for path in sorted(root.rglob("*"))
-        if path.is_file() and path.name != "manifest.json"
+        if path.is_file() and path != root / "manifest.json"
     }
     content = {
         "schema_version": PIPELINE_SCHEMA,
@@ -463,7 +463,7 @@ def verify_bundle(
     actual_files = {
         str(path.relative_to(bundle)): _sha256(path)
         for path in sorted(bundle.rglob("*"))
-        if path.is_file() and path.name != "manifest.json"
+        if path.is_file() and path != bundle / "manifest.json"
     }
     if actual_files != expected_files:
         raise ValueError("referenced file hashes do not match manifest")
