@@ -57,6 +57,10 @@ repository-relative `spec_path`. The trusted runner replaces `code_commit` with
 its checked-out `GITHUB_SHA`, builds and locally verifies the bundle, enforces
 the pre-kickoff boundary, attests the deterministic archive, verifies the
 attestation, and uploads the bundle, archive, Sigstore material, and receipt.
+The bundle/archive are first preserved under an explicit unattested artifact
+name, so an attestation failure leaves inspectable bytes without admitting
+evidence. Verified receipt and Sigstore material are uploaded only after the
+verification command succeeds.
 
 The register command independently reruns `gh attestation verify`, verifies the
 content-addressed manifest and all referenced identities, and extends the

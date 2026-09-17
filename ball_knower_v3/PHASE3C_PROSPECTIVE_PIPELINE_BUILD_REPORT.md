@@ -71,6 +71,12 @@ The workflow also has a clearly separate synthetic mode. Its manifest says
 `evidence_class: synthetic` and `prospective_nfl_evidence: false`. Synthetic
 output cannot enter the prospective registry.
 
+The completed bundle and archive are uploaded first under an explicit
+`unattested-build` artifact name. If attestation or verification then fails,
+those immutable bytes remain available for diagnosis but cannot enter the
+registry. A second artifact containing the receipt and Sigstore material is
+created only after successful verification.
+
 ## Validation performed
 
 The new tests cover:

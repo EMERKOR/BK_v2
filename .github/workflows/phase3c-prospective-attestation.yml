@@ -77,6 +77,16 @@ jobs:
           SUBJECT_PATH: ${{ steps.subject.outputs.subject_path }}
         run: printf '%s\n' "sha256=$(sha256sum "$SUBJECT_PATH" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
+      - name: Preserve generated bundle before attestation
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3c-unattested-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.subject.outputs.subject_path }}
+            ${{ steps.subject.outputs.bundle_directory }}
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Create GitHub artifact attestation
         id: attest
         uses: actions/attest-build-provenance@v3
@@ -119,10 +129,10 @@ jobs:
               stream.write("\n")
           PY
 
-      - name: Preserve subject and verification evidence
+      - name: Preserve verified attestation evidence
         uses: actions/upload-artifact@v4
         with:
-          name: phase3c-attested-${{ github.run_id }}-${{ github.run_attempt }}
+          name: phase3c-verified-attestation-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             ${{ steps.subject.outputs.subject_path }}
             ${{ steps.subject.outputs.bundle_directory }}
