@@ -215,7 +215,8 @@ def forecasts_to_frame(forecasts: Iterable[WeeklyStateForecast]) -> pd.DataFrame
 
 def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, seed=0,
                                 evidence_class="retrospective_historical_source_replay",
-                                replay_execution_at=None):
+                                replay_execution_at=None,
+                                prospective_bundle_build=False):
     """Expanding weekly fitting with persisted configs and joint state snapshots.
 
     origins supplies season/week/as_of, established before evaluating outcomes.
@@ -243,8 +244,11 @@ def run_fitted_weekly_benchmark(games, weeks, origins, *, space, artifact_dir, s
         previous_as_of = as_of
         target = (int(origin.season), int(origin.week))
         fit = fit_prior_time(weeks, cutoff=as_of, target=target, space=space, seed=seed,
-                             evidence_class=evidence_class, replay_execution_at=execution)
-        frozen = FrozenStateConfig.from_fit(fit)
+                             evidence_class=evidence_class, replay_execution_at=execution,
+                             prospective_bundle_build=prospective_bundle_build)
+        # Bind the envelope timestamp to the declared execution clock so an
+        # identical replay/bundle spec produces identical artifact bytes.
+        frozen = FrozenStateConfig.from_fit(fit, created_at=execution)
         model = frozen.replay(weeks, as_of=as_of, target=target)
         runner = WeeklyTeamStateBenchmarkRunner(model)
         week_games = games.loc[(games.season == target[0]) & (games.week == target[1])].copy()

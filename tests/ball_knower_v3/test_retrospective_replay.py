@@ -131,6 +131,21 @@ def test_local_config_cannot_be_relabeled_as_prospective():
         FrozenStateConfig(json.dumps(content), frozen.created_at)
 
 
+def test_pending_prospective_build_requires_explicit_pipeline_capability():
+    prospective_space = CandidateSpace(
+        candidates().candidates, experiment_registered_at="2025-01-01T00:00:00Z"
+    )
+    pending = fit_prior_time(
+        sources(), cutoff="2025-10-07T16:00:00Z", target=(2025, 6),
+        space=prospective_space, evidence_class="prospective_ingested",
+        replay_execution_at="2025-10-07T16:00:00Z", prospective_bundle_build=True,
+    )
+    frozen = FrozenStateConfig.from_fit(pending)
+    assert frozen.content["evidence_class"] == "prospective_ingested"
+    assert frozen.content["prospective_origin_declared"] is True
+    assert frozen.content["historical_forecast_existence_proven"] is False
+
+
 def test_forecast_schedule_is_separate_from_completed_observation_table(tmp_path):
     from ball_knower_v3.modeling.export_structural_state import export_table
     from test_state_fitting import export_inputs, space

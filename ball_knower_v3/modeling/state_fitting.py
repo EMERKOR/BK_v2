@@ -275,19 +275,24 @@ class FitResult:
 
 def fit_prior_time(weeks, *, cutoff, target, space, seed=0,
                    evidence_class="retrospective_historical_source_replay",
-                   replay_execution_at=None):
+                   replay_execution_at=None,
+                   prospective_bundle_build=False):
     cutoff = aware_time(cutoff)
     execution = aware_time(replay_execution_at or pd.Timestamp.now(tz="UTC"))
     if evidence_class == "prospective_ingested":
         if aware_time(space.experiment_registered_at) >= cutoff:
             raise ValueError("prospective candidate space must be registered before forecast origin")
-        # This local runner has no verified ESC-B attestation acceptance path.
-        raise ValueError("prospective evidence requires verified pre-outcome attestation")
-    if evidence_class != "retrospective_historical_source_replay":
+        if not prospective_bundle_build:
+            raise ValueError("prospective evidence requires verified pre-outcome attestation")
+        if execution < cutoff:
+            raise ValueError("prospective bundle cannot execute before its declared origin")
+    elif evidence_class != "retrospective_historical_source_replay":
         raise ValueError("unsupported forecast evidence class")
-    if aware_time(space.experiment_registered_at) >= execution:
+    if evidence_class == "retrospective_historical_source_replay" and aware_time(
+        space.experiment_registered_at
+    ) >= execution:
         raise ValueError("experiment must be registered before replay execution/evaluation")
-    if cutoff >= execution:
+    if evidence_class == "retrospective_historical_source_replay" and cutoff >= execution:
         raise ValueError("retrospective forecast cutoff must precede replay execution")
     if not isinstance(seed, int) or seed < 0:
         raise ValueError("seed must be a nonnegative integer")
