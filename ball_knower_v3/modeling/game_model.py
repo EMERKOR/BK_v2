@@ -26,7 +26,13 @@ from scipy.optimize import minimize
 from scipy.special import logsumexp
 from scipy.stats import t as student_t
 
-from .game_distribution import DiscretePredictivePMF, StudentTMixture, discretize_with_tail_tolerance
+from .game_distribution import (
+    DiscretePredictivePMF,
+    NormalMixture,
+    StudentTMixture,
+    discretize_with_tail_tolerance,
+)
+from .state_fitting import digest
 from .team_state import TeamStatePosterior
 
 
@@ -62,6 +68,9 @@ def load_team_state_artifact(path: str | Path, *, expected_state_sha256: str) ->
     required = {"team_ids", "mean", "covariance", "as_of", "config_sha256", "model_version"}
     if not required.issubset(payload):
         raise ValueError("state artifact is missing required fields")
+    actual_identity = digest(payload)
+    if actual_identity != expected_state_sha256:
+        raise ValueError("state artifact content does not match structural state_sha256")
     return TeamStatePosterior(
         tuple(payload["team_ids"]),
         np.asarray(payload["mean"], dtype=float),
@@ -163,15 +172,15 @@ class CausalLeagueEnvironment:
     def update_completed_games(
         self,
         *,
-        margins: Sequence[float],
+        margin_residuals: Sequence[float],
         totals: Sequence[float],
         neutral_sites: Sequence[bool],
     ) -> None:
-        margins_arr = np.asarray(margins, dtype=float)
+        margins_arr = np.asarray(margin_residuals, dtype=float)
         totals_arr = np.asarray(totals, dtype=float)
         neutral_arr = np.asarray(neutral_sites, dtype=bool)
         if margins_arr.ndim != 1 or totals_arr.shape != margins_arr.shape or neutral_arr.shape != margins_arr.shape:
-            raise ValueError("margins, totals, and neutral_sites must be equal one-dimensional arrays")
+            raise ValueError("margin residuals, totals, and neutral_sites must be equal one-dimensional arrays")
         if not np.isfinite(margins_arr).all() or not np.isfinite(totals_arr).all():
             raise ValueError("completed-game outcomes must be finite")
         self._hfa_mean, self._hfa_var = self._normal_batch_update(
@@ -304,8 +313,22 @@ class TrainingScale:
 
 
 @dataclass(frozen=True)
+class LaplaceGeometryDiagnostics:
+    raw_hessian_min_eigenvalue: float
+    raw_hessian_max_eigenvalue: float
+    nonpositive_eigenvalues: int
+    floored_eigenvalues: int
+    floored_fraction: float
+    stabilized_condition_number: float
+    covariance_clipped_eigenvalues: int
+    max_covariance_eigenvalue_reduction: float
+    optimizer_gradient_norm: float
+    status: str
+
+
+@dataclass(frozen=True)
 class BayesianStudentTFit:
-    """Laplace posterior for one target-specific Student-t location model."""
+    """MAP plus Laplace approximation for a Gaussian or Student-t location model."""
 
     target: str
     map_unconstrained: np.ndarray
@@ -315,6 +338,8 @@ class BayesianStudentTFit:
     n_games: int
     n_state_draws: int
     optimizer_success: bool
+    likelihood_family: str
+    geometry: LaplaceGeometryDiagnostics
 
     @property
     def n_predictors(self) -> int:
@@ -324,12 +349,9 @@ class BayesianStudentTFit:
         if n_draws <= 0:
             raise ValueError("n_draws must be positive")
         rng = np.random.default_rng(seed)
-        covariance = (self.covariance + self.covariance.T) / 2.0
-        values, vectors = np.linalg.eigh(covariance)
-        values = np.clip(values, 1e-10, 25.0)
-        return self.map_unconstrained + rng.normal(size=(n_draws, len(values))) @ (
-            vectors * np.sqrt(values)
-        ).T
+        return rng.multivariate_normal(
+            self.map_unconstrained, self.covariance, size=n_draws, check_valid="raise"
+        )
 
     def predict(
         self,
@@ -338,7 +360,7 @@ class BayesianStudentTFit:
         offset_draws: np.ndarray | None = None,
         n_components: int = 2000,
         seed: int = 0,
-    ) -> StudentTMixture:
+    ) -> StudentTMixture | NormalMixture:
         predictors = np.asarray(predictor_draws, dtype=float)
         if predictors.ndim != 2 or predictors.shape[1] != self.n_predictors or predictors.shape[0] == 0:
             raise ValueError("predictor_draws has the wrong shape")
@@ -358,7 +380,10 @@ class BayesianStudentTFit:
             + self.scaling.outcome_sd * standardized_location
             + offsets[state_index]
         )
-        scale = self.scaling.outcome_sd * np.exp(parameters[:, -2])
+        sigma_index = -2 if self.likelihood_family == "student_t" else -1
+        scale = self.scaling.outcome_sd * np.exp(parameters[:, sigma_index])
+        if self.likelihood_family == "gaussian":
+            return NormalMixture(location=location, scale=scale)
         df = 2.0 + np.exp(parameters[:, -1])
         return StudentTMixture(location=location, scale=scale, df=df)
 
@@ -395,8 +420,9 @@ def fit_bayesian_student_t(
     predictor_draws: np.ndarray,
     offset_draws: np.ndarray | None = None,
     prior: BayesianLocationPrior | None = None,
+    likelihood_family: str = "student_t",
 ) -> BayesianStudentTFit:
-    """Fit one target with a draw-integrated Student-t likelihood."""
+    """Fit one target by MAP and an explicitly diagnosed Laplace approximation."""
 
     y = np.asarray(outcomes, dtype=float)
     x = np.asarray(predictor_draws, dtype=float)
@@ -408,6 +434,8 @@ def fit_bayesian_student_t(
     if offsets.shape != x.shape[:2] or not np.isfinite(offsets).all():
         raise ValueError("offset draws must align with game/state draws")
     prior = prior or BayesianLocationPrior()
+    if likelihood_family not in {"student_t", "gaussian"}:
+        raise ValueError("likelihood_family must be student_t or gaussian")
 
     predictor_mean = x.mean(axis=(0, 1))
     predictor_sd = x.std(axis=(0, 1), ddof=0)
@@ -424,36 +452,69 @@ def fit_bayesian_student_t(
 
     def negative_log_posterior(theta: np.ndarray) -> float:
         beta = theta[:n_beta]
-        sigma = np.exp(theta[-2])
-        nu_minus_two = np.exp(theta[-1])
-        nu = 2.0 + nu_minus_two
+        sigma_index = -2 if likelihood_family == "student_t" else -1
+        sigma = np.exp(theta[sigma_index])
         locations = beta[0] + np.einsum("gdp,p->gd", xs, beta[1:]) + os
-        log_components = student_t.logpdf((ys[:, None] - locations) / sigma, df=nu) - np.log(sigma)
+        standardized = (ys[:, None] - locations) / sigma
+        if likelihood_family == "student_t":
+            nu_minus_two = np.exp(theta[-1])
+            nu = 2.0 + nu_minus_two
+            log_components = student_t.logpdf(standardized, df=nu) - np.log(sigma)
+        else:
+            log_components = -0.5 * standardized**2 - np.log(sigma) - 0.5 * np.log(2.0 * np.pi)
         log_likelihood = np.sum(logsumexp(log_components, axis=1) - np.log(x.shape[1]))
         log_prior = -0.5 * (beta[0] / prior.intercept_sd) ** 2 - np.log(prior.intercept_sd)
         log_prior += np.sum(-0.5 * (beta[1:] / prior.coefficient_sd) ** 2 - np.log(prior.coefficient_sd))
-        log_prior += -0.5 * ((theta[-2] - prior.log_scale_mean) / prior.log_scale_sd) ** 2 - np.log(prior.log_scale_sd)
-        rate = 1.0 / prior.nu_minus_two_mean
-        log_prior += np.log(rate) - rate * nu_minus_two + theta[-1]
+        log_prior += -0.5 * ((theta[sigma_index] - prior.log_scale_mean) / prior.log_scale_sd) ** 2 - np.log(prior.log_scale_sd)
+        if likelihood_family == "student_t":
+            rate = 1.0 / prior.nu_minus_two_mean
+            log_prior += np.log(rate) - rate * nu_minus_two + theta[-1]
         value = -(log_likelihood + log_prior)
         return float(value) if np.isfinite(value) else 1e100
 
-    initial = np.zeros(n_beta + 2)
-    initial[-2] = prior.log_scale_mean
-    initial[-1] = np.log(prior.nu_minus_two_mean)
+    extra = 2 if likelihood_family == "student_t" else 1
+    initial = np.zeros(n_beta + extra)
+    initial[-extra] = prior.log_scale_mean
+    if likelihood_family == "student_t":
+        initial[-1] = np.log(prior.nu_minus_two_mean)
     result = minimize(
         negative_log_posterior,
         initial,
         method="L-BFGS-B",
-        bounds=[(None, None)] * n_beta + [(-5.0, 3.0), (-4.0, 5.0)],
+        bounds=[(None, None)] * n_beta + (
+            [(-5.0, 3.0), (-4.0, 5.0)] if likelihood_family == "student_t" else [(-5.0, 3.0)]
+        ),
         options={"maxiter": 1000, "ftol": 1e-11},
     )
     if not np.isfinite(result.fun):
         raise RuntimeError("Student-t posterior optimization failed")
     hessian = _finite_hessian(negative_log_posterior, result.x)
-    values, vectors = np.linalg.eigh(hessian)
-    values = np.clip(values, 1e-6, None)
-    covariance = (vectors * (1.0 / values)) @ vectors.T
+    raw_values, vectors = np.linalg.eigh(hessian)
+    floor = 1e-6
+    nonpositive = int(np.sum(raw_values <= 0.0))
+    floored = int(np.sum(raw_values < floor))
+    if float(raw_values.min()) < -1e-4 or floored / len(raw_values) > 0.25:
+        raise RuntimeError("materially indefinite or degenerate Laplace geometry")
+    stabilized = np.maximum(raw_values, floor)
+    inverse_values = 1.0 / stabilized
+    clipped_inverse = np.clip(inverse_values, 1e-10, 25.0)
+    covariance_clipped = int(np.sum(clipped_inverse != inverse_values))
+    max_reduction = float(np.max(inverse_values - clipped_inverse, initial=0.0))
+    covariance = (vectors * clipped_inverse) @ vectors.T
+    gradient_norm = float(np.linalg.norm(np.asarray(result.jac, dtype=float)))
+    status = "ok" if floored == 0 and covariance_clipped == 0 and gradient_norm <= 1e-2 else "warning_stabilized"
+    geometry = LaplaceGeometryDiagnostics(
+        raw_hessian_min_eigenvalue=float(raw_values.min()),
+        raw_hessian_max_eigenvalue=float(raw_values.max()),
+        nonpositive_eigenvalues=nonpositive,
+        floored_eigenvalues=floored,
+        floored_fraction=floored / len(raw_values),
+        stabilized_condition_number=float(stabilized.max() / stabilized.min()),
+        covariance_clipped_eigenvalues=covariance_clipped,
+        max_covariance_eigenvalue_reduction=max_reduction,
+        optimizer_gradient_norm=gradient_norm,
+        status=status,
+    )
     return BayesianStudentTFit(
         target=target,
         map_unconstrained=result.x,
@@ -463,7 +524,15 @@ def fit_bayesian_student_t(
         n_games=len(y),
         n_state_draws=x.shape[1],
         optimizer_success=bool(result.success),
+        likelihood_family=likelihood_family,
+        geometry=geometry,
     )
+
+
+def fit_bayesian_gaussian(**kwargs) -> BayesianStudentTFit:
+    """Gaussian probabilistic benchmark under the same MAP/Laplace shell."""
+
+    return fit_bayesian_student_t(likelihood_family="gaussian", **kwargs)
 
 
 @dataclass(frozen=True)
@@ -480,8 +549,7 @@ class DirectGameModelFit:
             seed=seed,
         )
         total = self.total.predict(
-            matchup.strength_total[:, None],
-            offset_draws=matchup.total_baseline,
+            np.column_stack([matchup.strength_total, matchup.total_baseline]),
             n_components=n_components,
             seed=seed + 10_000,
         )
@@ -542,8 +610,9 @@ def fit_direct_game_models(
     margin_x = np.stack(
         [np.column_stack([game.matchup.strength_margin, game.matchup.hfa_input]) for game in eligible]
     )
-    total_x = np.stack([game.matchup.strength_total[:, None] for game in eligible])
-    total_offset = np.stack([game.matchup.total_baseline for game in eligible])
+    total_x = np.stack(
+        [np.column_stack([game.matchup.strength_total, game.matchup.total_baseline]) for game in eligible]
+    )
     return DirectGameModelFit(
         forecast_as_of=origin,
         training_game_ids=tuple(game.game_id for game in eligible),
@@ -557,7 +626,52 @@ def fit_direct_game_models(
             target="total",
             outcomes=outcomes_total,
             predictor_draws=total_x,
-            offset_draws=total_offset,
+            prior=prior,
+        ),
+    )
+
+
+def fit_gaussian_game_models(
+    games: Iterable[CompletedGame],
+    *,
+    forecast_as_of: datetime,
+    prior: BayesianLocationPrior | None = None,
+) -> DirectGameModelFit:
+    """Fit the Gaussian probabilistic benchmark under the identical causal shell."""
+
+    origin = _utc(forecast_as_of, "forecast_as_of")
+    supplied = list(games)
+    identifiers = [game.game_id for game in supplied]
+    if len(set(identifiers)) != len(identifiers):
+        raise ValueError("duplicate game_id in game-model history")
+    eligible = sorted(
+        (game for game in supplied if game.result_available_at < origin),
+        key=lambda game: (game.kickoff, game.game_id),
+    )
+    if len(eligible) < 2:
+        raise ValueError("at least two prior-time completed games are required")
+    n_draws = eligible[0].matchup.n_draws
+    if any(game.matchup.n_draws != n_draws for game in eligible):
+        raise ValueError("all training games must retain the same number of aligned draws")
+    margin_x = np.stack(
+        [np.column_stack([game.matchup.strength_margin, game.matchup.hfa_input]) for game in eligible]
+    )
+    total_x = np.stack(
+        [np.column_stack([game.matchup.strength_total, game.matchup.total_baseline]) for game in eligible]
+    )
+    return DirectGameModelFit(
+        forecast_as_of=origin,
+        training_game_ids=tuple(game.game_id for game in eligible),
+        margin=fit_bayesian_gaussian(
+            target="margin",
+            outcomes=np.array([game.margin for game in eligible], dtype=float),
+            predictor_draws=margin_x,
+            prior=prior,
+        ),
+        total=fit_bayesian_gaussian(
+            target="total",
+            outcomes=np.array([game.total for game in eligible], dtype=float),
+            predictor_draws=total_x,
             prior=prior,
         ),
     )

@@ -11,7 +11,31 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
+from scipy.stats import norm
 from scipy.stats import t as student_t
+
+
+@dataclass(frozen=True)
+class NormalMixture:
+    """Equal-weight posterior predictive Gaussian components."""
+
+    location: np.ndarray
+    scale: np.ndarray
+
+    def __post_init__(self) -> None:
+        location = np.asarray(self.location, dtype=float)
+        scale = np.asarray(self.scale, dtype=float)
+        if location.ndim != 1 or scale.shape != location.shape or location.size == 0:
+            raise ValueError("location and scale must be equal non-empty 1D arrays")
+        if not np.isfinite(location).all() or not np.isfinite(scale).all() or (scale <= 0).any():
+            raise ValueError("normal mixture parameters must be finite with positive scale")
+        object.__setattr__(self, "location", location)
+        object.__setattr__(self, "scale", scale)
+
+    def cdf(self, x: float | np.ndarray) -> np.ndarray:
+        x_arr = np.asarray(x, dtype=float)
+        z = (x_arr[..., None] - self.location) / self.scale
+        return norm.cdf(z).mean(axis=-1)
 
 
 @dataclass(frozen=True)
@@ -122,7 +146,7 @@ class ThresholdProbabilities:
 
 
 def discretize_student_t_mixture(
-    mixture: StudentTMixture,
+    mixture: StudentTMixture | NormalMixture,
     *,
     support_min: int,
     support_max: int,
@@ -147,7 +171,7 @@ def discretize_student_t_mixture(
 
 
 def discretize_with_tail_tolerance(
-    mixture: StudentTMixture,
+    mixture: StudentTMixture | NormalMixture,
     *,
     support_min: int,
     support_max: int,

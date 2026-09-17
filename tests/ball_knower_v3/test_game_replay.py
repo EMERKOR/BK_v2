@@ -5,9 +5,11 @@ import pandas as pd
 import pytest
 
 from ball_knower_v3.modeling.game_replay import run_direct_game_replay
+from ball_knower_v3.modeling.game_benchmarks import BENCHMARK_FAMILIES
+from ball_knower_v3.modeling.state_fitting import canonical_json, digest
 
 
-def _write_state(directory, identity, as_of):
+def _write_state(directory, as_of):
     teams = ["A", "B", "C", "D"]
     mean = [0.10, -0.05, 0.02, -0.07, -0.03, 0.04, -0.02, 0.01, 0.03]
     covariance = np.eye(9) * 0.0025
@@ -19,7 +21,9 @@ def _write_state(directory, identity, as_of):
         "config_sha256": "config",
         "model_version": "test",
     }
-    (directory / f"{identity}.json").write_text(json.dumps(payload))
+    identity = digest(payload)
+    (directory / f"{identity}.json").write_text(canonical_json(payload) + "\n")
+    return identity
 
 
 def _inputs(tmp_path):
@@ -32,10 +36,11 @@ def _inputs(tmp_path):
         ("g5", 2, "A", "D", "2025-10-23T00:00:00Z"),
         ("g6", 2, "B", "C", "2025-10-26T17:00:00Z"),
     ]
+    state_ids = [_write_state(tmp_path, origin) for origin in origins]
     rows = []
     context = []
     for game_id, origin_index, home, away, kickoff in games:
-        state_id = f"state-{origin_index}"
+        state_id = state_ids[origin_index]
         rows.append(
             {
                 "game_id": game_id,
@@ -55,8 +60,6 @@ def _inputs(tmp_path):
                 "neutral_site": game_id == "g2",
             }
         )
-    for i, origin in enumerate(origins):
-        _write_state(tmp_path, f"state-{i}", origin)
     outcomes = pd.DataFrame(
         [
             ("g1", 6, "2025-10-10T00:00:00Z", 27, 20, False, "2025-10-13T16:00:00Z"),
@@ -94,11 +97,10 @@ def test_replay_skips_unlearned_first_origin_and_never_embeds_outcomes(tmp_path)
         predictive_components=120,
         seed=4,
     )
-    assert result.origin_diagnostics.status.tolist() == [
-        "insufficient_prior_game_bridge_outcomes",
-        "fit",
-        "fit",
+    assert result.origin_diagnostics.groupby("forecast_as_of").status.first().tolist() == [
+        "insufficient_prior_game_bridge_outcomes", "fit", "fit"
     ]
+    assert set(result.predictions.benchmark_family) == set(BENCHMARK_FAMILIES)
     assert set(result.predictions.game_id) == {"g3", "g4", "g5", "g6"}
     assert not {"home_score", "away_score", "margin", "total"} & set(result.predictions.columns)
     assert result.predictions.development_evidence_only.all()

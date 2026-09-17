@@ -10,6 +10,7 @@ from ball_knower_v3.modeling.game_distribution import (
 )
 from ball_knower_v3.modeling.game_model import (
     CausalLeagueEnvironment,
+    BayesianLocationPrior,
     CompletedGame,
     LeagueEnvironmentPosterior,
     MatchupDraws,
@@ -19,6 +20,7 @@ from ball_knower_v3.modeling.game_model import (
     matchup_draws_from_posteriors,
     scoreboard_targets,
 )
+from ball_knower_v3.modeling.state_fitting import canonical_json, digest
 from ball_knower_v3.modeling.team_state import TeamStatePosterior
 
 
@@ -97,12 +99,17 @@ def test_state_artifact_identity_must_match_structural_reference(tmp_path):
         "config_sha256": "c",
         "model_version": "m",
     }
-    path = tmp_path / "state-id.json"
-    path.write_text(json.dumps(payload))
-    posterior = load_team_state_artifact(path, expected_state_sha256="state-id")
+    identity = digest(payload)
+    path = tmp_path / f"{identity}.json"
+    path.write_text(canonical_json(payload) + "\n")
+    posterior = load_team_state_artifact(path, expected_state_sha256=identity)
     assert posterior.team_ids == ("A", "B")
     with pytest.raises(ValueError, match="filename"):
         load_team_state_artifact(path, expected_state_sha256="different")
+    payload["mean"][0] = 1
+    path.write_text(canonical_json(payload) + "\n")
+    with pytest.raises(ValueError, match="content"):
+        load_team_state_artifact(path, expected_state_sha256=identity)
 
 
 def test_league_environment_is_time_varying_and_neutral_margin_is_excluded():
@@ -110,12 +117,25 @@ def test_league_environment_is_time_varying_and_neutral_margin_is_excluded():
     before = environment.posterior
     environment.transition(1)
     environment.update_completed_games(
-        margins=[30.0, -10.0], totals=[52.0, 38.0], neutral_sites=[True, False]
+        margin_residuals=[30.0, -10.0], totals=[52.0, 38.0], neutral_sites=[True, False]
     )
     after = environment.posterior
     assert after.hfa_mean < 0.0  # the +30 neutral result cannot enter HFA
     assert after.total_mean != before.total_mean
     assert after.hfa_var < before.hfa_var + environment.config.weekly_hfa_process_sd**2
+
+
+def test_strong_home_schedule_does_not_mechanically_inflate_residual_hfa():
+    environment = CausalLeagueEnvironment()
+    before = environment.posterior.hfa_mean
+    # Home teams win by 17, 21 and 24, but the structural bridge expected those
+    # same margins. HFA observes residual evidence of zero rather than raw wins.
+    environment.update_completed_games(
+        margin_residuals=[0.0, 0.0, 0.0],
+        totals=[48.0, 51.0, 55.0],
+        neutral_sites=[False, False, False],
+    )
+    assert environment.posterior.hfa_mean == pytest.approx(before)
 
 
 def test_completed_game_requires_pregame_state_and_postgame_availability():
@@ -169,14 +189,34 @@ def test_prediction_integrates_state_and_parameter_draws():
     assert (uncertain.df > 2).all()
 
 
-def test_total_baseline_is_an_uncertain_location_offset():
-    y = np.array([40.0, 44.0, 47.0, 51.0])
-    x = np.zeros((4, 16, 1))
-    offsets = np.stack([np.full(16, v) for v in [42.0, 43.0, 44.0, 45.0]])
-    fit = fit_bayesian_student_t(target="total", outcomes=y, predictor_draws=x, offset_draws=offsets)
-    base = fit.predict(np.zeros((20, 1)), offset_draws=np.full(20, 44.0), n_components=400, seed=9)
-    shifted = fit.predict(np.zeros((20, 1)), offset_draws=np.full(20, 49.0), n_components=400, seed=9)
-    assert np.allclose(shifted.location - base.location, 5.0)
+def test_total_baseline_influence_is_learned_and_regularized():
+    fit = fit_direct_game_models(_history(), forecast_as_of=datetime(2025, 10, 1, tzinfo=UTC))
+    assert fit.total.n_predictors == 2
+    base = fit.predict(_matchup(0.0, total_baseline=44.0), n_components=400, seed=9)[1]
+    shifted = fit.predict(_matchup(0.0, total_baseline=49.0), n_components=400, seed=9)[1]
+    difference = shifted.location - base.location
+    assert np.isfinite(difference).all()
+    assert not np.allclose(difference, 5.0)  # coefficient is not fixed to one
+
+
+def test_well_identified_laplace_geometry_needs_no_hessian_floor():
+    y = np.linspace(-14.0, 14.0, 20)
+    x = np.stack([np.full((32, 1), v) for v in np.linspace(-1.0, 1.0, 20)])
+    fit = fit_bayesian_student_t(target="margin", outcomes=y, predictor_draws=x)
+    assert fit.geometry.nonpositive_eigenvalues == 0
+    assert fit.geometry.floored_eigenvalues == 0
+    assert fit.geometry.raw_hessian_min_eigenvalue > 0
+
+
+def test_weak_geometry_triggers_explicit_warning_or_failure():
+    y = np.ones(4)
+    x = np.zeros((4, 8, 1))
+    fit = fit_bayesian_student_t(
+        target="margin", outcomes=y, predictor_draws=x,
+        prior=BayesianLocationPrior(coefficient_sd=1e6),
+    )
+    assert fit.geometry.status == "warning_stabilized"
+    assert fit.geometry.covariance_clipped_eigenvalues > 0 or fit.geometry.floored_eigenvalues > 0
 
 
 def test_separate_margin_total_models_produce_push_ready_pmfs():

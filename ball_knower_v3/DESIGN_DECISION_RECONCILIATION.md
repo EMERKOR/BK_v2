@@ -77,6 +77,7 @@ The minimum team-state implementation contract is resolved and implementation-re
 | Area | Status | Current disposition |
 |---|---|---|
 | Time-varying league HFA | CONFIRMED BASELINE / LOCK principle |
+| HFA observations residualize prior-time structural matchup expectation | CONFIRMED BASELINE — 2026-09-17 implementation clarification |
 | Neutral-site handling | CONFIRMED |
 | Fixed modern bye/mini-bye bonus | SUPERSEDED / prohibited |
 | Rest/short week | MODEL TEST OPEN |
@@ -97,6 +98,9 @@ Weather is now feasible to test correctly, but remains TEST until chronological 
 | Learned EPA-state to scoreboard bridge | CONFIRMED LOCK |
 | Separate direct margin + total models | CONFIRMED BASELINE |
 | Bayesian Student-t first direct family | CONFIRMED BASELINE |
+| Four-family chronological benchmark ladder | FROZEN PROSPECTIVE CONTRACT | `phase3c_prospective_experiment_contract_v1.md` |
+| League total baseline influence learned in structural families | CONFIRMED BASELINE — 2026-09-17 implementation clarification |
+| Phase 3C prospective experiment policy | FROZEN v1 / NO PROSPECTIVE EVIDENCE YET | `phase3c_prospective_experiment_contract_v1.md` |
 | Joint posterior state uncertainty propagation | CONFIRMED LOCK / BASELINE draws |
 | Integer/discrete output sufficient for pushes | CONFIRMED LOCK |
 | Posterior-mixture CDF-bin discretization | CONFIRMED BASELINE |

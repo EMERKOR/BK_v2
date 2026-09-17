@@ -11,7 +11,7 @@ from .game_distribution import DiscretePredictivePMF, discrete_crps, randomized_
 
 
 REQUIRED_PREDICTIONS = {
-    "game_id", "forecast_as_of", "kickoff", "margin_pmf", "total_pmf",
+    "benchmark_family", "game_id", "forecast_as_of", "kickoff", "margin_pmf", "total_pmf",
     "evidence_class", "development_evidence_only",
 }
 REQUIRED_OUTCOMES = {
@@ -93,18 +93,18 @@ def evaluate_game_predictions(
 
     _validate(predictions, REQUIRED_PREDICTIONS, "predictions")
     _validate(outcomes, REQUIRED_OUTCOMES, "outcomes")
-    if predictions.game_id.duplicated().any() or outcomes.game_id.duplicated().any():
-        raise ValueError("prediction and outcome game_id values must be unique")
+    if predictions.duplicated(["benchmark_family", "game_id"]).any() or outcomes.game_id.duplicated().any():
+        raise ValueError("prediction family/game and outcome game_id keys must be unique")
     if not set(outcomes.outcome_provenance_class).issubset(ALLOWED_OUTCOME_PROVENANCE):
         raise ValueError("outcome provenance must be source-proven or prospective")
 
     prediction_columns = list(predictions.columns)
     joined = predictions.merge(
-        outcomes[list(REQUIRED_OUTCOMES)], on="game_id", how="inner", validate="one_to_one"
+        outcomes[list(REQUIRED_OUTCOMES)], on="game_id", how="inner", validate="many_to_one"
     )
     rng = np.random.default_rng(seed)
     rows: list[dict] = []
-    for row in joined.sort_values(["forecast_as_of", "game_id"]).itertuples(index=False):
+    for row in joined.sort_values(["benchmark_family", "forecast_as_of", "game_id"]).itertuples(index=False):
         margin_observed = int(row.home_score) - int(row.away_score)
         total_observed = int(row.home_score) + int(row.away_score)
         margin = pmf_from_payload(row.margin_pmf)
@@ -118,6 +118,7 @@ def evaluate_game_predictions(
             max_unresolved_tail=max_unresolved_tail,
         )
         record = {
+            "benchmark_family": row.benchmark_family,
             "game_id": row.game_id,
             "forecast_as_of": row.forecast_as_of,
             "evidence_class": row.evidence_class,
@@ -140,21 +141,21 @@ def evaluate_game_predictions(
     if not rows:
         return GameEvaluationResult(diagnostics, pd.DataFrame())
     summary_rows = []
-    for target in ("margin", "total"):
-        summary_rows.append(
-            {
+    for family, family_frame in diagnostics.groupby("benchmark_family", sort=True):
+        for target in ("margin", "total"):
+            summary_rows.append({
+                "benchmark_family": family,
                 "target": target,
-                "games": len(diagnostics),
-                "mean_crps": diagnostics[f"{target}_crps"].mean(),
-                "mean_log_score": diagnostics[f"{target}_log_score"].mean(),
-                "mean_absolute_error": diagnostics[f"{target}_absolute_error"].mean(),
-                "pit_mean": diagnostics[f"{target}_randomized_pit"].mean(),
-                "pit_variance": diagnostics[f"{target}_randomized_pit"].var(ddof=0),
-                "coverage_50": diagnostics[f"{target}_interval_50_covered"].mean(),
-                "coverage_80": diagnostics[f"{target}_interval_80_covered"].mean(),
-                "coverage_90": diagnostics[f"{target}_interval_90_covered"].mean(),
-            }
-        )
+                "games": len(family_frame),
+                "mean_crps": family_frame[f"{target}_crps"].mean(),
+                "mean_log_score": family_frame[f"{target}_log_score"].mean(),
+                "mean_absolute_error": family_frame[f"{target}_absolute_error"].mean(),
+                "pit_mean": family_frame[f"{target}_randomized_pit"].mean(),
+                "pit_variance": family_frame[f"{target}_randomized_pit"].var(ddof=0),
+                "coverage_50": family_frame[f"{target}_interval_50_covered"].mean(),
+                "coverage_80": family_frame[f"{target}_interval_80_covered"].mean(),
+                "coverage_90": family_frame[f"{target}_interval_90_covered"].mean(),
+            })
     # Assert this evaluation did not mutate or append outcomes to the forecast artifact.
     if list(predictions.columns) != prediction_columns:
         raise RuntimeError("prediction artifact was mutated during evaluation")

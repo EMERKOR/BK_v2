@@ -1,115 +1,113 @@
 # Phase 3C direct game-model benchmark build report
 
-Date: 2026-09-16
-Status: first reviewed implementation and retrospective smoke evaluation; **not promoted for production prediction**
+Date: 2026-09-17
+Status: revised benchmark-ladder implementation and retrospective development comparison; **not production validated or promoted**
 
-## Phase handoff
+## Phase handoff and scope
 
-PR #24 merged to `main` as `c219383d1c7cd40fb7a5c2d74e96a0a03ed043ed`. Its [merge workflow run 35118449819](https://github.com/EMERKOR/BK_v2/actions/runs/35118449819) passed, and `PHASE3B_CLOSURE_ASSESSMENT.md` is present on `main`. Phase 3B is formally closed as a mechanics/provenance implementation unit. This work uses its frozen structural contract and does not reopen the Phase 3B architecture.
+PR #24 merged Phase 3B to `main` as `c219383d1c7cd40fb7a5c2d74e96a0a03ed043ed`; its merge workflow passed and `PHASE3B_CLOSURE_ASSESSMENT.md` is present. Phase 3B remains closed as a mechanics/provenance unit. This Phase 3C work consumes its frozen structural contract without reopening that architecture.
 
-## Implemented baseline
+The implementation contains no sportsbook information, key-number multiplier, post-hoc calibration, joint score simulator, joint margin/total model, weather, rest, travel, pace, PROE, QB overlay or wager selection.
 
-The first Phase 3C implementation provides separate direct models for
+## Frozen benchmark ladder
 
-`margin = home_points - away_points`
+All four families use the same expanding chronological origins, exact prior-time result eligibility, structural state artifacts, evidence labels, PMF construction and evaluation code:
 
-and
+1. `league_mean_hfa_gaussian`: dynamic residualized league HFA for margin and dynamic league scoring level for total, with prefix-only Gaussian residual scales.
+2. `structural_ridge_gaussian`: ridge location models using the approved structural predictors, with prefix-only Gaussian residual scales.
+3. `structural_gaussian_map_laplace`: Gaussian probabilistic structural models using MAP plus a diagnosed Gaussian Laplace approximation.
+4. `structural_student_t_map_laplace`: the BASELINE family, using separate Student-t structural models with MAP plus the same diagnosed Laplace approximation.
 
-`total = home_points + away_points`.
-
-For every retained joint team-state draw it computes:
+For every retained state draw:
 
 `eta_home = alpha_state + O_home - D_away`
 
 `eta_away = alpha_state + O_away - D_home`
 
-The margin bridge learns from `eta_home - eta_away` and a causal league-level dynamic HFA draw. Neutral games receive exactly zero ordinary home-site input. The total bridge learns from `eta_home + eta_away` and uses a causal league scoring-baseline draw. The EPA-state-to-points coefficients are learned; no EPA/play-times-plays conversion exists.
+Structural margin models use `eta_home - eta_away` and causal league HFA. Structural total models use `eta_home + eta_away` and the causal league scoring level. EPA-state-to-points coefficients are learned; there is no EPA/play-times-plays conversion.
 
-Each target has its own proper weakly informative priors, residual scale and Student-t degrees of freedom. Predictor and outcome scaling is fit inside each eligible historical prefix. The likelihood averages over each game's frozen causal state/environment draws.
+## Corrected league HFA specification
 
-The inference engine is **MAP estimation followed by a Gaussian Laplace posterior approximation**, separately for margin and total. L-BFGS-B finds the maximum a posteriori point of the regularized Student-t model. A central finite-difference Hessian of the negative log posterior at that point is eigendecomposed, positive-curvature eigenvalues are floored for numerical stability, and its inverse supplies the approximate multivariate-normal covariance. This is an explicit posterior approximation; it is not full Bayesian posterior sampling and must not be described as such.
+League HFA is no longer updated from raw non-neutral home margins. At every forecast origin, the implementation uses only eligible prior structural games to estimate a ridge-through-origin scoreboard coefficient from structural matchup strength to final margin. The dynamic HFA filter then observes:
 
-For prediction, seeded draws are sampled from that approximate multivariate-normal parameter distribution. Each parameter draw is paired with a sampled index from the game's aligned joint team-state and league-environment draws. Conditional Student-t location, target-specific scale and degrees of freedom are calculated for every pair, producing the mixture that is discretized into the final PMF. Parameter uncertainty is therefore propagated through the Laplace covariance approximation, while state and environment uncertainty are propagated through their retained draws. Approximation quality has not yet been established by MCMC or an equivalent reference posterior.
+`final_margin - coefficient_prefix * structural_strength_margin`
 
-The exposed distributions are separate integer PMFs built from Student-t CDF bins. Finite support expands until explicit unresolved tail mass is at most `1e-4`; it is never renormalized away. Whole-number threshold queries retain an exact push atom. There is no joint score or joint margin/total model.
+Neutral games remain excluded. This removes the mechanical schedule-composition path in which a week dominated by genuinely strong home teams would be mistaken for increased league HFA. The coefficient is recomputed only from the eligible prefix and is recorded in origin diagnostics. Tests explicitly verify that strong-home-team outcomes matching their structural expectation leave HFA unchanged.
 
-The implementation contains no sportsbook lines, weather, QB overlay, empirical residual PMF, heteroskedasticity, quantile model, key-number reweighting or post-hoc recalibration.
+## Total-baseline decision
+
+The league scoring baseline is **not** a fixed coefficient-one offset in the structural models. It is a second standardized predictor with a learned, regularized coefficient in the ridge, Gaussian MAP/Laplace and Student-t MAP/Laplace families. The league-mean benchmark uses the scoring baseline directly by definition. This decision is frozen in the prospective contract and prevents an implicit assumption that the environment baseline's scale must transfer one-for-one into every learned scoreboard bridge.
+
+## State-content verification
+
+`load_team_state_artifact()` now recomputes the canonical Phase 3B state identity: SHA-256 of sorted, compact, finite canonical JSON content. It requires both the filename stem and recomputed content digest to equal the structural row's `state_sha256`. A correctly named file with modified contents fails closed. The regression test mutates a state mean without changing the filename and confirms rejection.
+
+## MAP/Laplace inference and geometry controls
+
+Both probabilistic structural families use L-BFGS-B MAP estimation. A central finite-difference Hessian of the negative log posterior at the MAP point supplies a Gaussian Laplace approximation. Prediction samples parameters from that approximate multivariate normal and pairs each sample with a retained joint state/environment draw. This is an explicit posterior approximation, not full Bayesian posterior sampling.
+
+Every fit records raw Hessian eigenvalue bounds, non-positive and floored counts/fraction, stabilized condition number, covariance-eigenvalue clipping count/magnitude and optimizer gradient norm. A raw eigenvalue below `-1e-4`, or more than 25% of eigenvalues below the `1e-6` floor, fails the fit. Lesser stabilization or covariance clipping produces `warning_stabilized`; it cannot appear silently valid.
+
+Across the 12 fitted retrospective origins, all 48 Gaussian/Student-t target fits reported `ok`: no Hessian eigenvalue was floored, no covariance eigenvalue was clipped and no non-positive eigenvalue occurred. Gaussian minimum raw curvature ranged from 1.057 to 54.931 across targets; maximum condition number was 54.108 and maximum gradient norm was `6.08e-5`. Student-t minimum raw curvature ranged from 0.828 to 2.267; maximum condition number was 151.163 and maximum gradient norm was `3.45e-4`. Synthetic tests cover both negligible-correction geometry and a weak case that triggers the warning rule.
 
 ## Chronology and provenance controls
 
-The replay accepts three separate inputs:
-
-1. the outcome-free Phase 3B structural rows and their state hashes;
-2. exact pregame schedule context for neutral-site handling; and
-3. separately supplied source-proven completed-game outcomes.
-
-At every forecast origin it rebuilds the league environment and both scoreboard bridges from results whose source availability is strictly before that origin. It loads the full joint state artifact referenced by each row. Duplicate games, unsupported provenance, post-kickoff forecasts, pre-kickoff result timestamps and missing exact neutral-site context fail closed.
-
-Forecast output contains no home score, away score, margin or total outcome. Outcome evidence is joined later by the evaluation module, which preserves its dataset/evidence IDs and provenance class. Tests confirm that changing future scores cannot change an earlier forecast.
+Structural rows, exact pregame context and source-proven outcomes remain separate. Each origin rebuilds environment and family fits from results whose exact source availability is strictly before the cutoff. Duplicate keys, unsupported provenance, post-kickoff forecasts, pre-kickoff result availability, missing exact neutral context and state-content mismatch fail closed. Prediction artifacts contain no target outcomes; evaluation joins outcomes later as a separate descendant.
 
 ## Retrospective development run
 
-The exact 195-row 2025 Phase 3B replay was used only as `retrospective_historical_source_replay` development evidence.
+The exact 195-row 2025 Phase 3B replay is used only as `retrospective_historical_source_replay` development evidence.
 
 | Quantity | Result |
 |---|---:|
 | Structural rows supplied | 195 |
-| Independent forecast origins supplied | 14 |
-| Origins with enough prior scoreboard outcomes to fit | 12 |
-| Frozen predictions | 165 |
-| Predictions with separately available audited outcomes | 164 |
-| Teams | 32 |
-| Seasons | 1 |
+| Independent forecast origins | 14 |
+| Origins with enough prior outcomes to fit | 12 |
+| Predictions per family | 165 |
+| Scored predictions per family | 164 |
+| Families | 4 |
+| Total prediction rows | 660 |
+| Total scored diagnostic rows | 656 |
 
-Weeks 6 and 7 correctly remain unfitted because their origins have no eligible prior structural-game outcomes for learning the scoreboard bridge. Fitted origins begin at Week 8. Every margin and total optimizer reported success. The Week 22 prediction remains unscored because its outcome is absent from the established historical result chain.
+Weeks 6 and 7 intentionally remain unfitted because no eligible earlier structural-game outcomes exist for the scoreboard bridge. Week 22 remains intentionally unscored because its outcome is absent from the audited historical result chain.
 
-The artifacts are under `audits/phase3c_game_benchmark_2026-09-16/`:
+## Development-only benchmark comparison
+
+| Family | Target | CRPS | Log score | MAE | PIT mean | PIT variance | 50% coverage | 80% coverage | 90% coverage |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| League mean/HFA Gaussian | Margin | 8.405 | 4.148 | 11.608 | 0.471 | 0.088 | 53.0% | 73.8% | 85.4% |
+| League mean/HFA Gaussian | Total | 8.093 | 4.092 | 11.351 | 0.509 | 0.086 | 50.0% | 80.5% | 89.6% |
+| Structural ridge Gaussian | Margin | 8.305 | 4.087 | 11.722 | 0.482 | 0.081 | 53.7% | 80.5% | 90.2% |
+| Structural ridge Gaussian | Total | 7.778 | 4.050 | 10.811 | 0.520 | 0.083 | 53.7% | 79.3% | 89.6% |
+| Structural Gaussian MAP/Laplace | Margin | 8.076 | 4.141 | 11.201 | 0.475 | 0.097 | 47.6% | 75.0% | 81.1% |
+| Structural Gaussian MAP/Laplace | Total | 7.879 | 4.063 | 11.020 | 0.516 | 0.087 | 53.7% | 76.2% | 89.6% |
+| Structural Student-t MAP/Laplace | Margin | 8.087 | 4.150 | 11.186 | 0.474 | 0.098 | 47.0% | 74.4% | 81.1% |
+| Structural Student-t MAP/Laplace | Total | 7.871 | 4.065 | 10.983 | 0.524 | 0.088 | 50.0% | 76.2% | 89.6% |
+
+No winner is promoted. The sample spans one season, no early-season targets and no cross-season transition. Differences are development diagnostics only.
+
+The Student-t margin family assigns average mass 3.07% to margin 3 versus 9.15% observed, and 2.80% to margin 7 versus 5.49% observed. The deficiency remains uncorrected. It does not authorize key-number weighting.
+
+## Audited outputs
 
 | Artifact | SHA-256 |
 |---|---|
-| `predictions.jsonl.xz` | `f72160a5d482656f02fbdb21d2d4fe8c34157460fc014400d09f6cdbfac885d0` |
-| `origin_diagnostics.csv` | `e13f1c727738373b7b6f04efec3dde685b1f9e2fa85490bd13f73bb1ad2457f8` |
-| `game_diagnostics.csv` | `945df0c04235327a779fae5c7290dbbf1f06706baf6fbd825b6a1ad2bedacd99` |
-| `summary.csv` | `855ecff8a1b0600fa90c28a4ff694baed299d27c0d085066731a17415278b30f` |
+| `game_diagnostics.csv` | `f298a9c9f31ef9adc6ddc48ffdf28163ce19cb09fd41a8da3417a1119ccb40c6` |
+| `origin_diagnostics.csv` | `20cba044c6f2b89b76f4199b121ea82e572513180a402991195fedcbe7b9ca28` |
+| `summary.csv` | `9234cb826837c87a1d04b2d333f1b5729f7d79ea1cd80f0b89fef16b1da0b953` |
+| `predictions-league_mean_hfa_gaussian.jsonl.xz` | `87c2bf9d016ced4f7931f74b59b6fd04add617a41b83a65db7e83ca06ee89256` |
+| `predictions-structural_ridge_gaussian.jsonl.xz` | `3998c944a122bd2090a51f96bada2bbf303b0f9b3778c43a8b262a457a8f354c` |
+| `predictions-structural_gaussian_map_laplace.jsonl.xz` | `c72e525a23fa85aa89d92c2d11e4ca11a6710f46d02cebd2658c8e2da8496d77` |
+| `predictions-structural_student_t_map_laplace.jsonl.xz` | `4a5268d768dd66346b444a5b527bea557e2991df055b8201b731cecc0acca504` |
 
-`predictions.jsonl.xz` is the losslessly compressed form of the frozen JSON Lines prediction artifact.
+The compressed prediction files are lossless JSON Lines artifacts. All forecast rows remain outcome-free.
 
-## Development-only diagnostics
+## Prospective contract
 
-These figures test chronology, interfaces and gross calibration. They are not prospective evidence, held-out model selection evidence or a production promotion gate.
+The prospective experiment is frozen at `ball_knower_v3/design_decisions/phase3c_prospective_experiment_contract_v1.md`. It fixes candidates, features, cadence, causal eligibility, priors/penalties, scaling, inference, draw counts, PMF/tail policy, metrics, promotion criteria, artifact schema and append-only revision semantics. Changes after outcomes create a new model-development/contract version and cannot rewrite earlier prospective evidence.
 
-| Target | Games | Mean CRPS | Mean log score | MAE of PMF mean | PIT mean | PIT variance | 50% coverage | 80% coverage | 90% coverage |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Margin | 164 | 8.002 | 4.107 | 11.268 | 0.514 | 0.099 | 44.5% | 75.0% | 82.9% |
-| Total | 164 | 7.989 | 4.080 | 11.227 | 0.514 | 0.088 | 53.0% | 75.6% | 90.2% |
-
-Seeded randomized PIT uses seed 31. Mean forecast error (PMF mean minus observed) is -0.474 points for margin and -1.088 points for total. Maximum explicit omitted tail mass is `6.41e-5` for margin and `3.96e-5` for total.
-
-The raw Student-t margin baseline assigns average mass 3.06% to margin 3, while 15 of 164 outcomes (9.15%) equal 3. It assigns average mass 2.73% to margin 7, while 9 of 164 outcomes (5.49%) equal 7. This is a visible baseline deficiency, not permission to add key-number weights. Any correction remains a separately registered TEST challenger and must improve chronological proper scores.
-
-The margin 90% interval undercovers in this small replay. The first two fitted origins also require much wider finite support because posterior uncertainty is large with only 15–30 training games. Those findings are useful gross-calibration and weak-information warnings.
+No prospective validation is claimed. Promotion remains reserved for the attested prospective stream under that contract.
 
 ## Verification
 
-The Phase 3C tests cover target definitions, aligned joint-state transformations, neutral HFA, dynamic league updates, training-only scaling, target-specific scales, parameter/state integration, uncertain total baseline handling, push-ready PMFs, adaptive tail support, CRPS, seeded randomized PIT, outcome separation, provenance rejection, missing-context failure and future-outcome invariance.
-
-The complete v3 suite passes: **125 tests passed**. A repository-wide collection attempt also reached the legacy v2 tests, but that environment lacks their `scikit-learn` dependency; four legacy modules therefore failed during import before tests ran. No v3 failure occurred.
-
-The implementation uses MAP plus the Gaussian Laplace approximation described above. That is the first computational baseline, not full posterior sampling or evidence that posterior geometry is already production-safe. Prior-predictive sensitivity, stronger inference diagnostics, the registered simple-benchmark comparison, and prospective calibration remain outstanding.
-
-## Scientific status
-
-The 195 structural rows and 164 scored game forecasts span only one season, omit early-season target forecasts, do not exercise a cross-season transition and contain real delayed-evidence gaps. The upstream robust team-state model also remains an approximation rather than a validated production Bayesian baseline.
-
-Accordingly:
-
-- this run establishes the direct margin/total mechanics and causal replay path;
-- it does not establish production predictive quality;
-- it does not validate the Student-t family, priors, scale, tails or Laplace inference;
-- it does not justify post-hoc key-number correction;
-- it does not change the frozen prospective-validation policy; and
-- model promotion must rely on the preregistered, append-only prospective 2026+ stream with GitHub/Sigstore artifact attestation and no outcome-time rewriting.
-
-Phase 3C implementation has begun. This first baseline should remain in development status until the remaining implementation diagnostics are completed and the prospective stream supplies untouched validation evidence.
-
-The repository states the prospective evidence and attestation requirements, but a complete Phase 3C prospective experiment contract is **not yet frozen in-repo**. Candidate-family scope, selection policy, scoring rules, forecast cadence, artifact schema and promotion criteria must be frozen and attested before the first outcome-bearing prospective evaluation origin.
+The complete v3 suite passes: **130 tests passed**. It includes the four-family ladder, shared causal eligibility, HFA residualization, learned total-baseline influence, state-content tamper rejection, Laplace geometry success/warning behavior, PMF normalization/tails, outcome separation and future-outcome invariance. Repository-wide legacy-v2 collection remains unavailable locally because `scikit-learn` is absent; repository CI determines required-check status.

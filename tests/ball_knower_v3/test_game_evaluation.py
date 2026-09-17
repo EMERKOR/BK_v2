@@ -23,6 +23,7 @@ def _payload(location):
 
 def _frames():
     predictions = pd.DataFrame([{
+        "benchmark_family": "structural_student_t_map_laplace",
         "game_id": "g1", "forecast_as_of": "2025-10-07T16:00:00Z",
         "kickoff": "2025-10-10T00:00:00Z", "margin_pmf": _payload(3),
         "total_pmf": _payload(47), "evidence_class": "retrospective_historical_source_replay",
@@ -44,6 +45,7 @@ def test_evaluation_is_outcome_separated_and_reproducible():
     assert list(predictions.columns) == original_columns
     assert first.game_diagnostics.to_dict("records") == second.game_diagnostics.to_dict("records")
     assert set(first.summary.target) == {"margin", "total"}
+    assert set(first.summary.benchmark_family) == {"structural_student_t_map_laplace"}
     assert first.game_diagnostics.loc[0, "margin_observed_is_3"]
 
 
