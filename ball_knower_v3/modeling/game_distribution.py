@@ -89,6 +89,23 @@ class DiscretePredictivePMF:
         index = outcome - self.support[0]
         return float(self.lower_tail + self.probabilities[: index + 1].sum())
 
+    def quantile(self, probability: float) -> int:
+        """Return an integer quantile when it lies in represented support."""
+
+        if not 0.0 < probability < 1.0:
+            raise ValueError("probability must lie strictly between 0 and 1")
+        if probability <= self.lower_tail or probability > 1.0 - self.upper_tail:
+            raise ValueError("requested quantile lies in an unresolved tail")
+        cumulative = self.lower_tail + np.cumsum(self.probabilities)
+        return int(self.support[np.searchsorted(cumulative, probability, side="left")])
+
+    def expectation(self, *, max_unresolved_tail: float = 1e-6) -> float:
+        """Return the represented mean only when omitted tail mass is negligible."""
+
+        if self.lower_tail + self.upper_tail > max_unresolved_tail:
+            raise ValueError("unresolved tail mass is too large for a reported expectation")
+        return float(np.dot(self.support, self.probabilities))
+
 
 @dataclass(frozen=True)
 class ThresholdProbabilities:
@@ -127,6 +144,32 @@ def discretize_student_t_mixture(
     lower_tail = float(mixture.cdf(float(support_min) - 0.5))
     upper_tail = float(1.0 - mixture.cdf(float(support_max) + 0.5))
     return DiscretePredictivePMF(support, probabilities, lower_tail, upper_tail)
+
+
+def discretize_with_tail_tolerance(
+    mixture: StudentTMixture,
+    *,
+    support_min: int,
+    support_max: int,
+    max_tail_mass: float = 1e-4,
+    max_expansions: int = 12,
+) -> DiscretePredictivePMF:
+    """Expand finite support until omitted predictive mass is negligible."""
+
+    if not 0.0 < max_tail_mass < 1.0:
+        raise ValueError("max_tail_mass must lie strictly between 0 and 1")
+    lower, upper = int(support_min), int(support_max)
+    for _ in range(max_expansions + 1):
+        lower_tail = float(mixture.cdf(lower - 0.5))
+        upper_tail = float(1.0 - mixture.cdf(upper + 0.5))
+        if lower_tail + upper_tail <= max_tail_mass:
+            return discretize_student_t_mixture(
+                mixture, support_min=lower, support_max=upper
+            )
+        width = upper - lower + 1
+        lower -= width // 2
+        upper += width - width // 2
+    raise ValueError("predictive tails remain unresolved after maximum support expansion")
 
 
 def threshold_probabilities(distribution: DiscretePredictivePMF, line: float) -> ThresholdProbabilities:
@@ -181,3 +224,25 @@ def randomized_pit(
     index = observed - distribution.support[0]
     below = distribution.lower_tail + float(distribution.probabilities[:index].sum())
     return float(below + uniform * distribution.probabilities[index])
+
+
+def discrete_crps(
+    distribution: DiscretePredictivePMF,
+    observed: int,
+    *,
+    max_unresolved_tail: float = 1e-6,
+) -> float:
+    """Integer-grid CRPS for a sufficiently wide represented support.
+
+    The exact discrete identity is ``sum_k (F(k) - 1{y <= k})^2``.  A finite
+    support is acceptable only when its explicit unresolved tail mass is below
+    the caller's tolerance; tails are never silently renormalized.
+    """
+
+    if observed < distribution.support[0] or observed > distribution.support[-1]:
+        raise ValueError("observed outcome lies outside represented support")
+    if distribution.lower_tail + distribution.upper_tail > max_unresolved_tail:
+        raise ValueError("unresolved tail mass is too large for CRPS")
+    cdf = distribution.lower_tail + np.cumsum(distribution.probabilities)
+    observed_cdf = (distribution.support >= observed).astype(float)
+    return float(np.sum((cdf - observed_cdf) ** 2))
