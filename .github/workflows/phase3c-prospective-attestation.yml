@@ -62,15 +62,7 @@ jobs:
             test -n "$SPEC_PATH"
             test -f "$SPEC_PATH"
             export SPEC_PATH
-            python - <<'PY'
-            import json, os
-            with open(os.environ["SPEC_PATH"]) as stream:
-                spec = json.load(stream)
-            spec["code_commit"] = os.environ["GITHUB_SHA"]
-            with open("phase3c-origin-spec.json", "w") as stream:
-                json.dump(spec, stream, sort_keys=True, separators=(",", ":"))
-                stream.write("\n")
-            PY
+            python -c 'import json,os; spec=json.load(open(os.environ["SPEC_PATH"])); spec["code_commit"]=os.environ["GITHUB_SHA"]; open("phase3c-origin-spec.json","w").write(json.dumps(spec,sort_keys=True,separators=(",",":"))+"\n")'
             BUNDLE_PATH="phase3c-prospective-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
             python -m ball_knower_v3.modeling.prospective_pipeline build --spec phase3c-origin-spec.json --output-dir "$BUNDLE_PATH"
             python -m ball_knower_v3.modeling.prospective_pipeline verify --bundle "$BUNDLE_PATH" --allow-local-unattested
