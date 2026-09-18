@@ -157,9 +157,56 @@ Tests cover:
 
 Local result: **152 Phase 3B/3C tests passed**.
 
-The synthetic fixtures exercise mechanics only. The GitHub-hosted OIDC/Sigstore
-path has not been invoked to manufacture a real NFL forecast during this
-revision.
+The synthetic fixtures exercise mechanics only. No hosted run in this unit has
+created or relabeled NFL evidence.
+
+## Hosted synthetic production rehearsal
+
+PR #26 merged to `main` at
+`9f31aa30ad403a09123615628181240d3ec26c61`; merge CI run
+`35350470479` passed. The first hosted synthetic dispatch, run `35353534192`,
+exposed an invalid indented heredoc in the real-origin-only branch of the
+selection step. It failed before artifact creation or attestation, while
+`publish-registry` remained skipped. The narrow shell-syntax correction was
+committed as `96f656ce3a5cac8d3142f19a350cedf3a3cd6342`; the rendered run scripts also
+pass `bash -n`.
+
+Synthetic workflow-dispatch run `35353812195` then completed successfully from
+that `main` commit. Hosted evidence confirms:
+
+- GitHub-hosted OIDC issued the Sigstore signing identity;
+- `actions/attest-build-provenance@v3` created attestation `48462429`;
+- `gh attestation verify --format=json` succeeded with the repository, signer
+  workflow, and source digest pinned;
+- the verified signer is
+  `https://github.com/EMERKOR/BK_v2/.github/workflows/phase3c-prospective-attestation.yml@refs/heads/main`;
+- the verified source and workflow commit is
+  `96f656ce3a5cac8d3142f19a350cedf3a3cd6342`;
+- the attested synthetic archive SHA-256 is
+  `09db172a48868cb96350fcad90b4bf326f864ff9f526b7fb2201a791153b0f60`;
+- `verifiedTimestamps` contains the Rekor transparency-log timestamp
+  `2026-09-18T14:03:21Z`;
+- the built-unattested and attested-unregistered artifacts are downloadable;
+  the latter preserves the subject, Sigstore bundle, complete verified JSON,
+  and synthetic-only receipt needed for independent verification; and
+- `publish-registry` was skipped, so no registry or anchor publication occurred.
+
+The synthetic receipt remains
+`forecast_evidence_class: synthetic`, `prospective_nfl_evidence: false`, and
+`prospective_transaction_state: synthetic_only`.
+
+### Publication readiness
+
+GitHub reports `main` as unprotected and the repository ruleset collection is
+empty. Therefore the current branch/ruleset configuration does not prohibit the
+publication job's normal `git push origin HEAD:main`. The job explicitly
+requests `contents: write` and stages only the registry and anchor. Synthetic
+mode correctly did not exercise that write path. No branch protection was
+weakened for this assessment.
+
+The pipeline is **operationally ready for the first real 2026 origin**. The
+first real registry append remains intentionally unexercised until an eligible
+outcome-free forecast is run under the frozen contract.
 
 ## Actual prospective NFL evidence
 
@@ -169,13 +216,11 @@ remains development evidence and is never relabeled.
 
 ## Remaining blockers before the first real origin
 
-1. Review and merge this protocol and workflow so execution comes from trusted
-   code on `main`.
-2. Prepare the exact eligible 2026 input bytes and predeclared origin spec.
-3. Dispatch within the frozen cadence and complete signed attestation within the
+1. Prepare the exact eligible 2026 input bytes and predeclared origin spec.
+2. Dispatch within the frozen cadence and complete signed attestation within the
    60-minute grace and before every kickoff.
-4. Complete the authoritative registry publication transaction.
-5. Keep outcome acquisition and evaluation separate until results are available.
+3. Complete the authoritative registry publication transaction.
+4. Keep outcome acquisition and evaluation separate until results are available.
 
 No market comparison, wager selection, Kelly sizing, key-number correction,
 weather, QB decomposition, additional feature, candidate family, or model
