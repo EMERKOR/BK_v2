@@ -4,7 +4,7 @@ Date: 2026-09-17
 
 Contract: `phase3c_prospective_experiment_contract_v1`
 
-Publication protocol: `phase3c_prospective_publication_protocol_v1`
+Publication protocol: `phase3c_prospective_publication_protocol_v2`
 
 Status: infrastructure implemented; actual prospective NFL evidence is **none**
 
@@ -47,8 +47,9 @@ earliest qualifying signed timestamp from
 The versioned publication protocol permits a maximum 60-minute execution grace
 after the declared origin. The signed timestamp must be at or after the cutoff,
 no later than cutoff plus 60 minutes, and strictly before every target kickoff.
-A later build fails closed; it requires a separately predeclared delayed origin
-and cannot masquerade as the Tuesday 16:00 forecast.
+A later build fails closed. Protocol v2 implements no delayed-origin declaration
+mechanism, so every origin other than exactly Tuesday 16:00:00 UTC is rejected
+at construction and independent verification.
 
 Runner clocks, receipt creation time, artifact upload time, and the Actions UI
 completion time are never accepted as existence proof.
@@ -62,6 +63,8 @@ gh attestation verify <archive> \
   --repo EMERKOR/BK_v2 \
   --signer-workflow EMERKOR/BK_v2/.github/workflows/phase3c-prospective-attestation.yml \
   --source-digest <manifest-code-commit> \
+  --source-ref refs/heads/main \
+  --deny-self-hosted-runners \
   --format=json
 ```
 
@@ -96,23 +99,27 @@ verification policy, and preserves the immutable output.
 The follow-up registry job has:
 
 ```yaml
-actions: read
-attestations: read
-contents: write
+  actions: read
+  attestations: write
+  contents: write
+  id-token: write
 ```
 
 GitHub cannot scope `contents: write` to a path. The job therefore enforces the
 narrower boundary in code: it stages only
 `ball_knower_v3/prospective/phase3c_registry.jsonl` and
-`ball_knower_v3/prospective/phase3c_registry_anchor.json`, then uses a normal
-non-force push. A stale concurrent writer fails the Git fast-forward check.
+`ball_knower_v3/prospective/phase3c_registry_anchor.json` plus the one
+content-addressed publication-attestation receipt named by the proposed record,
+then uses a normal non-force push. A stale concurrent writer fails the Git
+fast-forward check.
 
 ## Transaction states and partial failure
 
 ```text
 built_unattested
     -- signed attestation verified --> attested_unregistered
-    -- registry append committed --> registered_prospective
+    -- exact registry proposal signed pre-kickoff --> publication_attested_pending_commit
+    -- exact proposal committed --> registered_prospective
 ```
 
 Only `registered_prospective` counts as admitted Ball Knower evidence.
@@ -155,7 +162,7 @@ Tests cover:
 - registry replacement detection against the persisted anchor; and
 - the synthetic workflow's distinct non-prospective label.
 
-Local result: **152 Phase 3B/3C tests passed**.
+Pre-hardening v1 local result: **152 Phase 3B/3C tests passed**.
 
 The synthetic fixtures exercise mechanics only. No hosted run in this unit has
 created or relabeled NFL evidence.
@@ -204,9 +211,59 @@ requests `contents: write` and stages only the registry and anchor. Synthetic
 mode correctly did not exercise that write path. No branch protection was
 weakened for this assessment.
 
-The pipeline is **operationally ready for the first real 2026 origin**. The
-first real registry append remains intentionally unexercised until an eligible
-outcome-free forecast is run under the frozen contract.
+The hosted rehearsal established the v1 mechanics. The independent review then
+identified admission-policy gaps, so the v1 readiness conclusion is superseded
+by the v2 hardening below.
+
+## Independent-review hardening — 2026-09-18
+
+Publication protocol v2 makes the following admission controls mandatory:
+
+- construction and independent verification accept only Tuesday 16:00:00 UTC;
+- registry uniqueness is contract version + season + competition week, with the
+  first bundle canonical and later records requiring same-key supersession;
+- forecast attestation ends at `attested_unregistered`; the exact proposed
+  registry record, complete proposed registry, and updated anchor are sealed as
+  a deterministic publication transaction, separately attested, independently
+  verified, and required to have a signed timestamp strictly before every
+  target kickoff before admission;
+- the durable publication receipt is persisted at the content-addressed path
+  named in the registry record; local/manual registration without it cannot
+  emit `registered_prospective`;
+- all `gh attestation verify` calls require `--source-ref refs/heads/main` and
+  `--deny-self-hosted-runners`; certificate inspection independently requires
+  `sourceRepositoryRef == refs/heads/main` and the exact approved signer URI on
+  that ref;
+- the forecast `code_commit` must be an ancestor of the authoritative `main`
+  head used to construct the publication transaction;
+- base randomness is the unsigned big-endian integer represented by the first
+  eight bytes of SHA-256 over canonical JSON containing contract version,
+  season, competition week, and normalized UTC origin. Stream seeds repeat that
+  procedure over the base seed plus ordered namespaces for Phase 3B state,
+  environment, family, margin/total, and stable target `game_id`; caller table
+  position is never used;
+- the Phase 3B prospective search space is the unchanged approved two-candidate
+  space frozen at
+  `ball_knower_v3/design_decisions/phase3b_prospective_candidate_space_v1.json`;
+  its exact SHA-256 is
+  `6a4a8b524b316d4249f948025108ada14b310ec0507da661df762152a4b149ca`;
+- implementation metadata pins the v1 experiment contract SHA-256
+  `4053e33169aa9898fcda07ebed9ea74a1b03ef3754ca9f8c5b4f697700f166ea`
+  and publication protocol v2 SHA-256
+  `3b81b419b2788d232b206f38c329866e9c53a4fafe2f86a71b44731d32fcef80`;
+  same-version byte changes fail closed; and
+- source receipts distinguish exact provider-version identities from local
+  content-only `sha256:<digest>` identities. The latter binds captured bytes but
+  does not prove provider publication metadata; unknown provenance remains
+  ineligible.
+
+Focused adversarial coverage includes Saturday, one-second-shifted, and
+Wednesday origins; alternate seeds; modified candidate space; modified v1
+contract bytes; approved workflow on a non-main ref; a second same-week bundle;
+cross-week supersession; missing publication attestation; and post-kickoff
+publication attestation.
+
+Current v2 local result: **169 Phase 3B/3C tests passed**.
 
 ## Actual prospective NFL evidence
 
@@ -219,7 +276,8 @@ remains development evidence and is never relabeled.
 1. Prepare the exact eligible 2026 input bytes and predeclared origin spec.
 2. Dispatch within the frozen cadence and complete signed attestation within the
    60-minute grace and before every kickoff.
-3. Complete the authoritative registry publication transaction.
+3. Complete the separately attested registry publication transaction, including
+   its verified signed pre-kickoff timestamp, on protected `main`.
 4. Keep outcome acquisition and evaluation separate until results are available.
 
 No market comparison, wager selection, Kelly sizing, key-number correction,

@@ -138,6 +138,28 @@ Attestations must be cryptographically verified before they count as durable pre
 
 A Git commit alone is useful provenance but is not the sole final proof mechanism.
 
+## Prospective registry admission — LOCK / BASELINE
+
+The canonical weekly origin is Tuesday 16:00:00 UTC. Until a separately
+versioned delayed-origin declaration mechanism exists, every other origin fails
+closed. One logical forecast is keyed by contract version, season, and
+competition week; later same-key records require an explicit same-key
+`supersedes` link.
+
+Forecast-archive attestation alone is `attested_unregistered`. Evidence-grade
+registry admission additionally requires a GitHub/Sigstore attestation over the
+constructed registry-publication transaction with a verified signed timestamp
+strictly before every target kickoff. Both attestations pin the authoritative
+repository, exact approved workflow on `refs/heads/main`, source digest, subject
+digest, and GitHub-hosted runner policy. The forecast code commit must be an
+ancestor of publication-time authoritative `main`.
+
+The Phase 3B prospective candidate-space bytes, prospective contract bytes, and
+active publication-protocol bytes are version-pinned. Prospective randomness is
+derived canonically from immutable forecast identity with disjoint namespaced
+streams; it is not caller-selected. Detailed operational semantics:
+`design_decisions/phase3c_prospective_publication_protocol_v2.md`.
+
 ## Existence vs review — LOCK
 
 Cryptographic attestation proves existence/freeze, not that a human examined the forecast.

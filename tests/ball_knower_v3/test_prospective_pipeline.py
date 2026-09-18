@@ -9,10 +9,14 @@ import pandas as pd
 import pytest
 
 from ball_knower_v3.modeling.game_benchmarks import BENCHMARK_FAMILIES
+from ball_knower_v3.modeling.game_replay import _namespace_seed
 from ball_knower_v3.modeling.prospective_pipeline import (
     CONTRACT_PATH,
+    CONTRACT_SHA256,
     CONTRACT_VERSION,
     FORECAST_EVIDENCE_CLASS,
+    PROSPECTIVE_CANDIDATE_SPACE_SHA256,
+    PUBLICATION_PROTOCOL_SHA256,
     PUBLICATION_PROTOCOL_VERSION,
     REQUIRED_SOURCE_ROLES,
     STATE_ATTESTED_UNREGISTERED,
@@ -20,9 +24,13 @@ from ball_knower_v3.modeling.prospective_pipeline import (
     _deterministic_archive,
     _manifest,
     _pmf_rows,
+    _require_frozen_file,
     append_registry,
     build_prospective_bundle,
+    canonical_base_seed,
     create_attestation_receipt,
+    create_publication_attestation_receipt,
+    prepare_registry_publication,
     verify_bundle,
 )
 from ball_knower_v3.modeling.state_fitting import canonical_json, digest
@@ -42,15 +50,26 @@ def _seal(bundle: Path, spec: dict, receipts: dict) -> dict:
     return manifest
 
 
-def _fixture_bundle(tmp_path: Path, name: str, *, source_bytes=b"version-a", supersedes=None):
+def _fixture_bundle(
+    tmp_path: Path,
+    name: str,
+    *,
+    source_bytes=b"version-a",
+    supersedes=None,
+    origin="2026-12-01T16:00:00+00:00",
+    kickoff="2026-12-04T01:15:00+00:00",
+    season=2026,
+    competition_week=14,
+    contract_version=CONTRACT_VERSION,
+):
     bundle = tmp_path / name
     bundle.mkdir()
     structural = pd.read_csv(REPLAY / "structural_state_forecasts.csv", nrows=1)
-    structural["season"] = 2026
-    structural["week"] = 14
-    structural["forecast_as_of"] = "2026-12-01T16:00:00+00:00"
-    structural["as_of"] = "2026-12-01T16:00:00+00:00"
-    structural["kickoff"] = "2026-12-04T01:15:00+00:00"
+    structural["season"] = season
+    structural["week"] = competition_week
+    structural["forecast_as_of"] = origin
+    structural["as_of"] = origin
+    structural["kickoff"] = kickoff
     structural["evidence_class"] = FORECAST_EVIDENCE_CLASS
     structural["historical_forecast_existence_proven"] = False
     state_id = structural.iloc[0].state_sha256
@@ -66,18 +85,27 @@ def _fixture_bundle(tmp_path: Path, name: str, *, source_bytes=b"version-a", sup
     source = bundle / "sources/source.bin"
     source.parent.mkdir()
     source.write_bytes(source_bytes)
-    receipts = {"sources": [
-        {
+    candidate = bundle / "sources/phase3b_prospective_candidate_space_v1.json"
+    shutil.copyfile(
+        ROOT / "ball_knower_v3/design_decisions/phase3b_prospective_candidate_space_v1.json",
+        candidate,
+    )
+    receipts = {"sources": []}
+    for role in sorted(REQUIRED_SOURCE_ROLES):
+        captured = candidate if role == "candidate_space" else source
+        receipts["sources"].append({
             "role": role,
-            "source_id": f"fixture:{role}:{_sha(source)}",
+            "source_id": f"sha256:{_sha(captured)}",
+            "source_id_kind": "content_sha256",
+            "provider_version_id": None,
+            "provider_digest": None,
+            "provider_metadata_proof": "none; local sha256 binds captured bytes only",
             "published_at": "2025-10-01T00:00:00+00:00",
-            "sha256": _sha(source),
-            "bytes": len(source_bytes),
+            "sha256": _sha(captured),
+            "bytes": captured.stat().st_size,
             "provenance_class": "historical_source_proven",
-            "captured_path": "sources/source.bin",
-        }
-        for role in sorted(REQUIRED_SOURCE_ROLES)
-    ]}
+            "captured_path": f"sources/{captured.name}",
+        })
     (bundle / "source_receipts.json").write_text(canonical_json(receipts) + "\n")
     (bundle / "model_fits.json").write_text('{"fixture":true}\n')
     (bundle / "origin_diagnostics.csv").write_text("status\nfixture\n")
@@ -98,10 +126,11 @@ def _fixture_bundle(tmp_path: Path, name: str, *, source_bytes=b"version-a", sup
     _pmf_rows(forecasts, bundle / "forecasts.jsonl.xz")
     spec = {
         "contract_path": CONTRACT_PATH,
+        "contract_version": contract_version,
         "origin": structural.iloc[0].forecast_as_of,
-        "season": 2026,
-        "competition_week": 14,
-        "seed": 7,
+        "season": season,
+        "competition_week": competition_week,
+        "seed": canonical_base_seed(contract_version, season, competition_week, origin),
         "code_commit": "fixture-commit",
         "supersedes": supersedes,
     }
@@ -118,6 +147,7 @@ def _verification_payload(
     repository="owner/repo",
     workflow=".github/workflows/phase3c-prospective-attestation.yml",
     commit="fixture-commit",
+    source_ref="refs/heads/main",
 ):
     return [{
         "attestation": {"fixture": True},
@@ -125,8 +155,9 @@ def _verification_payload(
             "signature": {"certificate": {
                 "sourceRepositoryURI": f"https://github.com/{repository}",
                 "sourceRepositoryDigest": commit,
+                "sourceRepositoryRef": source_ref,
                 "githubWorkflowSHA": commit,
-                "buildSignerURI": f"https://github.com/{repository}/{workflow}@refs/heads/main",
+                "buildSignerURI": f"https://github.com/{repository}/{workflow}@{source_ref}",
             }},
             "verifiedTimestamps": [{"type": "Tlog", "source": "Rekor", "timestamp": timestamp}],
             "statement": {"subject": [{"name": archive.name, "digest": {"sha256": _sha(archive)}}]},
@@ -139,9 +170,24 @@ def _fake_gh(tmp_path: Path, name: str, payload: object):
     executable.write_text(
         "#!/usr/bin/env python3\n"
         "import json,sys\n"
-        "required=['--signer-workflow','owner/repo/.github/workflows/phase3c-prospective-attestation.yml','--source-digest','fixture-commit','--format=json']\n"
+        "required=['--signer-workflow','owner/repo/.github/workflows/phase3c-prospective-attestation.yml','--source-digest','fixture-commit','--source-ref','refs/heads/main','--deny-self-hosted-runners','--format=json']\n"
         "assert all(value in sys.argv for value in required)\n"
         f"print({json.dumps(json.dumps(payload))})\n"
+    )
+    executable.chmod(0o755)
+    return str(executable)
+
+
+def _fake_gh_dual(tmp_path: Path, name: str, forecast_payload: object, publication_payload: object):
+    executable = tmp_path / f"gh-{name}-dual"
+    executable.write_text(
+        "#!/usr/bin/env python3\n"
+        "import json,sys\n"
+        "required=['--source-ref','refs/heads/main','--deny-self-hosted-runners','--format=json']\n"
+        "assert all(value in sys.argv for value in required)\n"
+        f"forecast={json.dumps(forecast_payload)!r}\n"
+        f"publication={json.dumps(publication_payload)!r}\n"
+        "print(publication if 'publication' in sys.argv[3] else forecast)\n"
     )
     executable.chmod(0o755)
     return str(executable)
@@ -184,6 +230,68 @@ def _anchor(registry: Path, anchor: Path):
         "registry_file_sha256": _sha(registry),
         "last_bundle_digest": None,
     }) + "\n")
+
+
+def _fake_git(tmp_path: Path, name: str, base_commit: str):
+    executable = tmp_path / f"git-{name}"
+    executable.write_text(
+        "#!/usr/bin/env python3\n"
+        "import sys\n"
+        f"base={base_commit!r}\n"
+        "if sys.argv[1] == 'rev-parse': print(base); raise SystemExit(0)\n"
+        "if sys.argv[1:3] == ['merge-base','--is-ancestor']: raise SystemExit(0)\n"
+        "raise SystemExit(2)\n"
+    )
+    executable.chmod(0o755)
+    return str(executable)
+
+
+def _publication_witness(
+    tmp_path: Path,
+    name: str,
+    bundle: tuple,
+    receipt: Path,
+    registry: Path,
+    anchor: Path,
+    *,
+    base_commit: str,
+    timestamp="2026-12-01T16:45:00+00:00",
+    forecast_timestamp="2026-12-01T16:30:00+00:00",
+):
+    forecast_payload = _verification_payload(bundle[4], timestamp=forecast_timestamp)
+    forecast_gh = _fake_gh(tmp_path, f"{name}-forecast", forecast_payload)
+    git = _fake_git(tmp_path, name, base_commit)
+    transaction = tmp_path / f"{name}-publication"
+    prepared = prepare_registry_publication(
+        registry,
+        anchor,
+        bundle[0],
+        receipt,
+        transaction,
+        repository="owner/repo",
+        registry_base_commit=base_commit,
+        gh_executable=forecast_gh,
+        git_executable=git,
+    )
+    archive = Path(prepared["publication_archive"])
+    verification = tmp_path / f"{name}-publication-verified.json"
+    publication_payload = _verification_payload(archive, timestamp=timestamp)
+    verification.write_text(canonical_json(publication_payload) + "\n")
+    evidence_path = Path(prepared["publication_evidence_path"])
+    create_publication_attestation_receipt(
+        transaction,
+        archive,
+        verification,
+        evidence_path,
+        repository="owner/repo",
+        attestation_id=f"publication-attestation-{name}",
+        attestation_url="https://github.example/publication-attestation",
+        sigstore_bundle_path="publication-fixture.sigstore.json",
+    )
+    combined_gh = _fake_gh_dual(
+        tmp_path, name, forecast_payload, publication_payload
+    )
+    return transaction, evidence_path, forecast_gh, combined_gh, git
 
 
 def test_bundle_manifest_and_archive_are_deterministic(tmp_path):
@@ -363,36 +471,45 @@ def test_append_only_registry_requires_supersession_and_is_idempotent(tmp_path):
     shutil.copyfile(ROOT / "ball_knower_v3/prospective/phase3c_registry.jsonl", registry)
     anchor = tmp_path / "registry-anchor.json"
     _anchor(registry, anchor)
+    first_publication = _publication_witness(
+        tmp_path, "first", first, first_receipt, registry, anchor, base_commit="base-1"
+    )
     first_record = append_registry(
-        registry, anchor, first[0], first_receipt, repository="owner/repo",
-        registry_base_commit="base-1", gh_executable=first_gh,
+        registry, anchor, first[0], first_receipt, first_publication[0], first_publication[1],
+        repository="owner/repo", registry_base_commit="base-1",
+        gh_executable=first_publication[3], git_executable=first_publication[4],
     )
     assert first_record["prospective_transaction_state"] == STATE_REGISTERED_PROSPECTIVE
     before_retry = registry.read_text()
     retry = append_registry(
-        registry, anchor, first[0], first_receipt, repository="owner/repo",
-        registry_base_commit="base-2", gh_executable=first_gh,
+        registry, anchor, first[0], first_receipt, first_publication[0], first_publication[1],
+        repository="owner/repo", registry_base_commit="base-1",
+        gh_executable=first_publication[3], git_executable=first_publication[4],
     )
     assert retry["idempotent_existing"] is True
     assert registry.read_text() == before_retry
 
     invalid = _fixture_bundle(tmp_path, "invalid", source_bytes=b"two")
     invalid_receipt, _ = _receipt(tmp_path, invalid[0], invalid[3], invalid[4])
-    invalid_gh = _fake_gh(tmp_path, "invalid-origin", _verification_payload(invalid[4]))
     with pytest.raises(ValueError, match="must supersede"):
-        append_registry(
-            registry, anchor, invalid[0], invalid_receipt, repository="owner/repo",
-            registry_base_commit="base-2", gh_executable=invalid_gh,
+        _publication_witness(
+            tmp_path, "invalid-origin", invalid, invalid_receipt, registry, anchor,
+            base_commit="base-2",
         )
 
     correction = _fixture_bundle(
         tmp_path, "correction", source_bytes=b"three", supersedes=first_record["bundle_digest"]
     )
     correction_receipt, _ = _receipt(tmp_path, correction[0], correction[3], correction[4])
-    correction_gh = _fake_gh(tmp_path, "correction", _verification_payload(correction[4]))
+    correction_publication = _publication_witness(
+        tmp_path, "correction", correction, correction_receipt, registry, anchor,
+        base_commit="base-2",
+    )
     corrected = append_registry(
-        registry, anchor, correction[0], correction_receipt, repository="owner/repo",
-        registry_base_commit="base-2", gh_executable=correction_gh,
+        registry, anchor, correction[0], correction_receipt,
+        correction_publication[0], correction_publication[1],
+        repository="owner/repo", registry_base_commit="base-2",
+        gh_executable=correction_publication[3], git_executable=correction_publication[4],
     )
     assert corrected["supersedes"] == first_record["bundle_digest"]
     assert len(registry.read_text().splitlines()) == 3
@@ -408,9 +525,208 @@ def test_registry_replacement_fails_against_persisted_anchor(tmp_path):
     _anchor(registry, anchor)
     registry.write_text(registry.read_text().replace("registry_genesis", "registry_replaced"))
     with pytest.raises(ValueError, match="anchor does not match"):
+        prepare_registry_publication(
+            registry, anchor, bundle[0], receipt, tmp_path / "publication",
+            repository="owner/repo", registry_base_commit="base",
+            gh_executable=gh, git_executable=_fake_git(tmp_path, "anchor", "base"),
+        )
+
+
+@pytest.mark.parametrize(
+    "origin",
+    [
+        "2026-11-28T16:00:00+00:00",
+        "2026-12-01T16:00:01+00:00",
+        "2026-12-02T16:00:00+00:00",
+    ],
+)
+def test_build_rejects_every_noncanonical_origin_before_reading_sources(tmp_path, origin):
+    spec = {
+        "contract_version": CONTRACT_VERSION,
+        "contract_path": CONTRACT_PATH,
+        "origin": origin,
+        "season": 2026,
+        "competition_week": 14,
+        "code_commit": "unused",
+        "sources": [],
+    }
+    path = tmp_path / "spec.json"
+    path.write_text(canonical_json(spec) + "\n")
+    with pytest.raises(ValueError, match="exactly Tuesday 16:00:00 UTC"):
+        build_prospective_bundle(path, tmp_path / "output")
+
+
+@pytest.mark.parametrize(
+    "origin",
+    [
+        "2026-11-28T16:00:00+00:00",
+        "2026-12-01T16:00:01+00:00",
+        "2026-12-02T16:00:00+00:00",
+    ],
+)
+def test_independent_verifier_rejects_every_noncanonical_origin(tmp_path, origin):
+    bundle = _fixture_bundle(tmp_path, "bundle", origin=origin)
+    with pytest.raises(ValueError, match="exactly Tuesday 16:00:00 UTC"):
+        verify_bundle(bundle[0], require_attestation=False)
+
+
+def test_alternate_compatibility_seed_is_illegal(tmp_path):
+    origin = "2026-09-15T16:00:00+00:00"
+    spec = {
+        "contract_version": CONTRACT_VERSION,
+        "contract_path": CONTRACT_PATH,
+        "origin": origin,
+        "season": 2026,
+        "competition_week": 2,
+        "seed": canonical_base_seed(CONTRACT_VERSION, 2026, 2, origin) + 1,
+        "code_commit": "unused",
+        "sources": [],
+    }
+    path = tmp_path / "spec.json"
+    path.write_text(canonical_json(spec) + "\n")
+    with pytest.raises(ValueError, match="canonical forecast-identity seed"):
+        build_prospective_bundle(path, tmp_path / "output")
+
+
+def test_manifest_cannot_claim_an_alternate_legal_seed(tmp_path):
+    bundle, _, _, _, _ = _fixture_bundle(tmp_path, "bundle")
+    envelope = json.loads((bundle / "manifest.json").read_text())
+    envelope["content"]["draw_policy"]["base_seed"] += 1
+    envelope["content_sha256"] = digest(envelope["content"])
+    (bundle / "manifest.json").write_text(canonical_json(envelope) + "\n")
+    with pytest.raises(ValueError, match="manifest randomness"):
+        verify_bundle(bundle, require_attestation=False)
+
+
+def test_seed_namespaces_are_stable_distinct_and_position_free():
+    base = canonical_base_seed(
+        CONTRACT_VERSION, 2026, 14, "2026-12-01T16:00:00+00:00"
+    )
+    streams = {
+        _namespace_seed(base, "phase3b_state_draws", "2026-12-01T16:00:00+00:00", "g1"),
+        _namespace_seed(base, "environment_draws", "2026-12-01T16:00:00+00:00", "g1"),
+        _namespace_seed(base, "benchmark_family", BENCHMARK_FAMILIES[0], "margin", "g1"),
+        _namespace_seed(base, "benchmark_family", BENCHMARK_FAMILIES[0], "total", "g1"),
+        _namespace_seed(base, "benchmark_family", BENCHMARK_FAMILIES[1], "margin", "g1"),
+        _namespace_seed(base, "benchmark_family", BENCHMARK_FAMILIES[0], "margin", "g2"),
+    }
+    assert len(streams) == 6
+    assert _namespace_seed(base, "benchmark_family", BENCHMARK_FAMILIES[0], "margin", "g1") in streams
+
+
+def test_human_source_label_cannot_substitute_for_content_identity(tmp_path):
+    bundle, spec, receipts, _, _ = _fixture_bundle(tmp_path, "bundle")
+    receipt = next(item for item in receipts["sources"] if item["role"] == "plays")
+    receipt["source_id"] = "weekly plays export"
+    (bundle / "source_receipts.json").write_text(canonical_json(receipts) + "\n")
+    _seal(bundle, spec, receipts)
+    with pytest.raises(ValueError, match="content-only source identity"):
+        verify_bundle(bundle, require_attestation=False)
+
+
+def test_changed_candidate_search_space_fails_before_use(tmp_path):
+    bundle, spec, receipts, _, _ = _fixture_bundle(tmp_path, "bundle")
+    candidate = bundle / "sources/phase3b_prospective_candidate_space_v1.json"
+    candidate.write_text(candidate.read_text().replace('"quadrature_nodes": 64', '"quadrature_nodes": 65'))
+    changed = _sha(candidate)
+    for receipt in receipts["sources"]:
+        if receipt["role"] == "candidate_space":
+            receipt["sha256"] = changed
+            receipt["source_id"] = f"sha256:{changed}"
+            receipt["bytes"] = candidate.stat().st_size
+    (bundle / "source_receipts.json").write_text(canonical_json(receipts) + "\n")
+    _seal(bundle, spec, receipts)
+    with pytest.raises(ValueError, match="candidate search-space"):
+        verify_bundle(bundle, require_attestation=False)
+
+
+def test_changed_v1_contract_bytes_fail_the_pinned_identity(tmp_path):
+    changed = tmp_path / "phase3c_prospective_experiment_contract_v1.md"
+    changed.write_bytes((ROOT / CONTRACT_PATH).read_bytes() + b"\nchanged\n")
+    with pytest.raises(ValueError, match="frozen version identity"):
+        _require_frozen_file(str(changed), CONTRACT_SHA256, "prospective contract")
+
+
+def test_pinned_contract_protocol_and_search_space_digests_match_repository():
+    assert _sha(ROOT / CONTRACT_PATH) == CONTRACT_SHA256
+    assert _sha(
+        ROOT / "ball_knower_v3/design_decisions/phase3c_prospective_publication_protocol_v2.md"
+    ) == PUBLICATION_PROTOCOL_SHA256
+    assert _sha(
+        ROOT / "ball_knower_v3/design_decisions/phase3b_prospective_candidate_space_v1.json"
+    ) == PROSPECTIVE_CANDIDATE_SPACE_SHA256
+
+
+def test_attestation_from_approved_workflow_on_non_main_ref_fails(tmp_path):
+    bundle, _, _, manifest, archive = _fixture_bundle(tmp_path, "bundle")
+    receipt, _ = _receipt(tmp_path, bundle, manifest, archive)
+    payload = _verification_payload(archive, source_ref="refs/heads/experiment")
+    gh = _fake_gh(tmp_path, "experiment-ref", payload)
+    with pytest.raises(ValueError, match="source repository ref is not main"):
+        verify_bundle(bundle, attestation_receipt=receipt, repository="owner/repo", gh_executable=gh)
+
+
+def test_cross_week_supersedes_is_rejected(tmp_path):
+    first = _fixture_bundle(tmp_path, "first", source_bytes=b"one")
+    first_receipt, _ = _receipt(tmp_path, first[0], first[3], first[4])
+    registry = tmp_path / "registry.jsonl"
+    shutil.copyfile(ROOT / "ball_knower_v3/prospective/phase3c_registry.jsonl", registry)
+    anchor = tmp_path / "registry-anchor.json"
+    _anchor(registry, anchor)
+    publication = _publication_witness(
+        tmp_path, "first-cross", first, first_receipt, registry, anchor, base_commit="base-1"
+    )
+    first_record = append_registry(
+        registry, anchor, first[0], first_receipt, publication[0], publication[1],
+        repository="owner/repo", registry_base_commit="base-1",
+        gh_executable=publication[3], git_executable=publication[4],
+    )
+    other_week = _fixture_bundle(
+        tmp_path,
+        "other-week",
+        source_bytes=b"two",
+        supersedes=first_record["bundle_digest"],
+        origin="2026-12-08T16:00:00+00:00",
+        kickoff="2026-12-11T01:15:00+00:00",
+        competition_week=15,
+    )
+    other_receipt, _ = _receipt(
+        tmp_path, other_week[0], other_week[3], other_week[4],
+        timestamp="2026-12-08T16:30:00+00:00",
+    )
+    with pytest.raises(ValueError, match="another contract, season, or week"):
+        _publication_witness(
+            tmp_path, "other-week", other_week, other_receipt, registry, anchor,
+            base_commit="base-2", timestamp="2026-12-08T16:45:00+00:00",
+            forecast_timestamp="2026-12-08T16:30:00+00:00",
+        )
+
+
+def test_post_kickoff_registry_publication_attestation_is_rejected(tmp_path):
+    bundle = _fixture_bundle(tmp_path, "bundle")
+    receipt, _ = _receipt(tmp_path, bundle[0], bundle[3], bundle[4])
+    registry = tmp_path / "registry.jsonl"
+    shutil.copyfile(ROOT / "ball_knower_v3/prospective/phase3c_registry.jsonl", registry)
+    anchor = tmp_path / "registry-anchor.json"
+    _anchor(registry, anchor)
+    with pytest.raises(ValueError, match="before every kickoff"):
+        _publication_witness(
+            tmp_path, "post-kickoff", bundle, receipt, registry, anchor,
+            base_commit="base", timestamp="2026-12-04T02:00:00+00:00",
+        )
+
+
+def test_manual_register_without_publication_attestation_cannot_admit(tmp_path):
+    bundle = _fixture_bundle(tmp_path, "bundle")
+    receipt, _ = _receipt(tmp_path, bundle[0], bundle[3], bundle[4])
+    registry = tmp_path / "registry.jsonl"
+    shutil.copyfile(ROOT / "ball_knower_v3/prospective/phase3c_registry.jsonl", registry)
+    anchor = tmp_path / "registry-anchor.json"
+    _anchor(registry, anchor)
+    with pytest.raises(TypeError):
         append_registry(
-            registry, anchor, bundle[0], receipt, repository="owner/repo",
-            registry_base_commit="base", gh_executable=gh,
+            registry, anchor, bundle[0], receipt,
+            repository="owner/repo", registry_base_commit="base",
         )
 
 
@@ -423,6 +739,11 @@ def test_attestation_workflow_keeps_synthetic_fixture_distinct():
     assert '--format=json > verified-attestation.json' in workflow
     assert '--signer-workflow "$SIGNER_WORKFLOW"' in workflow
     assert '--source-digest "$GITHUB_SHA"' in workflow
+    assert "--source-ref refs/heads/main" in workflow
+    assert "--deny-self-hosted-runners" in workflow
+    assert "prepare-publication" in workflow
+    assert "publication-receipt" in workflow
+    assert "registry-publication-transaction.tar.gz" in workflow
     assert "contents: write" in workflow
     assert '"evidence_class":"synthetic"' in workflow
     assert '"prospective_nfl_evidence":false' in workflow

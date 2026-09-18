@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+import hashlib
+import json
 from pathlib import Path
 
 import numpy as np
@@ -50,6 +52,15 @@ OUTCOME_REQUIRED = {
     "outcome_provenance_class",
 }
 ALLOWED_PROVENANCE = {"historical_source_proven", "prospective_ingested"}
+
+
+def _namespace_seed(base_seed: int, *namespace: str) -> int:
+    payload = json.dumps(
+        {"base_seed": int(base_seed), "namespace": list(namespace)},
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return int.from_bytes(hashlib.sha256(payload).digest()[:8], "big", signed=False)
 
 
 @dataclass(frozen=True)
@@ -140,6 +151,7 @@ def run_direct_game_replay(
     state_draws: int = 96,
     predictive_components: int = 2000,
     seed: int = 0,
+    seed_policy: str = "legacy_position_v1",
 ) -> GameReplayResult:
     """Fit and predict at each origin using only its available outcome prefix."""
 
@@ -160,6 +172,8 @@ def run_direct_game_replay(
         raise ValueError("outcome provenance must be source-proven or prospective")
     if state_draws < 2 or predictive_components <= 0:
         raise ValueError("state_draws and predictive_components must be positive")
+    if seed_policy not in {"legacy_position_v1", "sha256_namespace_v1"}:
+        raise ValueError("unsupported replay seed policy")
 
     structural = structural.copy()
     outcomes = outcomes.copy()
@@ -224,6 +238,16 @@ def run_direct_game_replay(
                 state_dir / f"{target.state_sha256}.json",
                 expected_state_sha256=target.state_sha256,
             )
+            if seed_policy == "sha256_namespace_v1":
+                state_seed = _namespace_seed(
+                    seed, "phase3b_state_draws", origin.isoformat(), str(target.game_id)
+                )
+                environment_seed = _namespace_seed(
+                    seed, "environment_draws", origin.isoformat(), str(target.game_id)
+                )
+            else:
+                state_seed = seed + 100_000 * origin_index + target_index
+                environment_seed = state_seed + 1
             matchup_by_game[target.game_id] = matchup_draws_from_posteriors(
                 state,
                 environment.posterior,
@@ -231,7 +255,8 @@ def run_direct_game_replay(
                 away_team=target.away_team,
                 neutral_site=bool(target.neutral_site),
                 n_draws=state_draws,
-                seed=seed + 100_000 * origin_index + target_index,
+                seed=state_seed,
+                environment_seed=environment_seed,
             )
 
         eligible_count = sum(game.result_available_at < origin.to_pydatetime() for game in completed)
@@ -280,10 +305,26 @@ def run_direct_game_replay(
                 )
             diagnostics.append(diagnostic)
             for target_index, target in enumerate(targets.itertuples(index=False)):
+                if seed_policy == "sha256_namespace_v1":
+                    margin_seed = _namespace_seed(
+                        seed, "benchmark_family", family, "margin", str(target.game_id)
+                    )
+                    total_seed = _namespace_seed(
+                        seed, "benchmark_family", family, "total", str(target.game_id)
+                    )
+                    prediction_seed = margin_seed
+                else:
+                    prediction_seed = (
+                        seed + 1_000_000 + 100_000 * origin_index
+                        + 10_000 * family_index + target_index
+                    )
+                    margin_seed = total_seed = None
                 prediction = fit.predict_discrete(
                     matchup_by_game[target.game_id],
                     n_components=predictive_components,
-                    seed=seed + 1_000_000 + 100_000 * origin_index + 10_000 * family_index + target_index,
+                    seed=prediction_seed,
+                    margin_seed=margin_seed,
+                    total_seed=total_seed,
                 )
                 rows.append({
                     "benchmark_family": family,

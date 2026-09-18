@@ -104,6 +104,8 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$SIGNER_WORKFLOW" \
             --source-digest "$GITHUB_SHA" \
+            --source-ref refs/heads/main \
+            --deny-self-hosted-runners \
             --format=json > verified-attestation.json
           if [[ "$EVIDENCE_CLASS" == "prospective_ingested" ]]; then
             python -m ball_knower_v3.modeling.prospective_pipeline receipt \
@@ -138,8 +140,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
-      attestations: read
+      attestations: write
       contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -170,7 +173,8 @@ jobs:
           name: phase3c-attested-unregistered-${{ github.run_id }}-${{ github.run_attempt }}
           path: verified-transaction
 
-      - name: Verify, append, and publish only registry state
+      - name: Verify forecast and seal exact registry publication proposal
+        id: publication
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -180,18 +184,81 @@ jobs:
           BASE_COMMIT="$(git rev-parse HEAD)"
           BUNDLE="$(find verified-transaction -mindepth 1 -maxdepth 1 -type d -name 'phase3c-prospective-*' -print -quit)"
           test -n "$BUNDLE"
+          python -m ball_knower_v3.modeling.prospective_pipeline prepare-publication \
+            --bundle "$BUNDLE" \
+            --attestation-receipt verified-transaction/phase3c-attestation-receipt.json \
+            --registry "$REGISTRY" \
+            --anchor "$ANCHOR" \
+            --output-dir registry-publication-transaction \
+            --repository "$GITHUB_REPOSITORY" \
+            --registry-base-commit "$BASE_COMMIT" > registry-publication-preparation.json
+          EVIDENCE_PATH="$(python -c 'import json; d=json.load(open("registry-publication-preparation.json")); print(d.get("publication_evidence_path",d.get("registry_publication_attestation_path","")))')"
+          IDEMPOTENT="$(python -c 'import json; print(str(json.load(open("registry-publication-preparation.json"))["idempotent_existing"]).lower())')"
+          printf '%s\n' "bundle=$BUNDLE" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "base_commit=$BASE_COMMIT" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "evidence_path=$EVIDENCE_PATH" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "idempotent_existing=$IDEMPOTENT" >> "$GITHUB_OUTPUT"
+
+      - name: Attest exact registry publication proposal
+        if: ${{ steps.publication.outputs.idempotent_existing != 'true' }}
+        id: attest-publication
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: registry-publication-transaction.tar.gz
+
+      - name: Verify and persist pre-kickoff registry publication witness
+        if: ${{ steps.publication.outputs.idempotent_existing != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ATTESTATION_ID: ${{ steps.attest-publication.outputs.attestation-id }}
+          ATTESTATION_URL: ${{ steps.attest-publication.outputs.attestation-url }}
+          SIGSTORE_BUNDLE_PATH: ${{ steps.attest-publication.outputs.bundle-path }}
+          EVIDENCE_PATH: ${{ steps.publication.outputs.evidence_path }}
+        run: |
+          set -euo pipefail
+          SIGNER_WORKFLOW="$GITHUB_REPOSITORY/.github/workflows/phase3c-prospective-attestation.yml"
+          gh attestation verify registry-publication-transaction.tar.gz \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$SIGNER_WORKFLOW" \
+            --source-digest "$GITHUB_SHA" \
+            --source-ref refs/heads/main \
+            --deny-self-hosted-runners \
+            --format=json > registry-publication-verified-attestation.json
+          python -m ball_knower_v3.modeling.prospective_pipeline publication-receipt \
+            --publication-transaction registry-publication-transaction \
+            --archive registry-publication-transaction.tar.gz \
+            --verification-json registry-publication-verified-attestation.json \
+            --output "$EVIDENCE_PATH" \
+            --repository "$GITHUB_REPOSITORY" \
+            --attestation-id "$ATTESTATION_ID" \
+            --attestation-url "$ATTESTATION_URL" \
+            --sigstore-bundle-path "$SIGSTORE_BUNDLE_PATH"
+
+      - name: Admit and publish only the exact attested transaction
+        if: ${{ steps.publication.outputs.idempotent_existing != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REGISTRY: ball_knower_v3/prospective/phase3c_registry.jsonl
+          ANCHOR: ball_knower_v3/prospective/phase3c_registry_anchor.json
+          BUNDLE: ${{ steps.publication.outputs.bundle }}
+          BASE_COMMIT: ${{ steps.publication.outputs.base_commit }}
+          EVIDENCE_PATH: ${{ steps.publication.outputs.evidence_path }}
+        run: |
+          set -euo pipefail
           python -m ball_knower_v3.modeling.prospective_pipeline register \
             --bundle "$BUNDLE" \
             --attestation-receipt verified-transaction/phase3c-attestation-receipt.json \
+            --publication-transaction registry-publication-transaction \
+            --publication-attestation-receipt "$EVIDENCE_PATH" \
             --registry "$REGISTRY" \
             --anchor "$ANCHOR" \
             --repository "$GITHUB_REPOSITORY" \
             --registry-base-commit "$BASE_COMMIT" > registry-publication-result.json
           if ! git diff --quiet -- "$REGISTRY" "$ANCHOR"; then
-            test "$(git diff --name-only | sort)" = "$(printf '%s\n%s\n' "$REGISTRY" "$ANCHOR" | sort)"
             git config user.name github-actions[bot]
             git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-            git add -- "$REGISTRY" "$ANCHOR"
+            git add -- "$REGISTRY" "$ANCHOR" "$EVIDENCE_PATH"
+            test "$(git diff --cached --name-only | sort)" = "$(printf '%s\n%s\n%s\n' "$REGISTRY" "$ANCHOR" "$EVIDENCE_PATH" | sort)"
             git commit -m "Register Phase 3C prospective forecast"
             git push origin HEAD:main
           fi
@@ -212,6 +279,7 @@ jobs:
               "previous_registry_head_digest": result["previous_registry_head_digest"],
               "new_registry_head_digest": result["record_sha256"],
               "registry_file_sha256": anchor["registry_file_sha256"],
+              "registry_publication_attestation_path": os.environ["EVIDENCE_PATH"],
               "idempotent_existing": result["idempotent_existing"],
           }
           with open("registry-publication-anchor.json", "w") as stream:
@@ -220,11 +288,27 @@ jobs:
           PY
 
       - name: Preserve externally anchored publication result
+        if: ${{ steps.publication.outputs.idempotent_existing != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: phase3c-registered-prospective-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             registry-publication-result.json
             registry-publication-anchor.json
+            registry-publication-preparation.json
+            registry-publication-transaction
+            registry-publication-transaction.tar.gz
+            registry-publication-verified-attestation.json
+            ${{ steps.attest-publication.outputs.bundle-path }}
+            ${{ steps.publication.outputs.evidence_path }}
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Preserve idempotent existing registration result
+        if: ${{ steps.publication.outputs.idempotent_existing == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3c-registered-prospective-${{ github.run_id }}-${{ github.run_attempt }}
+          path: registry-publication-preparation.json
           if-no-files-found: error
           retention-days: 90
