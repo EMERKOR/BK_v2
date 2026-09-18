@@ -26,14 +26,16 @@ def read_frame(path):
 def export_table(*, games, plays, availability, origins, space, output_dir, seed=0,
                  forecast_games=None,
                  evidence_class="retrospective_historical_source_replay",
-                 replay_execution_at=None, write_completion_manifest=True):
+                 replay_execution_at=None, write_completion_manifest=True,
+                 prospective_bundle_build=False):
     """The destination must be new: failed runs remain inspectable, never replaced."""
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=False)
     weeks = canonical_available_weeks(plays, games, availability)
     forecasts = run_fitted_weekly_benchmark(
         games if forecast_games is None else forecast_games, weeks, origins, space=space, artifact_dir=output_dir, seed=seed,
-        evidence_class=evidence_class, replay_execution_at=replay_execution_at)
+        evidence_class=evidence_class, replay_execution_at=replay_execution_at,
+        prospective_bundle_build=prospective_bundle_build)
     if forecasts.empty:
         raise ValueError("no structural forecasts; no completion manifest emitted")
     table = output_dir / "structural_state_forecasts.csv"

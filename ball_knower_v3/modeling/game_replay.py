@@ -213,6 +213,12 @@ def run_direct_game_replay(
         environment, hfa_strength_coefficient = _build_environment_before_origin(
             outcomes, origin, environment_config, completed_by_game
         )
+        environment_diagnostics = {
+            "league_hfa_mean": environment.posterior.hfa_mean,
+            "league_hfa_var": environment.posterior.hfa_var,
+            "league_total_mean": environment.posterior.total_mean,
+            "league_total_var": environment.posterior.total_var,
+        }
         for target_index, target in enumerate(targets.itertuples(index=False)):
             state = load_team_state_artifact(
                 state_dir / f"{target.state_sha256}.json",
@@ -240,6 +246,7 @@ def run_direct_game_replay(
                         "eligible_training_games": eligible_count,
                         "status": "insufficient_prior_game_bridge_outcomes",
                         "hfa_strength_coefficient": hfa_strength_coefficient,
+                        **environment_diagnostics,
                     }
                 )
             continue
@@ -254,6 +261,7 @@ def run_direct_game_replay(
                 "eligible_training_games": len(fit.training_game_ids),
                 "status": "fit",
                 "hfa_strength_coefficient": hfa_strength_coefficient,
+                **environment_diagnostics,
             }
             if hasattr(fit, "margin"):
                 diagnostic.update(

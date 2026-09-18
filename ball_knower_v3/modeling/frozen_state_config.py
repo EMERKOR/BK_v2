@@ -47,8 +47,14 @@ class FrozenStateConfig:
             raise ValueError("complete StateSpaceConfig required")
         StateSpaceConfig(**content["config"])
         aware_time(content["cutoff"])
-        if content["evidence_class"] not in {"synthetic", "retrospective_historical_source_replay"} or content["historical_forecast_existence_proven"] is not False:
-            raise ValueError("local freeze cannot claim prospective historical existence")
+        if content["evidence_class"] not in {
+            "synthetic", "retrospective_historical_source_replay", "prospective_ingested"
+        } or content["historical_forecast_existence_proven"] is not False:
+            raise ValueError("local freeze cannot claim historical forecast existence")
+        if content["evidence_class"] == "prospective_ingested" and content.get(
+            "prospective_origin_declared"
+        ) is not True:
+            raise ValueError("local config cannot claim prospective ingestion without a declared origin")
         if content["forecast_as_of"] != content["cutoff"]:
             raise ValueError("forecast cutoff aliases disagree")
         if aware_time(content["experiment_registered_at"]) >= aware_time(self.created_at):
@@ -78,6 +84,8 @@ class FrozenStateConfig:
             "experiment_registered_at": fit.space.experiment_registered_at,
             "evidence_class": fit.evidence_class,
             "historical_forecast_existence_proven": False,
+            **({"prospective_origin_declared": True}
+               if fit.evidence_class == "prospective_ingested" else {}),
             "diagnostics_scope": "eligible-prefix candidate tuning; not held-out forecast calibration",
             "training_range": [[fit.training[0].batch.season, fit.training[0].batch.week],
                                [fit.training[-1].batch.season, fit.training[-1].batch.week]],
