@@ -31,6 +31,7 @@ from ball_knower_v3.modeling.prospective_pipeline import (
     create_attestation_receipt,
     create_publication_attestation_receipt,
     prepare_registry_publication,
+    verify_registry_publication,
     verify_bundle,
 )
 from ball_knower_v3.modeling.state_fitting import canonical_json, digest
@@ -61,6 +62,7 @@ def _fixture_bundle(
     season=2026,
     competition_week=14,
     contract_version=CONTRACT_VERSION,
+    code_commit="fixture-commit",
 ):
     bundle = tmp_path / name
     bundle.mkdir()
@@ -131,7 +133,7 @@ def _fixture_bundle(
         "season": season,
         "competition_week": competition_week,
         "seed": canonical_base_seed(contract_version, season, competition_week, origin),
-        "code_commit": "fixture-commit",
+        "code_commit": code_commit,
         "supersedes": supersedes,
     }
     manifest = _seal(bundle, spec, receipts)
@@ -183,11 +185,12 @@ def _fake_gh_dual(tmp_path: Path, name: str, forecast_payload: object, publicati
     executable.write_text(
         "#!/usr/bin/env python3\n"
         "import json,sys\n"
+        "from pathlib import Path\n"
         "required=['--source-ref','refs/heads/main','--deny-self-hosted-runners','--format=json']\n"
         "assert all(value in sys.argv for value in required)\n"
         f"forecast={json.dumps(forecast_payload)!r}\n"
         f"publication={json.dumps(publication_payload)!r}\n"
-        "print(publication if 'publication' in sys.argv[3] else forecast)\n"
+        "print(publication if 'publication' in Path(sys.argv[3]).name else forecast)\n"
     )
     executable.chmod(0o755)
     return str(executable)
@@ -257,6 +260,7 @@ def _publication_witness(
     base_commit: str,
     timestamp="2026-12-01T16:45:00+00:00",
     forecast_timestamp="2026-12-01T16:30:00+00:00",
+    synthetic_rehearsal=False,
 ):
     forecast_payload = _verification_payload(bundle[4], timestamp=forecast_timestamp)
     forecast_gh = _fake_gh(tmp_path, f"{name}-forecast", forecast_payload)
@@ -287,6 +291,7 @@ def _publication_witness(
         attestation_id=f"publication-attestation-{name}",
         attestation_url="https://github.example/publication-attestation",
         sigstore_bundle_path="publication-fixture.sigstore.json",
+        synthetic_rehearsal=synthetic_rehearsal,
     )
     combined_gh = _fake_gh_dual(
         tmp_path, name, forecast_payload, publication_payload
@@ -730,6 +735,50 @@ def test_manual_register_without_publication_attestation_cannot_admit(tmp_path):
         )
 
 
+def test_synthetic_publication_rehearsal_is_read_only_and_cannot_register(tmp_path):
+    bundle = _fixture_bundle(
+        tmp_path, "synthetic-bundle",
+        origin="2026-09-15T16:00:00+00:00",
+        kickoff="2026-12-04T01:15:00+00:00",
+    )
+    receipt, _ = _receipt(
+        tmp_path, bundle[0], bundle[3], bundle[4],
+        timestamp="2026-09-15T16:30:00+00:00",
+    )
+    registry = tmp_path / "synthetic-registry.jsonl"
+    shutil.copyfile(ROOT / "ball_knower_v3/prospective/phase3c_registry.jsonl", registry)
+    anchor = tmp_path / "synthetic-registry-anchor.json"
+    _anchor(registry, anchor)
+    publication = _publication_witness(
+        tmp_path, "synthetic", bundle, receipt, registry, anchor,
+        base_commit="base", timestamp="2026-09-19T13:00:00+00:00",
+        forecast_timestamp="2026-09-15T16:30:00+00:00",
+        synthetic_rehearsal=True,
+    )
+    before = (registry.read_bytes(), anchor.read_bytes())
+    result = verify_registry_publication(
+        registry, anchor, bundle[0], receipt, publication[0], publication[1],
+        repository="owner/repo", registry_base_commit="base",
+        gh_executable=publication[3], git_executable=publication[4],
+        synthetic_rehearsal=True,
+    )
+    synthetic_receipt = json.loads(publication[1].read_text())
+    assert result["exact_transaction_verified"] is True
+    assert result["registry_write_performed"] is False
+    assert result["prospective_nfl_evidence"] is False
+    assert synthetic_receipt["evidence_class"] == "synthetic"
+    assert synthetic_receipt["prospective_nfl_evidence"] is False
+    assert synthetic_receipt["prospective_transaction_state"] == "synthetic_publication_attested_only"
+    assert (registry.read_bytes(), anchor.read_bytes()) == before
+    with pytest.raises(ValueError, match="synthetic publication receipt"):
+        append_registry(
+            registry, anchor, bundle[0], receipt, publication[0], publication[1],
+            repository="owner/repo", registry_base_commit="base",
+            gh_executable=publication[3], git_executable=publication[4],
+        )
+    assert (registry.read_bytes(), anchor.read_bytes()) == before
+
+
 def test_attestation_workflow_keeps_synthetic_fixture_distinct():
     workflow = (ROOT / ".github/workflows/phase3c-prospective-attestation.yml").read_text()
     assert "id-token: write" in workflow
@@ -743,7 +792,12 @@ def test_attestation_workflow_keeps_synthetic_fixture_distinct():
     assert "--deny-self-hosted-runners" in workflow
     assert "prepare-publication" in workflow
     assert "publication-receipt" in workflow
+    assert "verify-publication" in workflow
     assert "registry-publication-transaction.tar.gz" in workflow
     assert "contents: write" in workflow
+    assert "synthetic-publication-rehearsal" in workflow
+    assert "synthetic_publication_rehearsal == true" in workflow
+    assert "synthetic-publication-rehearsal-root" in workflow
+    assert "--synthetic-rehearsal" in workflow
     assert '"evidence_class":"synthetic"' in workflow
     assert '"prospective_nfl_evidence":false' in workflow

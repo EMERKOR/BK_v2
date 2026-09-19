@@ -1164,6 +1164,7 @@ def create_publication_attestation_receipt(
     attestation_id: str,
     attestation_url: str,
     sigstore_bundle_path: str,
+    synthetic_rehearsal: bool = False,
 ) -> dict:
     """Persist the signed pre-kickoff witness for the proposed registry bytes."""
 
@@ -1220,12 +1221,20 @@ def create_publication_attestation_receipt(
         "verified_identities": evidence["verified_identities"],
         "receipt_created_at_non_authoritative": pd.Timestamp.now(tz="UTC").isoformat(),
     }
+    if synthetic_rehearsal:
+        receipt.update({
+            "evidence_class": "synthetic",
+            "forecast_evidence_class": "synthetic",
+            "prospective_nfl_evidence": False,
+            "prospective_transaction_state": "synthetic_publication_attested_only",
+            "synthetic_rehearsal": True,
+        })
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(canonical_json(receipt) + "\n")
     return receipt
 
 
-def append_registry(
+def verify_registry_publication(
     registry_path: str | Path,
     anchor_path: str | Path,
     bundle: str | Path,
@@ -1237,8 +1246,9 @@ def append_registry(
     registry_base_commit: str,
     gh_executable: str = "gh",
     git_executable: str = "git",
+    synthetic_rehearsal: bool = False,
 ) -> dict:
-    """Admit only the exact proposal carrying a verified pre-kickoff witness."""
+    """Re-verify an exact publication proposal without mutating registry state."""
 
     verification = verify_bundle(
         bundle,
@@ -1286,6 +1296,16 @@ def append_registry(
     if str(publication_receipt_path) != evidence_path:
         raise ValueError("publication attestation evidence is not at its registered durable path")
     publication_receipt = json.loads(publication_receipt_path.read_text())
+    receipt_is_synthetic = (
+        publication_receipt.get("synthetic_rehearsal") is True
+        and publication_receipt.get("evidence_class") == "synthetic"
+        and publication_receipt.get("forecast_evidence_class") == "synthetic"
+        and publication_receipt.get("prospective_nfl_evidence") is False
+        and publication_receipt.get("prospective_transaction_state")
+        == "synthetic_publication_attested_only"
+    )
+    if receipt_is_synthetic != synthetic_rehearsal:
+        raise ValueError("synthetic publication receipt cannot enter real registry admission")
     if (
         publication_receipt.get("schema_version") != PUBLICATION_RECEIPT_SCHEMA
         or publication_receipt.get("status") != "verified"
@@ -1330,9 +1350,58 @@ def append_registry(
         "forecast_existence_time"
     ]:
         raise ValueError("publication receipt timestamp differs from verified signed timestamp")
+    return {
+        "bundle_digest": verification["bundle_digest"],
+        "record_sha256": expected_record["record_sha256"],
+        "publication_archive_sha256": _sha256(publication_archive),
+        "publication_existence_time": publication_evidence["forecast_existence_time"],
+        "source_ref": SOURCE_REF,
+        "signer_workflow": _signer_workflow(repository),
+        "exact_transaction_verified": True,
+        "registry_write_performed": False,
+        "synthetic_rehearsal": receipt_is_synthetic,
+        "prospective_nfl_evidence": False if receipt_is_synthetic else None,
+        "idempotent_existing": False,
+    }
+
+
+def append_registry(
+    registry_path: str | Path,
+    anchor_path: str | Path,
+    bundle: str | Path,
+    attestation_receipt: str | Path,
+    publication_transaction: str | Path,
+    publication_attestation_receipt: str | Path,
+    *,
+    repository: str,
+    registry_base_commit: str,
+    gh_executable: str = "gh",
+    git_executable: str = "git",
+) -> dict:
+    """Admit only the exact non-synthetic proposal carrying a verified witness."""
+
+    validation = verify_registry_publication(
+        registry_path,
+        anchor_path,
+        bundle,
+        attestation_receipt,
+        publication_transaction,
+        publication_attestation_receipt,
+        repository=repository,
+        registry_base_commit=registry_base_commit,
+        gh_executable=gh_executable,
+        git_executable=git_executable,
+        synthetic_rehearsal=False,
+    )
+    if validation["idempotent_existing"]:
+        return validation
+    publication_transaction = Path(publication_transaction)
+    registry_path = Path(registry_path)
+    anchor_path = Path(anchor_path)
     shutil.copyfile(publication_transaction / "phase3c_registry.jsonl", registry_path)
     shutil.copyfile(publication_transaction / "phase3c_registry_anchor.json", anchor_path)
-    return {**expected_record, "idempotent_existing": False}
+    record = json.loads(registry_path.read_text().splitlines()[-1])
+    return {**record, "idempotent_existing": False}
 
 
 def main() -> None:
@@ -1363,6 +1432,8 @@ def main() -> None:
     prepare.add_argument("--output-dir", required=True)
     prepare.add_argument("--repository", required=True)
     prepare.add_argument("--registry-base-commit", required=True)
+    prepare.add_argument("--gh-executable", default="gh")
+    prepare.add_argument("--git-executable", default="git")
     publication_receipt = commands.add_parser("publication-receipt")
     publication_receipt.add_argument("--publication-transaction", required=True)
     publication_receipt.add_argument("--archive", required=True)
@@ -1372,6 +1443,19 @@ def main() -> None:
     publication_receipt.add_argument("--attestation-id", required=True)
     publication_receipt.add_argument("--attestation-url", required=True)
     publication_receipt.add_argument("--sigstore-bundle-path", required=True)
+    publication_receipt.add_argument("--synthetic-rehearsal", action="store_true")
+    verify_publication = commands.add_parser("verify-publication")
+    verify_publication.add_argument("--bundle", required=True)
+    verify_publication.add_argument("--attestation-receipt", required=True)
+    verify_publication.add_argument("--publication-transaction", required=True)
+    verify_publication.add_argument("--publication-attestation-receipt", required=True)
+    verify_publication.add_argument("--registry", required=True)
+    verify_publication.add_argument("--anchor", required=True)
+    verify_publication.add_argument("--repository", required=True)
+    verify_publication.add_argument("--registry-base-commit", required=True)
+    verify_publication.add_argument("--gh-executable", default="gh")
+    verify_publication.add_argument("--git-executable", default="git")
+    verify_publication.add_argument("--synthetic-rehearsal", action="store_true")
     register = commands.add_parser("register")
     register.add_argument("--bundle", required=True)
     register.add_argument("--attestation-receipt", required=True)
@@ -1404,6 +1488,8 @@ def main() -> None:
             args.registry, args.anchor, args.bundle, args.attestation_receipt,
             args.output_dir, repository=args.repository,
             registry_base_commit=args.registry_base_commit,
+            gh_executable=args.gh_executable,
+            git_executable=args.git_executable,
         )
     elif args.command == "publication-receipt":
         result = create_publication_attestation_receipt(
@@ -1412,6 +1498,17 @@ def main() -> None:
             attestation_id=args.attestation_id,
             attestation_url=args.attestation_url,
             sigstore_bundle_path=args.sigstore_bundle_path,
+            synthetic_rehearsal=args.synthetic_rehearsal,
+        )
+    elif args.command == "verify-publication":
+        result = verify_registry_publication(
+            args.registry, args.anchor, args.bundle, args.attestation_receipt,
+            args.publication_transaction, args.publication_attestation_receipt,
+            repository=args.repository,
+            registry_base_commit=args.registry_base_commit,
+            gh_executable=args.gh_executable,
+            git_executable=args.git_executable,
+            synthetic_rehearsal=args.synthetic_rehearsal,
         )
     else:
         result = append_registry(
