@@ -263,6 +263,19 @@ contract bytes; approved workflow on a non-main ref; a second same-week bundle;
 cross-week supersession; missing publication attestation; and post-kickoff
 publication attestation.
 
+### Active `main` ruleset — 2026-09-19
+
+GitHub repository ruleset `Protect main registry history` (ID `23699702`) is
+active with target type `branch`. Its sole inclusion is `refs/heads/main`; it
+has no exclusions and the bypass list is empty. Its complete enabled rule set
+is `deletion` and `non_fast_forward` (the GitHub UI labels the latter "Block
+force pushes"). Restrict creations, restrict updates, linear history,
+deployments, signed commits, pull requests, status checks, code scanning, code
+quality, code coverage, and automatic Copilot review are all disabled. This
+blocks deletion and force-push replacement of `main` without granting a bypass,
+while retaining ordinary fast-forward writes for the approved Actions
+publisher.
+
 Current v2 local result: **169 Phase 3B/3C tests passed**.
 
 ## Actual prospective NFL evidence
