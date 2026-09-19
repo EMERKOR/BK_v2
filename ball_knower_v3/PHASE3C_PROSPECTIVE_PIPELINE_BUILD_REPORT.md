@@ -158,6 +158,8 @@ Tests cover:
 - the bounded post-cutoff grace;
 - signer-workflow and source-commit mismatch rejection;
 - attested-unregistered non-admission;
+- synthetic publication-receipt construction and enforced rejection from the
+  real registry admission path;
 - append-only supersession and idempotent retry;
 - registry replacement detection against the persisted anchor; and
 - the synthetic workflow's distinct non-prospective label.
@@ -276,7 +278,36 @@ blocks deletion and force-push replacement of `main` without granting a bypass,
 while retaining ordinary fast-forward writes for the approved Actions
 publisher.
 
-Current v2 local result: **169 Phase 3B/3C tests passed**.
+### Hosted synthetic publication rehearsal — 2026-09-19
+
+Workflow-dispatch run `35453690269` exercised the new publication-attestation
+path from `main` while checking out PR #27 head
+`0a4a1569711bd09905dc0bb44ff9488ef74325b6` as the implementation under test.
+The harness used a temporary registry and anchor below `RUNNER_TEMP`, carried
+the explicit labels `evidence_class: synthetic` and
+`prospective_nfl_evidence: false`, and made the real `publish-registry` job
+structurally ineligible. The hosted rehearsal confirmed:
+
+- two independently prepared publication transaction archives were
+  byte-identical, with SHA-256
+  `a6f3298f00fb413154cbec1a5752eae1eb89d9fed1f2f37fe3ee55f97314fc63`;
+- `actions/attest-build-provenance@v3` created attestation `48653689`;
+- `gh attestation verify` succeeded with the exact repository, approved
+  workflow, source digest, `--source-ref refs/heads/main`, and
+  `--deny-self-hosted-runners` constraints;
+- `verificationResult.verifiedTimestamps` supplied signed timestamp
+  `2026-09-19T16:03:52Z`;
+- the certificate source ref is `refs/heads/main`, and the signer URI is exactly
+  `https://github.com/EMERKOR/BK_v2/.github/workflows/phase3c-prospective-attestation.yml@refs/heads/main`;
+- `publication-receipt` accepted the real hosted verification JSON and emitted
+  a receipt that remained explicitly synthetic and non-NFL;
+- exact transaction re-verification succeeded against that receipt; and
+- neither the real registry nor its anchor was written, and no
+  `registered_prospective` record was created.
+
+The full hosted run completed successfully. PR CI run `35448706344` also
+completed successfully with **170 Phase 3B/3C tests passed**. Current v2 local
+result: **170 Phase 3B/3C tests passed**.
 
 ## Actual prospective NFL evidence
 
