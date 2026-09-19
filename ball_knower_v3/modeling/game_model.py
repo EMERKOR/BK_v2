@@ -230,6 +230,7 @@ def matchup_draws_from_posteriors(
     neutral_site: bool,
     n_draws: int,
     seed: int,
+    environment_seed: int | None = None,
 ) -> MatchupDraws:
     """Construct approved matchup quantities from the same joint state draw."""
 
@@ -239,7 +240,9 @@ def matchup_draws_from_posteriors(
     if home_team not in index or away_team not in index:
         raise ValueError("home and away teams must be present in the state posterior")
     state_draws = state.draws(n_draws, seed=seed)
-    hfa, total_baseline = environment.draws(n_draws, seed=seed + 1)
+    hfa, total_baseline = environment.draws(
+        n_draws, seed=seed + 1 if environment_seed is None else environment_seed
+    )
     n = state.n_teams
     hi, ai = index[home_team], index[away_team]
     alpha = state_draws[:, 2 * n]
@@ -542,16 +545,26 @@ class DirectGameModelFit:
     margin: BayesianStudentTFit
     total: BayesianStudentTFit
 
-    def predict(self, matchup: MatchupDraws, *, n_components: int = 2000, seed: int = 0) -> tuple[StudentTMixture, StudentTMixture]:
+    def predict(
+        self,
+        matchup: MatchupDraws,
+        *,
+        n_components: int = 2000,
+        seed: int = 0,
+        margin_seed: int | None = None,
+        total_seed: int | None = None,
+    ) -> tuple[StudentTMixture, StudentTMixture]:
+        margin_seed = seed if margin_seed is None else margin_seed
+        total_seed = seed + 10_000 if total_seed is None else total_seed
         margin = self.margin.predict(
             np.column_stack([matchup.strength_margin, matchup.hfa_input]),
             n_components=n_components,
-            seed=seed,
+            seed=margin_seed,
         )
         total = self.total.predict(
             np.column_stack([matchup.strength_total, matchup.total_baseline]),
             n_components=n_components,
-            seed=seed + 10_000,
+            seed=total_seed,
         )
         return margin, total
 
@@ -563,8 +576,16 @@ class DirectGameModelFit:
         total_support: tuple[int, int] = (-100, 200),
         n_components: int = 2000,
         seed: int = 0,
+        margin_seed: int | None = None,
+        total_seed: int | None = None,
     ) -> "DirectGamePrediction":
-        margin, total = self.predict(matchup, n_components=n_components, seed=seed)
+        margin, total = self.predict(
+            matchup,
+            n_components=n_components,
+            seed=seed,
+            margin_seed=margin_seed,
+            total_seed=total_seed,
+        )
         return DirectGamePrediction(
             margin=discretize_with_tail_tolerance(
                 margin, support_min=margin_support[0], support_max=margin_support[1]

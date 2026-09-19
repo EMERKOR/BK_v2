@@ -26,7 +26,11 @@ This ledger records the reviewed state of Ball Knower v3 after the Sep. 14 adver
 | Retrospective forecast evidence distinct from source provenance/prospective existence | CONFIRMED LOCK | `retrospective_historical_source_replay`; verified prospective attestation remains required |
 | Frozen/append-only forecast evidence | CONFIRMED | Canonical Foundation |
 | Content-addressed prospective manifest | CONFIRMED architecture | Former ESC-B resolution |
-| Public GitHub/Sigstore attestation as durable existence/freeze baseline | CONFIRMED BASELINE / IMPLEMENTATION OPEN | `evidence_provenance_esc_a_b_v1.md` |
+| Public GitHub/Sigstore forecast attestation as durable existence/freeze baseline | CONFIRMED BASELINE / IMPLEMENTED | `phase3c_prospective_publication_protocol_v2.md` |
+| Pre-kickoff registry-publication attestation required for evidence admission | CONFIRMED LOCK / IMPLEMENTED — 2026-09-18 | Forecast attestation alone remains `attested_unregistered` |
+| Prospective origin exactly Tuesday 16:00 UTC; delayed origins fail closed | CONFIRMED LOCK / IMPLEMENTED — 2026-09-18 | No delayed-origin declaration mechanism exists |
+| One logical forecast per contract/season/week with same-key supersession | CONFIRMED LOCK / IMPLEMENTED — 2026-09-18 | Cross-key supersession prohibited |
+| Prospective contract/protocol/candidate-space bytes and identity-derived RNG | CONFIRMED LOCK / IMPLEMENTED — 2026-09-18 | Version-pinned SHA-256 identities and namespaced streams |
 | Human examination requires separate explicit pre-outcome review assertion | CONFIRMED | Cannot be inferred from attestation |
 
 Former `ESC-A` and `ESC-B` are no longer design-open. Their implementation remains open.
