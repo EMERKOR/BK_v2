@@ -408,7 +408,6 @@ jobs:
             ball_knower_v3/prospective/phase3c_registry_anchor.json
           export ROOT ATTESTATION_ID
           python - <<'PY'
-          import hashlib
           import json
           import os
           from pathlib import Path
