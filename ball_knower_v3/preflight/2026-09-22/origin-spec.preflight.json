@@ -1,0 +1,12 @@
+{
+  "artifact_class": "preflight_non_evidence",
+  "forecast_evidence": false,
+  "runnable": false,
+  "warning": "NON-FORECAST / NON-EVIDENCE. This template deliberately omits the required inputs list and reviewed post-fix code identity.",
+  "contract_version": "phase3c_prospective_experiment_contract_v1",
+  "season": 2026,
+  "competition_week": 3,
+  "origin": "2026-09-22T16:00:00Z",
+  "code_commit": null,
+  "inputs": null
+}

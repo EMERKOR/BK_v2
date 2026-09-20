@@ -1,8 +1,11 @@
 from datetime import datetime, timedelta, timezone
 import json
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
+
+import ball_knower_v3.modeling.game_model as game_model
 
 from ball_knower_v3.modeling.game_distribution import (
     discretize_student_t_mixture,
@@ -176,6 +179,19 @@ def test_fit_uses_training_only_scaling_and_proper_finite_posterior():
     assert np.isfinite(fit.map_unconstrained).all()
     assert np.linalg.eigvalsh(fit.covariance).min() > 0
     assert np.isclose(fit.scaling.predictor_mean[0], x.mean())
+
+
+def test_optimizer_nonconvergence_fails_closed(monkeypatch):
+    def nonconverged_minimize(*args, **kwargs):
+        return SimpleNamespace(success=False, fun=1.0)
+
+    monkeypatch.setattr(game_model, "minimize", nonconverged_minimize)
+    y = np.array([-7.0, 3.0, 10.0, 1.0])
+    x = np.stack(
+        [np.column_stack([np.linspace(v - 0.1, v + 0.1, 20)]) for v in [-0.2, 0.0, 0.3, 0.1]]
+    )
+    with pytest.raises(RuntimeError, match="did not converge"):
+        fit_bayesian_student_t(target="margin", outcomes=y, predictor_draws=x)
 
 
 def test_prediction_integrates_state_and_parameter_draws():
