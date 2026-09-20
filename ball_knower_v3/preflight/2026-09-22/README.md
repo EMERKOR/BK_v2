@@ -88,12 +88,14 @@ Availability status:
   untracked temporary directory, and digest-valid.
 - The target Week 3 schedule is exact and available before cutoff.
 - The existing 2025 structural table plus its 14 states and 14 configurations
-  is already captured in the repository.
+  is already captured in the repository. `source-inventory.json` lists every
+  referenced state/config identity and all 13 historical schedule asset IDs.
 - Canonical input tables are intentionally not constructed early; their
   deterministic capture remains an origin operation.
 - The required historical pregame-context table remains to be constructed from
   the exact schedule asset identities already bound by the structural rows.
-  Those public provider assets are identified by the Phase 3B source catalog;
+  Those public provider assets are identified by the Phase 3B source catalog
+  whose SHA-256 is `5cb76a997dd231f47fa6e3d98350bb8e1c454573235db682707120790302d437`;
   they must be recaptured and hash-verified at origin.
 
 Unknown availability, a missing provider receipt, a digest mismatch, or an
