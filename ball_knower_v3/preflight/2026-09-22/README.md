@@ -20,17 +20,22 @@ therefore be the reviewed and merged successor on `main`, not `018f1ae...`.
 
 - Origin: `2026-09-22T16:00:00Z`
 - Season / competition week: `2026 / 3`
-- Binding schedule version: nflverse data archive GitHub release
+- Preflight snapshot schedule version: nflverse data archive GitHub release
   `archive-2026-09-17`, `games.rds` asset ID `570894191`
 - Schedule availability bound: `2026-09-17T19:02:07Z`, strictly before origin
 - Target games: 16; every kickoff is strictly after the origin
 - Neutral site: `2026_03_BAL_DAL` only
 
-The complete outcome-free inventory is in `target-schedule-preflight.csv`.
-The release asset has blank target scores/results. A later schedule revision is
-not eligible for this origin unless separately identified and proven available
-before the cutoff. Team fields use Ball Knower canonical codes, including the
-frozen nflverse `LA` → `LAR` normalization; source `game_id` values are retained.
+The complete outcome-free preflight inventory is in
+`target-schedule-preflight.csv`. The release asset has blank target
+scores/results. This snapshot establishes the current target inventory but is
+not irrevocably selected as the production origin input. At the origin, the
+operation must recapture and verify the appropriate exact schedule version
+available strictly before the cutoff. If no newer eligible exact version exists,
+the September 17 asset remains acceptable; a version first published at or
+after the origin is prohibited. Team fields use Ball Knower canonical codes,
+including the frozen nflverse `LA` → `LAR` normalization; source `game_id`
+values are retained.
 
 ## Required source roles
 
@@ -43,10 +48,10 @@ structural table.
 
 | Role | Format and minimum schema | Type and consumer | Outcome rule / planned source |
 |---|---|---|---|
-| `observation_games` | CSV/Parquet; `game_id, season, week, kickoff, home_team, away_team, is_final, home_margin, total_points` | Canonical fact; `build_prospective_bundle` → state replay | Historical outcomes only; deterministic canonicalization of exact `games.rds` bytes. |
-| `plays` | CSV/Parquet; `game_id, season, week, posteam, defteam, play_type, epa`, optional `snapshot_id` | Raw-to-canonical input; state replay | Exact 2025 and 2026 PBP archive assets; target-week outcomes absent. |
+| `observation_games` | CSV/Parquet; `game_id, season, week, kickoff, home_team, away_team, is_final, home_margin, total_points` | Canonical fact; `build_prospective_bundle` → state replay | Historical outcomes only; deterministic canonicalization of the final origin-resolved exact `games.rds` bytes. |
+| `plays` | CSV/Parquet; `game_id, season, week, posteam, defteam, play_type, epa`, optional `snapshot_id` | Raw-to-canonical input; state replay | Final origin-resolved exact 2025/2026 PBP assets; target-week outcomes absent. |
 | `availability` | CSV/Parquet; `season, week, origin_at, available_at, dataset_id, evidence_id, provenance_class` | Canonical timing fact; state replay | Unique season/week; `available_at < origin`; binds each observation batch to exact provider evidence. |
-| `forecast_games` | CSV/Parquet; `game_id, season, week, kickoff, home_team, away_team, schedule_known_at, schedule_dataset_id, schedule_evidence_id, schedule_provenance_class` | Canonical target fact; prospective builder | All target outcome/result fields prohibited; exact Week 3 rows from asset `570894191`. |
+| `forecast_games` | CSV/Parquet; `game_id, season, week, kickoff, home_team, away_team, schedule_known_at, schedule_dataset_id, schedule_evidence_id, schedule_provenance_class` | Canonical target fact; prospective builder | All target outcome/result fields prohibited; Week 3 rows from the exact version resolved at origin. Asset `570894191` is the validated preflight snapshot. |
 | `origins` | CSV/Parquet; exactly one `season, week, as_of` row | Generated canonical control; prospective builder | Must equal the declared origin exactly. |
 | `candidate_space` | JSON containing every `StateSpaceConfig` field | Frozen canonical input; `_candidate_space` | Repository file with exact frozen digest. |
 | `training_structural` | CSV; structural replay rows including `game_id, home_team, away_team, kickoff, forecast_as_of, state_sha256, config_sha256, evidence_class, schedule_dataset_id` | Derived training artifact; direct-game replay | Existing Phase 3B artifact; target outcomes prohibited. |
@@ -70,6 +75,16 @@ equals that value. The GitHub release/asset timestamps provide the conservative
 availability bound, and the provider digest is checked against the local byte
 SHA-256. Capture timestamps and exact values are in `source-inventory.json`.
 
+The inventory distinguishes two identities. `preflight_snapshot_identity`
+records the exact September 17 bytes validated during preparation.
+`final_origin_source_identity` is intentionally unresolved until the origin
+operation examines exact provider versions published strictly before
+`2026-09-22T16:00:00Z`. A newer eligible PBP/results asset containing Week 2
+must be considered under the existing causal eligibility rules. If no newer
+eligible version exists, the validated September 17 snapshot remains an
+acceptable choice where otherwise valid. Publication at or after the origin is
+always ineligible.
+
 Derived canonical tables use `content_sha256` only after deterministic
 construction: `source_id` is `sha256:<local-sha256>`, provider fields are
 absent, and a separate raw-source receipt preserves the provider-version and
@@ -84,9 +99,11 @@ guard merges.
 Availability status:
 
 - `games.rds`, `play_by_play_2025.rds`, and `play_by_play_2026.rds` from
-  `archive-2026-09-17` are provider-available, captured for this audit in an
-  untracked temporary directory, and digest-valid.
-- The target Week 3 schedule is exact and available before cutoff.
+  `archive-2026-09-17` are provider-available, captured as preflight snapshots
+  in an untracked temporary directory, and digest-valid. They are not a final
+  production source selection.
+- The preflight Week 3 schedule is exact and available before cutoff. The final
+  operational schedule identity is resolved and recaptured at the origin.
 - The existing 2025 structural table plus its 14 states and 14 configurations
   is already captured in the repository. `source-inventory.json` lists every
   referenced state/config identity and all 13 historical schedule asset IDs.
@@ -103,20 +120,25 @@ origin-equal timestamp fails closed.
 
 ## Training and Phase 3B observation cutoff
 
-The exact `games.rds` asset supplies historical results with a conservative
-availability timestamp of `2026-09-17T19:02:07Z`, before the origin. The
-existing direct-game structural training table contains 195 games over 14
-origins, ending at 2025 Week 22. No retrospective 2026 structural forecast row
-will be fabricated.
+The preflight `games.rds` snapshot supplies historical results with a
+conservative availability timestamp of `2026-09-17T19:02:07Z`, before the
+origin. The existing direct-game structural training table contains 195 games
+over 14 origins, ending at 2025 Week 22. No retrospective 2026 structural
+forecast row will be fabricated.
 
-For Phase 3B state observations, the exact 2025 PBP asset and 2026 PBP asset are
-eligible. The 2026 archive contains Week 1 only; Week 2 is absent from this
-eligible archive and is therefore omitted. The state advances across a missing
-week without fabricated observations. Thus:
+For the preflight snapshot, the exact 2025 and 2026 PBP assets are eligible and
+the 2026 asset contains Week 1 only. That establishes the preflight-observed
+cutoff, not an intentional exclusion of Week 2 from the real forecast. At the
+origin, the operation must resolve the newest provenance-valid exact PBP/results
+versions published before the cutoff. If they contain completed Week 2 evidence
+eligible under the frozen causal rules, that evidence enters the origin input
+set. If no such version exists, the state advances across the missing week
+without fabricated observations. Thus:
 
 - latest direct-game structural training week: 2025 Week 22;
-- latest eligible state-observation week: 2026 Week 1;
-- 2026 Week 2: missing from the exact eligible archive and not substituted;
+- latest state-observation week in the preflight snapshot: 2026 Week 1;
+- final state-observation cutoff: resolved at origin from exact pre-cutoff
+  provider versions; Week 2 is included if and only if causally eligible;
 - 2026 Week 3 target outcomes: absent and prohibited.
 
 Frozen play eligibility reproduced on the captured assets:
@@ -176,7 +198,8 @@ test stubs a finite failed optimizer result and requires the exception.
 4. Confirm the complete Week 3 schedule still uses only versions available
    strictly before origin and that all kickoffs remain after origin.
 5. Confirm every historical outcome has `result_available_at < origin`, target
-   outcomes are absent, and missing Week 2 produces no fabricated observation.
+   outcomes are absent, and any Week 2 evidence comes from an eligible exact
+   pre-cutoff version; if none exists, produce no fabricated observation.
 6. Run the full fail-closed validation and test suite before any real build.
 7. Only then dispatch the separately governed hosted forecast workflow.
 

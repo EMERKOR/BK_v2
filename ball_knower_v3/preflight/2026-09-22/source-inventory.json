@@ -4,8 +4,13 @@
   "origin": "2026-09-22T16:00:00Z",
   "season": 2026,
   "competition_week": 3,
+  "identity_semantics": {
+    "preflight_snapshot_identity": "Exact provider bytes captured and validated during preflight; not an irrevocable production-input selection.",
+    "final_origin_source_identity": "Resolved at the origin from exact provenance-valid provider versions first published strictly before 2026-09-22T16:00:00Z. Newer eligible versions must be considered; versions first published at or after the origin are prohibited."
+  },
   "provider": "nflverse/nflverse-data-archives",
   "release": {
+    "identity_role": "preflight_snapshot_identity",
     "tag": "archive-2026-09-17",
     "release_id": 390984320,
     "published_at": "2026-09-17T19:00:20Z",
@@ -14,6 +19,8 @@
   "assets": [
     {
       "name": "games.rds",
+      "identity_role": "preflight_snapshot_identity",
+      "origin_selection_status": "not_irrevocably_selected_resolve_at_origin",
       "asset_id": 570894191,
       "source_id_kind": "provider_version",
       "provider_version_id": "github-release-asset:nflverse/nflverse-data-archives:570894191",
@@ -30,6 +37,8 @@
     },
     {
       "name": "play_by_play_2025.rds",
+      "identity_role": "preflight_snapshot_identity",
+      "origin_selection_status": "not_irrevocably_selected_resolve_at_origin",
       "asset_id": 570909605,
       "source_id_kind": "provider_version",
       "provider_version_id": "github-release-asset:nflverse/nflverse-data-archives:570909605",
@@ -46,6 +55,8 @@
     },
     {
       "name": "play_by_play_2026.rds",
+      "identity_role": "preflight_snapshot_identity",
+      "origin_selection_status": "not_irrevocably_selected_resolve_at_origin",
       "asset_id": 570909606,
       "source_id_kind": "provider_version",
       "provider_version_id": "github-release-asset:nflverse/nflverse-data-archives:570909606",
@@ -123,10 +134,14 @@
       "e9af78a644da2600015e20be6a336a01704428e1aa44a02fb1c03378c99ad69b"
     ],
     "latest_training_week": {"season": 2025, "week": 22},
-    "latest_state_observation_week": {"season": 2026, "week": 1}
+    "preflight_snapshot_latest_state_observation_week": {"season": 2026, "week": 1},
+    "final_origin_state_observation_cutoff": "resolve_at_origin_from_exact_provider_versions_published_strictly_before_cutoff"
   },
   "status": {
-    "raw_assets": "captured_in_untracked_temporary_storage_and_digest_valid",
+    "raw_assets": "preflight_snapshots_captured_in_untracked_temporary_storage_and_digest_valid_not_final_origin_selection",
+    "final_origin_source_identity": "unresolved_until_origin_operation",
+    "week_2_policy": "consider_any_newer_exact_provenance_valid_pre_cutoff_version_and_include_week_2_only_if_causally_eligible",
+    "schedule_policy": "recapture_and_verify_the_appropriate_exact_pre_cutoff_schedule_version_at_origin_falling_back_to_the_september_17_snapshot_only_if_no_newer_eligible_version_exists",
     "canonical_role_files": "not_constructed_preflight_only",
     "code_identity": "blocked_pending_review_and_merge_of_optimizer_fail_closed_guard"
   }
