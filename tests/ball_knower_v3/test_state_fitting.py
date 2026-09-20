@@ -100,6 +100,44 @@ def test_future_append_reproducibility_and_immutable_freeze(tmp_path):
         first.replay(weeks, as_of=START + pd.Timedelta(weeks=13), target=(2020, 14))
 
 
+def test_play_row_reordering_is_numerically_stable():
+    weeks = simulated_weeks(count=12)
+    rng = np.random.default_rng(20260920)
+    reordered = []
+    for week in weeks:
+        order = rng.permutation(len(week.batch.epa))
+        batch = replace(
+            week.batch,
+            offenses=tuple(np.asarray(week.batch.offenses)[order]),
+            defenses=tuple(np.asarray(week.batch.defenses)[order]),
+            epa=tuple(np.asarray(week.batch.epa)[order]),
+        )
+        reordered.append(replace(week, batch=batch))
+
+    original_fit = fit(weeks)
+    reordered_fit = fit(tuple(reordered))
+    assert reordered_fit.selected.config == original_fit.selected.config
+    assert reordered_fit.selected.objective == pytest.approx(
+        original_fit.selected.objective, abs=1e-10
+    )
+
+    original_model = FrozenStateConfig.from_fit(original_fit).replay(
+        weeks, as_of=original_fit.cutoff, target=original_fit.target
+    )
+    reordered_model = FrozenStateConfig.from_fit(reordered_fit).replay(
+        tuple(reordered), as_of=reordered_fit.cutoff, target=reordered_fit.target
+    )
+    np.testing.assert_allclose(
+        reordered_model.posterior.mean, original_model.posterior.mean, rtol=0, atol=1e-12
+    )
+    np.testing.assert_allclose(
+        reordered_model.posterior.covariance,
+        original_model.posterior.covariance,
+        rtol=0,
+        atol=1e-12,
+    )
+
+
 @pytest.mark.parametrize("field", [f.name for f in fields(StateSpaceConfig)])
 @pytest.mark.parametrize("bad", [float("nan"), float("inf"), -1])
 def test_invalid_parameter_values(field, bad):

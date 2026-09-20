@@ -1,0 +1,615 @@
+{
+  "artifact_class": "development_training_rehearsal_non_evidence",
+  "phase3b": {
+    "artifact_class": "development_training_rehearsal_non_evidence",
+    "candidate_scores": [
+      {
+        "config": {
+          "defense_process_sd": 0.025,
+          "defense_rho": 0.96,
+          "initial_defense_sd": 0.2,
+          "initial_intercept_sd": 0.1,
+          "initial_offense_sd": 0.2,
+          "observation_sd": 1.6,
+          "offense_process_sd": 0.025,
+          "offense_rho": 0.96,
+          "offseason_defense_rho": 0.7,
+          "offseason_defense_sd": 0.08,
+          "offseason_intercept_rho": 0.0,
+          "offseason_intercept_sd": 0.1,
+          "offseason_offense_rho": 0.7,
+          "offseason_offense_sd": 0.08,
+          "student_t_df": 5.0
+        },
+        "coverage_90": 0.9626741099526586,
+        "innovation_mean": -0.002642152099040776,
+        "innovation_second_moment": 0.44371024202652604,
+        "log_predictive": -64636.84180235162,
+        "log_prior": -1.478391151936429,
+        "objective": -64638.320193503554,
+        "observations": 36543,
+        "tail_fraction_02": 0.00741592096981638
+      },
+      {
+        "config": {
+          "defense_process_sd": 0.020000000000000004,
+          "defense_rho": 0.768,
+          "initial_defense_sd": 0.16000000000000003,
+          "initial_intercept_sd": 0.08000000000000002,
+          "initial_offense_sd": 0.16000000000000003,
+          "observation_sd": 2.0,
+          "offense_process_sd": 0.020000000000000004,
+          "offense_rho": 0.768,
+          "offseason_defense_rho": 0.5599999999999999,
+          "offseason_defense_sd": 0.064,
+          "offseason_intercept_rho": 0.1,
+          "offseason_intercept_sd": 0.08000000000000002,
+          "offseason_offense_rho": 0.5599999999999999,
+          "offseason_offense_sd": 0.064,
+          "student_t_df": 7.0
+        },
+        "coverage_90": 0.9749883698656377,
+        "innovation_mean": -0.005549024126016893,
+        "innovation_second_moment": 0.3399534802153492,
+        "log_predictive": -68534.81203385294,
+        "log_prior": -0.2587761921896643,
+        "objective": -68535.07081004513,
+        "observations": 36543,
+        "tail_fraction_02": 0.004159483348384095
+      }
+    ],
+    "deterministic_identical_fit": true,
+    "fit_runtime_seconds": 6.340105750015937,
+    "forecast_as_of_rehearsed": "2026-09-22T16:00:00+00:00",
+    "forecast_created": false,
+    "phase3b_fit_success": true,
+    "posterior_summary": {
+      "defense_mean_spread_sd": 0.0385654366017821,
+      "defense_posterior_sd_max": 0.0872059409776486,
+      "defense_posterior_sd_mean": 0.08582243882578829,
+      "defense_posterior_sd_min": 0.08405919273796196,
+      "league_intercept_mean": 0.01285220965682931,
+      "league_intercept_sd": 0.035016364830805634,
+      "offense_mean_spread_sd": 0.040897736545232696,
+      "offense_posterior_sd_max": 0.08711607412121015,
+      "offense_posterior_sd_mean": 0.08582962945705602,
+      "offense_posterior_sd_min": 0.0837122425378355
+    },
+    "prospective_evidence": false,
+    "robust_weighting": {
+      "count": 36543,
+      "fraction_below_0_25": 0.0018881865199901486,
+      "fraction_below_0_50": 0.017759899296718933,
+      "mean": 0.9658469992689495,
+      "median": 1.0,
+      "minimum": 0.08816375033070828,
+      "p01": 0.40453969448195115,
+      "p05": 0.735801048310173
+    },
+    "row_reorder_stable": true,
+    "selected_config": {
+      "defense_process_sd": 0.025,
+      "defense_process_variance": 0.0006250000000000001,
+      "defense_rho": 0.96,
+      "initial_defense_sd": 0.2,
+      "initial_intercept_sd": 0.1,
+      "initial_offense_sd": 0.2,
+      "observation_marginal_sd": 2.0655911179772892,
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_process_variance": 0.0006250000000000001,
+      "offense_rho": 0.96,
+      "offseason_defense_rho": 0.7,
+      "offseason_defense_sd": 0.08,
+      "offseason_intercept_rho": 0.0,
+      "offseason_intercept_sd": 0.1,
+      "offseason_offense_rho": 0.7,
+      "offseason_offense_sd": 0.08,
+      "student_t_df": 5.0
+    },
+    "total_phase3b_diagnostics_seconds": 22.59308325004531,
+    "training_span": {
+      "eligible_plays": 36543,
+      "first": [
+        2025,
+        1
+      ],
+      "last": [
+        2026,
+        1
+      ],
+      "teams": 32,
+      "weeks": [
+        [
+          2025,
+          1
+        ],
+        [
+          2025,
+          2
+        ],
+        [
+          2025,
+          3
+        ],
+        [
+          2025,
+          4
+        ],
+        [
+          2025,
+          5
+        ],
+        [
+          2025,
+          6
+        ],
+        [
+          2025,
+          7
+        ],
+        [
+          2025,
+          8
+        ],
+        [
+          2025,
+          9
+        ],
+        [
+          2025,
+          10
+        ],
+        [
+          2025,
+          11
+        ],
+        [
+          2025,
+          12
+        ],
+        [
+          2025,
+          13
+        ],
+        [
+          2025,
+          14
+        ],
+        [
+          2025,
+          15
+        ],
+        [
+          2025,
+          16
+        ],
+        [
+          2025,
+          17
+        ],
+        [
+          2025,
+          18
+        ],
+        [
+          2025,
+          19
+        ],
+        [
+          2025,
+          20
+        ],
+        [
+          2025,
+          21
+        ],
+        [
+          2025,
+          22
+        ],
+        [
+          2026,
+          1
+        ]
+      ]
+    },
+    "transition_diagnostics": {
+      "after_2026_week1": {
+        "defense_mean_spread_sd": 0.04184617686825314,
+        "defense_posterior_sd_mean": 0.08545139205210221,
+        "league_intercept_mean": 0.01285220965682931,
+        "league_intercept_sd": 0.035016364830805634,
+        "offense_mean_spread_sd": 0.044376884272170895,
+        "offense_posterior_sd_mean": 0.08545994788136257
+      },
+      "end_2025": {
+        "defense_mean_spread_sd": 0.05338574308203007,
+        "defense_posterior_sd_mean": 0.06834630904876145,
+        "league_intercept_mean": 0.005601722026499284,
+        "league_intercept_sd": 0.008796833426181027,
+        "offense_mean_spread_sd": 0.05290470768252157,
+        "offense_posterior_sd_mean": 0.06838322676738195
+      },
+      "missing_week_transition": {
+        "defense_posterior_sd_mean_after": 0.08582243882578829,
+        "defense_posterior_sd_mean_before": 0.08545139205210221,
+        "from": [
+          2026,
+          1
+        ],
+        "observation_count_added": 0,
+        "offense_posterior_sd_mean_after": 0.08582962945705602,
+        "offense_posterior_sd_mean_before": 0.08545994788136257,
+        "to": [
+          2026,
+          3
+        ]
+      },
+      "offseason": {
+        "defense_mean_sd_after": 0.037370020157421045,
+        "defense_mean_sd_before": 0.05338574308203007,
+        "defense_posterior_sd_mean_after": 0.092147442790754,
+        "defense_posterior_sd_mean_before": 0.06834630904876145,
+        "from": [
+          2025,
+          22
+        ],
+        "offense_mean_sd_after": 0.0370332953777651,
+        "offense_mean_sd_before": 0.05290470768252157,
+        "offense_posterior_sd_mean_after": 0.09216256560715735,
+        "offense_posterior_sd_mean_before": 0.06838322676738195,
+        "to": [
+          2026,
+          1
+        ]
+      }
+    }
+  },
+  "phase3c": {
+    "artifact_class": "development_training_rehearsal_non_evidence",
+    "attestation_called": false,
+    "development_chronological_refit_runtime_seconds": 4.5068098730407655,
+    "environment": {
+      "hfa_mean": 1.7473500644679136,
+      "hfa_strength_coefficient": 54.80139167990357,
+      "hfa_var": 1.9054907724608106,
+      "total_mean": 45.31620427113366,
+      "total_var": 2.7162918959713753
+    },
+    "families_fit": [
+      "league_mean_hfa_gaussian",
+      "structural_ridge_gaussian",
+      "structural_gaussian_map_laplace",
+      "structural_student_t_map_laplace"
+    ],
+    "fit_runtime_seconds": 0.6515621659928001,
+    "forecast_created": false,
+    "geometry": [
+      {
+        "covariance_clipped_eigenvalues": 0,
+        "family": "structural_gaussian_map_laplace",
+        "floored_eigenvalues": 0,
+        "floored_fraction": 0.0,
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "max_covariance_eigenvalue_reduction": 0.0,
+        "nonpositive_eigenvalues": 0,
+        "objective_value": 260.90864565826047,
+        "optimizer_gradient_norm": 1.7053025624159706e-05,
+        "optimizer_success": true,
+        "raw_hessian_max_eigenvalue": 308.1387334772378,
+        "raw_hessian_min_eigenvalue": 37.03378044671911,
+        "stabilized_condition_number": 8.320477406311792,
+        "status": "ok",
+        "target": "margin"
+      },
+      {
+        "covariance_clipped_eigenvalues": 0,
+        "family": "structural_gaussian_map_laplace",
+        "floored_eigenvalues": 0,
+        "floored_fraction": 0.0,
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "max_covariance_eigenvalue_reduction": 0.0,
+        "nonpositive_eigenvalues": 0,
+        "objective_value": 270.3105595164433,
+        "optimizer_gradient_norm": 4.51180650162884e-05,
+        "optimizer_success": true,
+        "raw_hessian_max_eigenvalue": 342.7135571587744,
+        "raw_hessian_min_eigenvalue": 47.69812679988998,
+        "stabilized_condition_number": 7.185052750532017,
+        "status": "ok",
+        "target": "total"
+      },
+      {
+        "covariance_clipped_eigenvalues": 0,
+        "family": "structural_student_t_map_laplace",
+        "floored_eigenvalues": 0,
+        "floored_fraction": 0.0,
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "max_covariance_eigenvalue_reduction": 0.0,
+        "nonpositive_eigenvalues": 0,
+        "objective_value": 262.41499127278405,
+        "optimizer_gradient_norm": 3.113442274336182e-05,
+        "optimizer_success": true,
+        "raw_hessian_max_eigenvalue": 293.4181036366118,
+        "raw_hessian_min_eigenvalue": 1.836856571890928,
+        "stabilized_condition_number": 159.739256797038,
+        "status": "ok",
+        "target": "margin"
+      },
+      {
+        "covariance_clipped_eigenvalues": 0,
+        "family": "structural_student_t_map_laplace",
+        "floored_eigenvalues": 0,
+        "floored_fraction": 0.0,
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "max_covariance_eigenvalue_reduction": 0.0,
+        "nonpositive_eigenvalues": 0,
+        "objective_value": 271.79787445745745,
+        "optimizer_gradient_norm": 5.51117393586862e-05,
+        "optimizer_success": true,
+        "raw_hessian_max_eigenvalue": 304.1880526762753,
+        "raw_hessian_min_eigenvalue": 2.1473269531498724,
+        "stabilized_condition_number": 141.65893658162662,
+        "status": "ok",
+        "target": "total"
+      }
+    ],
+    "parameters": [
+      {
+        "environment_coefficient": 1.0,
+        "family": "league_mean_hfa_gaussian",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 0.0,
+        "nu": null,
+        "residual_scale": 14.416830937730177,
+        "structural_coefficient": 0.0,
+        "target": "margin",
+        "training_games": 195
+      },
+      {
+        "environment_coefficient": 1.0,
+        "family": "league_mean_hfa_gaussian",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 0.0,
+        "nu": null,
+        "residual_scale": 14.081006786986338,
+        "structural_coefficient": 0.0,
+        "target": "total",
+        "training_games": 195
+      },
+      {
+        "environment_coefficient": -0.7515208325360156,
+        "family": "structural_ridge_gaussian",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 3.3098315908113594,
+        "nu": null,
+        "residual_scale": 13.033308002556799,
+        "ridge_penalty": 4.0,
+        "structural_coefficient": 54.59310657910293,
+        "target": "margin",
+        "training_games": 195
+      },
+      {
+        "environment_coefficient": -1.2547313718282718,
+        "family": "structural_ridge_gaussian",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 101.43627419955169,
+        "nu": null,
+        "residual_scale": 13.285017127800344,
+        "ridge_penalty": 4.0,
+        "structural_coefficient": 32.42898378735621,
+        "target": "total",
+        "training_games": 195
+      },
+      {
+        "environment_coefficient": -0.3158520849922807,
+        "environment_coefficient_posterior_sd": 0.43300272148712743,
+        "environment_prior_sd_raw_equivalent": 4.134689457415651,
+        "family": "structural_gaussian_map_laplace",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 2.2730980776063885,
+        "intercept_posterior_sd": 1.3328969798570194,
+        "nu": null,
+        "nu_posterior_sd": null,
+        "prior_coefficient_sd_standardized": 1.0,
+        "prior_intercept_sd_standardized": 2.0,
+        "prior_log_scale_sd": 0.75,
+        "prior_nu_minus_two_mean": null,
+        "residual_scale": 10.334968877012345,
+        "residual_scale_posterior_sd": 1.3339532329999029,
+        "structural_coefficient": 53.39759277976499,
+        "structural_coefficient_posterior_sd": 9.073770835576424,
+        "structural_prior_sd_raw_equivalent": 77.73087242407013,
+        "target": "margin",
+        "training_games": 195
+      },
+      {
+        "environment_coefficient": -0.43648095087093985,
+        "environment_coefficient_posterior_sd": 0.44381159401193665,
+        "environment_prior_sd_raw_equivalent": 3.0930644794263724,
+        "family": "structural_gaussian_map_laplace",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 64.69122788253844,
+        "intercept_posterior_sd": 20.108920081435695,
+        "nu": null,
+        "nu_posterior_sd": null,
+        "prior_coefficient_sd_standardized": 1.0,
+        "prior_intercept_sd_standardized": 2.0,
+        "prior_log_scale_sd": 0.75,
+        "prior_nu_minus_two_mean": null,
+        "residual_scale": 12.466847574163754,
+        "residual_scale_posterior_sd": 0.8681874032130872,
+        "structural_coefficient": 30.494374397319152,
+        "structural_coefficient_posterior_sd": 8.603465089991987,
+        "structural_prior_sd_raw_equivalent": 73.93608428621,
+        "target": "total",
+        "training_games": 195
+      },
+      {
+        "environment_coefficient": -0.3079362577502315,
+        "environment_coefficient_posterior_sd": 0.43167781715820025,
+        "environment_prior_sd_raw_equivalent": 4.134689457415651,
+        "family": "structural_student_t_map_laplace",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 2.257749352474481,
+        "intercept_posterior_sd": 1.3331892187672048,
+        "nu": 16.34617243319579,
+        "nu_posterior_sd": 10.545879454582684,
+        "prior_coefficient_sd_standardized": 1.0,
+        "prior_intercept_sd_standardized": 2.0,
+        "prior_log_scale_sd": 0.75,
+        "prior_nu_minus_two_mean": 10.0,
+        "residual_scale": 9.4828041471158,
+        "residual_scale_posterior_sd": 1.4533726526186033,
+        "structural_coefficient": 55.61947843242462,
+        "structural_coefficient_posterior_sd": 9.072881858997631,
+        "structural_prior_sd_raw_equivalent": 77.73087242407013,
+        "target": "margin",
+        "training_games": 195
+      },
+      {
+        "environment_coefficient": -0.4583909529637921,
+        "environment_coefficient_posterior_sd": 0.4387016881729008,
+        "environment_prior_sd_raw_equivalent": 3.0930644794263724,
+        "family": "structural_student_t_map_laplace",
+        "forecast_as_of": "2026-09-22T16:00:00+00:00",
+        "intercept": 65.50409087540537,
+        "intercept_posterior_sd": 19.870264998605915,
+        "nu": 17.070158517922916,
+        "nu_posterior_sd": 10.269513235684297,
+        "prior_coefficient_sd_standardized": 1.0,
+        "prior_intercept_sd_standardized": 2.0,
+        "prior_log_scale_sd": 0.75,
+        "prior_nu_minus_two_mean": 10.0,
+        "residual_scale": 11.765934986015193,
+        "residual_scale_posterior_sd": 0.9630276021900164,
+        "structural_coefficient": 30.879757049868658,
+        "structural_coefficient_posterior_sd": 8.639042601290072,
+        "structural_prior_sd_raw_equivalent": 73.93608428621,
+        "target": "total",
+        "training_games": 195
+      }
+    ],
+    "prediction_called": false,
+    "prospective_evidence": false,
+    "publication_called": false,
+    "reached_immediately_before_prediction": true,
+    "registration_called": false,
+    "same_eligible_game_set_all_families": true,
+    "target_matchup_inputs_checked": [
+      {
+        "finite": true,
+        "game_id": "2026_03_ARI_SF",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_ATL_GB",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_BAL_DAL",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_CAR_CLE",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_CIN_PIT",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_HOU_IND",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_KC_MIA",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_LAC_BUF",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_LA_DEN",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_LV_NO",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_MIN_TB",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_NE_JAX",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_NYJ_DET",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_PHI_CHI",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_SEA_WAS",
+        "state_draws": 96
+      },
+      {
+        "finite": true,
+        "game_id": "2026_03_TEN_NYG",
+        "state_draws": 96
+      }
+    ],
+    "training_games": 195
+  },
+  "prospective_evidence": false,
+  "source_snapshot": {
+    "assets": [
+      {
+        "asset_id": 570894191,
+        "availability_bound": "2026-09-17T19:02:07Z",
+        "local_sha256": "eda9d0ac3bbaf64c8caa3e9180e0f426267abe2281955d301a412c90348cc9c1",
+        "name": "games.rds"
+      },
+      {
+        "asset_id": 570909605,
+        "availability_bound": "2026-09-17T19:10:48Z",
+        "local_sha256": "fb44829609797a3f5e3db126833bcecf771a6264c400b79d4bbcb61a4c91830b",
+        "name": "play_by_play_2025.rds"
+      },
+      {
+        "asset_id": 570909606,
+        "availability_bound": "2026-09-17T19:10:48Z",
+        "local_sha256": "440385c901f1ad1f1bd53db60fde1649bf263226420e39785ae0dc9b8177bdcf",
+        "name": "play_by_play_2026.rds"
+      }
+    ],
+    "release": {
+      "identity_role": "preflight_snapshot_identity",
+      "published_at": "2026-09-17T19:00:20Z",
+      "release_id": 390984320,
+      "tag": "archive-2026-09-17",
+      "url": "https://github.com/nflverse/nflverse-data-archives/releases/tag/archive-2026-09-17"
+    }
+  },
+  "total_runtime_seconds": 115.92993995797588
+}

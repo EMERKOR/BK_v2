@@ -1,0 +1,19 @@
+{
+  "artifact_class": "development_training_rehearsal_non_evidence",
+  "code_commit": "cca956ed730b40281d3eb523329ff0523bdb2767",
+  "files": {
+    "DEVELOPMENT_FROZEN_BASELINE_TRAINING_REPORT.md": "9f54129cfa7366effad2499100ba1b408f65c651c4b06d78f7f25dbf45cc6cfb",
+    "development_exact_margin_3_7.csv": "f02d2834d3839a9fcef82c2f47fe94d7d04232ae6e42ec75423ba643cf117697",
+    "development_pit_deciles.csv": "9ed32b108af72e196e36e147bb716df21e00cf42e9e6b4fed7c72f4d78434a68",
+    "development_scorecard.csv": "96adc503935dcc5d549a547873c9f8a915333a862780e58efd7dd96a916aa649",
+    "first_origin_training_rehearsal.json": "721706ef7aaf3d084947d7cd7dacf3adfad22699c56fb054261a0920d7547836",
+    "phase3b_first_origin_state.csv": "455cee1a52ca57d13b91dbc0a1465b581c7d3ed1fa142a978d7ea13f1b15c715",
+    "phase3b_parameter_trajectory.csv": "b8fb2768cb50ae6a6a4cd4d5c29a4798eb33a97cd9fc73fef23d4c21234cf982",
+    "phase3b_state_stability.csv": "bae4ab9df352d2f12698b9b157f86627c503dca25df67cf8e673b85048ba7839",
+    "phase3b_team_uncertainty.csv": "5cd2731fa0bed2a298a22cb8681e354b32ecb90c1e9c48bbb1bf4db9a3614837",
+    "phase3c_laplace_diagnostics.csv": "4c48d887fd6120413d52964f20904838520c659df381e511512052728affc5ab",
+    "phase3c_parameter_trajectory.csv": "a02bbfeb0919085b74da70ac11868e3ec72fcf9842930ba767b46c292c6d0f78"
+  },
+  "forecast_created": false,
+  "prospective_evidence": false
+}
