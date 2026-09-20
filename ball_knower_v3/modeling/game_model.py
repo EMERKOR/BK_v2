@@ -489,6 +489,8 @@ def fit_bayesian_student_t(
         ),
         options={"maxiter": 1000, "ftol": 1e-11},
     )
+    if not bool(result.success):
+        raise RuntimeError("posterior optimization did not converge")
     if not np.isfinite(result.fun):
         raise RuntimeError("Student-t posterior optimization failed")
     hessian = _finite_hessian(negative_log_posterior, result.x)

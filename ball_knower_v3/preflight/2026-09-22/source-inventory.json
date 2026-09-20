@@ -1,0 +1,84 @@
+{
+  "artifact_class": "preflight_non_evidence",
+  "forecast_evidence": false,
+  "origin": "2026-09-22T16:00:00Z",
+  "season": 2026,
+  "competition_week": 3,
+  "provider": "nflverse/nflverse-data-archives",
+  "release": {
+    "tag": "archive-2026-09-17",
+    "release_id": 390984320,
+    "published_at": "2026-09-17T19:00:20Z",
+    "url": "https://github.com/nflverse/nflverse-data-archives/releases/tag/archive-2026-09-17"
+  },
+  "assets": [
+    {
+      "name": "games.rds",
+      "asset_id": 570894191,
+      "source_id_kind": "provider_version",
+      "provider_version_id": "github-release-asset:nflverse/nflverse-data-archives:570894191",
+      "source_id": "github-release-asset:nflverse/nflverse-data-archives:570894191",
+      "provider_digest": "sha256:eda9d0ac3bbaf64c8caa3e9180e0f426267abe2281955d301a412c90348cc9c1",
+      "local_sha256": "eda9d0ac3bbaf64c8caa3e9180e0f426267abe2281955d301a412c90348cc9c1",
+      "created_at": "2026-09-17T19:02:04Z",
+      "updated_at": "2026-09-17T19:02:07Z",
+      "availability_bound": "2026-09-17T19:02:07Z",
+      "captured_at": "2026-09-20T16:29:25Z",
+      "size_bytes": 427201,
+      "provenance_class": "prospective_ingested",
+      "planned_roles": ["observation_games", "forecast_games", "pregame_context", "prior_outcomes"]
+    },
+    {
+      "name": "play_by_play_2025.rds",
+      "asset_id": 570909605,
+      "source_id_kind": "provider_version",
+      "provider_version_id": "github-release-asset:nflverse/nflverse-data-archives:570909605",
+      "source_id": "github-release-asset:nflverse/nflverse-data-archives:570909605",
+      "provider_digest": "sha256:fb44829609797a3f5e3db126833bcecf771a6264c400b79d4bbcb61a4c91830b",
+      "local_sha256": "fb44829609797a3f5e3db126833bcecf771a6264c400b79d4bbcb61a4c91830b",
+      "created_at": "2026-09-17T19:10:47Z",
+      "updated_at": "2026-09-17T19:10:48Z",
+      "availability_bound": "2026-09-17T19:10:48Z",
+      "captured_at": "2026-09-20T16:45:47Z",
+      "size_bytes": 14361275,
+      "provenance_class": "prospective_ingested",
+      "planned_roles": ["plays", "availability"]
+    },
+    {
+      "name": "play_by_play_2026.rds",
+      "asset_id": 570909606,
+      "source_id_kind": "provider_version",
+      "provider_version_id": "github-release-asset:nflverse/nflverse-data-archives:570909606",
+      "source_id": "github-release-asset:nflverse/nflverse-data-archives:570909606",
+      "provider_digest": "sha256:440385c901f1ad1f1bd53db60fde1649bf263226420e39785ae0dc9b8177bdcf",
+      "local_sha256": "440385c901f1ad1f1bd53db60fde1649bf263226420e39785ae0dc9b8177bdcf",
+      "created_at": "2026-09-17T19:10:47Z",
+      "updated_at": "2026-09-17T19:10:48Z",
+      "availability_bound": "2026-09-17T19:10:48Z",
+      "captured_at": "2026-09-20T16:29:26Z",
+      "size_bytes": 818291,
+      "provenance_class": "prospective_ingested",
+      "planned_roles": ["plays", "availability"]
+    }
+  ],
+  "repository_inputs": {
+    "reviewed_base_commit": "018f1ae57756ba1c7be205c4d2663514377c2558",
+    "intended_origin_commit": null,
+    "contract_sha256": "4053e33169aa9898fcda07ebed9ea74a1b03ef3754ca9f8c5b4f697700f166ea",
+    "publication_protocol_sha256": "3b81b419b2788d232b206f38c329866e9c53a4fafe2f86a71b44731d32fcef80",
+    "candidate_space_sha256": "6a4a8b524b316d4249f948025108ada14b310ec0507da661df762152a4b149ca",
+    "training_structural_path": "ball_knower_v3/audits/phase3b_expanded_replay_2026-09-16/replay_bundle/structural_state_forecasts.csv",
+    "training_structural_sha256": "0fab56f5a145ad5d9fcbbc52b85cf02267337ab31747a546b42bda4bc826103e",
+    "training_rows": 195,
+    "training_origins": 14,
+    "training_state_count": 14,
+    "training_config_count": 14,
+    "latest_training_week": {"season": 2025, "week": 22},
+    "latest_state_observation_week": {"season": 2026, "week": 1}
+  },
+  "status": {
+    "raw_assets": "captured_in_untracked_temporary_storage_and_digest_valid",
+    "canonical_role_files": "not_constructed_preflight_only",
+    "code_identity": "blocked_pending_review_and_merge_of_optimizer_fail_closed_guard"
+  }
+}
