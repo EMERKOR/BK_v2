@@ -84,8 +84,10 @@ class SimpleGaussianGameFit:
         total_support: tuple[int, int] = (-100, 200),
         n_components: int = 2000,
         seed: int = 0,
+        margin_seed: int | None = None,
+        total_seed: int | None = None,
     ) -> DirectGamePrediction:
-        del n_components, seed
+        del n_components, seed, margin_seed, total_seed
         margin, total = self._locations(matchup)
         return DirectGamePrediction(
             margin=discretize_with_tail_tolerance(
