@@ -1,6 +1,7 @@
 """Regression tests for the retrospective Phase 3B identification challenger."""
 from dataclasses import asdict
 
+import pandas as pd
 import pytest
 
 from ball_knower_v3.challenger_research.phase3b_hyperparameter_identification_v1.runner import (
@@ -44,7 +45,7 @@ def test_frozen_one_factor_profiles_change_only_declared_fields():
 def test_one_factor_origin_is_deterministic_and_development_only():
     payload = load_candidate_space()
     truth = simulate_regime(DEFAULT_REGIMES[1], seed=17, count=6, plays_per_team=4)
-    cutoff = SIMULATION_START + 6 * pytest.importorskip("pandas").Timedelta(weeks=1)
+    cutoff = SIMULATION_START + pd.Timedelta(weeks=6)
     kwargs = dict(
         weeks=truth.weeks,
         cutoff=cutoff,
