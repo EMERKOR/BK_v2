@@ -4,6 +4,9 @@ from dataclasses import asdict
 import pandas as pd
 import pytest
 
+from ball_knower_v3.challenger_research.phase3b_hyperparameter_identification_v1 import (
+    execute as execution,
+)
 from ball_knower_v3.challenger_research.phase3b_hyperparameter_identification_v1.execute import (
     derive_stage_a_candidate_diagnostics,
     derive_week_to_week_movement,
@@ -27,6 +30,14 @@ def test_frozen_specification_identity_is_pinned():
     identity = verify_frozen_identity()
     assert identity["experiment_spec_sha256"].startswith("3f0024fd")
     assert identity["candidate_space_sha256"].startswith("89d46644")
+
+
+def test_stage_a_reports_missing_pyarrow_only_when_historical_inputs_are_loaded(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr(execution, "_installed_package_version", lambda package: None)
+    with pytest.raises(RuntimeError, match="Stage A historical replay requires PyArrow"):
+        execution._load_historical_inputs(tmp_path)
 
 
 def test_stage_b_summary_records_recovery_confusion_and_objective_separation():

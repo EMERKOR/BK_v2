@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 from dataclasses import asdict, replace
 from datetime import datetime, timezone
 import hashlib
+from importlib.metadata import PackageNotFoundError, version as package_version
 import json
 from pathlib import Path
 import platform
@@ -20,7 +21,6 @@ from typing import Iterable
 
 import numpy as np
 import pandas as pd
-import pyarrow
 import scipy
 from scipy.stats import spearmanr
 
@@ -109,6 +109,23 @@ def _git(*args: str) -> str:
     ).strip()
 
 
+def _installed_package_version(package: str) -> str | None:
+    try:
+        return package_version(package)
+    except PackageNotFoundError:
+        return None
+
+
+def _require_stage_a_pyarrow() -> str:
+    version = _installed_package_version("pyarrow")
+    if version is None:
+        raise RuntimeError(
+            "Stage A historical replay requires PyArrow to read its audited "
+            "Parquet inputs; install pyarrow before executing Stage A"
+        )
+    return version
+
+
 def verify_frozen_identity() -> dict:
     spec = EXPERIMENT_DIR / "EXPERIMENT_SPEC.md"
     candidates = EXPERIMENT_DIR / "candidate_space.json"
@@ -192,6 +209,7 @@ def verify_provenance(input_dir: Path, source_dir: Path) -> dict:
 
 
 def _load_historical_inputs(input_dir: Path):
+    _require_stage_a_pyarrow()
     plays = pd.read_parquet(input_dir / "plays.parquet")
     games = pd.read_parquet(input_dir / "observation_games.parquet")
     availability = pd.read_parquet(input_dir / "availability.parquet")
@@ -838,7 +856,7 @@ def execution_metadata(started_at: str, completed_at: str, identity: dict, outpu
             "numpy": np.__version__,
             "pandas": pd.__version__,
             "scipy": scipy.__version__,
-            "pyarrow": pyarrow.__version__,
+            "pyarrow": _installed_package_version("pyarrow"),
         },
         **identity,
         "deterministic_seeds": {
