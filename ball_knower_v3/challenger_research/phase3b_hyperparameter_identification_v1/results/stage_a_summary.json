@@ -1,0 +1,927 @@
+{
+  "artifact_class": "retrospective_development_challenger",
+  "by_profile": {
+    "joint_offseason_rho": {
+      "best_versus_second_objective_gap": {
+        "max": 0.1840377974403964,
+        "mean": 0.1840377974385774,
+        "median": 0.1840377974385774,
+        "min": 0.1840377974367584
+      },
+      "boundary_selection_frequency": 1.0,
+      "candidate_values": [
+        0.4,
+        0.55,
+        0.7,
+        0.82,
+        0.9
+      ],
+      "distinct_selected_values": [
+        0.9
+      ],
+      "max_state_mean_abs_difference_from_baseline": 0.0,
+      "max_state_mean_rmse_from_baseline": 0.0,
+      "mean_posterior_sd_ratio_to_baseline": {
+        "max": 1.0,
+        "mean": 1.0,
+        "median": 1.0,
+        "min": 1.0
+      },
+      "near_baseline_candidate_count_within_one_percent": {
+        "fraction_origins_with_multiple_values": 1.0,
+        "max": 5,
+        "min": 5,
+        "origins_with_multiple_values": 14
+      },
+      "objective_profile_shapes": {
+        "monotone_increasing": 14
+      },
+      "origins": 14,
+      "selected_values_by_origin": [
+        {
+          "target": [
+            2025,
+            6
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            7
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            8
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            9
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            10
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            11
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            12
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            13
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            14
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            15
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            16
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            17
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            18
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            22
+          ],
+          "value": 0.9
+        }
+      ],
+      "selection_frequencies": [
+        {
+          "count": 14,
+          "value": 0.9
+        }
+      ],
+      "simulation_exact_recovery_frequency": null,
+      "weak_identification_rules": {
+        "boundary_at_least_half_origins": true,
+        "multiple_values_within_one_percent_at_least_half_origins": true,
+        "simulation_recovery_below_60_percent": null
+      },
+      "weakly_identified_v1": true
+    },
+    "joint_offseason_sd": {
+      "best_versus_second_objective_gap": {
+        "max": 0.008000000001629815,
+        "mean": 0.007999999999940752,
+        "median": 0.00800000000072032,
+        "min": 0.007999999997991836
+      },
+      "boundary_selection_frequency": 1.0,
+      "candidate_values": [
+        0.04,
+        0.06,
+        0.08,
+        0.12,
+        0.16
+      ],
+      "distinct_selected_values": [
+        0.04
+      ],
+      "max_state_mean_abs_difference_from_baseline": 0.0,
+      "max_state_mean_rmse_from_baseline": 0.0,
+      "mean_posterior_sd_ratio_to_baseline": {
+        "max": 1.0,
+        "mean": 1.0,
+        "median": 1.0,
+        "min": 1.0
+      },
+      "near_baseline_candidate_count_within_one_percent": {
+        "fraction_origins_with_multiple_values": 1.0,
+        "max": 5,
+        "min": 5,
+        "origins_with_multiple_values": 14
+      },
+      "objective_profile_shapes": {
+        "monotone_decreasing": 14
+      },
+      "origins": 14,
+      "selected_values_by_origin": [
+        {
+          "target": [
+            2025,
+            6
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            7
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            8
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            9
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            10
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            11
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            12
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            13
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            14
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            15
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            16
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            17
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            18
+          ],
+          "value": 0.04
+        },
+        {
+          "target": [
+            2025,
+            22
+          ],
+          "value": 0.04
+        }
+      ],
+      "selection_frequencies": [
+        {
+          "count": 14,
+          "value": 0.04
+        }
+      ],
+      "simulation_exact_recovery_frequency": null,
+      "weak_identification_rules": {
+        "boundary_at_least_half_origins": true,
+        "multiple_values_within_one_percent_at_least_half_origins": true,
+        "simulation_recovery_below_60_percent": null
+      },
+      "weakly_identified_v1": true
+    },
+    "joint_persistence": {
+      "best_versus_second_objective_gap": {
+        "max": 3.6235234422638314,
+        "mean": 3.0851023299601366,
+        "median": 3.3292117933524423,
+        "min": 1.856324430580571
+      },
+      "boundary_selection_frequency": 1.0,
+      "candidate_values": [
+        0.9,
+        0.93,
+        0.96,
+        0.98,
+        0.99
+      ],
+      "distinct_selected_values": [
+        0.9
+      ],
+      "max_state_mean_abs_difference_from_baseline": 0.0736805006454048,
+      "max_state_mean_rmse_from_baseline": 0.028920645979796784,
+      "mean_posterior_sd_ratio_to_baseline": {
+        "max": 1.1833697984395186,
+        "mean": 0.9800418009475913,
+        "median": 1.0,
+        "min": 0.7571027313978814
+      },
+      "near_baseline_candidate_count_within_one_percent": {
+        "fraction_origins_with_multiple_values": 1.0,
+        "max": 5,
+        "min": 5,
+        "origins_with_multiple_values": 14
+      },
+      "objective_profile_shapes": {
+        "monotone_decreasing": 14
+      },
+      "origins": 14,
+      "selected_values_by_origin": [
+        {
+          "target": [
+            2025,
+            6
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            7
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            8
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            9
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            10
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            11
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            12
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            13
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            14
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            15
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            16
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            17
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            18
+          ],
+          "value": 0.9
+        },
+        {
+          "target": [
+            2025,
+            22
+          ],
+          "value": 0.9
+        }
+      ],
+      "selection_frequencies": [
+        {
+          "count": 14,
+          "value": 0.9
+        }
+      ],
+      "simulation_exact_recovery_frequency": 0.56,
+      "weak_identification_rules": {
+        "boundary_at_least_half_origins": true,
+        "multiple_values_within_one_percent_at_least_half_origins": true,
+        "simulation_recovery_below_60_percent": true
+      },
+      "weakly_identified_v1": true
+    },
+    "joint_process_sd": {
+      "best_versus_second_objective_gap": {
+        "max": 7.3900528932135785,
+        "mean": 3.8654524054522232,
+        "median": 3.855885705890614,
+        "min": 0.7988011828419985
+      },
+      "boundary_selection_frequency": 1.0,
+      "candidate_values": [
+        0.0125,
+        0.025,
+        0.04,
+        0.06
+      ],
+      "distinct_selected_values": [
+        0.0125
+      ],
+      "max_state_mean_abs_difference_from_baseline": 0.09490558752419184,
+      "max_state_mean_rmse_from_baseline": 0.0293436331330821,
+      "mean_posterior_sd_ratio_to_baseline": {
+        "max": 1.9788625161027515,
+        "mean": 1.2092997067318225,
+        "median": 1.0741536433305798,
+        "min": 0.6286109373681756
+      },
+      "near_baseline_candidate_count_within_one_percent": {
+        "fraction_origins_with_multiple_values": 1.0,
+        "max": 4,
+        "min": 4,
+        "origins_with_multiple_values": 14
+      },
+      "objective_profile_shapes": {
+        "monotone_decreasing": 14
+      },
+      "origins": 14,
+      "selected_values_by_origin": [
+        {
+          "target": [
+            2025,
+            6
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            7
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            8
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            9
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            10
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            11
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            12
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            13
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            14
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            15
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            16
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            17
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            18
+          ],
+          "value": 0.0125
+        },
+        {
+          "target": [
+            2025,
+            22
+          ],
+          "value": 0.0125
+        }
+      ],
+      "selection_frequencies": [
+        {
+          "count": 14,
+          "value": 0.0125
+        }
+      ],
+      "simulation_exact_recovery_frequency": 0.2,
+      "weak_identification_rules": {
+        "boundary_at_least_half_origins": true,
+        "multiple_values_within_one_percent_at_least_half_origins": true,
+        "simulation_recovery_below_60_percent": true
+      },
+      "weakly_identified_v1": true
+    },
+    "observation_scale": {
+      "best_versus_second_objective_gap": {
+        "max": 1561.3426185667995,
+        "mean": 866.5968792002158,
+        "median": 859.7211706748622,
+        "min": 365.6394580212218
+      },
+      "boundary_selection_frequency": 1.0,
+      "candidate_values": [
+        1.2,
+        1.4,
+        1.6,
+        1.9,
+        2.2
+      ],
+      "distinct_selected_values": [
+        1.2
+      ],
+      "max_state_mean_abs_difference_from_baseline": 0.02736321101806971,
+      "max_state_mean_rmse_from_baseline": 0.009461764907174843,
+      "mean_posterior_sd_ratio_to_baseline": {
+        "max": 1.1763344412011076,
+        "mean": 1.0120385301848738,
+        "median": 1.0,
+        "min": 0.860682908550974
+      },
+      "near_baseline_candidate_count_within_one_percent": {
+        "fraction_origins_with_multiple_values": 0.0,
+        "max": 1,
+        "min": 1,
+        "origins_with_multiple_values": 0
+      },
+      "objective_profile_shapes": {
+        "monotone_decreasing": 14
+      },
+      "origins": 14,
+      "selected_values_by_origin": [
+        {
+          "target": [
+            2025,
+            6
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            7
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            8
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            9
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            10
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            11
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            12
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            13
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            14
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            15
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            16
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            17
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            18
+          ],
+          "value": 1.2
+        },
+        {
+          "target": [
+            2025,
+            22
+          ],
+          "value": 1.2
+        }
+      ],
+      "selection_frequencies": [
+        {
+          "count": 14,
+          "value": 1.2
+        }
+      ],
+      "simulation_exact_recovery_frequency": 0.76,
+      "weak_identification_rules": {
+        "boundary_at_least_half_origins": true,
+        "multiple_values_within_one_percent_at_least_half_origins": false,
+        "simulation_recovery_below_60_percent": false
+      },
+      "weakly_identified_v1": true
+    },
+    "student_t_df": {
+      "best_versus_second_objective_gap": {
+        "max": 54.4628838471981,
+        "mean": 23.540848072424655,
+        "median": 19.854626856807954,
+        "min": 3.7402302381160553
+      },
+      "boundary_selection_frequency": 0.0,
+      "candidate_values": [
+        3.5,
+        5.0,
+        8.0,
+        15.0,
+        30.0
+      ],
+      "distinct_selected_values": [
+        15.0
+      ],
+      "max_state_mean_abs_difference_from_baseline": 0.04114827505146183,
+      "max_state_mean_rmse_from_baseline": 0.014092261248298023,
+      "mean_posterior_sd_ratio_to_baseline": {
+        "max": 1.0017615211426005,
+        "mean": 0.9982250820146,
+        "median": 0.998312479046694,
+        "min": 0.9935014696170102
+      },
+      "near_baseline_candidate_count_within_one_percent": {
+        "fraction_origins_with_multiple_values": 1.0,
+        "max": 3,
+        "min": 2,
+        "origins_with_multiple_values": 14
+      },
+      "objective_profile_shapes": {
+        "interior_single_peak": 14
+      },
+      "origins": 14,
+      "selected_values_by_origin": [
+        {
+          "target": [
+            2025,
+            6
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            7
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            8
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            9
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            10
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            11
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            12
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            13
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            14
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            15
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            16
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            17
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            18
+          ],
+          "value": 15.0
+        },
+        {
+          "target": [
+            2025,
+            22
+          ],
+          "value": 15.0
+        }
+      ],
+      "selection_frequencies": [
+        {
+          "count": 14,
+          "value": 15.0
+        }
+      ],
+      "simulation_exact_recovery_frequency": 0.96,
+      "weak_identification_rules": {
+        "boundary_at_least_half_origins": false,
+        "multiple_values_within_one_percent_at_least_half_origins": true,
+        "simulation_recovery_below_60_percent": false
+      },
+      "weakly_identified_v1": true
+    }
+  },
+  "candidate_results": 406,
+  "derived_candidate_diagnostics": 406,
+  "evidence_class": "retrospective_historical_source_replay",
+  "experiment_id": "phase3b_hyperparameter_identification_v1",
+  "origins": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    22
+  ],
+  "profile_results": 84,
+  "prospective_evidence": false,
+  "week_to_week_movements": 377
+}

@@ -1,0 +1,936 @@
+{
+  "comparisons": [
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0755285551056204e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.2490009027033011e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.1796119636642288e-16,
+      "max_abs_objective_difference": 1.8189894035458565e-12,
+      "max_abs_state_mean_difference": 8.465450562766819e-16,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.5959455978986625e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 9.71445146547012e-16,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0061396160665481e-16,
+      "max_abs_objective_difference": 1.8189894035458565e-12,
+      "max_abs_state_mean_difference": 1.2490009027033011e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.806255641895632e-17,
+      "max_abs_objective_difference": 1.8189894035458565e-12,
+      "max_abs_state_mean_difference": 8.465450562766819e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.806255641895632e-17,
+      "max_abs_objective_difference": 1.8189894035458565e-12,
+      "max_abs_state_mean_difference": 8.465450562766819e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.1275702593849246e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.2906342661267445e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0755285551056204e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 8.673617379884035e-16,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.3877787807814457e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.0269562977782698e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0408340855860843e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.1657341758564144e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0408340855860843e-16,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 7.355227538141662e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0408340855860843e-16,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 7.355227538141662e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.326672684688674e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.1796119636642288e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0061396160665481e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 9.298117831235686e-16,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.1622647289044608e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.0130785099704553e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.326672684688674e-17,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.3600232051658168e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.326672684688674e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 9.298117831235686e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.326672684688674e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 9.298117831235686e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.28583859910259e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.0685896612017132e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.632783294297951e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5265566588595902e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 9.280770596475918e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.0824674490095276e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.678685382510707e-17,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.1102230246251565e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.591949208711867e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 9.020562075079397e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.591949208711867e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 9.020562075079397e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.852157730108388e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.4710455076283324e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.765421556309548e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.0269562977782698e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.673617379884035e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.1102230246251565e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.505213034913027e-17,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 8.743006318923108e-16,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.336808689942018e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 8.743006318923108e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.336808689942018e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 8.743006318923108e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.591949208711867e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.8041124150158794e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.28583859910259e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5543122344752192e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.719519468096792e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.186550857568136e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.158268339717665e-17,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.1796119636642288e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.163336342344337e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 6.661338147750939e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.163336342344337e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 6.661338147750939e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.591949208711867e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.7486012637846216e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.326672684688674e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.4155343563970746e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.45931094670027e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 9.575673587391975e-16,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.9439619065339e-17,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.2073675392798577e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.423544863740858e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 7.771561172376096e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.423544863740858e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 7.771561172376096e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.19910242530375e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5404344466674047e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.979727989493313e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.1102230246251565e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.806255641895632e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.304512053934559e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.683753385137379e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.0547118733938987e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.683753385137379e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 9.159339953157541e-16,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.683753385137379e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 9.159339953157541e-16,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.724587470723463e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.4988010832439613e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.245004513516506e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.4988010832439613e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.158268339717665e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.582067810090848e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.4643789493269423e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.4988010832439613e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.597017211338539e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.4988010832439613e-15,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.597017211338539e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.4988010832439613e-15,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.724587470723463e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.204170427930421e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.898059818321144e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.683753385137379e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.683753385137379e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.683753385137379e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.4643789493269423e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.204170427930421e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.158268339717665e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.2500725161431774e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.2500725161431774e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.2500725161431774e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.4643789493269423e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.85722573273506e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.551115123125783e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.0766001685454967e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.0766001685454967e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.0766001685454967e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.245004513516506e-17,
+      "max_abs_objective_difference": 1.4551915228366852e-11,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.245004513516506e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.984795992119984e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.678685382510707e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.9439619065339e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 4.9439619065339e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.811323644522304e-17,
+      "max_abs_objective_difference": 1.4551915228366852e-11,
+      "max_abs_state_mean_difference": 2.6367796834847468e-15,
+      "profile": "joint_persistence",
+      "target": [
+        2025,
+        22
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 9.367506770274758e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.8318679906315083e-15,
+      "profile": "joint_process_sd",
+      "target": [
+        2025,
+        22
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.637851296924623e-17,
+      "max_abs_objective_difference": 1.4551915228366852e-11,
+      "max_abs_state_mean_difference": 2.4841240175987878e-15,
+      "profile": "observation_scale",
+      "target": [
+        2025,
+        22
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.637851296924623e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.4710455076283324e-15,
+      "profile": "student_t_df",
+      "target": [
+        2025,
+        22
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.637851296924623e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.3877787807814457e-15,
+      "profile": "joint_offseason_rho",
+      "target": [
+        2025,
+        22
+      ]
+    },
+    {
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.637851296924623e-17,
+      "max_abs_objective_difference": 0.0,
+      "max_abs_state_mean_difference": 1.3877787807814457e-15,
+      "profile": "joint_offseason_sd",
+      "target": [
+        2025,
+        22
+      ]
+    }
+  ],
+  "experiment_id": "phase3b_hyperparameter_identification_v1",
+  "max_abs_covariance_difference": 1.5959455978986625e-16,
+  "max_abs_objective_difference": 1.4551915228366852e-11,
+  "max_abs_state_mean_difference": 2.6367796834847468e-15,
+  "objective_absolute_tolerance": 1e-10,
+  "passed": true,
+  "seed": 20260920,
+  "state_absolute_tolerance": 1e-12
+}

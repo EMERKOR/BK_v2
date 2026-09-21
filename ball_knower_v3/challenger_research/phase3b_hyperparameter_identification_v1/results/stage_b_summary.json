@@ -1,0 +1,1885 @@
+{
+  "artifact_class": "retrospective_development_challenger",
+  "by_profile": {
+    "joint_persistence": {
+      "best_versus_second_objective_gap": {
+        "max": 0.8694296252833738,
+        "mean": 0.24563393990771146,
+        "median": 0.18327807778950955,
+        "min": 0.006781857935493463
+      },
+      "boundary_selection_frequency": 0.4,
+      "confusion_frequencies": [
+        {
+          "count": 4,
+          "generating_value": "0.9",
+          "selected_value": "0.9"
+        },
+        {
+          "count": 1,
+          "generating_value": "0.9",
+          "selected_value": "0.93"
+        },
+        {
+          "count": 5,
+          "generating_value": "0.96",
+          "selected_value": "0.93"
+        },
+        {
+          "count": 6,
+          "generating_value": "0.96",
+          "selected_value": "0.96"
+        },
+        {
+          "count": 2,
+          "generating_value": "0.96",
+          "selected_value": "0.98"
+        },
+        {
+          "count": 2,
+          "generating_value": "0.96",
+          "selected_value": "0.99"
+        },
+        {
+          "count": 1,
+          "generating_value": "0.99",
+          "selected_value": "0.96"
+        },
+        {
+          "count": 4,
+          "generating_value": "0.99",
+          "selected_value": "0.99"
+        }
+      ],
+      "exact_recovery_count": 14,
+      "exact_recovery_frequency": 0.56,
+      "exact_truth_replicates": 25,
+      "replicates": 25,
+      "selection_frequencies": [
+        {
+          "count": 4,
+          "value": 0.9
+        },
+        {
+          "count": 6,
+          "value": 0.93
+        },
+        {
+          "count": 7,
+          "value": 0.96
+        },
+        {
+          "count": 2,
+          "value": 0.98
+        },
+        {
+          "count": 6,
+          "value": 0.99
+        }
+      ],
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.835,
+        "median": 0.9375,
+        "min": 0.375
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.08382037253395225,
+        "mean": 0.06854694035329305,
+        "median": 0.07002318862091464,
+        "min": 0.051757232204156754
+      },
+      "state_rmse": {
+        "max": 0.11526856703035925,
+        "mean": 0.07456543406833555,
+        "median": 0.06736203894135098,
+        "min": 0.03779379890314505
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 4.652479101766973,
+        "mean": 1.5505672254568734,
+        "median": 0.9723885481102805,
+        "min": 0.22840128715202965
+      },
+      "weak_identification_recovery_rule_triggered": true
+    },
+    "joint_process_sd": {
+      "best_versus_second_objective_gap": {
+        "max": 0.7779243180193589,
+        "mean": 0.19853225127248153,
+        "median": 0.13288919504157093,
+        "min": 0.0022280713565123733
+      },
+      "boundary_selection_frequency": 0.64,
+      "confusion_frequencies": [
+        {
+          "count": 2,
+          "generating_value": "0.0125",
+          "selected_value": "0.0125"
+        },
+        {
+          "count": 3,
+          "generating_value": "0.0125",
+          "selected_value": "0.06"
+        },
+        {
+          "count": 7,
+          "generating_value": "0.025",
+          "selected_value": "0.0125"
+        },
+        {
+          "count": 3,
+          "generating_value": "0.025",
+          "selected_value": "0.025"
+        },
+        {
+          "count": 4,
+          "generating_value": "0.025",
+          "selected_value": "0.04"
+        },
+        {
+          "count": 1,
+          "generating_value": "0.025",
+          "selected_value": "0.06"
+        },
+        {
+          "count": 3,
+          "generating_value": "0.06",
+          "selected_value": "0.0125"
+        },
+        {
+          "count": 2,
+          "generating_value": "0.06",
+          "selected_value": "0.025"
+        }
+      ],
+      "exact_recovery_count": 5,
+      "exact_recovery_frequency": 0.2,
+      "exact_truth_replicates": 25,
+      "replicates": 25,
+      "selection_frequencies": [
+        {
+          "count": 12,
+          "value": 0.0125
+        },
+        {
+          "count": 5,
+          "value": 0.025
+        },
+        {
+          "count": 4,
+          "value": 0.04
+        },
+        {
+          "count": 4,
+          "value": 0.06
+        }
+      ],
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.8175,
+        "median": 0.875,
+        "min": 0.3125
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.1241554082993166,
+        "mean": 0.07311693379378474,
+        "median": 0.0700314991458599,
+        "min": 0.050086677718281264
+      },
+      "state_rmse": {
+        "max": 0.11588954643147167,
+        "mean": 0.07649439618837674,
+        "median": 0.06843646704187607,
+        "min": 0.042467767856531384
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 5.268513027307435,
+        "mean": 1.7432794354243026,
+        "median": 1.689587744499916,
+        "min": 0.1870796955867062
+      },
+      "weak_identification_recovery_rule_triggered": true
+    },
+    "observation_scale": {
+      "best_versus_second_objective_gap": {
+        "max": 54.33218823636889,
+        "mean": 37.46770160976652,
+        "median": 42.14185795722369,
+        "min": 0.27024942566276877
+      },
+      "boundary_selection_frequency": 0.0,
+      "confusion_frequencies": [
+        {
+          "count": 5,
+          "generating_value": "1.6",
+          "selected_value": "1.4"
+        },
+        {
+          "count": 19,
+          "generating_value": "1.6",
+          "selected_value": "1.6"
+        },
+        {
+          "count": 1,
+          "generating_value": "1.6",
+          "selected_value": "1.9"
+        }
+      ],
+      "exact_recovery_count": 19,
+      "exact_recovery_frequency": 0.76,
+      "exact_truth_replicates": 25,
+      "replicates": 25,
+      "selection_frequencies": [
+        {
+          "count": 5,
+          "value": 1.4
+        },
+        {
+          "count": 19,
+          "value": 1.6
+        },
+        {
+          "count": 1,
+          "value": 1.9
+        }
+      ],
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.8625,
+        "median": 0.9375,
+        "min": 0.625
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.07458200476118682,
+        "mean": 0.06957742100847442,
+        "median": 0.07003666539728795,
+        "min": 0.06657173688480159
+      },
+      "state_rmse": {
+        "max": 0.11647476634529182,
+        "mean": 0.07535376679973223,
+        "median": 0.06883043084105124,
+        "min": 0.042467767856531384
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 2.7657237806218253,
+        "mean": 1.2524509933391086,
+        "median": 0.9626332286175019,
+        "min": 0.36565707945537174
+      },
+      "weak_identification_recovery_rule_triggered": false
+    },
+    "student_t_df": {
+      "best_versus_second_objective_gap": {
+        "max": 34.09215041836978,
+        "mean": 19.398384000114746,
+        "median": 21.325420429167934,
+        "min": 0.6252493387246432
+      },
+      "boundary_selection_frequency": 0.36,
+      "confusion_frequencies": [
+        {
+          "count": 5,
+          "generating_value": "3.5",
+          "selected_value": "3.5"
+        },
+        {
+          "count": 1,
+          "generating_value": "30.0",
+          "selected_value": "15.0"
+        },
+        {
+          "count": 4,
+          "generating_value": "30.0",
+          "selected_value": "30.0"
+        },
+        {
+          "count": 15,
+          "generating_value": "5.0",
+          "selected_value": "5.0"
+        }
+      ],
+      "exact_recovery_count": 24,
+      "exact_recovery_frequency": 0.96,
+      "exact_truth_replicates": 25,
+      "replicates": 25,
+      "selection_frequencies": [
+        {
+          "count": 5,
+          "value": 3.5
+        },
+        {
+          "count": 15,
+          "value": 5.0
+        },
+        {
+          "count": 1,
+          "value": 15.0
+        },
+        {
+          "count": 4,
+          "value": 30.0
+        }
+      ],
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.865,
+        "median": 0.9375,
+        "min": 0.625
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.070603199709224,
+        "mean": 0.06995279618862643,
+        "median": 0.07003666539728795,
+        "min": 0.06904789948511156
+      },
+      "state_rmse": {
+        "max": 0.11647476634529182,
+        "mean": 0.07555075510092103,
+        "median": 0.06761675246956642,
+        "min": 0.042429950863984524
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 2.7657237806218253,
+        "mean": 1.2471680881886793,
+        "median": 0.9420520589203115,
+        "min": 0.3623238126331185
+      },
+      "weak_identification_recovery_rule_triggered": false
+    }
+  },
+  "by_regime": {
+    "baseline_like": {
+      "best_versus_second_objective_gap": {
+        "max": 53.493264946382624,
+        "mean": 16.49141333089865,
+        "median": 9.330513527401308,
+        "min": 0.0022280713565123733
+      },
+      "boundary_selection_frequency": 0.15,
+      "exact_recovery_count": 15,
+      "exact_recovery_frequency": 0.75,
+      "exact_truth_replicates": 20,
+      "replicates": 20,
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.9125,
+        "median": 0.9375,
+        "min": 0.75
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.09431952032497021,
+        "mean": 0.06946510252186307,
+        "median": 0.07003477815370186,
+        "min": 0.050531455114243416
+      },
+      "state_rmse": {
+        "max": 0.07823736501503284,
+        "mean": 0.06906458096330961,
+        "median": 0.0690839623613918,
+        "min": 0.06356125312475534
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 2.0201409395406733,
+        "mean": 1.0560976937657431,
+        "median": 0.9723885481102805,
+        "min": 0.5026553405260497
+      }
+    },
+    "heavier_tails": {
+      "best_versus_second_objective_gap": {
+        "max": 34.09215041836978,
+        "mean": 9.483316928364184,
+        "median": 0.43752650721216924,
+        "min": 0.0025949690279958304
+      },
+      "boundary_selection_frequency": 0.4,
+      "exact_recovery_count": 11,
+      "exact_recovery_frequency": 0.55,
+      "exact_truth_replicates": 20,
+      "replicates": 20,
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.91875,
+        "median": 0.9375,
+        "min": 0.75
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.1241554082993166,
+        "mean": 0.07233567009694616,
+        "median": 0.07039793674825534,
+        "min": 0.05078110971530901
+      },
+      "state_rmse": {
+        "max": 0.09242376844718674,
+        "mean": 0.06367476294614555,
+        "median": 0.06253675834435625,
+        "min": 0.03779379890314505
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 3.307806475700865,
+        "mean": 0.9539514552282086,
+        "median": 0.6831393194925962,
+        "min": 0.22840128715202965
+      }
+    },
+    "high_persistence_low_process": {
+      "best_versus_second_objective_gap": {
+        "max": 53.671071345133896,
+        "mean": 16.613861793547585,
+        "median": 9.573034994032241,
+        "min": 0.033802862077209284
+      },
+      "boundary_selection_frequency": 0.45,
+      "exact_recovery_count": 16,
+      "exact_recovery_frequency": 0.8,
+      "exact_truth_replicates": 20,
+      "replicates": 20,
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.915625,
+        "median": 1.0,
+        "min": 0.625
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.12375965921430136,
+        "mean": 0.07887551553270686,
+        "median": 0.07005234282571454,
+        "min": 0.05053083803223608
+      },
+      "state_rmse": {
+        "max": 0.08632287848921935,
+        "mean": 0.06990137023300043,
+        "median": 0.06545061848783376,
+        "min": 0.05340339366844343
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 2.920807874343695,
+        "mean": 0.9921249600658602,
+        "median": 0.7873319237536249,
+        "min": 0.1870796955867062
+      }
+    },
+    "lighter_tails": {
+      "best_versus_second_objective_gap": {
+        "max": 51.12639033065898,
+        "mean": 12.228781159195297,
+        "median": 0.5310458922435828,
+        "min": 0.05497093379381113
+      },
+      "boundary_selection_frequency": 0.4,
+      "exact_recovery_count": 6,
+      "exact_recovery_frequency": 0.3,
+      "exact_truth_replicates": 20,
+      "replicates": 20,
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.9,
+        "median": 0.9375,
+        "min": 0.75
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.09395747699916901,
+        "mean": 0.0678805083922633,
+        "median": 0.06786055037416905,
+        "min": 0.050086677718281264
+      },
+      "state_rmse": {
+        "max": 0.0782001078929098,
+        "mean": 0.06510840040986791,
+        "median": 0.06517021023395128,
+        "min": 0.05659691334895133
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 1.8006825194001126,
+        "mean": 0.9900486305393199,
+        "median": 0.9102500383624008,
+        "min": 0.4940697981600319
+      }
+    },
+    "low_persistence_high_process": {
+      "best_versus_second_objective_gap": {
+        "max": 54.33218823636889,
+        "mean": 16.82044153932111,
+        "median": 9.213498404023085,
+        "min": 0.006781857935493463
+      },
+      "boundary_selection_frequency": 0.35,
+      "exact_recovery_count": 14,
+      "exact_recovery_frequency": 0.7,
+      "exact_truth_replicates": 20,
+      "replicates": 20,
+      "state_coverage_90": {
+        "max": 0.75,
+        "mean": 0.578125,
+        "median": 0.625,
+        "min": 0.3125
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.07009176944465113,
+        "mean": 0.06293581763644389,
+        "median": 0.0700314991458599,
+        "min": 0.050539068169203526
+      },
+      "state_rmse": {
+        "max": 0.11647476634529182,
+        "mean": 0.1097063256443834,
+        "median": 0.11111110512628736,
+        "min": 0.09418578773312448
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 5.268513027307435,
+        "mean": 3.2496094384120724,
+        "median": 2.66977258155496,
+        "min": 2.156081820332086
+      }
+    }
+  },
+  "by_regime_and_profile": {
+    "baseline_like": {
+      "joint_persistence": {
+        "best_versus_second_objective_gap": {
+          "max": 0.2643380660483672,
+          "mean": 0.1628392146594706,
+          "median": 0.1252257091946376,
+          "min": 0.08548866222736251
+        },
+        "boundary_selection_frequency": 0.2,
+        "confusion_frequencies": [
+          {
+            "count": 1,
+            "generating_value": "0.96",
+            "selected_value": "0.93"
+          },
+          {
+            "count": 3,
+            "generating_value": "0.96",
+            "selected_value": "0.96"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.96",
+            "selected_value": "0.99"
+          }
+        ],
+        "exact_recovery_count": 3,
+        "exact_recovery_frequency": 0.6,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 1,
+            "value": 0.93
+          },
+          {
+            "count": 3,
+            "value": 0.96
+          },
+          {
+            "count": 1,
+            "value": 0.99
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.9375,
+          "mean": 0.9125,
+          "median": 0.9375,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.08372259098057133,
+          "mean": 0.07066905381717441,
+          "median": 0.07004950857248791,
+          "min": 0.05945147625258053
+        },
+        "state_rmse": {
+          "max": 0.07823736501503284,
+          "mean": 0.07089856515508322,
+          "median": 0.06998056747755564,
+          "min": 0.06479665428505138
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.7317344030951782,
+          "mean": 1.0651438385801772,
+          "median": 0.9723885481102805,
+          "min": 0.6972705586986618
+        }
+      },
+      "joint_process_sd": {
+        "best_versus_second_objective_gap": {
+          "max": 0.44521305457783455,
+          "mean": 0.19399639933071738,
+          "median": 0.2170817760979844,
+          "min": 0.0022280713565123733
+        },
+        "boundary_selection_frequency": 0.4,
+        "confusion_frequencies": [
+          {
+            "count": 2,
+            "generating_value": "0.025",
+            "selected_value": "0.0125"
+          },
+          {
+            "count": 2,
+            "generating_value": "0.025",
+            "selected_value": "0.025"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.025",
+            "selected_value": "0.04"
+          }
+        ],
+        "exact_recovery_count": 2,
+        "exact_recovery_frequency": 0.4,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 2,
+            "value": 0.0125
+          },
+          {
+            "count": 2,
+            "value": 0.025
+          },
+          {
+            "count": 1,
+            "value": 0.04
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.8875,
+          "median": 0.9375,
+          "min": 0.75
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.09431952032497021,
+          "mean": 0.06710205563871192,
+          "median": 0.07003477815370186,
+          "min": 0.050531455114243416
+        },
+        "state_rmse": {
+          "max": 0.07180804435618661,
+          "mean": 0.06815291227910722,
+          "median": 0.06819435451932665,
+          "min": 0.06479665428505138
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 2.0201409395406733,
+          "mean": 1.2345168862420168,
+          "median": 0.9723885481102805,
+          "min": 0.5026553405260497
+        }
+      },
+      "observation_scale": {
+        "best_versus_second_objective_gap": {
+          "max": 53.493264946382624,
+          "mean": 44.58626234470139,
+          "median": 46.047217408504366,
+          "min": 34.02798148747934
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "1.6",
+            "selected_value": "1.6"
+          }
+        ],
+        "exact_recovery_count": 5,
+        "exact_recovery_frequency": 1.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 1.6
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.9375,
+          "mean": 0.925,
+          "median": 0.9375,
+          "min": 0.875
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.0700869151265304,
+          "mean": 0.07004465031578297,
+          "median": 0.07003477815370186,
+          "min": 0.0700246925536345
+        },
+        "state_rmse": {
+          "max": 0.07318096964003724,
+          "mean": 0.06860342320952403,
+          "median": 0.0690839623613918,
+          "min": 0.06356125312475534
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.0921957517941943,
+          "mean": 0.9623650251203891,
+          "median": 0.9723885481102805,
+          "min": 0.8229151427007052
+        }
+      },
+      "student_t_df": {
+        "best_versus_second_objective_gap": {
+          "max": 22.528362142425976,
+          "mean": 21.02255536490302,
+          "median": 21.36657766602366,
+          "min": 18.215814000224782
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "5.0",
+            "selected_value": "5.0"
+          }
+        ],
+        "exact_recovery_count": 5,
+        "exact_recovery_frequency": 1.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 5.0
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.9375,
+          "mean": 0.925,
+          "median": 0.9375,
+          "min": 0.875
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.0700869151265304,
+          "mean": 0.07004465031578297,
+          "median": 0.07003477815370186,
+          "min": 0.0700246925536345
+        },
+        "state_rmse": {
+          "max": 0.07318096964003724,
+          "mean": 0.06860342320952403,
+          "median": 0.0690839623613918,
+          "min": 0.06356125312475534
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.0921957517941943,
+          "mean": 0.9623650251203891,
+          "median": 0.9723885481102805,
+          "min": 0.8229151427007052
+        }
+      }
+    },
+    "heavier_tails": {
+      "joint_persistence": {
+        "best_versus_second_objective_gap": {
+          "max": 0.38312476573264576,
+          "mean": 0.19047856538491031,
+          "median": 0.1724379783954646,
+          "min": 0.08281399480802065
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 2,
+            "generating_value": "0.96",
+            "selected_value": "0.93"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.96",
+            "selected_value": "0.96"
+          },
+          {
+            "count": 2,
+            "generating_value": "0.96",
+            "selected_value": "0.98"
+          }
+        ],
+        "exact_recovery_count": 1,
+        "exact_recovery_frequency": 0.2,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 2,
+            "value": 0.93
+          },
+          {
+            "count": 1,
+            "value": 0.96
+          },
+          {
+            "count": 2,
+            "value": 0.98
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.9,
+          "median": 0.9375,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.07922286799037803,
+          "mean": 0.06956192493883298,
+          "median": 0.07025232927342814,
+          "min": 0.059582132553842926
+        },
+        "state_rmse": {
+          "max": 0.08751412928508025,
+          "mean": 0.06224661191161936,
+          "median": 0.06131672058172236,
+          "min": 0.03779379890314505
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.5496929228502432,
+          "mean": 0.9155689775623218,
+          "median": 0.9212428588611006,
+          "min": 0.22840128715202965
+        }
+      },
+      "joint_process_sd": {
+        "best_versus_second_objective_gap": {
+          "max": 0.4919282486916927,
+          "mean": 0.16412104164446645,
+          "median": 0.07515408531071444,
+          "min": 0.0025949690279958304
+        },
+        "boundary_selection_frequency": 0.6,
+        "confusion_frequencies": [
+          {
+            "count": 2,
+            "generating_value": "0.025",
+            "selected_value": "0.0125"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.025",
+            "selected_value": "0.025"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.025",
+            "selected_value": "0.04"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.025",
+            "selected_value": "0.06"
+          }
+        ],
+        "exact_recovery_count": 1,
+        "exact_recovery_frequency": 0.2,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 2,
+            "value": 0.0125
+          },
+          {
+            "count": 1,
+            "value": 0.025
+          },
+          {
+            "count": 1,
+            "value": 0.04
+          },
+          {
+            "count": 1,
+            "value": 0.06
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.925,
+          "median": 1.0,
+          "min": 0.75
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.1241554082993166,
+          "mean": 0.0781177317591902,
+          "median": 0.07024046060001081,
+          "min": 0.05078110971530901
+        },
+        "state_rmse": {
+          "max": 0.09242376844718674,
+          "mean": 0.06679611711606422,
+          "median": 0.06689578612773671,
+          "min": 0.042467767856531384
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 3.307806475700865,
+          "mean": 1.2334666959886131,
+          "median": 0.4548428741413037,
+          "min": 0.30383083241226605
+        }
+      },
+      "observation_scale": {
+        "best_versus_second_objective_gap": {
+          "max": 14.553679672932049,
+          "mean": 7.977594755860627,
+          "median": 11.736236477392595,
+          "min": 0.27024942566276877
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 4,
+            "generating_value": "1.6",
+            "selected_value": "1.6"
+          },
+          {
+            "count": 1,
+            "generating_value": "1.6",
+            "selected_value": "1.9"
+          }
+        ],
+        "exact_recovery_count": 4,
+        "exact_recovery_frequency": 0.8,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 4,
+            "value": 1.6
+          },
+          {
+            "count": 1,
+            "value": 1.9
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.925,
+          "median": 0.9375,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.07458200476118682,
+          "mean": 0.07112918127274158,
+          "median": 0.07026294668066396,
+          "min": 0.07024046060001081
+        },
+        "state_rmse": {
+          "max": 0.08751412928508025,
+          "mean": 0.06291757530510382,
+          "median": 0.06009116102567032,
+          "min": 0.042467767856531384
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.5496929228502432,
+          "mean": 0.8304353014707777,
+          "median": 0.6486856087742765,
+          "min": 0.36565707945537174
+        }
+      },
+      "student_t_df": {
+        "best_versus_second_objective_gap": {
+          "max": 34.09215041836978,
+          "mean": 29.60107335056673,
+          "median": 28.812199741760196,
+          "min": 24.69570272877354
+        },
+        "boundary_selection_frequency": 1.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "3.5",
+            "selected_value": "3.5"
+          }
+        ],
+        "exact_recovery_count": 5,
+        "exact_recovery_frequency": 1.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 3.5
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.925,
+          "median": 0.9375,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.070603199709224,
+          "mean": 0.07053384241701989,
+          "median": 0.07051298820424215,
+          "min": 0.07048770844809248
+        },
+        "state_rmse": {
+          "max": 0.08799783928446687,
+          "mean": 0.06273874745179486,
+          "median": 0.05983877444410413,
+          "min": 0.042429950863984524
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.555550194147843,
+          "mean": 0.8363348458911218,
+          "median": 0.7175930302109159,
+          "min": 0.3623238126331185
+        }
+      }
+    },
+    "high_persistence_low_process": {
+      "joint_persistence": {
+        "best_versus_second_objective_gap": {
+          "max": 0.8694296252833738,
+          "mean": 0.34491091223899273,
+          "median": 0.3049313353149046,
+          "min": 0.05371940546137921
+        },
+        "boundary_selection_frequency": 0.8,
+        "confusion_frequencies": [
+          {
+            "count": 1,
+            "generating_value": "0.99",
+            "selected_value": "0.96"
+          },
+          {
+            "count": 4,
+            "generating_value": "0.99",
+            "selected_value": "0.99"
+          }
+        ],
+        "exact_recovery_count": 4,
+        "exact_recovery_frequency": 0.8,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 1,
+            "value": 0.96
+          },
+          {
+            "count": 4,
+            "value": 0.99
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.9625,
+          "median": 1.0,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.08382037253395225,
+          "mean": 0.08101390929285808,
+          "median": 0.08373571339476255,
+          "min": 0.07002318862091464
+        },
+        "state_rmse": {
+          "max": 0.08511215832109988,
+          "mean": 0.0679202786239346,
+          "median": 0.0641934864999768,
+          "min": 0.057167294647964224
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.4779625134158896,
+          "mean": 0.7593558624224747,
+          "median": 0.5871814549721517,
+          "min": 0.46653726241632576
+        }
+      },
+      "joint_process_sd": {
+        "best_versus_second_objective_gap": {
+          "max": 0.7779243180193589,
+          "mean": 0.24235425556471454,
+          "median": 0.15767470619357482,
+          "min": 0.033802862077209284
+        },
+        "boundary_selection_frequency": 1.0,
+        "confusion_frequencies": [
+          {
+            "count": 2,
+            "generating_value": "0.0125",
+            "selected_value": "0.0125"
+          },
+          {
+            "count": 3,
+            "generating_value": "0.0125",
+            "selected_value": "0.06"
+          }
+        ],
+        "exact_recovery_count": 2,
+        "exact_recovery_frequency": 0.4,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 2,
+            "value": 0.0125
+          },
+          {
+            "count": 3,
+            "value": 0.06
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.9,
+          "median": 1.0,
+          "min": 0.625
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.12375965921430136,
+          "mean": 0.0943953278222398,
+          "median": 0.12352955830055523,
+          "min": 0.05053083803223608
+        },
+        "state_rmse": {
+          "max": 0.08632287848921935,
+          "mean": 0.06984711183240414,
+          "median": 0.07129571153373562,
+          "min": 0.05340339366844343
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 2.920807874343695,
+          "mean": 1.0960117491880559,
+          "median": 0.3429871200648469,
+          "min": 0.1870796955867062
+        }
+      },
+      "observation_scale": {
+        "best_versus_second_objective_gap": {
+          "max": 53.671071345133896,
+          "mean": 44.864799368373134,
+          "median": 46.34492029149442,
+          "min": 34.86407352138667
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "1.6",
+            "selected_value": "1.6"
+          }
+        ],
+        "exact_recovery_count": 5,
+        "exact_recovery_frequency": 1.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 1.6
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.9,
+          "median": 0.9375,
+          "min": 0.75
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.07008785437353615,
+          "mean": 0.0700464125078648,
+          "median": 0.07003794589432055,
+          "min": 0.07002318862091464
+        },
+        "state_rmse": {
+          "max": 0.08608224191746447,
+          "mean": 0.0709190452378315,
+          "median": 0.06512426614080159,
+          "min": 0.05614562510004472
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.5106354352378748,
+          "mean": 1.0565661143264555,
+          "median": 0.8647507626732227,
+          "min": 0.6421499365516656
+        }
+      },
+      "student_t_df": {
+        "best_versus_second_objective_gap": {
+          "max": 22.523345748446445,
+          "mean": 21.0033826380135,
+          "median": 21.325420429167934,
+          "min": 18.27664036278111
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "5.0",
+            "selected_value": "5.0"
+          }
+        ],
+        "exact_recovery_count": 5,
+        "exact_recovery_frequency": 1.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 5.0
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.9,
+          "median": 0.9375,
+          "min": 0.75
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.07008785437353615,
+          "mean": 0.0700464125078648,
+          "median": 0.07003794589432055,
+          "min": 0.07002318862091464
+        },
+        "state_rmse": {
+          "max": 0.08608224191746447,
+          "mean": 0.0709190452378315,
+          "median": 0.06512426614080159,
+          "min": 0.05614562510004472
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.5106354352378748,
+          "mean": 1.0565661143264555,
+          "median": 0.8647507626732227,
+          "min": 0.6421499365516656
+        }
+      }
+    },
+    "lighter_tails": {
+      "joint_persistence": {
+        "best_versus_second_objective_gap": {
+          "max": 0.34673404266413854,
+          "mean": 0.2336750805556221,
+          "median": 0.2420129867241485,
+          "min": 0.1182609024363046
+        },
+        "boundary_selection_frequency": 0.2,
+        "confusion_frequencies": [
+          {
+            "count": 2,
+            "generating_value": "0.96",
+            "selected_value": "0.93"
+          },
+          {
+            "count": 2,
+            "generating_value": "0.96",
+            "selected_value": "0.96"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.96",
+            "selected_value": "0.99"
+          }
+        ],
+        "exact_recovery_count": 2,
+        "exact_recovery_frequency": 0.4,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 2,
+            "value": 0.93
+          },
+          {
+            "count": 2,
+            "value": 0.96
+          },
+          {
+            "count": 1,
+            "value": 0.99
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.9,
+          "median": 0.875,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.08307192412720393,
+          "mean": 0.06818326847896597,
+          "median": 0.06962706606120742,
+          "min": 0.059247024062276735
+        },
+        "state_rmse": {
+          "max": 0.06655159693599295,
+          "mean": 0.06447895011351253,
+          "median": 0.0650932601328369,
+          "min": 0.061975654678654124
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.2604077872938362,
+          "mean": 0.9383491935543038,
+          "median": 0.8837030853264993,
+          "min": 0.6139751945263998
+        }
+      },
+      "joint_process_sd": {
+        "best_versus_second_objective_gap": {
+          "max": 0.4368424457625224,
+          "mean": 0.23736123193702952,
+          "median": 0.28580138688175794,
+          "min": 0.05497093379381113
+        },
+        "boundary_selection_frequency": 0.6,
+        "confusion_frequencies": [
+          {
+            "count": 3,
+            "generating_value": "0.025",
+            "selected_value": "0.0125"
+          },
+          {
+            "count": 2,
+            "generating_value": "0.025",
+            "selected_value": "0.04"
+          }
+        ],
+        "exact_recovery_count": 0,
+        "exact_recovery_frequency": 0.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 3,
+            "value": 0.0125
+          },
+          {
+            "count": 2,
+            "value": 0.04
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.9375,
+          "mean": 0.8875,
+          "median": 0.9375,
+          "min": 0.75
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.09395747699916901,
+          "mean": 0.06763008693153519,
+          "median": 0.050168656756512345,
+          "min": 0.050086677718281264
+        },
+        "state_rmse": {
+          "max": 0.0782001078929098,
+          "mean": 0.06671442864634534,
+          "median": 0.06596413798690187,
+          "min": 0.05701397597856362
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.8006825194001126,
+          "mean": 1.1944922337598172,
+          "median": 1.2948114997955416,
+          "min": 0.4940697981600319
+        }
+      },
+      "observation_scale": {
+        "best_versus_second_objective_gap": {
+          "max": 51.12639033065898,
+          "mean": 44.17188821121308,
+          "median": 50.48537652531195,
+          "min": 30.52702988523197
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "1.6",
+            "selected_value": "1.4"
+          }
+        ],
+        "exact_recovery_count": 0,
+        "exact_recovery_frequency": 0.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 1.4
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.9375,
+          "mean": 0.9,
+          "median": 0.9375,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.06667320126322654,
+          "mean": 0.0666182317010351,
+          "median": 0.06660765867614543,
+          "min": 0.06657173688480159
+        },
+        "state_rmse": {
+          "max": 0.07199963022389366,
+          "mean": 0.06403822676018042,
+          "median": 0.06426579719206135,
+          "min": 0.05659691334895133
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.16663433114633,
+          "mean": 0.9298335825078257,
+          "median": 0.931814917352954,
+          "min": 0.7217280146374203
+        }
+      },
+      "student_t_df": {
+        "best_versus_second_objective_gap": {
+          "max": 9.968198124357514,
+          "mean": 4.272200113075451,
+          "median": 3.552118409303148,
+          "min": 0.6252493387246432
+        },
+        "boundary_selection_frequency": 0.8,
+        "confusion_frequencies": [
+          {
+            "count": 1,
+            "generating_value": "30.0",
+            "selected_value": "15.0"
+          },
+          {
+            "count": 4,
+            "generating_value": "30.0",
+            "selected_value": "30.0"
+          }
+        ],
+        "exact_recovery_count": 4,
+        "exact_recovery_frequency": 0.8,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 1,
+            "value": 15.0
+          },
+          {
+            "count": 4,
+            "value": 30.0
+          }
+        ],
+        "state_coverage_90": {
+          "max": 1.0,
+          "mean": 0.9125,
+          "median": 0.9375,
+          "min": 0.8125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.0692372767469988,
+          "mean": 0.06909044645751691,
+          "median": 0.06905088777059411,
+          "min": 0.06904789948511156
+        },
+        "state_rmse": {
+          "max": 0.07473404489612359,
+          "mean": 0.0652019961194334,
+          "median": 0.06509978300159945,
+          "min": 0.05810775792932393
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 1.1710362774419631,
+          "mean": 0.8975195123353341,
+          "median": 0.8886851593718477,
+          "min": 0.7081593266376768
+        }
+      }
+    },
+    "low_persistence_high_process": {
+      "joint_persistence": {
+        "best_versus_second_objective_gap": {
+          "max": 0.7194539124648145,
+          "mean": 0.29626592669956153,
+          "median": 0.22777629720985715,
+          "min": 0.006781857935493463
+        },
+        "boundary_selection_frequency": 0.8,
+        "confusion_frequencies": [
+          {
+            "count": 4,
+            "generating_value": "0.9",
+            "selected_value": "0.9"
+          },
+          {
+            "count": 1,
+            "generating_value": "0.9",
+            "selected_value": "0.93"
+          }
+        ],
+        "exact_recovery_count": 4,
+        "exact_recovery_frequency": 0.8,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 4,
+            "value": 0.9
+          },
+          {
+            "count": 1,
+            "value": 0.93
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.5625,
+          "mean": 0.5,
+          "median": 0.5625,
+          "min": 0.375
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.059492989613689005,
+          "mean": 0.05330654523863378,
+          "median": 0.05176097886589487,
+          "min": 0.051757232204156754
+        },
+        "state_rmse": {
+          "max": 0.11526856703035925,
+          "mean": 0.10728276453752812,
+          "median": 0.10853684803614043,
+          "min": 0.09418578773312448
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 4.652479101766973,
+          "mean": 4.07441825516509,
+          "median": 4.256364202679157,
+          "min": 3.3096997343496275
+        }
+      },
+      "joint_process_sd": {
+        "best_versus_second_objective_gap": {
+          "max": 0.42398210950705106,
+          "mean": 0.15482832788547968,
+          "median": 0.10898049314891978,
+          "min": 0.03153721698981826
+        },
+        "boundary_selection_frequency": 0.6,
+        "confusion_frequencies": [
+          {
+            "count": 3,
+            "generating_value": "0.06",
+            "selected_value": "0.0125"
+          },
+          {
+            "count": 2,
+            "generating_value": "0.06",
+            "selected_value": "0.025"
+          }
+        ],
+        "exact_recovery_count": 0,
+        "exact_recovery_frequency": 0.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 3,
+            "value": 0.0125
+          },
+          {
+            "count": 2,
+            "value": 0.025
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.75,
+          "mean": 0.4875,
+          "median": 0.375,
+          "min": 0.3125
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.07003297724385343,
+          "mean": 0.058339466817246555,
+          "median": 0.05055371248558549,
+          "min": 0.050539068169203526
+        },
+        "state_rmse": {
+          "max": 0.11588954643147167,
+          "mean": 0.11096141106796283,
+          "median": 0.11236542332597974,
+          "min": 0.10288818567435253
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 5.268513027307435,
+          "mean": 3.95790961194301,
+          "median": 4.840328378226188,
+          "min": 2.156081820332086
+        }
+      },
+      "observation_scale": {
+        "best_versus_second_objective_gap": {
+          "max": 54.33218823636889,
+          "mean": 45.73796336868436,
+          "median": 47.23757767084862,
+          "min": 34.9377558242395
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "1.6",
+            "selected_value": "1.6"
+          }
+        ],
+        "exact_recovery_count": 5,
+        "exact_recovery_frequency": 1.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 1.6
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.75,
+          "mean": 0.6625,
+          "median": 0.625,
+          "min": 0.625
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.07009176944465113,
+          "mean": 0.07004862924494762,
+          "median": 0.07003666539728795,
+          "min": 0.0700314991458599
+        },
+        "state_rmse": {
+          "max": 0.11647476634529182,
+          "mean": 0.11029056348602137,
+          "median": 0.11094521335119957,
+          "min": 0.10288818567435253
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 2.7657237806218253,
+          "mean": 2.4830549432700963,
+          "median": 2.5059681063716623,
+          "min": 2.156081820332086
+        }
+      },
+      "student_t_df": {
+        "best_versus_second_objective_gap": {
+          "max": 23.12657949345521,
+          "mean": 21.09270853401504,
+          "median": 21.26430363064901,
+          "min": 17.707542895581355
+        },
+        "boundary_selection_frequency": 0.0,
+        "confusion_frequencies": [
+          {
+            "count": 5,
+            "generating_value": "5.0",
+            "selected_value": "5.0"
+          }
+        ],
+        "exact_recovery_count": 5,
+        "exact_recovery_frequency": 1.0,
+        "exact_truth_replicates": 5,
+        "replicates": 5,
+        "selection_frequencies": [
+          {
+            "count": 5,
+            "value": 5.0
+          }
+        ],
+        "state_coverage_90": {
+          "max": 0.75,
+          "mean": 0.6625,
+          "median": 0.625,
+          "min": 0.625
+        },
+        "state_mean_posterior_sd": {
+          "max": 0.07009176944465113,
+          "mean": 0.07004862924494762,
+          "median": 0.07003666539728795,
+          "min": 0.0700314991458599
+        },
+        "state_rmse": {
+          "max": 0.11647476634529182,
+          "mean": 0.11029056348602137,
+          "median": 0.11094521335119957,
+          "min": 0.10288818567435253
+        },
+        "state_standardized_squared_error_mean": {
+          "max": 2.7657237806218253,
+          "mean": 2.4830549432700963,
+          "median": 2.5059681063716623,
+          "min": 2.156081820332086
+        }
+      }
+    }
+  },
+  "candidate_profiles": 100,
+  "evidence_class": "synthetic",
+  "experiment_id": "phase3b_hyperparameter_identification_v1",
+  "overall": {
+    "best_versus_second_objective_gap": {
+      "max": 54.33218823636889,
+      "mean": 14.327562950265365,
+      "median": 0.7486891152420867,
+      "min": 0.0022280713565123733
+    },
+    "boundary_selection_frequency": 0.35,
+    "exact_recovery_count": 62,
+    "exact_recovery_frequency": 0.62,
+    "exact_truth_replicates": 100,
+    "replicates": 100,
+    "state_coverage_90": {
+      "max": 1.0,
+      "mean": 0.845,
+      "median": 0.9375,
+      "min": 0.3125
+    },
+    "state_mean_posterior_sd": {
+      "max": 0.1241554082993166,
+      "mean": 0.07029852283604465,
+      "median": 0.07003477815370186,
+      "min": 0.050086677718281264
+    },
+    "state_rmse": {
+      "max": 0.11647476634529182,
+      "mean": 0.0754910880393414,
+      "median": 0.06831541078060135,
+      "min": 0.03779379890314505
+    },
+    "state_standardized_squared_error_mean": {
+      "max": 5.268513027307435,
+      "mean": 1.4483664356022408,
+      "median": 0.9723885481102805,
+      "min": 0.1870796955867062
+    }
+  },
+  "prospective_evidence": false,
+  "raw_rows": 100,
+  "regimes": [
+    {
+      "defense_process_sd": 0.06,
+      "defense_rho": 0.9,
+      "name": "low_persistence_high_process",
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.06,
+      "offense_rho": 0.9,
+      "student_t_df": 5.0
+    },
+    {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "name": "baseline_like",
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "student_t_df": 5.0
+    },
+    {
+      "defense_process_sd": 0.0125,
+      "defense_rho": 0.99,
+      "name": "high_persistence_low_process",
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.0125,
+      "offense_rho": 0.99,
+      "student_t_df": 5.0
+    },
+    {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "name": "lighter_tails",
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "student_t_df": 30.0
+    },
+    {
+      "defense_process_sd": 0.025,
+      "defense_rho": 0.96,
+      "name": "heavier_tails",
+      "observation_sd": 1.6,
+      "offense_process_sd": 0.025,
+      "offense_rho": 0.96,
+      "student_t_df": 3.5
+    }
+  ],
+  "seeds": [
+    11,
+    29,
+    47,
+    83,
+    131
+  ],
+  "state_recovery_by_parameter_recovery": {
+    "exactly_recovered": {
+      "best_versus_second_objective_gap": {
+        "max": 54.33218823636889,
+        "mean": 19.409902097731695,
+        "median": 20.564095677284058,
+        "min": 0.0022280713565123733
+      },
+      "boundary_selection_frequency": 0.3064516129032258,
+      "exact_recovery_count": 62,
+      "exact_recovery_frequency": 1.0,
+      "exact_truth_replicates": 62,
+      "replicates": 62,
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.8487903225806451,
+        "median": 0.9375,
+        "min": 0.375
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.08382037253395225,
+        "mean": 0.06910657048578432,
+        "median": 0.07003794589432055,
+        "min": 0.05053083803223608
+      },
+      "state_rmse": {
+        "max": 0.11647476634529182,
+        "mean": 0.07671853627761666,
+        "median": 0.0690839623613918,
+        "min": 0.042429950863984524
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 4.652479101766973,
+        "mean": 1.423882629967896,
+        "median": 0.9723885481102805,
+        "min": 0.3623238126331185
+      }
+    },
+    "not_exactly_recovered": {
+      "best_versus_second_objective_gap": {
+        "max": 51.12639033065898,
+        "mean": 6.035325393872929,
+        "median": 0.22954738141106645,
+        "min": 0.0025949690279958304
+      },
+      "boundary_selection_frequency": 0.42105263157894735,
+      "exact_recovery_count": 0,
+      "exact_recovery_frequency": 0.0,
+      "exact_truth_replicates": 38,
+      "replicates": 38,
+      "state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.8388157894736842,
+        "median": 0.875,
+        "min": 0.3125
+      },
+      "state_mean_posterior_sd": {
+        "max": 0.1241554082993166,
+        "mean": 0.0722432871969957,
+        "median": 0.06663086709105287,
+        "min": 0.050086677718281264
+      },
+      "state_rmse": {
+        "max": 0.11588954643147167,
+        "mean": 0.07348840933478706,
+        "median": 0.06702453501739251,
+        "min": 0.03779379890314505
+      },
+      "state_standardized_squared_error_mean": {
+        "max": 5.268513027307435,
+        "mean": 1.4883136974266993,
+        "median": 1.0527567543411354,
+        "min": 0.1870796955867062
+      }
+    }
+  }
+}
