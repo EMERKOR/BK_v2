@@ -1,0 +1,40 @@
+{
+  "experiment_id": "phase3b_hyperparameter_identification_v1",
+  "artifact_class": "retrospective_development_challenger",
+  "baseline": {
+    "offense_rho": 0.96,
+    "defense_rho": 0.96,
+    "offense_process_sd": 0.025,
+    "defense_process_sd": 0.025,
+    "observation_scale": 1.6,
+    "student_t_df": 5.0,
+    "initial_offense_sd": 0.2,
+    "initial_defense_sd": 0.2,
+    "initial_intercept_sd": 0.1,
+    "offseason_offense_rho": 0.7,
+    "offseason_defense_rho": 0.7,
+    "offseason_offense_sd": 0.08,
+    "offseason_defense_sd": 0.08,
+    "offseason_intercept_rho": 0.0,
+    "offseason_intercept_sd": 0.1
+  },
+  "profiles": {
+    "joint_persistence": [0.90, 0.93, 0.96, 0.98, 0.99],
+    "joint_process_sd": [0.0125, 0.025, 0.04, 0.06],
+    "observation_scale": [1.2, 1.4, 1.6, 1.9, 2.2],
+    "student_t_df": [3.5, 5.0, 8.0, 15.0, 30.0],
+    "joint_offseason_rho": [0.40, 0.55, 0.70, 0.82, 0.90],
+    "joint_offseason_sd": [0.04, 0.06, 0.08, 0.12, 0.16]
+  },
+  "fixed_in_v1": [
+    "initial_offense_sd",
+    "initial_defense_sd",
+    "initial_intercept_sd",
+    "offseason_intercept_rho",
+    "offseason_intercept_sd",
+    "observation_definition",
+    "eligible_play_rules",
+    "state_model_structure"
+  ],
+  "prospective_baseline_modified": false
+}
