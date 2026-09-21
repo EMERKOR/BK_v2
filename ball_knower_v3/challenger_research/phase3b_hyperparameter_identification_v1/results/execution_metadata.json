@@ -1,0 +1,56 @@
+{
+  "artifact_class": "retrospective_development_challenger",
+  "candidate_space_sha256": "89d46644218180e7917840b9b6f23de2329d2837353924e7a44732ad2e856c7a",
+  "command": "python -m ball_knower_v3.challenger_research.phase3b_hyperparameter_identification_v1.execute",
+  "completed_at": "2026-09-21T17:03:40.065891+00:00",
+  "deterministic_seeds": {
+    "stage_a_row_order": 20260920,
+    "stage_b": [
+      11,
+      29,
+      47,
+      83,
+      131
+    ]
+  },
+  "experiment_id": "phase3b_hyperparameter_identification_v1",
+  "experiment_spec_sha256": "3f0024fd2d2cfa43f74a87c93f6d6e97e1ac66389edc2cd2438678d1510ceec5",
+  "git_branch": "codex/phase3b-identification-results-v1",
+  "git_commit_sha": "5f92716954b186e381f45e42916c76240b40c396",
+  "input_file_hashes": {
+    "availability.parquet": "1ccb30a7dd319e793a4bb1f0ab9c5ecb8bf669a2f8aa71c2ca9e6dea1e1af81a",
+    "observation_games.parquet": "723588f0332a7a2762cc12a8a6c7e683ef8b572440d23c4f134681b1406c2c7b",
+    "origins.parquet": "58c343617dddfd7ce68f833a662bf93adc71d2ddcdae5338a2e175a3127c9160",
+    "plays.parquet": "e3e7cd66e23c48e8af25af0bb5e5f15ae9314625d94df97ce0ecf2797e2abdfe"
+  },
+  "output_directory": "ball_knower_v3/challenger_research/phase3b_hyperparameter_identification_v1/results",
+  "packages": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "pyarrow": "25.0.1",
+    "scipy": "1.18.1"
+  },
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "prospective_evidence": false,
+  "python": "3.14.2 (v3.14.2:df793163d58, Dec  5 2025, 12:18:06) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "stage_a_row_order_stability_passed": true,
+  "stage_b_replicate_rows": 100,
+  "stage_c_run": false,
+  "started_at": "2026-09-21T16:12:40.279231+00:00",
+  "successfully_reconstructed_stage_a_origins": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    22
+  ]
+}
