@@ -13,9 +13,8 @@ import pandas as pd
 
 from ball_knower_v3.modeling.canonical_adapter import WeeklyObservationBatch
 from ball_knower_v3.modeling.state_fitting import AvailableWeek
-from ball_knower_v3.modeling.team_state import StateSpaceConfig
 
-from .runner import baseline_config, load_candidate_space, run_one_factor_origin
+from .runner import load_candidate_space, run_one_factor_origin
 
 SIMULATION_START = pd.Timestamp("2020-09-01T00:00:00Z")
 DEFAULT_TEAMS = tuple("ABCDEFGH")
@@ -139,6 +138,30 @@ def generating_profile_value(regime: SyntheticRegime, profile: str) -> float | N
     return values.get(profile)
 
 
+def _selected_state_diagnostics(result, truth: SyntheticTruth) -> dict[str, float]:
+    selected = result.selected
+    n = len(result.team_ids)
+    truth_index = {team: index for index, team in enumerate(truth.team_ids)}
+    true_offense = np.asarray([truth.target_offense[truth_index[team]] for team in result.team_ids])
+    true_defense = np.asarray([truth.target_defense[truth_index[team]] for team in result.team_ids])
+    mean = np.asarray(selected.posterior_mean)
+    covariance = np.asarray(selected.posterior_covariance)
+    predicted = np.concatenate([mean[:n], mean[n:2 * n]])
+    actual = np.concatenate([true_offense, true_defense])
+    variances = np.clip(np.diag(covariance)[:2 * n], 0.0, None)
+    sd = np.sqrt(variances)
+    error = predicted - actual
+    positive = sd > 0
+    if not positive.all():
+        raise ValueError("synthetic state recovery requires positive marginal uncertainty")
+    return {
+        "state_rmse": float(np.sqrt(np.mean(error ** 2))),
+        "state_coverage_90": float(np.mean(np.abs(error) <= 1.6448536269514722 * sd)),
+        "state_standardized_squared_error_mean": float(np.mean((error / sd) ** 2)),
+        "state_mean_posterior_sd": float(np.mean(sd)),
+    }
+
+
 def run_recovery_replicate(
     regime: SyntheticRegime,
     *,
@@ -187,6 +210,7 @@ def run_recovery_replicate(
             ),
             "selected_objective_delta_from_baseline": selected.objective_delta_from_baseline,
             "selected_config_sha256": selected.config_sha256,
+            **_selected_state_diagnostics(result, truth),
         })
     return tuple(rows)
 
