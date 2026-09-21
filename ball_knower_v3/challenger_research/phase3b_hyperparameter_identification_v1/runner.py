@@ -61,6 +61,15 @@ class ProfileCandidateResult:
     defense_posterior_sd_max: float
     league_intercept_mean: float
     league_intercept_sd: float
+    robust_weight_mean: float
+    robust_weight_median: float
+    robust_weight_p05: float
+    robust_weight_p01: float
+    robust_weight_min: float
+    robust_weight_fraction_below_050: float
+    robust_weight_fraction_below_025: float
+    posterior_mean: tuple[float, ...]
+    posterior_covariance: tuple[tuple[float, ...], ...]
 
 
 @dataclass(frozen=True)
@@ -71,6 +80,7 @@ class ProfileResult:
     target: tuple[int, int]
     profile: str
     baseline_value: float
+    team_ids: tuple[str, ...]
     training_weeks: tuple[tuple[int, int], ...]
     source_dataset_ids: tuple[str, ...]
     availability_evidence_ids: tuple[str, ...]
@@ -125,8 +135,7 @@ def build_profile_configs(payload: dict, profile: str) -> tuple[tuple[float, Sta
 
 def _baseline_profile_value(payload: dict, profile: str) -> float:
     base = baseline_config(payload)
-    fields = _PROFILE_FIELDS[profile]
-    values = {float(getattr(base, field)) for field in fields}
+    values = {float(getattr(base, field)) for field in _PROFILE_FIELDS[profile]}
     if len(values) != 1:
         raise ValueError(f"baseline fields for {profile} are not tied")
     value = values.pop()
@@ -155,22 +164,41 @@ def _regularization_score(config: StateSpaceConfig) -> float:
     return float(score)
 
 
+def _batch_robust_weights(model, offenses, defenses, values) -> np.ndarray:
+    config = model.config
+    means = np.asarray(
+        [model.matchup_moments(offense, defense)[0] for offense, defense in zip(offenses, defenses, strict=True)]
+    )
+    residuals = np.asarray(values, dtype=float) - means
+    standardized_sq = (residuals / config.observation_sd) ** 2
+    weights = (config.student_t_df + 1.0) / (config.student_t_df + standardized_sq)
+    return np.clip(weights, 1e-6, 1.0)
+
+
 def _replay(training, team_ids, config: StateSpaceConfig, target: tuple[int, int]):
     model = RobustOffenseDefenseFilter(team_ids, config)
     previous = None
+    robust_weights = []
     for week in training:
         key = (week.batch.season, week.batch.week)
         advance(model, previous, key)
+        robust_weights.extend(
+            _batch_robust_weights(
+                model, week.batch.offenses, week.batch.defenses, week.batch.epa
+            )
+        )
         model.update_game_batch(week.batch.offenses, week.batch.defenses, week.batch.epa)
         previous = key
     advance(model, previous, tuple(target))
-    return model
+    return model, np.asarray(robust_weights, dtype=float)
 
 
-def _state_diagnostics(model) -> dict[str, float]:
+def _state_diagnostics(model, robust_weights: np.ndarray) -> dict:
     posterior = model.posterior
     offense_sd = np.sqrt(np.clip(np.diag(posterior.offense_covariance), 0.0, None))
     defense_sd = np.sqrt(np.clip(np.diag(posterior.defense_covariance), 0.0, None))
+    if not len(robust_weights) or not np.isfinite(robust_weights).all():
+        raise ValueError("finite nonempty robust-weight diagnostics required")
     return {
         "offense_spread_sd": float(np.std(posterior.offense_mean)),
         "defense_spread_sd": float(np.std(posterior.defense_mean)),
@@ -182,6 +210,17 @@ def _state_diagnostics(model) -> dict[str, float]:
         "defense_posterior_sd_max": float(defense_sd.max()),
         "league_intercept_mean": posterior.league_intercept_mean,
         "league_intercept_sd": float(np.sqrt(posterior.league_intercept_var)),
+        "robust_weight_mean": float(np.mean(robust_weights)),
+        "robust_weight_median": float(np.median(robust_weights)),
+        "robust_weight_p05": float(np.quantile(robust_weights, 0.05)),
+        "robust_weight_p01": float(np.quantile(robust_weights, 0.01)),
+        "robust_weight_min": float(np.min(robust_weights)),
+        "robust_weight_fraction_below_050": float(np.mean(robust_weights < 0.5)),
+        "robust_weight_fraction_below_025": float(np.mean(robust_weights < 0.25)),
+        "posterior_mean": tuple(float(value) for value in posterior.mean),
+        "posterior_covariance": tuple(
+            tuple(float(value) for value in row) for row in posterior.covariance
+        ),
     }
 
 
@@ -211,8 +250,8 @@ def run_one_factor_origin(
     for value, config in build_profile_configs(payload, profile):
         regularization = _regularization_score(config)
         score = score_training(config, training, team_ids, log_prior=regularization)
-        model = _replay(training, team_ids, config, tuple(target))
-        staged.append((value, config, score, _state_diagnostics(model)))
+        model, robust_weights = _replay(training, team_ids, config, tuple(target))
+        staged.append((value, config, score, _state_diagnostics(model, robust_weights)))
 
     baseline_matches = [row for row in staged if row[0] == baseline_value]
     if len(baseline_matches) != 1:
@@ -246,6 +285,7 @@ def run_one_factor_origin(
         target=tuple(target),
         profile=profile,
         baseline_value=baseline_value,
+        team_ids=team_ids,
         training_weeks=tuple((week.batch.season, week.batch.week) for week in training),
         source_dataset_ids=tuple(sorted({week.dataset_id for week in training})),
         availability_evidence_ids=tuple(sorted({week.evidence_id for week in training})),
