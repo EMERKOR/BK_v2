@@ -11,6 +11,7 @@ from pathlib import Path
 import json
 
 import numpy as np
+from scipy.special import logsumexp
 
 from ball_knower_v3.modeling.state_fitting import (
     advance,
@@ -144,14 +145,8 @@ def _baseline_profile_value(payload: dict, profile: str) -> float:
     return value
 
 
-def _regularization_score(config: StateSpaceConfig) -> float:
-    """Unnormalized form of the finite-space regularizer used by Phase 3B.
-
-    The normalization constant is common to candidates within one profile, so it
-    cancels from candidate ranking and objective deltas. Keeping it unnormalized
-    avoids pretending each one-factor profile is the frozen prospective
-    CandidateSpace, whose schema intentionally requires all parameters to vary.
-    """
+def _raw_regularization_score(config: StateSpaceConfig) -> float:
+    """Raw finite-space regularizer used before within-profile normalization."""
     score = 0.0
     for name, value in asdict(config).items():
         if name.endswith("_sd"):
@@ -162,6 +157,12 @@ def _regularization_score(config: StateSpaceConfig) -> float:
         else:
             score -= (value - 2.0) / 10.0
     return float(score)
+
+
+def _profile_log_prior_masses(configs: tuple[StateSpaceConfig, ...]) -> np.ndarray:
+    """Normalize the existing Phase 3B regularizer over one frozen profile."""
+    raw = np.asarray([_raw_regularization_score(config) for config in configs])
+    return raw - logsumexp(raw)
 
 
 def _batch_robust_weights(model, offenses, defenses, values) -> np.ndarray:
@@ -245,11 +246,15 @@ def run_one_factor_origin(
         raise ValueError("no eligible prior-time training evidence")
     team_ids = tuple(sorted({team for week in training for team in (*week.batch.offenses, *week.batch.defenses)}))
     baseline_value = _baseline_profile_value(payload, profile)
+    profile_configs = build_profile_configs(payload, profile)
+    configs = tuple(config for _, config in profile_configs)
+    log_priors = _profile_log_prior_masses(configs)
 
     staged = []
-    for value, config in build_profile_configs(payload, profile):
-        regularization = _regularization_score(config)
-        score = score_training(config, training, team_ids, log_prior=regularization)
+    for (value, config), regularization in zip(profile_configs, log_priors, strict=True):
+        score = score_training(
+            config, training, team_ids, log_prior=float(regularization)
+        )
         model, robust_weights = _replay(training, team_ids, config, tuple(target))
         staged.append((value, config, score, _state_diagnostics(model, robust_weights)))
 
