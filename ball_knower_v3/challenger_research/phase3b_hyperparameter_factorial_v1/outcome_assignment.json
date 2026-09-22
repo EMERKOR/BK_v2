@@ -1,0 +1,19 @@
+{
+  "artifact_class": "retrospective_development_challenger",
+  "assignments": {
+    "persistence_process": {
+      "outcome": "C",
+      "outcome_label": "insufficient information",
+      "reason": "Exact synthetic joint-pair recovery was 9/35 (25.7%); all historical optima were on the boundary; all 20 candidates were within the 1% objective-equivalence rule at every origin; and near-equivalent alternatives crossed the frozen 10% posterior-SD threshold at every origin. The block is weakly jointly identified and does not support Outcome A. Although its near-optimal set formed a connected path, the poor recovery and material uncertainty differences do not support the stable, interpretable bounded structure required for Outcome B."
+    },
+    "scale_tail": {
+      "outcome": "C",
+      "outcome_label": "insufficient information",
+      "reason": "Exact synthetic joint-pair recovery was 33/35 (94.3%), but all historical optima were on the lower observation-scale boundary and conditional optima spanned three grid steps at every origin. The block therefore triggers two frozen weak-identification rules. It had no qualifying connected ridge or path, so Outcome B is not supported; because the block is weakly jointly identified, Outcome A is not assigned."
+    }
+  },
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "next_experiment_created": false,
+  "prospective_evidence": false,
+  "stage_c_run": false
+}

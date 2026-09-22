@@ -123,7 +123,7 @@ def _grid_distance(payload: dict, block_name: str, truth: dict, selected: dict) 
     return distance
 
 
-def run_recovery_replicate(
+def run_recovery_replicate_with_surface(
     pair: FrozenGeneratingPair,
     *,
     seed: int,
@@ -131,8 +131,8 @@ def run_recovery_replicate(
     count: int = 18,
     plays_per_team: int = 28,
     teams: tuple[str, ...] = DEFAULT_TEAMS,
-) -> dict:
-    """Run one frozen joint-pair replicate through the full block grid."""
+) -> tuple[dict, object]:
+    """Run one frozen joint-pair replicate and retain its full objective surface."""
     payload = payload or load_candidate_space()
     regime = regime_for_pair(pair, payload)
     truth = simulate_regime(
@@ -172,7 +172,7 @@ def run_recovery_replicate(
     marginal_recovery = {
         name: selected_coordinates[name] == generating[name] for name in axis_names
     }
-    return {
+    row = {
         "experiment_id": result.experiment_id,
         "artifact_class": result.artifact_class,
         "prospective_evidence": False,
@@ -197,6 +197,28 @@ def run_recovery_replicate(
         "source_identity_sha256": result.source_identity_sha256,
         **_state_recovery(result, truth),
     }
+    return row, result
+
+
+def run_recovery_replicate(
+    pair: FrozenGeneratingPair,
+    *,
+    seed: int,
+    payload: dict | None = None,
+    count: int = 18,
+    plays_per_team: int = 28,
+    teams: tuple[str, ...] = DEFAULT_TEAMS,
+) -> dict:
+    """Run one frozen joint-pair replicate through the full block grid."""
+    row, _ = run_recovery_replicate_with_surface(
+        pair,
+        seed=seed,
+        payload=payload,
+        count=count,
+        plays_per_team=plays_per_team,
+        teams=teams,
+    )
+    return row
 
 
 def run_frozen_recovery_suite(
@@ -233,8 +255,54 @@ def summarize_recovery(rows: tuple[dict, ...] | list[dict]) -> dict:
         array = np.asarray(tuple(values), dtype=float)
         return {
             "mean": float(np.mean(array)),
+            "median": float(np.median(array)),
             "min": float(np.min(array)),
             "max": float(np.max(array)),
+        }
+
+    def value_counts(values) -> tuple[dict, ...]:
+        counts = Counter(values)
+        return tuple({"value": value, "count": counts[value]} for value in sorted(counts))
+
+    def recovery_metrics(subset: list[dict]) -> dict:
+        axis_names = tuple(subset[0]["generating_configuration"])
+        return {
+            "replicates": len(subset),
+            "exact_joint_pair_recovery_count": sum(
+                row["exact_joint_pair_recovery"] for row in subset
+            ),
+            "exact_joint_pair_recovery_frequency": float(
+                np.mean([row["exact_joint_pair_recovery"] for row in subset])
+            ),
+            "marginal_recovery_frequency": {
+                axis: float(np.mean([row["marginal_recovery"][axis] for row in subset]))
+                for axis in axis_names
+            },
+            "boundary_selection_frequency": float(
+                np.mean([row["selected_on_boundary"] for row in subset])
+            ),
+            "manhattan_grid_distance_from_truth": numeric(
+                row["manhattan_grid_distance_from_truth"] for row in subset
+            ),
+            "manhattan_grid_distance_counts": value_counts(
+                row["manhattan_grid_distance_from_truth"] for row in subset
+            ),
+            "objective_gap_best_minus_second": numeric(
+                row["objective_gap_best_minus_second"] for row in subset
+            ),
+            "objective_gap_selected_minus_truth": numeric(
+                row["objective_gap_selected_minus_truth"] for row in subset
+            ),
+            "latent_state_rmse": numeric(row["latent_state_rmse"] for row in subset),
+            "latent_state_coverage_90": numeric(
+                row["latent_state_coverage_90"] for row in subset
+            ),
+            "mean_squared_standardized_state_error": numeric(
+                row["mean_squared_standardized_state_error"] for row in subset
+            ),
+            "mean_posterior_state_sd": numeric(
+                row["mean_posterior_state_sd"] for row in subset
+            ),
         }
 
     by_block = {}
@@ -266,31 +334,34 @@ def summarize_recovery(rows: tuple[dict, ...] | list[dict]) -> dict:
                         row["mean_posterior_state_sd"] for row in subset
                     ),
                 }
-        axis_names = tuple(block_rows[0]["generating_configuration"])
-        by_block[block] = {
-            "replicates": len(block_rows),
-            "exact_joint_pair_recovery_frequency": float(
-                np.mean([row["exact_joint_pair_recovery"] for row in block_rows])
-            ),
-            "marginal_recovery_frequency": {
-                axis: float(np.mean([
-                    row["marginal_recovery"][axis] for row in block_rows
-                ]))
-                for axis in axis_names
-            },
-            "boundary_selection_frequency": float(
-                np.mean([row["selected_on_boundary"] for row in block_rows])
-            ),
-            "manhattan_grid_distance_from_truth": numeric(
-                row["manhattan_grid_distance_from_truth"] for row in block_rows
-            ),
+        by_case = {}
+        for case in sorted({row["generating_case"] for row in block_rows}):
+            by_case[case] = recovery_metrics([
+                row for row in block_rows if row["generating_case"] == case
+            ])
+        block_metrics = recovery_metrics(block_rows)
+        by_block[block] = block_metrics | {
             "confusion_counts": tuple({
                 "generating_configuration": dict(generating),
                 "selected_configuration": dict(selected),
                 "count": count,
             } for (generating, selected), count in sorted(confusion.items())),
+            "recovery_by_generating_pair": by_case,
             "state_metrics_by_exact_recovery": state_by_recovery,
         }
+        if exact and incorrect:
+            by_block[block]["incorrect_minus_exact_mean_state_metrics"] = {
+                metric: (
+                    state_by_recovery["incorrect"][metric]["mean"]
+                    - state_by_recovery["exact"][metric]["mean"]
+                )
+                for metric in (
+                    "latent_state_rmse",
+                    "latent_state_coverage_90",
+                    "mean_squared_standardized_state_error",
+                    "mean_posterior_state_sd",
+                )
+            }
     return {
         "experiment_id": rows[0]["experiment_id"],
         "artifact_class": rows[0]["artifact_class"],

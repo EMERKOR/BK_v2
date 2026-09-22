@@ -1,0 +1,320 @@
+{
+  "comparisons": [
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.214306433183765e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.304512053934559e-15,
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.5959455978986625e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.6514567491299204e-15,
+      "target": [
+        2025,
+        6
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.214306433183765e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.3183898417423734e-15,
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.3877787807814457e-16,
+      "max_abs_objective_difference": 3.637978807091713e-12,
+      "max_abs_state_mean_difference": 1.5543122344752192e-15,
+      "target": [
+        2025,
+        7
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.1796119636642288e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.4432899320127035e-15,
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.1622647289044608e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5681900222830336e-15,
+      "target": [
+        2025,
+        8
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.1102230246251565e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5265566588595902e-15,
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0755285551056204e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 2.1510571102112408e-15,
+      "target": [
+        2025,
+        9
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.673617379884035e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 9.71445146547012e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.7208456881689926e-15,
+      "target": [
+        2025,
+        10
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0061396160665481e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 2.0539125955565396e-15,
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.413408858487514e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6930901125533637e-15,
+      "target": [
+        2025,
+        11
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0755285551056204e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.8041124150158794e-15,
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.500145032286355e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6792123247455493e-15,
+      "target": [
+        2025,
+        12
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 9.367506770274758e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 2.1371793224034263e-15,
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.326672684688674e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.7763568394002505e-15,
+      "target": [
+        2025,
+        13
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.0408340855860843e-16,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6375789613221059e-15,
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.28583859910259e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.582067810090848e-15,
+      "target": [
+        2025,
+        14
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 9.020562075079397e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 7.45931094670027e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.762479051592436e-15,
+      "target": [
+        2025,
+        15
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 9.367506770274758e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.678685382510707e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.6653345369377348e-15,
+      "target": [
+        2025,
+        16
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 8.673617379884035e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.591949208711867e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 1.5959455978986625e-15,
+      "target": [
+        2025,
+        17
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 9.367506770274758e-17,
+      "max_abs_objective_difference": 1.4551915228366852e-11,
+      "max_abs_state_mean_difference": 2.040034807748725e-15,
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 6.678685382510707e-17,
+      "max_abs_objective_difference": 7.275957614183426e-12,
+      "max_abs_state_mean_difference": 2.1510571102112408e-15,
+      "target": [
+        2025,
+        18
+      ]
+    },
+    {
+      "block": "persistence_process",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 1.214306433183765e-16,
+      "max_abs_objective_difference": 1.4551915228366852e-11,
+      "max_abs_state_mean_difference": 3.497202527569243e-15,
+      "target": [
+        2025,
+        22
+      ]
+    },
+    {
+      "block": "scale_tail",
+      "candidate_ranking_identical": true,
+      "max_abs_covariance_difference": 5.637851296924623e-17,
+      "max_abs_objective_difference": 1.4551915228366852e-11,
+      "max_abs_state_mean_difference": 2.4841240175987878e-15,
+      "target": [
+        2025,
+        22
+      ]
+    }
+  ],
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "max_abs_covariance_difference": 1.5959455978986625e-16,
+  "max_abs_objective_difference": 1.4551915228366852e-11,
+  "max_abs_state_mean_difference": 3.497202527569243e-15,
+  "objective_absolute_tolerance": 1e-10,
+  "passed": true,
+  "seed": 20260920,
+  "state_absolute_tolerance": 1e-12
+}

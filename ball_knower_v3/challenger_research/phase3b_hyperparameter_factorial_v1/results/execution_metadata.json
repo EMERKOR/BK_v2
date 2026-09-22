@@ -1,0 +1,38 @@
+{
+  "advancement_outcome_assignments": {
+    "persistence_process": "C",
+    "scale_tail": "C"
+  },
+  "advancement_outcomes_selected": true,
+  "artifact_class": "retrospective_development_challenger",
+  "artifact_sha256_before_execution_metadata": {
+    "deterministic_regeneration.json": "5cf8beb029118ed0483ad04362fe21edab37cf08598dd17e2959bc6668ed04a1",
+    "source_provenance_manifest.json": "a2034d309d486448ca2c7e3c8629f1c553b8216acf23ee3fd36bac1eb11d507f",
+    "stage_a_geometry.jsonl": "d3ccdc4e61185c8deee35e3b754f8aab0878d903aad5302d70c3eb286b307f81",
+    "stage_a_raw.jsonl": "561dfff5490d3eef2cd13067bc8dec6758c087dbaa22b37eefada4daa213f61f",
+    "stage_a_row_order_stability.json": "7ea9220cc2fd8e1469f75074db7f7f59945777344ce3679035655011af50d0a4",
+    "stage_a_summary.json": "233f59f5119b7e5c60b8dc973ada6739f47b3baa42576be39833f64af5f398cb",
+    "stage_b_candidate_surfaces.jsonl": "072b3f03f51de76c544288840b9dbb4da86f32554e8d3e1c04c31d521ba421fd",
+    "stage_b_raw.json": "ce199a221472cf3894e98417a4baa40cabc880c98e13350c8c6f2430bab79601",
+    "stage_b_summary.json": "d8971fe99483638b2838d073309602f189ab44fbf70520a399d2f5af7ebbb4cd",
+    "unavailable_origins.json": "020b4bd2e3ac31d057579f4774fcfba5c5d2c293e357c4b1230781b882d78403",
+    "validation.json": "c47b8a06e1c2c42a316267827133f47689fdce897439d06f4af93d71d84aefec"
+  },
+  "candidate_space_sha256": "dae81f072cc4ee44a70275780c237efb9f11f9e861dd6404184dc95b11742f48",
+  "completed_at": "2026-09-22T17:23:21.061301+00:00",
+  "deterministic_regeneration_passed": true,
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "experiment_spec_sha256": "2cd8f814b81f9c4c1db92b7f944e1f7a72802a072aa6414a246ccc704223965a",
+  "git_branch": "codex/phase3b-factorial-results-v1",
+  "git_commit_sha": "ceb5bf73e674ca20411f5c461561cf49f87ba69d",
+  "outcome_assignment_sha256": "85fc0e52157e58d1ae6df2201c321fb37882f879183bffb28239da61466f2940",
+  "prospective_evidence": false,
+  "stage_a_block_origin_records": 28,
+  "stage_a_candidate_results": 630,
+  "stage_a_row_order_stability_passed": true,
+  "stage_b_replicates": 70,
+  "stage_c_run": false,
+  "started_at": "2026-09-22T16:25:40.024538+00:00",
+  "unavailable_origins": 0,
+  "validation_passed": true
+}

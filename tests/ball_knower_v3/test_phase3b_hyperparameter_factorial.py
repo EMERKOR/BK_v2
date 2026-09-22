@@ -26,6 +26,7 @@ from ball_knower_v3.challenger_research.phase3b_hyperparameter_factorial_v1.simu
     frozen_generating_pairs,
     regime_for_pair,
     run_recovery_replicate,
+    run_recovery_replicate_with_surface,
     summarize_recovery,
 )
 from ball_knower_v3.challenger_research.phase3b_hyperparameter_identification_v1 import (
@@ -188,16 +189,30 @@ def test_synthetic_smoke_records_joint_marginal_distance_and_state_metrics():
     assert summary["by_block"]["persistence_process"]["replicates"] == 1
 
 
-def test_factorial_config_is_byte_frozen_and_no_results_were_generated():
+def test_synthetic_surface_api_preserves_raw_row_and_full_candidate_grid():
+    payload = load_candidate_space()
+    pair = next(
+        item for item in frozen_generating_pairs(payload)
+        if item.block == "scale_tail" and item.name == "baseline_pair"
+    )
+    row, result = run_recovery_replicate_with_surface(
+        pair, seed=11, payload=payload, count=5, plays_per_team=3
+    )
+    assert row["selected_config_sha256"] == result.best_config_sha256
+    assert len(result.candidates) == payload["blocks"]["scale_tail"]["candidate_count"]
+    summary = summarize_recovery([row])
+    block = summary["by_block"]["scale_tail"]
+    assert block["exact_joint_pair_recovery_count"] in (0, 1)
+    assert block["manhattan_grid_distance_from_truth"]["median"] >= 0
+
+
+def test_factorial_config_is_byte_frozen():
     assert _sha256(DEFAULT_SPEC_PATH) == EXPECTED_CONFIG_SHA256
     raw = DEFAULT_SPEC_PATH.read_text()
     assert raw == json.dumps(
         json.loads(raw), indent=2, sort_keys=True, allow_nan=False
     ) + "\n"
     assert verify_frozen_identity()["candidate_space_sha256"] == EXPECTED_CONFIG_SHA256
-    experiment_dir = DEFAULT_SPEC_PATH.parent
-    assert not (experiment_dir / "RESULTS.md").exists()
-    assert not (experiment_dir / "results").exists()
 
 
 def test_orchestrator_refuses_unacknowledged_execution():

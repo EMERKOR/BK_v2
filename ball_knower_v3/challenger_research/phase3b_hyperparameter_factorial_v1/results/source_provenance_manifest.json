@@ -1,0 +1,362 @@
+{
+  "artifact_class": "retrospective_development_challenger",
+  "evidence_class": "retrospective_historical_source_replay",
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "historical_forecast_existence_proven": false,
+  "input_directory": "/Users/emersonkorum/Documents/Codex/2026-09-15/files-pasted-by-the-user-we/work/archive-expansion/expanded-inputs",
+  "input_files": {
+    "availability.parquet": {
+      "bytes": 7534,
+      "sha256": "1ccb30a7dd319e793a4bb1f0ab9c5ecb8bf669a2f8aa71c2ca9e6dea1e1af81a"
+    },
+    "observation_games.parquet": {
+      "bytes": 13047,
+      "sha256": "723588f0332a7a2762cc12a8a6c7e683ef8b572440d23c4f134681b1406c2c7b"
+    },
+    "origins.parquet": {
+      "bytes": 2462,
+      "sha256": "58c343617dddfd7ce68f833a662bf93adc71d2ddcdae5338a2e175a3127c9160"
+    },
+    "plays.parquet": {
+      "bytes": 629470,
+      "sha256": "e3e7cd66e23c48e8af25af0bb5e5f15ae9314625d94df97ce0ecf2797e2abdfe"
+    }
+  },
+  "prospective_evidence": false,
+  "provider_custody_assets": [
+    {
+      "asset_id": 299769091,
+      "bytes": 413194,
+      "local_file": "archive-2025-10-02-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:97689d88414fed363c017c849dd8e43c3ffe9f3db1ce09ea4984f92e391b0a90",
+      "release_tag": "archive-2025-10-02",
+      "source_available_at": "2025-10-02T15:30:53Z",
+      "source_sha256": "97689d88414fed363c017c849dd8e43c3ffe9f3db1ce09ea4984f92e391b0a90"
+    },
+    {
+      "asset_id": 299770475,
+      "bytes": 3343248,
+      "local_file": "archive-2025-10-02-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b",
+      "release_tag": "archive-2025-10-02",
+      "source_available_at": "2025-10-02T15:33:20Z",
+      "source_sha256": "0b04ffcee75f07c5a1cec292d7b485ec3222bbbcb65f7d5866fcd81b802b9d9b"
+    },
+    {
+      "asset_id": 302373781,
+      "bytes": 413463,
+      "local_file": "archive-2025-10-09-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:e4520f43c14c79657dff904a5f3a56e467fb3aea0de933db087da8de84f767b2",
+      "release_tag": "archive-2025-10-09",
+      "source_available_at": "2025-10-09T15:44:46Z",
+      "source_sha256": "e4520f43c14c79657dff904a5f3a56e467fb3aea0de933db087da8de84f767b2"
+    },
+    {
+      "asset_id": 302374075,
+      "bytes": 4065639,
+      "local_file": "archive-2025-10-09-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c",
+      "release_tag": "archive-2025-10-09",
+      "source_available_at": "2025-10-09T15:45:49Z",
+      "source_sha256": "14a594b86b207508b89a42755f624c241e6ceef516d859a4b6bd2c4a5a7b472c"
+    },
+    {
+      "asset_id": 305098532,
+      "bytes": 413924,
+      "local_file": "archive-2025-10-16-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:a8420a6949b782c450e92ed57ce19bcdde751e9bec627f86c1a58e5051170083",
+      "release_tag": "archive-2025-10-16",
+      "source_available_at": "2025-10-16T15:45:33Z",
+      "source_sha256": "a8420a6949b782c450e92ed57ce19bcdde751e9bec627f86c1a58e5051170083"
+    },
+    {
+      "asset_id": 305097630,
+      "bytes": 4809950,
+      "local_file": "archive-2025-10-16-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15",
+      "release_tag": "archive-2025-10-16",
+      "source_available_at": "2025-10-16T15:42:35Z",
+      "source_sha256": "d4c020717d85af1950259a7a7d79b5db9ebca8d70701c2fcc7a5da0d29ea9d15"
+    },
+    {
+      "asset_id": 307812009,
+      "bytes": 414185,
+      "local_file": "archive-2025-10-23-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:7e0cca2e97a6ca6a6de54f402905a251e084236f8e90a7a674d7f42196f856be",
+      "release_tag": "archive-2025-10-23",
+      "source_available_at": "2025-10-23T15:32:34Z",
+      "source_sha256": "7e0cca2e97a6ca6a6de54f402905a251e084236f8e90a7a674d7f42196f856be"
+    },
+    {
+      "asset_id": 307813872,
+      "bytes": 5580520,
+      "local_file": "archive-2025-10-23-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b",
+      "release_tag": "archive-2025-10-23",
+      "source_available_at": "2025-10-23T15:36:48Z",
+      "source_sha256": "6d8296b5f9e02ac2a51b35a96ade7f214d3c4fc4483036820efa46e642fd800b"
+    },
+    {
+      "asset_id": 310570721,
+      "bytes": 414639,
+      "local_file": "archive-2025-10-30-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:ab96f6641c891d46a73cd33baeb05b9ec5cd4e1dec5b03dccee343b1769070e7",
+      "release_tag": "archive-2025-10-30",
+      "source_available_at": "2025-10-30T15:34:50Z",
+      "source_sha256": "ab96f6641c891d46a73cd33baeb05b9ec5cd4e1dec5b03dccee343b1769070e7"
+    },
+    {
+      "asset_id": 310572709,
+      "bytes": 6215746,
+      "local_file": "archive-2025-10-30-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c",
+      "release_tag": "archive-2025-10-30",
+      "source_available_at": "2025-10-30T15:39:36Z",
+      "source_sha256": "09d4cbb60ab73ae5329ac5776b00c41dc3b603a21a1dd001f2b8ad43cd48f57c"
+    },
+    {
+      "asset_id": 313354781,
+      "bytes": 415041,
+      "local_file": "archive-2025-11-06-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:33e44a0c02934558ee79649b4de326a2b046169ba491a244da662f9f7eb6439a",
+      "release_tag": "archive-2025-11-06",
+      "source_available_at": "2025-11-06T15:34:54Z",
+      "source_sha256": "33e44a0c02934558ee79649b4de326a2b046169ba491a244da662f9f7eb6439a"
+    },
+    {
+      "asset_id": 313356862,
+      "bytes": 6915895,
+      "local_file": "archive-2025-11-06-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53",
+      "release_tag": "archive-2025-11-06",
+      "source_available_at": "2025-11-06T15:40:00Z",
+      "source_sha256": "fcfd0ca94a4121a36eb2aa561f28f2d32fffd199c4844e0a3da4cde2932c9a53"
+    },
+    {
+      "asset_id": 316009177,
+      "bytes": 415360,
+      "local_file": "archive-2025-11-13-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:73f6bce17fa6876ead1ee07522afdd4a3627fc218fc543b22de97ec97b335905",
+      "release_tag": "archive-2025-11-13",
+      "source_available_at": "2025-11-13T15:33:07Z",
+      "source_sha256": "73f6bce17fa6876ead1ee07522afdd4a3627fc218fc543b22de97ec97b335905"
+    },
+    {
+      "asset_id": 316011371,
+      "bytes": 7611907,
+      "local_file": "archive-2025-11-13-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec",
+      "release_tag": "archive-2025-11-13",
+      "source_available_at": "2025-11-13T15:38:04Z",
+      "source_sha256": "bdb4fba0965dfacc093c4f71e12ebc2dc180baf63b96e5f8a889e3f844d5adec"
+    },
+    {
+      "asset_id": 318837553,
+      "bytes": 415809,
+      "local_file": "archive-2025-11-20-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:0c3cc4cb9fdff4d1991c25a9edfa6e77fcff0f0c395d55981f1791da85cd5d5a",
+      "release_tag": "archive-2025-11-20",
+      "source_available_at": "2025-11-20T15:34:43Z",
+      "source_sha256": "0c3cc4cb9fdff4d1991c25a9edfa6e77fcff0f0c395d55981f1791da85cd5d5a"
+    },
+    {
+      "asset_id": 318839645,
+      "bytes": 8372494,
+      "local_file": "archive-2025-11-20-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae",
+      "release_tag": "archive-2025-11-20",
+      "source_available_at": "2025-11-20T15:38:58Z",
+      "source_sha256": "421313e98803fec97d321b6a289a4645a38246871ee12b957197e54e3eac28ae"
+    },
+    {
+      "asset_id": 321531075,
+      "bytes": 416116,
+      "local_file": "archive-2025-11-27-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:329873c6f615a0c3aecac8b59a323c695af8c33435b396f2ef1c2b1c24977a22",
+      "release_tag": "archive-2025-11-27",
+      "source_available_at": "2025-11-27T15:33:15Z",
+      "source_sha256": "329873c6f615a0c3aecac8b59a323c695af8c33435b396f2ef1c2b1c24977a22"
+    },
+    {
+      "asset_id": 321532841,
+      "bytes": 9084716,
+      "local_file": "archive-2025-11-27-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482",
+      "release_tag": "archive-2025-11-27",
+      "source_available_at": "2025-11-27T15:37:31Z",
+      "source_sha256": "7aa6d2e9d52e22101e988c6fe56aa2c19c87937ffc728e6e8bbaebeb81f77482"
+    },
+    {
+      "asset_id": 324362504,
+      "bytes": 416518,
+      "local_file": "archive-2025-12-04-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:899a366f22db4cb561fb4d88d209476a769ea9bee0cd8beab34020389fba5016",
+      "release_tag": "archive-2025-12-04",
+      "source_available_at": "2025-12-04T15:37:22Z",
+      "source_sha256": "899a366f22db4cb561fb4d88d209476a769ea9bee0cd8beab34020389fba5016"
+    },
+    {
+      "asset_id": 324364390,
+      "bytes": 9880083,
+      "local_file": "archive-2025-12-04-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:a23a110d335ef5361e70166976cca8f13392b97dcf98dfe783e4066c1df224bd",
+      "release_tag": "archive-2025-12-04",
+      "source_available_at": "2025-12-04T15:42:12Z",
+      "source_sha256": "a23a110d335ef5361e70166976cca8f13392b97dcf98dfe783e4066c1df224bd"
+    },
+    {
+      "asset_id": 327433996,
+      "bytes": 416919,
+      "local_file": "archive-2025-12-11-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:fa7666574968fa23b6f3fefd1bfaf1e7a3e971d5be509730925e203b43ee9068",
+      "release_tag": "archive-2025-12-11",
+      "source_available_at": "2025-12-11T15:39:24Z",
+      "source_sha256": "fa7666574968fa23b6f3fefd1bfaf1e7a3e971d5be509730925e203b43ee9068"
+    },
+    {
+      "asset_id": 327435650,
+      "bytes": 54894,
+      "local_file": "archive-2025-12-11-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:3590bcb90a75c32ba8b10d692d26838caedbc267a57db23931694abc9598c873",
+      "release_tag": "archive-2025-12-11",
+      "source_available_at": "2025-12-11T15:44:21Z",
+      "source_sha256": "3590bcb90a75c32ba8b10d692d26838caedbc267a57db23931694abc9598c873"
+    },
+    {
+      "asset_id": 332861918,
+      "bytes": 417615,
+      "local_file": "archive-2025-12-25-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:493dc1dc5a36242e6329e6c421f09447e5938c1681ffda92ad61165c0f8b512f",
+      "release_tag": "archive-2025-12-25",
+      "source_available_at": "2025-12-25T15:32:52Z",
+      "source_sha256": "493dc1dc5a36242e6329e6c421f09447e5938c1681ffda92ad61165c0f8b512f"
+    },
+    {
+      "asset_id": 332863213,
+      "bytes": 12155395,
+      "local_file": "archive-2025-12-25-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867",
+      "release_tag": "archive-2025-12-25",
+      "source_available_at": "2025-12-25T15:37:03Z",
+      "source_sha256": "fd8b789271b0dd3f3e5e4a2ec9ae3a680b7b2387b715d9796f494c8da06b3867"
+    },
+    {
+      "asset_id": 335211517,
+      "bytes": 418036,
+      "local_file": "archive-2026-01-01-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:7e8045a638a2bfb41769bb824ea689c7009321227082d44307f341752e6d7fce",
+      "release_tag": "archive-2026-01-01",
+      "source_available_at": "2026-01-01T15:33:25Z",
+      "source_sha256": "7e8045a638a2bfb41769bb824ea689c7009321227082d44307f341752e6d7fce"
+    },
+    {
+      "asset_id": 335212696,
+      "bytes": 12916465,
+      "local_file": "archive-2026-01-01-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:e912cd312aca03724079fe1d13a7efe5e2d335b27b1000cbc486623c2aeadfd5",
+      "release_tag": "archive-2026-01-01",
+      "source_available_at": "2026-01-01T15:37:18Z",
+      "source_sha256": "e912cd312aca03724079fe1d13a7efe5e2d335b27b1000cbc486623c2aeadfd5"
+    },
+    {
+      "asset_id": 337932927,
+      "bytes": 418442,
+      "local_file": "archive-2026-01-08-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:157c82dd3b6a18032e36f7ec2554360d1174928f75918995b242bbff0c432fac",
+      "release_tag": "archive-2026-01-08",
+      "source_available_at": "2026-01-08T15:40:24Z",
+      "source_sha256": "157c82dd3b6a18032e36f7ec2554360d1174928f75918995b242bbff0c432fac"
+    },
+    {
+      "asset_id": 337934967,
+      "bytes": 13687919,
+      "local_file": "archive-2026-01-08-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:59ac112922db4531327908d7f18f0cfed7c4e37f4382ab2f27d98fb832a0e8c6",
+      "release_tag": "archive-2026-01-08",
+      "source_available_at": "2026-01-08T15:44:49Z",
+      "source_sha256": "59ac112922db4531327908d7f18f0cfed7c4e37f4382ab2f27d98fb832a0e8c6"
+    },
+    {
+      "asset_id": 341004025,
+      "bytes": 418755,
+      "local_file": "archive-2026-01-15-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:5af4150fbf79fb8905a5a436b84a948878a420ecd7d9136729b8c2bbf97fb259",
+      "release_tag": "archive-2026-01-15",
+      "source_available_at": "2026-01-15T15:40:46Z",
+      "source_sha256": "5af4150fbf79fb8905a5a436b84a948878a420ecd7d9136729b8c2bbf97fb259"
+    },
+    {
+      "asset_id": 344356279,
+      "bytes": 14204904,
+      "local_file": "archive-2026-01-15-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:fb8b7221797516c062aaba0c10ca1e347acf5a2029f0d58a33261498744309b1",
+      "release_tag": "archive-2026-01-15",
+      "source_available_at": "2026-01-22T16:28:41Z",
+      "source_sha256": "fb8b7221797516c062aaba0c10ca1e347acf5a2029f0d58a33261498744309b1"
+    },
+    {
+      "asset_id": 347739173,
+      "bytes": 418935,
+      "local_file": "archive-2026-01-29-games.rds",
+      "name": "games.rds",
+      "provider_digest": "sha256:1a9ae09e03df4c53e6b5d29ff5ac4259a198fc21dffccdf10f5bc78a48e41ca8",
+      "release_tag": "archive-2026-01-29",
+      "source_available_at": "2026-01-29T15:53:07Z",
+      "source_sha256": "1a9ae09e03df4c53e6b5d29ff5ac4259a198fc21dffccdf10f5bc78a48e41ca8"
+    },
+    {
+      "asset_id": 347741288,
+      "bytes": 14304013,
+      "local_file": "archive-2026-01-29-play_by_play_2025.rds",
+      "name": "play_by_play_2025.rds",
+      "provider_digest": "sha256:4cf54e6c29bb6e9eb2d3e3480985713d4dae93d16deed059470f29d4e12a653d",
+      "release_tag": "archive-2026-01-29",
+      "source_available_at": "2026-01-29T15:57:51Z",
+      "source_sha256": "4cf54e6c29bb6e9eb2d3e3480985713d4dae93d16deed059470f29d4e12a653d"
+    }
+  ],
+  "selected_week_versions": {
+    "path": "ball_knower_v3/audits/phase3b_expanded_replay_2026-09-16/selected-week-versions.json",
+    "sha256": "ef93af4270a1e01d73eb01240c534001c0b711d500c900355bb82720d7e2333e"
+  },
+  "source_catalog": {
+    "assets": 32,
+    "path": "ball_knower_v3/audits/phase3b_expanded_replay_2026-09-16/source-asset-catalog.json",
+    "sha256": "5cb76a997dd231f47fa6e3d98350bb8e1c454573235db682707120790302d437"
+  },
+  "source_directory": "/Users/emersonkorum/Documents/Codex/2026-09-15/files-pasted-by-the-user-we/work/archive-expansion/source",
+  "week_22_origin_definition": {
+    "path": "ball_knower_v3/audits/phase3b_expanded_replay_2026-09-16/super-bowl-extension-experiment.json",
+    "sha256": "07667159539aa44e7f815509f191c4e9baa0f0535bb795f7a3c8c219eafd5771"
+  }
+}
