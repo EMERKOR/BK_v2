@@ -1,0 +1,312 @@
+{
+  "advancement_categories": {
+    "outcome_a": "Discrete pair sufficiently identified: strong joint recovery, stable interior or clearly separated historical optima, and no material uncertainty differences among near-equivalent alternatives.",
+    "outcome_b": "Joint ridge but bounded structure is clear: stable, interpretable interaction geometry across origins and simulations.",
+    "outcome_c": "Insufficient information: poor recovery, unstable geometry, no consistent ridge or optimum, or state insensitivity that does not justify expansion."
+  },
+  "artifact_class": "retrospective_development_challenger",
+  "baseline": {
+    "defense_process_sd": 0.025,
+    "defense_rho": 0.96,
+    "initial_defense_sd": 0.2,
+    "initial_intercept_sd": 0.1,
+    "initial_offense_sd": 0.2,
+    "observation_scale": 1.6,
+    "offense_process_sd": 0.025,
+    "offense_rho": 0.96,
+    "offseason_defense_rho": 0.7,
+    "offseason_defense_sd": 0.08,
+    "offseason_intercept_rho": 0.0,
+    "offseason_intercept_sd": 0.1,
+    "offseason_offense_rho": 0.7,
+    "offseason_offense_sd": 0.08,
+    "student_t_df": 5.0
+  },
+  "blocks": {
+    "persistence_process": {
+      "axes": [
+        {
+          "fields": [
+            "offense_rho",
+            "defense_rho"
+          ],
+          "name": "joint_persistence",
+          "values": [
+            0.9,
+            0.93,
+            0.96,
+            0.98,
+            0.99
+          ]
+        },
+        {
+          "fields": [
+            "offense_process_sd",
+            "defense_process_sd"
+          ],
+          "name": "joint_process_sd",
+          "values": [
+            0.0125,
+            0.025,
+            0.04,
+            0.06
+          ]
+        }
+      ],
+      "candidate_count": 20,
+      "construction": "full_cartesian_product",
+      "fixed_parameters": {
+        "initial_defense_sd": 0.2,
+        "initial_intercept_sd": 0.1,
+        "initial_offense_sd": 0.2,
+        "observation_scale": 1.6,
+        "offseason_defense_rho": 0.7,
+        "offseason_defense_sd": 0.08,
+        "offseason_intercept_rho": 0.0,
+        "offseason_intercept_sd": 0.1,
+        "offseason_offense_rho": 0.7,
+        "offseason_offense_sd": 0.08,
+        "student_t_df": 5.0
+      }
+    },
+    "scale_tail": {
+      "axes": [
+        {
+          "fields": [
+            "observation_sd"
+          ],
+          "name": "observation_scale",
+          "values": [
+            1.2,
+            1.4,
+            1.6,
+            1.9,
+            2.2
+          ]
+        },
+        {
+          "fields": [
+            "student_t_df"
+          ],
+          "name": "student_t_df",
+          "values": [
+            3.5,
+            5.0,
+            8.0,
+            15.0,
+            30.0
+          ]
+        }
+      ],
+      "candidate_count": 25,
+      "construction": "full_cartesian_product",
+      "fixed_parameters": {
+        "defense_process_sd": 0.025,
+        "defense_rho": 0.96,
+        "initial_defense_sd": 0.2,
+        "initial_intercept_sd": 0.1,
+        "initial_offense_sd": 0.2,
+        "offense_process_sd": 0.025,
+        "offense_rho": 0.96,
+        "offseason_defense_rho": 0.7,
+        "offseason_defense_sd": 0.08,
+        "offseason_intercept_rho": 0.0,
+        "offseason_intercept_sd": 0.1,
+        "offseason_offense_rho": 0.7,
+        "offseason_offense_sd": 0.08
+      }
+    }
+  },
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "historical_replay": {
+    "fail_closed": true,
+    "origins": [
+      {
+        "forecast_as_of": "2025-10-07T16:00:00+00:00",
+        "season": 2025,
+        "week": 6
+      },
+      {
+        "forecast_as_of": "2025-10-14T16:00:00+00:00",
+        "season": 2025,
+        "week": 7
+      },
+      {
+        "forecast_as_of": "2025-10-21T16:00:00+00:00",
+        "season": 2025,
+        "week": 8
+      },
+      {
+        "forecast_as_of": "2025-10-28T16:00:00+00:00",
+        "season": 2025,
+        "week": 9
+      },
+      {
+        "forecast_as_of": "2025-11-04T16:00:00+00:00",
+        "season": 2025,
+        "week": 10
+      },
+      {
+        "forecast_as_of": "2025-11-11T16:00:00+00:00",
+        "season": 2025,
+        "week": 11
+      },
+      {
+        "forecast_as_of": "2025-11-18T16:00:00+00:00",
+        "season": 2025,
+        "week": 12
+      },
+      {
+        "forecast_as_of": "2025-11-25T16:00:00+00:00",
+        "season": 2025,
+        "week": 13
+      },
+      {
+        "forecast_as_of": "2025-12-02T16:00:00+00:00",
+        "season": 2025,
+        "week": 14
+      },
+      {
+        "forecast_as_of": "2025-12-09T16:00:00+00:00",
+        "season": 2025,
+        "week": 15
+      },
+      {
+        "forecast_as_of": "2025-12-16T16:00:00+00:00",
+        "season": 2025,
+        "week": 16
+      },
+      {
+        "forecast_as_of": "2025-12-23T16:00:00+00:00",
+        "season": 2025,
+        "week": 17
+      },
+      {
+        "forecast_as_of": "2025-12-30T16:00:00+00:00",
+        "season": 2025,
+        "week": 18
+      },
+      {
+        "forecast_as_of": "2026-02-03T16:00:00+00:00",
+        "season": 2025,
+        "week": 22
+      }
+    ],
+    "pit_rules": "Exact historical source versions must be available strictly before the origin; only earlier competition weeks are eligible; missing weeks transition without fake observations; later revisions never substitute.",
+    "source_identity": {
+      "selected_week_versions_sha256": "ef93af4270a1e01d73eb01240c534001c0b711d500c900355bb82720d7e2333e",
+      "source_asset_catalog_sha256": "5cb76a997dd231f47fa6e3d98350bb8e1c454573235db682707120790302d437",
+      "source_provenance_manifest_sha256": "33495cee17b98e042bd8e6b922a89f9e9741d9eb5542f42621812b53c9439a2b",
+      "super_bowl_extension_experiment_sha256": "07667159539aa44e7f815509f191c4e9baa0f0535bb795f7a3c8c219eafd5771"
+    }
+  },
+  "identification_thresholds": {
+    "boundary_origin_fraction": 0.5,
+    "conditional_optimum_origin_fraction": 0.5,
+    "conditional_optimum_span_min_grid_steps": 2,
+    "configuration_fraction_within_one_percent": 0.2,
+    "exact_joint_recovery_minimum": 0.6,
+    "historical_origin_fraction_for_equivalence": 0.5,
+    "material_posterior_sd_fraction": 0.1,
+    "material_state_mean_rmse": 0.01,
+    "near_optimal_objective_fraction": 0.01,
+    "objective_equivalence_fractions": [
+      0.001,
+      0.005,
+      0.01
+    ],
+    "ridge_adjacency": "orthogonal_grid_neighbors_only",
+    "ridge_minimum_configuration_fraction": 0.2,
+    "ridge_must_span_both_axes": true
+  },
+  "prospective_baseline_modified": false,
+  "schema_version": "phase3b_hyperparameter_factorial_v1",
+  "stage_c_enabled": false,
+  "status": "TEST",
+  "synthetic_recovery": {
+    "block_generating_pairs": {
+      "persistence_process": [
+        {
+          "joint_persistence": 0.9,
+          "joint_process_sd": 0.06,
+          "name": "low_persistence_high_process_corner"
+        },
+        {
+          "joint_persistence": 0.93,
+          "joint_process_sd": 0.04,
+          "name": "intermediate_diagonal"
+        },
+        {
+          "joint_persistence": 0.96,
+          "joint_process_sd": 0.025,
+          "name": "baseline_pair"
+        },
+        {
+          "joint_persistence": 0.98,
+          "joint_process_sd": 0.025,
+          "name": "intermediate_high_persistence"
+        },
+        {
+          "joint_persistence": 0.99,
+          "joint_process_sd": 0.0125,
+          "name": "high_persistence_low_process_corner"
+        },
+        {
+          "joint_persistence": 0.9,
+          "joint_process_sd": 0.0125,
+          "name": "counter_diagonal_low_low"
+        },
+        {
+          "joint_persistence": 0.99,
+          "joint_process_sd": 0.06,
+          "name": "counter_diagonal_high_high"
+        }
+      ],
+      "scale_tail": [
+        {
+          "name": "baseline_pair",
+          "observation_scale": 1.6,
+          "student_t_df": 5.0
+        },
+        {
+          "name": "lighter_tails",
+          "observation_scale": 1.6,
+          "student_t_df": 30.0
+        },
+        {
+          "name": "heavier_tails",
+          "observation_scale": 1.6,
+          "student_t_df": 3.5
+        },
+        {
+          "name": "low_scale",
+          "observation_scale": 1.2,
+          "student_t_df": 5.0
+        },
+        {
+          "name": "high_scale",
+          "observation_scale": 2.2,
+          "student_t_df": 5.0
+        },
+        {
+          "name": "lower_scale_heavier_tails",
+          "observation_scale": 1.2,
+          "student_t_df": 3.5
+        },
+        {
+          "name": "higher_scale_lighter_tails",
+          "observation_scale": 2.2,
+          "student_t_df": 30.0
+        }
+      ]
+    },
+    "schedule": "full Cartesian product of each block's frozen generating pairs and deterministic seeds",
+    "seeds": [
+      11,
+      29,
+      47,
+      83,
+      131
+    ]
+  }
+}
