@@ -1,0 +1,1517 @@
+{
+  "artifact_class": "retrospective_development_challenger",
+  "by_block": {
+    "persistence_process": {
+      "boundary_selection_frequency": 0.8571428571428571,
+      "confusion_counts": [
+        {
+          "count": 4,
+          "generating_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.0125
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.0125
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.06
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 4,
+          "generating_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.06
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.04
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.04
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.025
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.04
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.9,
+            "joint_process_sd": 0.04
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.04
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 2,
+          "generating_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.04
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.025
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.93,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.025
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.025
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.025
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.025
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.04
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.0125
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.0125
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 2,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.0125
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.025
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.0125
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.04
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.06
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.96,
+            "joint_process_sd": 0.04
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.06
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.98,
+            "joint_process_sd": 0.06
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.06
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.0125
+          }
+        },
+        {
+          "count": 2,
+          "generating_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.06
+          },
+          "selected_configuration": {
+            "joint_persistence": 0.99,
+            "joint_process_sd": 0.06
+          }
+        }
+      ],
+      "exact_joint_pair_recovery_count": 9,
+      "exact_joint_pair_recovery_frequency": 0.2571428571428571,
+      "incorrect_minus_exact_mean_state_metrics": {
+        "latent_state_coverage_90": -0.2155448717948718,
+        "latent_state_rmse": 0.02578653489298674,
+        "mean_posterior_state_sd": 0.0019046389426843058,
+        "mean_squared_standardized_state_error": 1.5459384657589537
+      },
+      "latent_state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.7982142857142858,
+        "median": 0.875,
+        "min": 0.1875
+      },
+      "latent_state_rmse": {
+        "max": 0.16310947898525105,
+        "mean": 0.08271600195123836,
+        "median": 0.07861254901591316,
+        "min": 0.025429801021993048
+      },
+      "manhattan_grid_distance_counts": [
+        {
+          "count": 9,
+          "value": 0
+        },
+        {
+          "count": 13,
+          "value": 1
+        },
+        {
+          "count": 10,
+          "value": 2
+        },
+        {
+          "count": 3,
+          "value": 3
+        }
+      ],
+      "manhattan_grid_distance_from_truth": {
+        "max": 3.0,
+        "mean": 1.2,
+        "median": 1.0,
+        "min": 0.0
+      },
+      "marginal_recovery_frequency": {
+        "joint_persistence": 0.6571428571428571,
+        "joint_process_sd": 0.4
+      },
+      "mean_posterior_state_sd": {
+        "max": 0.13411481152176538,
+        "mean": 0.06855965195416293,
+        "median": 0.06690561159590896,
+        "min": 0.0300599231652051
+      },
+      "mean_squared_standardized_state_error": {
+        "max": 13.200849877659689,
+        "mean": 2.032106477195115,
+        "median": 1.3404683170022158,
+        "min": 0.3808453954112644
+      },
+      "objective_gap_best_minus_second": {
+        "max": 0.29765982781646017,
+        "mean": 0.11235064741683476,
+        "median": 0.08548866222736251,
+        "min": 0.020634745220377226
+      },
+      "objective_gap_selected_minus_truth": {
+        "max": 1.6625369507637515,
+        "mean": 0.39875411003023536,
+        "median": 0.14092222352701356,
+        "min": 0.0
+      },
+      "recovery_by_generating_pair": {
+        "baseline_pair": {
+          "boundary_selection_frequency": 0.8,
+          "exact_joint_pair_recovery_count": 1,
+          "exact_joint_pair_recovery_frequency": 0.2,
+          "latent_state_coverage_90": {
+            "max": 0.9375,
+            "mean": 0.7875,
+            "median": 0.8125,
+            "min": 0.5
+          },
+          "latent_state_rmse": {
+            "max": 0.07861254901591316,
+            "mean": 0.07149058059793154,
+            "median": 0.06998056747755564,
+            "min": 0.06819435451932665
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 1,
+              "value": 0
+            },
+            {
+              "count": 1,
+              "value": 1
+            },
+            {
+              "count": 3,
+              "value": 2
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 2.0,
+            "mean": 1.4,
+            "median": 2.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "joint_persistence": 0.4,
+            "joint_process_sd": 0.4
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.08372259098057133,
+            "mean": 0.060730276942131456,
+            "median": 0.06102985904227165,
+            "min": 0.03827441008717021
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 4.220308213559284,
+            "mean": 1.8176255225243776,
+            "median": 1.3774473072485147,
+            "min": 0.6972705586986618
+          },
+          "objective_gap_best_minus_second": {
+            "max": 0.2505347866717784,
+            "mean": 0.10046927644907555,
+            "median": 0.08548866222736251,
+            "min": 0.027702848450644524
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.8301452931573294,
+            "mean": 0.3577346431957267,
+            "median": 0.44521305457783455,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "counter_diagonal_high_high": {
+          "boundary_selection_frequency": 0.8,
+          "exact_joint_pair_recovery_count": 2,
+          "exact_joint_pair_recovery_frequency": 0.4,
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.775,
+            "median": 0.875,
+            "min": 0.3125
+          },
+          "latent_state_rmse": {
+            "max": 0.16310947898525105,
+            "mean": 0.14201998990892487,
+            "median": 0.14295449815279568,
+            "min": 0.11841371636034125
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 2,
+              "value": 0
+            },
+            {
+              "count": 1,
+              "value": 1
+            },
+            {
+              "count": 2,
+              "value": 3
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 3.0,
+            "mean": 1.4,
+            "median": 1.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "joint_persistence": 0.6,
+            "joint_process_sd": 0.6
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.13411481152176538,
+            "mean": 0.11199627574212345,
+            "median": 0.13065465934894693,
+            "min": 0.06691590453836677
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 5.9374065043688855,
+            "mean": 2.3045994813863766,
+            "median": 1.1985784847262793,
+            "min": 0.781536888797249
+          },
+          "objective_gap_best_minus_second": {
+            "max": 0.28820402628480224,
+            "mean": 0.1589624529286084,
+            "median": 0.16672015566837217,
+            "min": 0.020634745220377226
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 1.6625369507637515,
+            "mean": 0.6153844735039457,
+            "median": 0.12445023665532062,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "counter_diagonal_low_low": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 4,
+          "exact_joint_pair_recovery_frequency": 0.8,
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.975,
+            "median": 1.0,
+            "min": 0.9375
+          },
+          "latent_state_rmse": {
+            "max": 0.03195474767091812,
+            "mean": 0.02818213428818085,
+            "median": 0.02701557019557258,
+            "min": 0.025429801021993048
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 4,
+              "value": 0
+            },
+            {
+              "count": 1,
+              "value": 1
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 1.0,
+            "mean": 0.2,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "joint_persistence": 0.8,
+            "joint_process_sd": 1.0
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.03828127230200587,
+            "mean": 0.03171069927017306,
+            "median": 0.03007037242121595,
+            "min": 0.0300599231652051
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.054518106358808,
+            "mean": 0.8002036312986822,
+            "median": 0.7268439511238844,
+            "min": 0.6969561444726255
+          },
+          "objective_gap_best_minus_second": {
+            "max": 0.10582747519219993,
+            "mean": 0.05612235242442694,
+            "median": 0.028285123409659718,
+            "min": 0.021392474744061474
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.14092222352701356,
+            "mean": 0.02818444470540271,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "high_persistence_low_process_corner": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 1,
+          "exact_joint_pair_recovery_frequency": 0.2,
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.9125,
+            "median": 1.0,
+            "min": 0.625
+          },
+          "latent_state_rmse": {
+            "max": 0.08632287848921935,
+            "mean": 0.06735025779785368,
+            "median": 0.06458879034047472,
+            "min": 0.057167294647964224
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 1,
+              "value": 0
+            },
+            {
+              "count": 2,
+              "value": 1
+            },
+            {
+              "count": 2,
+              "value": 2
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 2.0,
+            "mean": 1.2,
+            "median": 1.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "joint_persistence": 0.8,
+            "joint_process_sd": 0.4
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.10612894680603092,
+            "mean": 0.07822429647257814,
+            "median": 0.08373571339476255,
+            "min": 0.05053083803223608
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 2.920807874343695,
+            "mean": 1.0536474165231515,
+            "median": 0.5677875087351336,
+            "min": 0.3808453954112644
+          },
+          "objective_gap_best_minus_second": {
+            "max": 0.29765982781646017,
+            "mean": 0.15919898570609803,
+            "median": 0.1788563009704376,
+            "min": 0.045086511187037104
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 1.2303611986444594,
+            "mean": 0.45371483096932935,
+            "median": 0.05132500558102038,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "intermediate_diagonal": {
+          "boundary_selection_frequency": 0.6,
+          "exact_joint_pair_recovery_count": 0,
+          "exact_joint_pair_recovery_frequency": 0.0,
+          "latent_state_coverage_90": {
+            "max": 0.875,
+            "mean": 0.6375,
+            "median": 0.6875,
+            "min": 0.25
+          },
+          "latent_state_rmse": {
+            "max": 0.08794932870961286,
+            "mean": 0.082795992968029,
+            "median": 0.08427516236683535,
+            "min": 0.07333312627391514
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 3,
+              "value": 1
+            },
+            {
+              "count": 2,
+              "value": 2
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 2.0,
+            "mean": 1.4,
+            "median": 1.0,
+            "min": 1.0
+          },
+          "marginal_recovery_frequency": {
+            "joint_persistence": 0.6,
+            "joint_process_sd": 0.2
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.07674520426116682,
+            "mean": 0.05714483858507421,
+            "median": 0.05945736878447576,
+            "min": 0.03827455573682184
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 4.846345325016774,
+            "mean": 2.532627870880351,
+            "median": 2.141104915599523,
+            "min": 0.9129135026360509
+          },
+          "objective_gap_best_minus_second": {
+            "max": 0.233121045779626,
+            "mean": 0.09158935170162294,
+            "median": 0.045092097756423755,
+            "min": 0.020887145956294262
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 1.0221333709323517,
+            "mean": 0.4002022241213126,
+            "median": 0.13415373568022915,
+            "min": 0.07845187140264898
+          },
+          "replicates": 5
+        },
+        "intermediate_high_persistence": {
+          "boundary_selection_frequency": 0.8,
+          "exact_joint_pair_recovery_count": 1,
+          "exact_joint_pair_recovery_frequency": 0.2,
+          "latent_state_coverage_90": {
+            "max": 0.9375,
+            "mean": 0.85,
+            "median": 0.9375,
+            "min": 0.625
+          },
+          "latent_state_rmse": {
+            "max": 0.08987608475203013,
+            "mean": 0.08063961137884756,
+            "median": 0.07817062323715149,
+            "min": 0.07740534070196577
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 1,
+              "value": 0
+            },
+            {
+              "count": 1,
+              "value": 1
+            },
+            {
+              "count": 3,
+              "value": 2
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 2.0,
+            "mean": 1.4,
+            "median": 2.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "joint_persistence": 0.4,
+            "joint_process_sd": 0.2
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.10613011231490908,
+            "mean": 0.07270061323158274,
+            "median": 0.06689600598269488,
+            "min": 0.05053193907031586
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 3.1650451682553298,
+            "mean": 1.5460382036661655,
+            "median": 1.3404683170022158,
+            "min": 0.5422545729848063
+          },
+          "objective_gap_best_minus_second": {
+            "max": 0.2867695211316459,
+            "mean": 0.11747426677866316,
+            "median": 0.07058380117268825,
+            "min": 0.027118179781609797
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.9550352584956272,
+            "mean": 0.48486413536702455,
+            "median": 0.49244829156850756,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "low_persistence_high_process_corner": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 0,
+          "exact_joint_pair_recovery_frequency": 0.0,
+          "latent_state_coverage_90": {
+            "max": 0.875,
+            "mean": 0.65,
+            "median": 0.75,
+            "min": 0.1875
+          },
+          "latent_state_rmse": {
+            "max": 0.11544535764211568,
+            "mean": 0.10653344671890108,
+            "median": 0.10927127044770717,
+            "min": 0.09613674663549569
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 4,
+              "value": 1
+            },
+            {
+              "count": 1,
+              "value": 3
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 3.0,
+            "mean": 1.4,
+            "median": 1.0,
+            "min": 1.0
+          },
+          "marginal_recovery_frequency": {
+            "joint_persistence": 1.0,
+            "joint_process_sd": 0.0
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.07679153164112644,
+            "mean": 0.06741056343547755,
+            "median": 0.076724648848237,
+            "min": 0.030070736263756104
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 13.200849877659689,
+            "mean": 4.1700032140867025,
+            "median": 2.088743059156247,
+            "min": 1.5687433935036872
+          },
+          "objective_gap_best_minus_second": {
+            "max": 0.21589994542046043,
+            "mean": 0.10263784592934826,
+            "median": 0.08290684082930966,
+            "min": 0.04822177381902293
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 1.3395242497936124,
+            "mean": 0.45119401834890593,
+            "median": 0.23954662865799037,
+            "min": 0.1819903822743072
+          },
+          "replicates": 5
+        }
+      },
+      "replicates": 35,
+      "state_metrics_by_exact_recovery": {
+        "exact": {
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.9583333333333334,
+            "median": 0.9375,
+            "min": 0.875
+          },
+          "latent_state_rmse": {
+            "max": 0.13286874692148157,
+            "mean": 0.06356029031644822,
+            "median": 0.06458879034047472,
+            "min": 0.025429801021993048
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.13411481152176538,
+            "mean": 0.06714477731102603,
+            "median": 0.06690561159590896,
+            "min": 0.0300599231652051
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.054518106358808,
+            "mean": 0.883695045488464,
+            "median": 0.932259041709339,
+            "min": 0.7152430939810484
+          }
+        },
+        "incorrect": {
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.7427884615384616,
+            "median": 0.75,
+            "min": 0.1875
+          },
+          "latent_state_rmse": {
+            "max": 0.16310947898525105,
+            "mean": 0.08934682520943496,
+            "median": 0.08284330860420527,
+            "min": 0.03195474767091812
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.13065465934894693,
+            "mean": 0.06904941625371033,
+            "median": 0.06690595526053082,
+            "min": 0.030070736263756104
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 13.200849877659689,
+            "mean": 2.4296335112474177,
+            "median": 1.7754492819546044,
+            "min": 0.3808453954112644
+          }
+        }
+      }
+    },
+    "scale_tail": {
+      "boundary_selection_frequency": 0.8285714285714286,
+      "confusion_counts": [
+        {
+          "count": 5,
+          "generating_configuration": {
+            "observation_scale": 1.2,
+            "student_t_df": 3.5
+          },
+          "selected_configuration": {
+            "observation_scale": 1.2,
+            "student_t_df": 3.5
+          }
+        },
+        {
+          "count": 5,
+          "generating_configuration": {
+            "observation_scale": 1.2,
+            "student_t_df": 5.0
+          },
+          "selected_configuration": {
+            "observation_scale": 1.2,
+            "student_t_df": 5.0
+          }
+        },
+        {
+          "count": 5,
+          "generating_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 3.5
+          },
+          "selected_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 3.5
+          }
+        },
+        {
+          "count": 5,
+          "generating_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 5.0
+          },
+          "selected_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 5.0
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 30.0
+          },
+          "selected_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 15.0
+          }
+        },
+        {
+          "count": 4,
+          "generating_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 30.0
+          },
+          "selected_configuration": {
+            "observation_scale": 1.6,
+            "student_t_df": 30.0
+          }
+        },
+        {
+          "count": 5,
+          "generating_configuration": {
+            "observation_scale": 2.2,
+            "student_t_df": 5.0
+          },
+          "selected_configuration": {
+            "observation_scale": 2.2,
+            "student_t_df": 5.0
+          }
+        },
+        {
+          "count": 1,
+          "generating_configuration": {
+            "observation_scale": 2.2,
+            "student_t_df": 30.0
+          },
+          "selected_configuration": {
+            "observation_scale": 2.2,
+            "student_t_df": 15.0
+          }
+        },
+        {
+          "count": 4,
+          "generating_configuration": {
+            "observation_scale": 2.2,
+            "student_t_df": 30.0
+          },
+          "selected_configuration": {
+            "observation_scale": 2.2,
+            "student_t_df": 30.0
+          }
+        }
+      ],
+      "exact_joint_pair_recovery_count": 33,
+      "exact_joint_pair_recovery_frequency": 0.9428571428571428,
+      "incorrect_minus_exact_mean_state_metrics": {
+        "latent_state_coverage_90": -0.016098484848484862,
+        "latent_state_rmse": -0.0003297950199666333,
+        "mean_posterior_state_sd": 0.003408256566286169,
+        "mean_squared_standardized_state_error": -0.10837748838271244
+      },
+      "latent_state_coverage_90": {
+        "max": 1.0,
+        "mean": 0.9214285714285714,
+        "median": 0.9375,
+        "min": 0.8125
+      },
+      "latent_state_rmse": {
+        "max": 0.08799783928446687,
+        "mean": 0.0662878144502019,
+        "median": 0.06761675246956642,
+        "min": 0.03494449959433937
+      },
+      "manhattan_grid_distance_counts": [
+        {
+          "count": 33,
+          "value": 0
+        },
+        {
+          "count": 2,
+          "value": 1
+        }
+      ],
+      "manhattan_grid_distance_from_truth": {
+        "max": 1.0,
+        "mean": 0.05714285714285714,
+        "median": 0.0,
+        "min": 0.0
+      },
+      "marginal_recovery_frequency": {
+        "observation_scale": 1.0,
+        "student_t_df": 0.9428571428571428
+      },
+      "mean_posterior_state_sd": {
+        "max": 0.07900032305457406,
+        "mean": 0.07043357081240753,
+        "median": 0.07003477815370186,
+        "min": 0.06302081205894668
+      },
+      "mean_squared_standardized_state_error": {
+        "max": 1.5710724273217933,
+        "mean": 0.9034604453005813,
+        "median": 0.87029946444623,
+        "min": 0.3037731387290817
+      },
+      "objective_gap_best_minus_second": {
+        "max": 34.09215041836978,
+        "mean": 17.913268586915052,
+        "median": 21.36657766602366,
+        "min": 0.5295211466582259
+      },
+      "objective_gap_selected_minus_truth": {
+        "max": 0.6252493387246432,
+        "mean": 0.032993442439510544,
+        "median": 0.0,
+        "min": 0.0
+      },
+      "recovery_by_generating_pair": {
+        "baseline_pair": {
+          "boundary_selection_frequency": 0.0,
+          "exact_joint_pair_recovery_count": 5,
+          "exact_joint_pair_recovery_frequency": 1.0,
+          "latent_state_coverage_90": {
+            "max": 0.9375,
+            "mean": 0.925,
+            "median": 0.9375,
+            "min": 0.875
+          },
+          "latent_state_rmse": {
+            "max": 0.07318096964003724,
+            "mean": 0.06860342320952403,
+            "median": 0.0690839623613918,
+            "min": 0.06356125312475534
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 5,
+              "value": 0
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "observation_scale": 1.0,
+            "student_t_df": 1.0
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.0700869151265304,
+            "mean": 0.07004465031578297,
+            "median": 0.07003477815370186,
+            "min": 0.0700246925536345
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.0921957517941943,
+            "mean": 0.9623650251203891,
+            "median": 0.9723885481102805,
+            "min": 0.8229151427007052
+          },
+          "objective_gap_best_minus_second": {
+            "max": 22.528362142425976,
+            "mean": 19.174055386698093,
+            "median": 21.36657766602366,
+            "min": 12.949599225612474
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "heavier_tails": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 5,
+          "exact_joint_pair_recovery_frequency": 1.0,
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.925,
+            "median": 0.9375,
+            "min": 0.8125
+          },
+          "latent_state_rmse": {
+            "max": 0.08799783928446687,
+            "mean": 0.06273874745179486,
+            "median": 0.05983877444410413,
+            "min": 0.042429950863984524
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 5,
+              "value": 0
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "observation_scale": 1.0,
+            "student_t_df": 1.0
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.070603199709224,
+            "mean": 0.07053384241701989,
+            "median": 0.07051298820424215,
+            "min": 0.07048770844809248
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.555550194147843,
+            "mean": 0.8363348458911218,
+            "median": 0.7175930302109159,
+            "min": 0.3623238126331185
+          },
+          "objective_gap_best_minus_second": {
+            "max": 34.09215041836978,
+            "mean": 29.36328862668561,
+            "median": 28.812199741760196,
+            "min": 24.69570272877354
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "high_scale": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 5,
+          "exact_joint_pair_recovery_frequency": 1.0,
+          "latent_state_coverage_90": {
+            "max": 0.9375,
+            "mean": 0.925,
+            "median": 0.9375,
+            "min": 0.875
+          },
+          "latent_state_rmse": {
+            "max": 0.08281152672728223,
+            "mean": 0.07574767199410364,
+            "median": 0.07367849358395816,
+            "min": 0.07228115954775263
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 5,
+              "value": 0
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "observation_scale": 1.0,
+            "student_t_df": 1.0
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.07900032305457406,
+            "mean": 0.07896621577751946,
+            "median": 0.07896227721812574,
+            "min": 0.078939981644164
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.100324726986948,
+            "mean": 0.922685904327141,
+            "median": 0.87029946444623,
+            "min": 0.8384955700148611
+          },
+          "objective_gap_best_minus_second": {
+            "max": 22.52403695142675,
+            "mean": 20.62665389250069,
+            "median": 21.30980701135013,
+            "min": 16.812524942701202
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "higher_scale_lighter_tails": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 4,
+          "exact_joint_pair_recovery_frequency": 0.8,
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.9375,
+            "median": 0.9375,
+            "min": 0.875
+          },
+          "latent_state_rmse": {
+            "max": 0.07902328734717759,
+            "mean": 0.07358246934472212,
+            "median": 0.07238681919261968,
+            "min": 0.06767682766169242
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 4,
+              "value": 0
+            },
+            {
+              "count": 1,
+              "value": 1
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 1.0,
+            "mean": 0.2,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "observation_scale": 1.0,
+            "student_t_df": 0.8
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.07805686297424162,
+            "mean": 0.07788786974356895,
+            "median": 0.07784410344406756,
+            "min": 0.07784070818959866
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.0304258590383548,
+            "mean": 0.8956058348043442,
+            "median": 0.8650045171121798,
+            "min": 0.7558632999135624
+          },
+          "objective_gap_best_minus_second": {
+            "max": 10.051173524570913,
+            "mean": 4.268143009473351,
+            "median": 3.634412963048817,
+            "min": 0.5295211466582259
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.5295211466582259,
+            "mean": 0.10590422933164519,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "lighter_tails": {
+          "boundary_selection_frequency": 0.8,
+          "exact_joint_pair_recovery_count": 4,
+          "exact_joint_pair_recovery_frequency": 0.8,
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.9125,
+            "median": 0.9375,
+            "min": 0.8125
+          },
+          "latent_state_rmse": {
+            "max": 0.07473404489612359,
+            "mean": 0.0652019961194334,
+            "median": 0.06509978300159945,
+            "min": 0.05810775792932393
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 4,
+              "value": 0
+            },
+            {
+              "count": 1,
+              "value": 1
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 1.0,
+            "mean": 0.2,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "observation_scale": 1.0,
+            "student_t_df": 0.8
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.0692372767469988,
+            "mean": 0.06909044645751691,
+            "median": 0.06905088777059411,
+            "min": 0.06904789948511156
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.1710362774419631,
+            "mean": 0.8975195123353341,
+            "median": 0.8886851593718477,
+            "min": 0.7081593266376768
+          },
+          "objective_gap_best_minus_second": {
+            "max": 9.968198124357514,
+            "mean": 4.272200113075451,
+            "median": 3.552118409303148,
+            "min": 0.6252493387246432
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.6252493387246432,
+            "mean": 0.12504986774492863,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "low_scale": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 5,
+          "exact_joint_pair_recovery_frequency": 1.0,
+          "latent_state_coverage_90": {
+            "max": 0.9375,
+            "mean": 0.9,
+            "median": 0.875,
+            "min": 0.875
+          },
+          "latent_state_rmse": {
+            "max": 0.06762270699273018,
+            "mean": 0.06266304076186945,
+            "median": 0.0645856965579563,
+            "min": 0.057612587375824816
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 5,
+              "value": 0
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "observation_scale": 1.0,
+            "student_t_df": 1.0
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.06309983935786366,
+            "mean": 0.06304814754274013,
+            "median": 0.06304016721313951,
+            "min": 0.06302081205894668
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.1498046926476673,
+            "mean": 0.9919976484616508,
+            "median": 1.0487039965022324,
+            "min": 0.8345335719202925
+          },
+          "objective_gap_best_minus_second": {
+            "max": 22.525257616114686,
+            "mean": 20.968136533442884,
+            "median": 21.49885515979622,
+            "min": 18.040992532025484
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        },
+        "lower_scale_heavier_tails": {
+          "boundary_selection_frequency": 1.0,
+          "exact_joint_pair_recovery_count": 5,
+          "exact_joint_pair_recovery_frequency": 1.0,
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.925,
+            "median": 0.9375,
+            "min": 0.8125
+          },
+          "latent_state_rmse": {
+            "max": 0.07956500027089135,
+            "mean": 0.05547735226996585,
+            "median": 0.05357556906213129,
+            "min": 0.03494449959433937
+          },
+          "manhattan_grid_distance_counts": [
+            {
+              "count": 5,
+              "value": 0
+            }
+          ],
+          "manhattan_grid_distance_from_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "marginal_recovery_frequency": {
+            "observation_scale": 1.0,
+            "student_t_df": 1.0
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.06354717812130664,
+            "mean": 0.06346382343270432,
+            "median": 0.06343879055545071,
+            "min": 0.06340973012910245
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.5710724273217933,
+            "mean": 0.8177143461640876,
+            "median": 0.7099523089943143,
+            "min": 0.3037731387290817
+          },
+          "objective_gap_best_minus_second": {
+            "max": 28.540918610323388,
+            "mean": 26.720402546529293,
+            "median": 26.75557896499322,
+            "min": 24.657125778538102
+          },
+          "objective_gap_selected_minus_truth": {
+            "max": 0.0,
+            "mean": 0.0,
+            "median": 0.0,
+            "min": 0.0
+          },
+          "replicates": 5
+        }
+      },
+      "replicates": 35,
+      "state_metrics_by_exact_recovery": {
+        "exact": {
+          "latent_state_coverage_90": {
+            "max": 1.0,
+            "mean": 0.9223484848484849,
+            "median": 0.9375,
+            "min": 0.8125
+          },
+          "latent_state_rmse": {
+            "max": 0.08799783928446687,
+            "mean": 0.06630665987991428,
+            "median": 0.06761675246956642,
+            "min": 0.03494449959433937
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.07900032305457406,
+            "mean": 0.07023881329433404,
+            "median": 0.07003477815370186,
+            "min": 0.06302081205894668
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 1.5710724273217933,
+            "mean": 0.9096534446367364,
+            "median": 0.8886851593718477,
+            "min": 0.3037731387290817
+          }
+        },
+        "incorrect": {
+          "latent_state_coverage_90": {
+            "max": 0.9375,
+            "mean": 0.90625,
+            "median": 0.90625,
+            "min": 0.875
+          },
+          "latent_state_rmse": {
+            "max": 0.07089764469018119,
+            "mean": 0.06597686485994765,
+            "median": 0.06597686485994765,
+            "min": 0.061056085029714116
+          },
+          "mean_posterior_state_sd": {
+            "max": 0.07805686297424162,
+            "mean": 0.07364706986062021,
+            "median": 0.07364706986062021,
+            "min": 0.0692372767469988
+          },
+          "mean_squared_standardized_state_error": {
+            "max": 0.8248871732031763,
+            "mean": 0.8012759562540239,
+            "median": 0.8012759562540239,
+            "min": 0.7776647393048716
+          }
+        }
+      }
+    }
+  },
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "prospective_evidence": false,
+  "stage_c_run": false
+}

@@ -1,0 +1,13 @@
+{
+  "errors": [],
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "frozen_candidate_counts": {
+    "persistence_process": 20,
+    "scale_tail": 25
+  },
+  "passed": true,
+  "stage_a_block_origin_records": 28,
+  "stage_a_candidate_results": 630,
+  "stage_b_rows": 70,
+  "unavailable_origins": 0
+}

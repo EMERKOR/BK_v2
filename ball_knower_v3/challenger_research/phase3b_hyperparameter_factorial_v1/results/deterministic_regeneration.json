@@ -1,0 +1,6 @@
+{
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "passed": true,
+  "stage_a_summary_matches_persisted_raw": true,
+  "stage_b_summary_matches_persisted_raw": true
+}

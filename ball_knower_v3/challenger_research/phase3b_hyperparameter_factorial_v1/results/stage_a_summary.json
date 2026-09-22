@@ -1,0 +1,660 @@
+{
+  "artifact_class": "retrospective_development_challenger",
+  "by_block": {
+    "persistence_process": {
+      "advancement_outcome_selected": null,
+      "best_second_objective_gap": {
+        "max": 3.2403892196089146,
+        "mean": 2.1360058753682876,
+        "median": 2.392775535088731,
+        "min": 0.2660562206801842
+      },
+      "boundary_optimum_frequency": 1.0,
+      "candidate_count": 20,
+      "conditional_optimum_instability_frequency": 0.0,
+      "conditional_optimum_span_grid_steps": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0
+      },
+      "eligible_origins": 14,
+      "equivalence_counts_by_absolute_baseline_objective_fraction": {
+        "0.001": {
+          "max": 20.0,
+          "mean": 17.714285714285715,
+          "median": 17.0,
+          "min": 17.0
+        },
+        "0.005": {
+          "max": 20.0,
+          "mean": 20.0,
+          "median": 20.0,
+          "min": 20.0
+        },
+        "0.01": {
+          "max": 20.0,
+          "mean": 20.0,
+          "median": 20.0,
+          "min": 20.0
+        }
+      },
+      "global_optima_by_origin": [
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            6
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            7
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            8
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            9
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            10
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            11
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            12
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            13
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            14
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            15
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            16
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            17
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            18
+          ]
+        },
+        {
+          "config_sha256": "e66ed49b1d0256bd3f08de7518f274a8cc8ff268e1b35843588169a2d841f257",
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            22
+          ]
+        }
+      ],
+      "global_optimum_coordinate_counts": [
+        {
+          "coordinates": [
+            [
+              "joint_persistence",
+              0.9
+            ],
+            [
+              "joint_process_sd",
+              0.0125
+            ]
+          ],
+          "count": 14
+        }
+      ],
+      "material_near_equivalent_uncertainty_frequency": 1.0,
+      "near_optimal_posterior_sd_max_min_ratio": {
+        "max": 5.169413821329229,
+        "mean": 3.7056663045091374,
+        "median": 3.7746687651701336,
+        "min": 2.0960176269541764
+      },
+      "one_percent_equivalence_rule_frequency": 1.0,
+      "qualifying_connected_ridge_frequency": 1.0,
+      "synthetic_exact_joint_pair_recovery_frequency": 0.2571428571428571,
+      "weak_identification_rule_triggers": {
+        "conditional_optimum_instability": false,
+        "historical_boundary": true,
+        "historical_objective_equivalence": true,
+        "material_near_equivalent_uncertainty": true,
+        "synthetic_exact_recovery": true
+      },
+      "weakly_jointly_identified": true
+    },
+    "scale_tail": {
+      "advancement_outcome_selected": null,
+      "best_second_objective_gap": {
+        "max": 59.49120137783029,
+        "mean": 21.760684251578823,
+        "median": 17.82460093591726,
+        "min": 0.0778150317582913
+      },
+      "boundary_optimum_frequency": 1.0,
+      "candidate_count": 25,
+      "conditional_optimum_instability_frequency": 1.0,
+      "conditional_optimum_span_grid_steps": {
+        "max": 3.0,
+        "mean": 3.0,
+        "median": 3.0,
+        "min": 3.0
+      },
+      "eligible_origins": 14,
+      "equivalence_counts_by_absolute_baseline_objective_fraction": {
+        "0.001": {
+          "max": 2.0,
+          "mean": 2.0,
+          "median": 2.0,
+          "min": 2.0
+        },
+        "0.005": {
+          "max": 2.0,
+          "mean": 2.0,
+          "median": 2.0,
+          "min": 2.0
+        },
+        "0.01": {
+          "max": 4.0,
+          "mean": 4.0,
+          "median": 4.0,
+          "min": 4.0
+        }
+      },
+      "global_optima_by_origin": [
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            6
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            7
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            8
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            9
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            10
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            11
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            12
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            13
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            14
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            15
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            16
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            17
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            18
+          ]
+        },
+        {
+          "config_sha256": "9af566ff0fca3cfcc0019c596a493666e777025ac5639967e8842847c217a0e7",
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "on_boundary": true,
+          "target": [
+            2025,
+            22
+          ]
+        }
+      ],
+      "global_optimum_coordinate_counts": [
+        {
+          "coordinates": [
+            [
+              "observation_scale",
+              1.2
+            ],
+            [
+              "student_t_df",
+              5.0
+            ]
+          ],
+          "count": 14
+        }
+      ],
+      "material_near_equivalent_uncertainty_frequency": 0.0,
+      "near_optimal_posterior_sd_max_min_ratio": {
+        "max": 1.0117574244288374,
+        "mean": 1.0081700526220143,
+        "median": 1.007881055113018,
+        "min": 1.0049963895176897
+      },
+      "one_percent_equivalence_rule_frequency": 0.0,
+      "qualifying_connected_ridge_frequency": 0.0,
+      "synthetic_exact_joint_pair_recovery_frequency": 0.9428571428571428,
+      "weak_identification_rule_triggers": {
+        "conditional_optimum_instability": true,
+        "historical_boundary": true,
+        "historical_objective_equivalence": false,
+        "material_near_equivalent_uncertainty": false,
+        "synthetic_exact_recovery": false
+      },
+      "weakly_jointly_identified": true
+    }
+  },
+  "experiment_id": "phase3b_hyperparameter_factorial_v1",
+  "prospective_evidence": false,
+  "stage_c_run": false
+}
