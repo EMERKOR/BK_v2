@@ -1,0 +1,297 @@
+{
+  "advancement_rules": {
+    "coverage_max_increase_in_absolute_nominal_error": 0.03,
+    "crps_mean_improvement_min_points": 0.1,
+    "crps_origin_block_bootstrap_one_sided_95_upper_max": 0.0,
+    "exact_margin_calibration": {
+      "aggregate_l1_relative_improvement_min": 0.1,
+      "margins_improved_min": 6,
+      "non_key_margins_improved_min": 3,
+      "single_non_key_margin_gap_degradation_max": 0.01
+    },
+    "integer_nll_mean_delta_max": 0.01,
+    "integer_nll_origin_block_bootstrap_one_sided_95_upper_max": 0.02,
+    "max_single_origin_share_of_aggregate_crps_gain": 0.4,
+    "no_numerical_or_fail_closed_defect": true,
+    "no_pit_or_provenance_violation": true,
+    "origin_fraction_crps_nonworse_min": 0.75,
+    "origin_fraction_nll_nonworse_min": 0.6666666666666666,
+    "pit_mean_absolute_deviation_degradation_max": 0.02,
+    "pit_variance_absolute_deviation_from_one_twelfth_degradation_max": 0.01,
+    "score_tail_mass_max_each_game": 0.0001,
+    "signed_margin_error_absolute_degradation_max_points": 0.5,
+    "whole_distribution_improvement_required": true
+  },
+  "artifact_class": "retrospective_development_challenger",
+  "candidate_families": [
+    {
+      "dependence": "independent",
+      "distribution": "poisson",
+      "fitted_parameters": [],
+      "id": "independent_poisson_score",
+      "interpretation": "deliberately simple equidispersed integer-score reference"
+    },
+    {
+      "dependence": "independent",
+      "distribution": "negative_binomial_2",
+      "fitted_parameters": [
+        {
+          "bounds": [
+            0.005,
+            0.75
+          ],
+          "fit": "bounded_scalar_MAP_on_joint_home_and_away_prefix_log_likelihood",
+          "id": "alpha",
+          "interpretation": "Var(score|mean)=mean+alpha*mean^2; pooled across home and away",
+          "prior": "uniform_within_bounds"
+        }
+      ],
+      "id": "independent_nb2_score",
+      "interpretation": "one-parameter overdispersed integer-score challenger"
+    },
+    {
+      "dependence": "shared_poisson_component",
+      "distribution": "bivariate_poisson",
+      "fitted_parameters": [
+        {
+          "bounds": [
+            0.0,
+            0.75
+          ],
+          "fit": "bounded_scalar_MAP_on_joint_prefix_log_likelihood",
+          "id": "rho",
+          "interpretation": "shared intensity equals rho*min(home_mean,away_mean); marginal means remain unchanged",
+          "prior": "uniform_within_bounds"
+        }
+      ],
+      "id": "shared_poisson_score",
+      "interpretation": "minimal positive shared-scoring-environment dependence challenger"
+    }
+  ],
+  "comparator": {
+    "contract": "ball_knower_v3/design_decisions/phase3c_prospective_experiment_contract_v1.md",
+    "family": "structural_student_t_map_laplace",
+    "role": "primary",
+    "secondary_references": [
+      "league_mean_hfa_gaussian",
+      "structural_ridge_gaussian",
+      "structural_gaussian_map_laplace"
+    ],
+    "structural_expectation_rule": "use the unchanged comparator posterior-predictive component mean for margin and total; home_mean=(total_mean+margin_mean)/2 and away_mean=(total_mean-margin_mean)/2; fail closed if either is outside the frozen bounds"
+  },
+  "deterministic_seeds": {
+    "bootstrap": 31703,
+    "randomized_pit": 31702,
+    "structural_expectation_namespace": "phase3c_margin_distribution_shape_v1/structural_expectation",
+    "synthetic": {
+      "high_scoring": 31005,
+      "independent_equidispersed": 31001,
+      "low_scoring": 31004,
+      "overdispersed": 31002,
+      "shared_positive_environment": 31003
+    }
+  },
+  "evaluation": {
+    "absolute_margin_thresholds": [
+      14,
+      21,
+      28
+    ],
+    "bootstrap_replicates": 10000,
+    "exact_margin_diagnostics": [
+      -14,
+      -10,
+      -7,
+      -6,
+      -3,
+      0,
+      3,
+      6,
+      7,
+      10,
+      14
+    ],
+    "metric_definitions": {
+      "absolute_margin_distribution": "derive P(abs(M)=a) by summing the integer margin PMF at +a and -a",
+      "coverage": "indicator that the realized margin is inside the equal-tailed central 50%, 80%, or 90% integer interval",
+      "exact_margin_probability_calibration": "for each frozen k, abs(mean_i(P_i(M=k))-mean_i(1{M_i=k})); aggregate L1 is the unweighted mean across frozen k",
+      "integer_negative_log_probability": "-log(P(M=realized_integer_margin))",
+      "margin_crps": "sum over integer k of (F(k)-1{realized_margin<=k})^2",
+      "randomized_pit": "F(realized_margin-1)+U*P(M=realized_margin), with frozen deterministic U stream",
+      "signed_and_absolute_tail_probabilities": "sum integer PMF atoms beyond each frozen signed or absolute threshold",
+      "signed_margin_error": "E_PMF[M]-realized_margin",
+      "tie_probability": "P(M=0)"
+    },
+    "metrics": [
+      "margin_crps",
+      "integer_negative_log_probability",
+      "signed_margin_error",
+      "coverage_50",
+      "coverage_80",
+      "coverage_90",
+      "randomized_pit",
+      "exact_margin_probability_calibration",
+      "tie_probability",
+      "absolute_margin_distribution",
+      "signed_and_absolute_tail_probabilities"
+    ],
+    "origin_blocking": "forecast_as_of",
+    "primary_target": "home_score_minus_away_score"
+  },
+  "excluded": [
+    "sportsbook_inputs",
+    "closing_lines",
+    "manual_key_number_weights",
+    "special_probability_boosts",
+    "margin_value_indicator_probability_adjustments",
+    "post_hoc_isotonic_calibration",
+    "post_hoc_temperature_scaling",
+    "QB_features",
+    "weather",
+    "rest",
+    "travel",
+    "pace",
+    "PROE",
+    "injuries",
+    "alternative_team_state_estimation",
+    "market_comparison"
+  ],
+  "experiment_id": "phase3c_margin_distribution_shape_v1",
+  "fitting": {
+    "chronology": "expanding_window_prior_time_only",
+    "invalid_optimizer_or_parameter_action": "fail_closed",
+    "location_parameters_refit_by_challenger": false,
+    "minimum_training_games": 20,
+    "optimizer": "scipy_optimize_minimize_scalar_bounded",
+    "optimizer_absolute_tolerance": 1e-08,
+    "optimizer_max_iterations": 500,
+    "team_strengths_refit_by_challenger": false
+  },
+  "historical_origins": [
+    "2025-10-07T16:00:00+00:00",
+    "2025-10-14T16:00:00+00:00",
+    "2025-10-21T16:00:00+00:00",
+    "2025-10-28T16:00:00+00:00",
+    "2025-11-04T16:00:00+00:00",
+    "2025-11-11T16:00:00+00:00",
+    "2025-11-18T16:00:00+00:00",
+    "2025-11-25T16:00:00+00:00",
+    "2025-12-02T16:00:00+00:00",
+    "2025-12-09T16:00:00+00:00",
+    "2025-12-16T16:00:00+00:00",
+    "2025-12-23T16:00:00+00:00",
+    "2025-12-30T16:00:00+00:00",
+    "2026-02-03T16:00:00+00:00"
+  ],
+  "prospective_baseline_modified": false,
+  "score_support": {
+    "away_score": [
+      0,
+      125
+    ],
+    "empirical_repository_support": {
+      "games": 7276,
+      "maximum_team_score": 70,
+      "minimum_team_score": 0,
+      "p999_team_score": 56,
+      "p99_team_score": 48,
+      "source": "data/v3/canonical/_sources/nflverse_games_snapshot.csv"
+    },
+    "expected_score_bounds": [
+      0.25,
+      60.0
+    ],
+    "home_score": [
+      0,
+      125
+    ],
+    "margin": [
+      -125,
+      125
+    ],
+    "normalization": "divide represented joint score probabilities once by represented_joint_mass; never reweight an individual score or margin",
+    "tail_accounting": [
+      "home_score_omitted",
+      "away_score_omitted",
+      "joint_score_omitted",
+      "total_omitted",
+      "margin_omitted"
+    ],
+    "tail_mass_max": 0.0001,
+    "total": [
+      0,
+      250
+    ]
+  },
+  "serialization": "UTF-8 JSON, sorted keys, indent=2, allow_nan=false, trailing newline",
+  "stage_order": [
+    "stage_a_synthetic_distribution_recovery",
+    "stage_b_chronological_nfl_distribution_evaluation"
+  ],
+  "status": "TEST",
+  "synthetic_recovery": {
+    "gates": {
+      "dispersion_parameter_absolute_error_max": 0.04,
+      "exact_margin_pmf_total_variation_max": 0.05,
+      "margin_variance_relative_error_max": 0.12,
+      "mean_score_absolute_error_max": 0.6,
+      "score_variance_relative_error_max": 0.12,
+      "shared_parameter_absolute_error_max": 0.04,
+      "tail_probability_absolute_error_max": 0.005
+    },
+    "regimes": [
+      {
+        "away_mean": 21.0,
+        "family": "independent_poisson_score",
+        "home_mean": 24.0,
+        "id": "independent_equidispersed",
+        "parameters": {}
+      },
+      {
+        "away_mean": 21.0,
+        "family": "independent_nb2_score",
+        "home_mean": 24.0,
+        "id": "overdispersed",
+        "parameters": {
+          "alpha": 0.15
+        }
+      },
+      {
+        "away_mean": 21.0,
+        "family": "shared_poisson_score",
+        "home_mean": 24.0,
+        "id": "shared_positive_environment",
+        "parameters": {
+          "rho": 0.2
+        }
+      },
+      {
+        "away_mean": 12.0,
+        "family": "independent_poisson_score",
+        "home_mean": 14.0,
+        "id": "low_scoring",
+        "parameters": {}
+      },
+      {
+        "away_mean": 35.0,
+        "family": "independent_nb2_score",
+        "home_mean": 38.0,
+        "id": "high_scoring",
+        "parameters": {
+          "alpha": 0.08
+        }
+      }
+    ],
+    "replicates_per_regime": 5,
+    "required_recovery_outputs": [
+      "mean_scores",
+      "score_variances",
+      "margin_variance",
+      "exact_margin_pmf",
+      "tail_behavior",
+      "dispersion_or_dependence_parameter"
+    ],
+    "sample_size_per_replicate": 20000,
+    "stage_b_requires_all_truth_family_gates": true
+  }
+}
